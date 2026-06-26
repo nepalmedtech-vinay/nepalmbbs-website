@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NepalMBBS.in — MBBS in Nepal for Indian Students | Official Guidance 2025</title>
+<meta name="description" content="NEET qualified? Get official guidance for MBBS in Nepal 2025 — NMC approved colleges, MEC process, free counseling. Trusted by students from Mumbai, Nagpur, Nanded, Nashik, Latur.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0a1628;--deep:#0f2444;--blue:#1a4b8c;
+  --accent:#e8a020;--gold:#f5c842;--green:#16a34a;
+  --green-light:#dcfce7;--red:#dc2626;--white:#ffffff;
+  --off:#f8fafc;--text:#1e293b;--muted:#64748b;
+  --border:#e2e8f0;--r:12px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x:hidden}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,22,40,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);padding:0 20px}
+.nav-inner{max-width:1200px;margin:0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#fff;text-decoration:none;flex-shrink:0}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:20px}
+.nav-links a{color:rgba(255,255,255,0.75);font-size:14px;font-weight:500;text-decoration:none;transition:color 0.2s;white-space:nowrap}
+.nav-links a:hover{color:#fff}
+.nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.lang-switcher{display:flex;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:20px;overflow:hidden}
+.lang-btn{padding:5px 12px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);cursor:pointer;border:none;background:transparent;transition:all 0.2s}
+.lang-btn.active{background:var(--accent);color:var(--navy)}
+.nav-cta{background:var(--accent);color:var(--navy);padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all 0.2s}
+.nav-cta:hover{background:var(--gold)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.hamburger span{width:22px;height:2px;background:#fff;border-radius:2px}
+.mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:var(--navy);padding:20px 24px;z-index:999;border-bottom:1px solid rgba(255,255,255,0.1)}
+.mobile-menu a{display:block;color:rgba(255,255,255,0.85);text-decoration:none;font-size:15px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.mobile-menu.open{display:block}
+.mobile-lang{display:flex;gap:8px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.mobile-lang button{padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.7);font-size:13px;font-weight:600;cursor:pointer}
+.mobile-lang button.active{background:var(--accent);color:var(--navy);border-color:transparent}
+
+/* HERO */
+.hero{min-height:100vh;background:linear-gradient(160deg,var(--navy) 0%,var(--deep) 50%,#0d2d50 100%);display:flex;align-items:center;padding:100px 24px 60px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(232,160,32,0.08) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 460px;gap:56px;align-items:center;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,160,32,0.15);border:1px solid rgba(232,160,32,0.3);padding:6px 14px;border-radius:20px;font-size:13px;color:var(--gold);font-weight:600;margin-bottom:22px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#ef4444;animation:pulse 1.5s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero h1{font-family:'Sora',sans-serif;font-size:clamp(30px,4vw,52px);font-weight:800;color:#fff;line-height:1.12;margin-bottom:18px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero-sub{font-size:16px;color:rgba(255,255,255,0.68);line-height:1.75;margin-bottom:28px;max-width:500px}
+.hero-stats{display:flex;gap:28px;margin-bottom:32px;flex-wrap:wrap}
+.hero-stat strong{display:block;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;color:var(--gold)}
+.hero-stat span{font-size:11px;color:rgba(255,255,255,0.5);font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn-gold{background:var(--accent);color:var(--navy);padding:13px 26px;border-radius:10px;font-size:15px;font-weight:700;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.2s}
+.btn-gold:hover{background:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,160,32,0.35)}
+.btn-outline{background:transparent;color:#fff;padding:13px 26px;border-radius:10px;font-size:15px;font-weight:600;border:1.5px solid rgba(255,255,255,0.28);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all 0.2s}
+.btn-outline:hover{border-color:#fff;background:rgba(255,255,255,0.07)}
+
+/* HERO CARD */
+.hero-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:30px;position:relative}
+.hero-card-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--navy);font-size:12px;font-weight:700;padding:4px 16px;border-radius:20px;white-space:nowrap}
+.hero-card h3{font-family:'Sora',sans-serif;font-size:19px;font-weight:700;color:#fff;margin-bottom:4px;margin-top:10px}
+.hero-card p{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:18px}
+.form-field{margin-bottom:12px}
+.form-field label{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,0.55);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em}
+.form-field input,.form-field select{width:100%;padding:10px 13px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;color:#fff;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s}
+.form-field input::placeholder{color:rgba(255,255,255,0.28)}
+.form-field select option{background:var(--navy);color:#fff}
+.form-field input:focus,.form-field select:focus{border-color:var(--accent)}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.submit-btn{width:100%;background:var(--accent);color:var(--navy);padding:12px;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:4px;font-family:'Sora',sans-serif}
+.submit-btn:hover{background:var(--gold)}
+.submit-btn:disabled{opacity:0.6;cursor:not-allowed}
+.form-note{text-align:center;margin-top:9px;font-size:11px;color:rgba(255,255,255,0.35)}
+.form-success{display:none;text-align:center;padding:16px 0}
+.form-success .check{font-size:46px;margin-bottom:10px}
+.form-success h3{font-family:'Sora',sans-serif;color:var(--gold);font-size:20px;margin-bottom:8px}
+.form-success p{color:rgba(255,255,255,0.6);font-size:13px;line-height:1.6}
+.form-success .wa-link{display:inline-block;margin-top:12px;background:var(--accent);color:var(--navy);padding:9px 20px;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none}
+
+/* TICKER */
+.ticker{background:var(--accent);padding:9px 0;overflow:hidden}
+.ticker-track{display:flex;animation:scroll 35s linear infinite;white-space:nowrap}
+.ticker-item{padding:0 36px;font-size:13px;font-weight:700;color:var(--navy)}
+.ticker-item::after{content:'•';margin-left:36px}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SECTIONS */
+.section{padding:76px 24px}
+.container{max-width:1200px;margin:0 auto}
+.sec-eyebrow{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px}
+.sec-title{font-family:'Sora',sans-serif;font-size:clamp(24px,3vw,38px);font-weight:800;color:var(--navy);line-height:1.2;margin-bottom:14px}
+.sec-sub{font-size:15px;color:var(--muted);line-height:1.75;max-width:580px}
+.text-center{text-align:center}
+.text-center .sec-sub{margin:0 auto}
+
+/* JOURNEY */
+.journey{background:var(--off)}
+.step-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:44px}
+.step-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:22px;transition:all 0.25s}
+.step-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.08)}
+.step-tag{display:inline-block;background:var(--navy);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:12px}
+.step-icon{font-size:26px;margin-bottom:8px}
+.step-card h4{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:7px}
+.step-card p{font-size:13px;color:var(--muted);line-height:1.7}
+.step-link{display:inline-flex;align-items:center;gap:3px;margin-top:9px;font-size:12px;font-weight:600;color:var(--blue);text-decoration:none}
+.step-link:hover{color:var(--accent)}
+
+/* WHY NEPAL */
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:44px}
+.why-card{border-left:3px solid var(--accent);padding:18px 18px 18px 22px;background:var(--off);border-radius:0 var(--r) var(--r) 0;transition:all 0.2s}
+.why-card:hover{background:#fff;box-shadow:0 4px 18px rgba(0,0,0,0.07)}
+.why-card h4{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:7px}
+.why-card p{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* OFFICIAL LINKS */
+.official{background:var(--navy)}
+.official .sec-title{color:#fff}
+.official .sec-sub{color:rgba(255,255,255,0.55)}
+.off-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:38px}
+.off-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:var(--r);padding:18px;text-decoration:none;transition:all 0.2s;display:block}
+.off-card:hover{background:rgba(255,255,255,0.09);border-color:var(--accent);transform:translateY(-2px)}
+.off-flag{font-size:22px;margin-bottom:9px}
+.off-card h4{font-family:'Sora',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
+.off-card p{font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;line-height:1.5}
+.off-url{font-size:11px;color:var(--accent)}
+
+/* FAQ */
+.faq-wrap{max-width:780px;margin:38px auto 0}
+.faq-cat-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin:28px 0 10px;padding:0 2px}
+.faq-item{border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden;transition:border-color 0.2s}
+.faq-item.open{border-color:var(--accent)}
+.faq-q{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:12px}
+.faq-q span{font-size:14px;font-weight:600;color:var(--navy)}
+.faq-icon{width:26px;height:26px;border-radius:50%;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--muted);flex-shrink:0;transition:all 0.3s}
+.faq-item.open .faq-icon{background:var(--accent);color:var(--navy);transform:rotate(45deg)}
+.faq-body{max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.3s}
+.faq-item.open .faq-body{max-height:300px;padding:0 18px 16px}
+.faq-body p{font-size:13px;color:var(--muted);line-height:1.75}
+.faq-body a{color:var(--blue);font-weight:600;text-decoration:none}
+.faq-body a:hover{text-decoration:underline}
+
+/* COUNSELING */
+.counsel{background:linear-gradient(135deg,#0f2444 0%,var(--navy) 100%)}
+.counsel-inner{display:grid;grid-template-columns:1fr 440px;gap:56px;align-items:center}
+.counsel .sec-title{color:#fff}
+.counsel .sec-sub{color:rgba(255,255,255,0.6)}
+.platform-btns{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.pbtn{display:flex;align-items:center;gap:7px;padding:11px 18px;border-radius:9px;font-size:13px;font-weight:600;text-decoration:none;transition:all 0.2s}
+.pbtn-meet{background:#fff;color:var(--text)}
+.pbtn-meet:hover{background:#f0f4ff}
+.pbtn-zoom{background:#2d8cff;color:#fff}
+.pbtn-zoom:hover{background:#1a7aee}
+.pbtn-wa{background:#25d366;color:#fff}
+.pbtn-wa:hover{background:#1da851}
+.counsel-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.11);border-radius:20px;padding:28px}
+.counsel-card h3{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:4px}
+.counsel-card p{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:18px}
+
+/* LIFESTYLE */
+.life-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:38px}
+.life-card{text-align:center;padding:22px 14px;background:var(--off);border-radius:var(--r);transition:all 0.2s}
+.life-card:hover{background:#fff;box-shadow:0 4px 18px rgba(0,0,0,0.08);transform:translateY(-3px)}
+.life-icon{font-size:32px;margin-bottom:10px}
+.life-card h4{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:5px}
+.life-card p{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* CURRENCY */
+.curr-box{background:var(--navy);border-radius:16px;padding:28px;max-width:460px;margin:36px auto 0}
+.curr-box h3{font-family:'Sora',sans-serif;color:#fff;font-size:17px;margin-bottom:18px;text-align:center}
+.curr-row{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+.curr-lbl{font-size:12px;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;width:48px;flex-shrink:0}
+.curr-inp{flex:1;padding:11px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:8px;color:#fff;font-size:16px;font-family:'Sora',sans-serif;font-weight:600;outline:none}
+.curr-result{background:rgba(232,160,32,0.1);border:1px solid rgba(232,160,32,0.25);border-radius:8px;padding:11px 14px;font-size:20px;font-family:'Sora',sans-serif;font-weight:800;color:var(--gold);text-align:center;margin-top:6px}
+.curr-note{font-size:11px;color:rgba(255,255,255,0.28);text-align:center;margin-top:7px}
+
+/* BLOGS */
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px;margin-top:38px}
+.blog-card{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all 0.25s;text-decoration:none;display:block;color:inherit}
+.blog-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1);border-color:var(--accent)}
+.blog-img{height:150px;background:linear-gradient(135deg,var(--deep),var(--blue));display:flex;align-items:center;justify-content:center;font-size:44px}
+.blog-body{padding:18px}
+.blog-tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;padding:3px 9px;border-radius:20px;margin-bottom:10px}
+.t-neet{background:#fef3c7;color:#92400e}
+.t-nepal{background:#dcfce7;color:#166534}
+.t-life{background:#ede9fe;color:#6d28d9}
+.blog-card h4{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:7px;line-height:1.4}
+.blog-card p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.blog-meta{font-size:11px;color:var(--muted)}
+
+/* CONTACT BAR */
+.contact-bar{background:var(--off);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:16px 24px}
+.contact-bar-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap}
+.contact-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);text-decoration:none;font-weight:500}
+.contact-item:hover{color:var(--blue)}
+.contact-icon{font-size:18px}
+
+/* FOOTER */
+footer{background:var(--navy);padding:44px 24px 20px}
+.footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;margin-bottom:36px}
+.footer-logo{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#fff;margin-bottom:10px;display:block;text-decoration:none}
+.footer-logo span{color:var(--accent)}
+.footer-desc{font-size:13px;color:rgba(255,255,255,0.4);line-height:1.7;max-width:260px;margin-bottom:16px}
+.footer-contact-links a{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.55);font-size:13px;text-decoration:none;margin-bottom:7px;transition:color 0.2s}
+.footer-contact-links a:hover{color:var(--accent)}
+.footer-col h5{font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:13px}
+.footer-col a{display:block;color:rgba(255,255,255,0.55);font-size:13px;text-decoration:none;margin-bottom:8px;transition:color 0.2s}
+.footer-col a:hover{color:var(--accent)}
+.footer-bottom{max-width:1200px;margin:0 auto;padding-top:18px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.footer-bottom p{font-size:11px;color:rgba(255,255,255,0.28)}
+.footer-bottom a{color:rgba(255,255,255,0.35);text-decoration:none;font-size:11px}
+
+/* WHATSAPP FLOAT */
+.wa-float{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.wa-tip{background:var(--navy);color:#fff;font-size:12px;font-weight:600;padding:7px 12px;border-radius:7px;white-space:nowrap;opacity:0;transform:translateX(8px);transition:all 0.2s;pointer-events:none;border:1px solid rgba(255,255,255,0.1)}
+.wa-float:hover .wa-tip{opacity:1;transform:translateX(0)}
+.wa-btn{width:54px;height:54px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(37,211,102,0.45);transition:transform 0.2s;text-decoration:none}
+.wa-btn:hover{transform:scale(1.1)}
+.wa-btn svg{width:28px;height:28px;fill:#fff}
+
+/* TOAST */
+.toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy);color:#fff;padding:11px 22px;border-radius:9px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:all 0.3s;border:1px solid rgba(255,255,255,0.1);pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:#052e16;border-color:#16a34a;color:#86efac}
+.toast.err{background:#1c0a0a;border-color:#dc2626;color:#fca5a5}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(20px);transition:all 0.55s cubic-bezier(0.16,1,0.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .hero-inner{grid-template-columns:1fr}
+  .counsel-inner{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+  .hamburger{display:flex}
+}
+@media(max-width:580px){
+  .hero{padding:88px 16px 44px}
+  .section{padding:56px 16px}
+  .footer-grid{grid-template-columns:1fr}
+  .hero-stats{gap:18px}
+  .form-row-2{grid-template-columns:1fr}
+  .hero-btns{flex-direction:column}
+  .contact-bar-inner{gap:16px}
+  .nav-right .nav-cta{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo">Nepal<span>MBBS</span>.in</a>
+    <div class="nav-links">
+      <a href="#journey" data-en="Process" data-hi="प्रक्रिया">Process</a>
+      <a href="#why-nepal" data-en="Why Nepal" data-hi="नेपाल क्यों">Why Nepal</a>
+      <a href="#official" data-en="Official Links" data-hi="सरकारी लिंक">Official Links</a>
+      <a href="#faq" data-en="FAQ" data-hi="FAQ">FAQ</a>
+      <a href="#counsel" data-en="Counseling" data-hi="काउंसलिंग">Counseling</a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('hi')">हि</button>
+      </div>
+      <a href="#counsel" class="nav-cta" data-en="Free Counseling →" data-hi="निःशुल्क काउंसलिंग →">Free Counseling →</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-lang">
+    <button class="active" onclick="setLang('en');toggleMenu()">English</button>
+    <button onclick="setLang('hi');toggleMenu()">हिंदी</button>
+  </div>
+  <a href="#journey" onclick="toggleMenu()" data-en="Admission Process" data-hi="प्रवेश प्रक्रिया">Admission Process</a>
+  <a href="#why-nepal" onclick="toggleMenu()" data-en="Why Nepal" data-hi="नेपाल क्यों">Why Nepal</a>
+  <a href="#official" onclick="toggleMenu()" data-en="Official Links" data-hi="सरकारी लिंक">Official Links</a>
+  <a href="#faq" onclick="toggleMenu()" data-en="FAQ" data-hi="FAQ">FAQ</a>
+  <a href="#counsel" onclick="toggleMenu()" style="color:var(--gold);font-weight:700" data-en="Free Counseling →" data-hi="निःशुल्क काउंसलिंग →">Free Counseling →</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge"><div class="live-dot"></div><span data-en="NEET 2025 Results Out — Nepal Admissions Open" data-hi="NEET 2025 परिणाम आए — नेपाल प्रवेश खुला">NEET 2025 Results Out — Nepal Admissions Open</span></div>
+      <h1 data-en="After NEET — <em>Nepal MBBS</em><br>The Smartest Path Forward" data-hi="NEET के बाद — <em>नेपाल MBBS</em><br>सबसे स्मार्ट विकल्प">After NEET — <em>Nepal MBBS</em><br>The Smartest Path Forward</h1>
+      <p class="hero-sub" data-en="Limited MBBS seats in India? Nepal offers NMC-approved medical colleges — English medium, familiar culture, zero visa required for Indian citizens." data-hi="भारत में सीमित MBBS सीटें? नेपाल में NMC-अनुमोदित मेडिकल कॉलेज — अंग्रेजी माध्यम, परिचित संस्कृति, भारतीय नागरिकों के लिए शून्य वीज़ा।">Limited MBBS seats in India? Nepal offers NMC-approved medical colleges — English medium, familiar culture, zero visa required for Indian citizens.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>25+</strong><span data-en="NMC Approved Colleges" data-hi="NMC अनुमोदित कॉलेज">NMC Approved Colleges</span></div>
+        <div class="hero-stat"><strong>5.5 Yr</strong><span data-en="MBBS + Internship" data-hi="MBBS + इंटर्नशिप">MBBS + Internship</span></div>
+        <div class="hero-stat"><strong>0</strong><span data-en="Visa for Indians" data-hi="भारतीयों के लिए वीज़ा">Visa for Indians</span></div>
+      </div>
+      <div class="hero-btns">
+        <a href="#counsel" class="btn-gold" data-en="Book Free Counseling" data-hi="निःशुल्क काउंसलिंग बुक करें">Book Free Counseling</a>
+        <a href="https://wa.me/917080800888?text=Hello!%20I%20need%20guidance%20for%20Nepal%20MBBS%20admission%202025." target="_blank" class="btn-outline">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.549 4.116 1.512 5.845L.057 23.273a.75.75 0 00.924.924l5.428-1.455A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22.5c-1.978 0-3.83-.53-5.42-1.452l-.388-.229-4.02 1.078 1.078-4.02-.229-.388A10.45 10.45 0 011.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12 17.799 22.5 12 22.5z"/></svg>
+          <span data-en="WhatsApp Us" data-hi="WhatsApp करें">WhatsApp Us</span>
+        </a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-badge" data-en="🎓 Free Counseling Session" data-hi="🎓 निःशुल्क काउंसलिंग">🎓 Free Counseling Session</div>
+      <div id="hf-area">
+        <h3 data-en="Register Now" data-hi="अभी रजिस्टर करें">Register Now</h3>
+        <p data-en="Our counselor will contact you promptly" data-hi="हमारे काउंसलर जल्द संपर्क करेंगे">Our counselor will contact you promptly</p>
+        <div class="form-field"><label data-en="Student Name" data-hi="छात्र का नाम">Student Name</label><input id="h-name" type="text" placeholder="Full name"></div>
+        <div class="form-row-2">
+          <div class="form-field"><label data-en="WhatsApp No." data-hi="WhatsApp नं.">WhatsApp No.</label><input id="h-phone" type="tel" placeholder="10 digits" maxlength="10"></div>
+          <div class="form-field"><label data-en="NEET Score" data-hi="NEET स्कोर">NEET Score</label><input id="h-neet" type="number" placeholder="e.g. 420" min="0" max="720"></div>
+        </div>
+        <div class="form-field">
+          <label data-en="City" data-hi="शहर">City</label>
+          <select id="h-city"><option value="">Select city</option><option>Mumbai</option><option>Nagpur</option><option>Nanded</option><option>Nashik</option><option>Latur</option><option>Pune</option><option>Aurangabad</option><option>Delhi</option><option>Other</option></select>
+        </div>
+        <div class="form-field">
+          <label data-en="Category" data-hi="श्रेणी">Category</label>
+          <select id="h-cat"><option value="">Select</option><option>General</option><option>OBC</option><option>SC</option><option>ST</option></select>
+        </div>
+        <button class="submit-btn" onclick="submitForm('hero')" data-en="Get Free Guidance →" data-hi="निःशुल्क मार्गदर्शन पाएं →">Get Free Guidance →</button>
+        <div class="form-note" data-en="🔒 Your information is kept private" data-hi="🔒 आपकी जानकारी निजी रखी जाती है">🔒 Your information is kept private</div>
+      </div>
+      <div class="form-success" id="hf-success">
+        <div class="check">🎉</div>
+        <h3 data-en="Registered!" data-hi="पंजीकृत!">Registered!</h3>
+        <p data-en="Our team will contact you on WhatsApp shortly. Meanwhile, join our group for updates." data-hi="हमारी टीम जल्द WhatsApp पर संपर्क करेगी।">Our team will contact you on WhatsApp shortly. Meanwhile, join our group for updates.</p>
+        <a href="https://wa.me/917080800888?text=I%20just%20registered%20on%20NepalMBBS.in" target="_blank" class="wa-link" data-en="💬 WhatsApp for Updates" data-hi="💬 अपडेट के लिए WhatsApp">💬 WhatsApp for Updates</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">NEET 2025 Results Out — Nepal Admissions Open</span>
+    <span class="ticker-item">NMC India Recognised Colleges in Nepal</span>
+    <span class="ticker-item">No Visa Required for Indian Citizens</span>
+    <span class="ticker-item">English Medium MBBS Programme</span>
+    <span class="ticker-item">FMGE / NExT Pathway — Practice in India</span>
+    <span class="ticker-item">Free Counseling — No Pressure</span>
+    <span class="ticker-item">Official MEC Nepal Process</span>
+    <span class="ticker-item">NEET 2025 Results Out — Nepal Admissions Open</span>
+    <span class="ticker-item">NMC India Recognised Colleges in Nepal</span>
+    <span class="ticker-item">No Visa Required for Indian Citizens</span>
+    <span class="ticker-item">English Medium MBBS Programme</span>
+    <span class="ticker-item">FMGE / NExT Pathway — Practice in India</span>
+    <span class="ticker-item">Free Counseling — No Pressure</span>
+    <span class="ticker-item">Official MEC Nepal Process</span>
+  </div>
+</div>
+
+<!-- CONTACT BAR -->
+<div class="contact-bar">
+  <div class="contact-bar-inner">
+    <a href="tel:+917080800888" class="contact-item"><span class="contact-icon">📞</span> +91 70808 00888</a>
+    <a href="mailto:info@nepalmbbs.in" class="contact-item"><span class="contact-icon">✉️</span> info@nepalmbbs.in</a>
+    <a href="mailto:vinay@nepalmbbs.in" class="contact-item"><span class="contact-icon">👤</span> vinay@nepalmbbs.in</a>
+    <a href="https://wa.me/917080800888" target="_blank" class="contact-item"><span class="contact-icon">💬</span> WhatsApp</a>
+  </div>
+</div>
+
+<!-- JOURNEY -->
+<section class="section journey" id="journey">
+  <div class="container">
+    <div class="text-center reveal">
+      <div class="sec-eyebrow" data-en="Step by Step" data-hi="चरण दर चरण">Step by Step</div>
+      <div class="sec-title" data-en="From NEET to Nepal MBBS — Complete Roadmap" data-hi="NEET से नेपाल MBBS तक — पूरा रोडमैप">From NEET to Nepal MBBS — Complete Roadmap</div>
+      <div class="sec-sub" data-en="We guide you through every step — from eligibility check to joining college." data-hi="हम हर कदम पर आपका मार्गदर्शन करते हैं।">We guide you through every step — from eligibility check to joining college.</div>
+    </div>
+    <div class="step-grid">
+      <div class="step-card reveal"><div class="step-tag">Step 1</div><div class="step-icon">📋</div><h4 data-en="NEET Score & Eligibility" data-hi="NEET स्कोर और पात्रता">NEET Score & Eligibility</h4><p data-en="Minimum 50th percentile NEET score required for General category (40th for SC/ST). Verify current NMC guidelines before applying." data-hi="सामान्य श्रेणी के लिए न्यूनतम 50वां पर्सेंटाइल NEET स्कोर आवश्यक।">Minimum 50th percentile NEET score required for General category (40th for SC/ST). Verify current NMC guidelines before applying.</p><a href="https://nmc.org.in" target="_blank" class="step-link">NMC Official ↗</a></div>
+      <div class="step-card reveal"><div class="step-tag">Step 2</div><div class="step-icon">🏛️</div><h4 data-en="College Selection via MEC" data-hi="MEC के माध्यम से कॉलेज चयन">College Selection via MEC</h4><p data-en="All admissions in Nepal go through the Medical Education Commission (MEC). Select only MEC-approved and NMC India recognised colleges." data-hi="नेपाल में सभी प्रवेश MEC के माध्यम से होते हैं।">All admissions in Nepal go through the Medical Education Commission (MEC). Select only MEC-approved and NMC India recognised colleges.</p><a href="https://mec.gov.np" target="_blank" class="step-link">MEC Nepal ↗</a></div>
+      <div class="step-card reveal"><div class="step-tag">Step 3</div><div class="step-icon">📝</div><h4 data-en="Documents & Application" data-hi="दस्तावेज़ और आवेदन">Documents & Application</h4><p data-en="10th + 12th marksheets (notarised), NEET scorecard, valid passport, medical fitness certificate, character certificate." data-hi="10वीं + 12वीं अंकपत्र, NEET स्कोरकार्ड, वैध पासपोर्ट, मेडिकल फिटनेस प्रमाणपत्र।">10th + 12th marksheets (notarised), NEET scorecard, valid passport, medical fitness certificate, character certificate.</p><a href="https://entrance.mec.gov.np" target="_blank" class="step-link">MECEE Portal ↗</a></div>
+      <div class="step-card reveal"><div class="step-tag">Step 4</div><div class="step-icon">✅</div><h4 data-en="Seat Confirmation & Fee" data-hi="सीट पुष्टि और शुल्क">Seat Confirmation & Fee</h4><p data-en="MEC runs a transparent seat-matching process. Pay fees directly to the college only. Verify official fee ceiling at mec.gov.np before any payment." data-hi="शुल्क सीधे कॉलेज को भुगतान करें। किसी भी भुगतान से पहले mec.gov.np पर शुल्क की पुष्टि करें।">Pay fees directly to the college only. Verify official fee ceiling at mec.gov.np before any payment.</p><a href="https://mec.gov.np/en/feeStructure" target="_blank" class="step-link">MEC Fee Structure ↗</a></div>
+      <div class="step-card reveal"><div class="step-tag">Step 5</div><div class="step-icon">✈️</div><h4 data-en="Travel to Nepal — No Visa!" data-hi="नेपाल यात्रा — कोई वीज़ा नहीं!">Travel to Nepal — No Visa!</h4><p data-en="Indian citizens do not need a visa for Nepal. Valid Indian passport or government-issued ID is sufficient. Direct buses and flights from Delhi, Gorakhpur, Patna." data-hi="भारतीय नागरिकों को नेपाल के लिए वीज़ा की आवश्यकता नहीं।">Indian citizens do not need a visa for Nepal. Valid Indian passport or government-issued ID is sufficient.</p><a href="#lifestyle" class="step-link">Life in Nepal ↗</a></div>
+      <div class="step-card reveal"><div class="step-tag">Step 6</div><div class="step-icon">🎓</div><h4 data-en="MBBS → FMGE / NExT" data-hi="MBBS → FMGE / NExT">MBBS → FMGE / NExT</h4><p data-en="After 5.5 years, return to India and clear FMGE or NExT exam (conducted by NBE) to obtain a licence to practice medicine in India." data-hi="5.5 साल बाद भारत लौटें और FMGE या NExT परीक्षा पास करें।">After 5.5 years, return to India and clear FMGE or NExT exam (conducted by NBE) to obtain a licence to practice medicine in India.</p><a href="https://natboard.edu.in" target="_blank" class="step-link">NBE India ↗</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY NEPAL -->
+<section class="section" id="why-nepal">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-eyebrow" data-en="Honest Comparison" data-hi="ईमानदार तुलना">Honest Comparison</div>
+      <div class="sec-title" data-en="Why Nepal MBBS — Facts Only" data-hi="नेपाल MBBS क्यों — केवल तथ्य">Why Nepal MBBS — Facts Only</div>
+      <div class="sec-sub" data-en="No exaggeration. These are factual advantages supported by official sources." data-hi="कोई अतिशयोक्ति नहीं। ये आधिकारिक स्रोतों द्वारा समर्थित तथ्यात्मक लाभ हैं।">No exaggeration. These are factual advantages supported by official sources.</div>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal"><h4>✈️ <span data-en="No Visa for Indians" data-hi="भारतीयों के लिए कोई वीज़ा नहीं">No Visa for Indians</span></h4><p data-en="India-Nepal open border agreement. Indian citizens enter with valid passport or Aadhaar card — no visa process, no embassy visit." data-hi="भारत-नेपाल खुली सीमा समझौता। वैध पासपोर्ट या आधार कार्ड से प्रवेश।">India-Nepal open border agreement. Indian citizens enter with valid passport or Aadhaar card — no visa process, no embassy visit.</p></div>
+      <div class="why-card reveal"><h4>🏛️ <span data-en="NMC India Recognised" data-hi="NMC भारत मान्यता प्राप्त">NMC India Recognised</span></h4><p data-en="Select colleges are recognised by NMC India. Graduates from these colleges are eligible to appear for FMGE/NExT. Always verify the college on nmc.org.in before applying." data-hi="चुनिंदा कॉलेज NMC भारत द्वारा मान्यता प्राप्त हैं। आवेदन से पहले nmc.org.in पर सत्यापित करें।">Select colleges are recognised by NMC India. Always verify on nmc.org.in before applying.</p></div>
+      <div class="why-card reveal"><h4>📚 <span data-en="Indian-Aligned Curriculum" data-hi="भारतीय-संरेखित पाठ्यक्रम">Indian-Aligned Curriculum</span></h4><p data-en="Nepal MBBS syllabus closely mirrors Indian MBBS. Same subjects, similar exam pattern — this helps in FMGE/NExT preparation after graduation." data-hi="नेपाल MBBS पाठ्यक्रम भारतीय MBBS जैसा है। यह FMGE/NExT तैयारी में मदद करता है।">Nepal MBBS syllabus closely mirrors Indian MBBS — same subjects, similar exam pattern, which aids FMGE/NExT preparation.</p></div>
+      <div class="why-card reveal"><h4>🗣️ <span data-en="English Medium, Hindi Understood" data-hi="अंग्रेजी माध्यम, हिंदी समझी जाती है">English Medium, Hindi Understood</span></h4><p data-en="Medium of instruction is English. Hindi is widely spoken and understood in Nepal. No separate language learning required for Indian students." data-hi="शिक्षा का माध्यम अंग्रेजी है। नेपाल में हिंदी व्यापक रूप से बोली जाती है।">Medium of instruction is English. Hindi is widely spoken and understood — no language barrier for Indian students.</p></div>
+      <div class="why-card reveal"><h4>🍛 <span data-en="Familiar Food & Culture" data-hi="परिचित खाना और संस्कृति">Familiar Food & Culture</span></h4><p data-en="Indian food is available in most college hostels and nearby. Cultural similarities with India make daily life comfortable for Indian students." data-hi="अधिकांश कॉलेज छात्रावासों में भारतीय भोजन उपलब्ध है।">Indian food is available in most college hostels. Cultural similarities make daily life comfortable.</p></div>
+      <div class="why-card reveal"><h4>🏥 <span data-en="Clinical Exposure" data-hi="क्लिनिकल अनुभव">Clinical Exposure</span></h4><p data-en="Nepal medical colleges have attached teaching hospitals providing hands-on patient exposure. Disease patterns are similar to India — relevant clinical training." data-hi="नेपाल के मेडिकल कॉलेजों में संलग्न शिक्षण अस्पताल हैं।">Nepal medical colleges have attached teaching hospitals. Disease patterns similar to India — relevant clinical training from early years.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- OFFICIAL LINKS -->
+<section class="section official" id="official">
+  <div class="container">
+    <div class="text-center reveal">
+      <div class="sec-eyebrow" style="color:var(--gold)" data-en="Official Government Resources" data-hi="आधिकारिक सरकारी संसाधन">Official Government Resources</div>
+      <div class="sec-title" data-en="Always Verify from Official Sources" data-hi="हमेशा आधिकारिक स्रोतों से सत्यापित करें">Always Verify from Official Sources</div>
+      <div class="sec-sub" data-en="Trust only these official government websites for fees, college lists, and guidelines." data-hi="शुल्क, कॉलेज सूची और दिशानिर्देशों के लिए केवल इन आधिकारिक सरकारी वेबसाइटों पर भरोसा करें।">Trust only these official government websites for fees, college lists, and guidelines.</div>
+    </div>
+    <div class="off-grid">
+      <a href="https://nmc.org.in" target="_blank" rel="noopener" class="off-card reveal"><div class="off-flag">🇮🇳</div><h4>NMC India</h4><p data-en="National Medical Commission — India's official medical regulator. College recognition list, FMGE/NExT rules." data-hi="भारत का आधिकारिक चिकित्सा नियामक।">India's official medical regulator. College list, FMGE/NExT rules.</p><div class="off-url">↗ nmc.org.in</div></a>
+      <a href="https://mec.gov.np" target="_blank" rel="noopener" class="off-card reveal"><div class="off-flag">🇳🇵</div><h4>MEC Nepal</h4><p data-en="Medical Education Commission Nepal — official admission authority. Fee ceiling, seat matrix, approved colleges." data-hi="नेपाल का आधिकारिक प्रवेश प्राधिकरण।">Nepal's official admission authority. Fee ceiling, seat matrix, approved colleges.</p><div class="off-url">↗ mec.gov.np</div></a>
+      <a href="https://entrance.mec.gov.np" target="_blank" rel="noopener" class="off-card reveal"><div class="off-flag">📝</div><h4>MECEE Portal</h4><p data-en="MEC Entrance Examination portal — MECEE-BL applications, admit cards, results." data-hi="MEC प्रवेश परीक्षा पोर्टल।">MEC entrance exam — applications, admit cards, results.</p><div class="off-url">↗ entrance.mec.gov.np</div></a>
+      <a href="https://wdoms.org" target="_blank" rel="noopener" class="off-card reveal"><div class="off-flag">🌍</div><h4>WDOMS</h4><p data-en="World Directory of Medical Schools — verify any college's global recognition status here." data-hi="किसी भी कॉलेज की वैश्विक मान्यता यहाँ सत्यापित करें।">Verify any college's global recognition status.</p><div class="off-url">↗ wdoms.org</div></a>
+      <a href="https://natboard.edu.in" target="_blank" rel="noopener" class="off-card reveal"><div class="off-flag">📊</div><h4>NBE India</h4><p data-en="National Board of Examinations — conducts FMGE and NExT for foreign medical graduates." data-hi="विदेशी चिकित्सा स्नातकों के लिए FMGE और NExT आयोजित करता है।">Conducts FMGE and NExT for foreign medical graduates.</p><div class="off-url">↗ natboard.edu.in</div></a>
+      <a href="https://mec.gov.np/en/feeStructure" target="_blank" rel="noopener" class="off-card reveal"><div class="off-flag">💰</div><h4>MEC Fee Structure</h4><p data-en="Official fee ceiling published by Nepal government — verify before paying any amount to any college." data-hi="किसी भी राशि का भुगतान करने से पहले यहाँ सत्यापित करें।">Official government fee ceiling — verify before any payment.</p><div class="off-url">↗ mec.gov.np/fees</div></a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq" style="background:var(--off)">
+  <div class="container">
+    <div class="text-center reveal">
+      <div class="sec-eyebrow" data-en="Common Questions" data-hi="सामान्य प्रश्न">Common Questions</div>
+      <div class="sec-title" data-en="Parents & Students — Top Questions Answered" data-hi="माता-पिता और छात्र — शीर्ष प्रश्नों के उत्तर">Parents & Students — Top Questions Answered</div>
+    </div>
+    <div class="faq-wrap">
+      <div class="faq-cat-label" data-en="Admission & Eligibility" data-hi="प्रवेश और पात्रता">Admission & Eligibility</div>
+      <div class="faq-item reveal">
+        <div class="faq-q"><span data-en="Is NEET mandatory for Nepal MBBS?" data-hi="क्या नेपाल MBBS के लिए NEET अनिवार्य है?">Is NEET mandatory for Nepal MBBS?</span><div class="faq-icon">+</div></div>
+        <div class="faq-body"><p data-en="Yes. As per NMC India guidelines, NEET qualification is mandatory for Indian students who wish to practice medicine in India after completing MBBS abroad. Minimum 50th percentile for General category. Always verify current rules at <a href='https://nmc.org.in' target='_blank'>nmc.org.in</a>." data-hi="हां। NMC भारत दिशानिर्देशों के अनुसार, NEET योग्यता अनिवार्य है। <a href='https://nmc.org.in' target='_blank'>nmc.org.in</a> पर वर्तमान नियम सत्यापित करें।">Yes. As per NMC India guidelines, NEET qualification is mandatory for Indian students who wish to practice medicine in India after MBBS abroad. Minimum 50th percentile (General). Verify at <a href="https://nmc.org.in" target="_blank">nmc.org.in</a>.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q"><span data-en="Is a Nepal MBBS degree valid in India?" data-hi="क्या नेपाल MBBS डिग्री भारत में वैध है?">Is a Nepal MBBS degree valid in India?</span><div class="faq-icon">+</div></div>
+        <div class="faq-body"><p data-en="Valid only from NMC India recognised colleges. After graduating, you must clear FMGE or NExT exam (conducted by NBE) to obtain a licence to practice in India. Verify college recognition at <a href='https://nmc.org.in/information-desk/college-and-course-search/' target='_blank'>NMC College Search</a>." data-hi="केवल NMC भारत मान्यता प्राप्त कॉलेजों से। FMGE या NExT परीक्षा पास करना अनिवार्य है।">Valid only from NMC India recognised colleges. You must clear FMGE or NExT (by NBE) to practice in India. Always check: <a href="https://nmc.org.in/information-desk/college-and-course-search/" target="_blank">NMC College Search</a>.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q"><span data-en="What is the duration of MBBS in Nepal?" data-hi="नेपाल में MBBS की अवधि क्या है?">What is the duration of MBBS in Nepal?</span><div class="faq-icon">+</div></div>
+        <div class="faq-body"><p data-en="5.5 years total — 4.5 years of academic study and 1 year of compulsory rotating internship. This is the same structure as MBBS in India. Source: <a href='https://mec.gov.np' target='_blank'>mec.gov.np</a>." data-hi="कुल 5.5 वर्ष — 4.5 वर्ष अकादमिक अध्ययन + 1 वर्ष अनिवार्य इंटर्नशिप।">5.5 years — 4.5 years academic + 1 year compulsory internship. Same structure as MBBS in India. Source: <a href="https://mec.gov.np" target="_blank">mec.gov.np</a>.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q"><span data-en="When do Nepal MBBS admissions open?" data-hi="नेपाल MBBS प्रवेश कब खुलते हैं?">When do Nepal MBBS admissions open?</span><div class="faq-icon">+</div></div>
+        <div class="faq-body"><p data-en="Typically July to October. MEC publishes official notices on mec.gov.np. NEET qualified Indian students can apply directly through NEET quota or appear for MECEE-BL entrance exam. Track: <a href='https://entrance.mec.gov.np' target='_blank'>entrance.mec.gov.np</a>." data-hi="आमतौर पर जुलाई से अक्टूबर। MEC mec.gov.np पर आधिकारिक नोटिस प्रकाशित करता है।">Typically July–October. MEC publishes official notices. Track at: <a href="https://entrance.mec.gov.np" target="_blank">entrance.mec.gov.np</a>.</p></div>
+      </div>
+
+      <div class="faq-cat-label" data-en="Fees & Finance" data-hi="शुल्क और वित्त">Fees & Finance</div>
+      <div class="faq-item reveal">
+        <div class="faq-q"><span data-en="How much does Nepal MBBS cost?" data-hi="नेपाल MBBS में कितना खर्च आता है?">How much does Nepal MBBS cost?</span><div class="faq-icon">+</div></div>
+        <div class="faq-body"><p data-en="Fees vary by college and are regulated by MEC Nepal's official fee ceiling. We do not publish estimated figures to avoid misleading you. Contact us and we will share the latest official fee structure for the college you are considering. Verify directly at <a href='https://mec.gov.np/en/feeStructure' target='_blank'>mec.gov.np</a>." data-hi="शुल्क कॉलेज के अनुसार भिन्न होता है। हमसे संपर्क करें और हम आधिकारिक शुल्क संरचना साझा करेंगे।">Fees are regulated by MEC Nepal and vary by college. Contact us for the current official fee structure. Verify at <a href="https://mec.gov.np/en/feeStructure" target="_blank">mec.gov.np</a>.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q"><span data-en="Is an education loan available for Nepal MBBS?" data-hi="क्या नेपाल MBBS के लिए शिक्षा ऋण उपलब्ध है?">Is an education loan available for Nepal MBBS?</span><div class="faq-icon">+</div></div>
+        <div class="faq-body"><p data-en="Indian banks including SBI and Bank of Baroda provide education loans for MBBS at NMC recognised foreign colleges. The college's NMC recognition letter is typically required. Terms vary by bank — consult your bank directly." data-hi="SBI और Bank of Baroda सहित भारतीय बैंक NMC मान्यता प्राप्त विदेशी कॉलेजों में MBBS के लिए शिक्षा ऋण प्रदान करते हैं।">Indian banks (SBI, Bank of Baroda, etc.) provide education loans for MBBS at NMC recognised colleges. NMC recognition letter required. Consult your bank directly for terms.</p></div>
+      </div>
+
+      <div class="faq-cat-label" data-en="Career & Future" data-hi="करियर और भविष्य">Career & Future</div>
+      <div class="faq-item reveal">
+        <div class="faq-q"><span data-en="What is FMGE / NExT and is it difficult?" data-hi="FMGE / NExT क्या है और यह कितना कठिन है?">What is FMGE / NExT and is it difficult?</span><div class="faq-icon">+</div></div>
+        <div class="faq-body"><p data-en="FMGE (Foreign Medical Graduate Examination) is conducted by NBE twice a year. NExT is replacing FMGE — it will apply to both Indian and foreign graduates. Nepal's India-aligned curriculum provides a helpful foundation, but serious preparation is required. Info: <a href='https://natboard.edu.in' target='_blank'>natboard.edu.in</a>." data-hi="FMGE NBE द्वारा वर्ष में दो बार आयोजित किया जाता है। NExT इसे प्रतिस्थापित कर रहा है।">FMGE is conducted by NBE twice yearly. NExT is replacing FMGE. Nepal's aligned curriculum helps, but serious preparation is required. Info: <a href="https://natboard.edu.in" target="_blank">natboard.edu.in</a>.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q"><span data-en="Can I do NEET PG in India after Nepal MBBS?" data-hi="क्या मैं नेपाल MBBS के बाद भारत में NEET PG कर सकता हूं?">Can I do NEET PG in India after Nepal MBBS?</span><div class="faq-icon">+</div></div>
+        <div class="faq-body"><p data-en="After clearing FMGE/NExT and completing a 1-year internship in India, you may be eligible for NEET PG. Rules are subject to NMC updates — always verify current eligibility at <a href='https://nmc.org.in' target='_blank'>nmc.org.in</a> before making decisions." data-hi="FMGE/NExT पास करने और 1 वर्ष इंटर्नशिप पूरी करने के बाद। वर्तमान नियम <a href='https://nmc.org.in' target='_blank'>nmc.org.in</a> पर सत्यापित करें।">After FMGE/NExT + 1-year India internship, you may be eligible for NEET PG. Rules are subject to NMC updates — verify at <a href="https://nmc.org.in" target="_blank">nmc.org.in</a>.</p></div>
+      </div>
+
+      <div class="faq-cat-label" data-en="Life & Safety" data-hi="जीवन और सुरक्षा">Life & Safety</div>
+      <div class="faq-item reveal">
+        <div class="faq-q"><span data-en="Do Indian students need a visa for Nepal?" data-hi="क्या भारतीय छात्रों को नेपाल के लिए वीज़ा चाहिए?">Do Indian students need a visa for Nepal?</span><div class="faq-icon">+</div></div>
+        <div class="faq-body"><p data-en="No. Indian citizens do not require a visa for Nepal under the bilateral open border agreement. A valid Indian passport or any government-issued photo ID is sufficient for entry." data-hi="नहीं। भारतीय नागरिकों को नेपाल के लिए वीज़ा की आवश्यकता नहीं है।">No. Indian citizens do not require a visa for Nepal under the bilateral open border agreement. Valid Indian passport or government-issued photo ID is sufficient.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q"><span data-en="Is Nepal safe for Indian students?" data-hi="क्या नेपाल भारतीय छात्रों के लिए सुरक्षित है?">Is Nepal safe for Indian students?</span><div class="faq-icon">+</div></div>
+        <div class="faq-body"><p data-en="Nepal and India share historically close cultural and diplomatic ties. Indian students are generally well-received. Top medical colleges provide on-campus security and separate hostels for male and female students. Individual experiences may vary — we recommend speaking with current students before deciding." data-hi="नेपाल और भारत के ऐतिहासिक रूप से घनिष्ठ संबंध हैं। शीर्ष मेडिकल कॉलेज परिसर सुरक्षा प्रदान करते हैं।">Nepal and India share historically close ties. Top colleges provide campus security and separate hostels. We recommend speaking with current students before deciding.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIFESTYLE -->
+<section class="section" id="lifestyle">
+  <div class="container">
+    <div class="text-center reveal">
+      <div class="sec-eyebrow" data-en="Life in Nepal" data-hi="नेपाल में जीवन">Life in Nepal</div>
+      <div class="sec-title" data-en="What to Expect — Honest Picture" data-hi="क्या उम्मीद करें — ईमानदार तस्वीर">What to Expect — Honest Picture</div>
+    </div>
+    <div class="life-grid">
+      <div class="life-card reveal"><div class="life-icon">🌡️</div><h4 data-en="Weather" data-hi="मौसम">Weather</h4><p data-en="Kathmandu: 5–30°C. Pleasant in spring/autumn. Cold winters (5–10°C). Monsoon June–August." data-hi="काठमांडू: 5-30°C। वसंत/शरद ऋतु में सुखद।">Kathmandu: 5–30°C. Pleasant in spring and autumn. Cold winters (5–10°C). Monsoon June–August.</p></div>
+      <div class="life-card reveal"><div class="life-icon">🍛</div><h4 data-en="Food" data-hi="खाना">Food</h4><p data-en="Indian food available in most college hostels. Indian restaurants in Kathmandu and Pokhara. Dal, roti, sabzi readily available." data-hi="अधिकांश कॉलेज छात्रावासों में भारतीय भोजन उपलब्ध।">Indian food in most college hostels. Dal, roti, sabzi readily available. Indian restaurants in Kathmandu and Pokhara.</p></div>
+      <div class="life-card reveal"><div class="life-icon">🏠</div><h4 data-en="Hostel" data-hi="छात्रावास">Hostel</h4><p data-en="On-campus hostels with separate blocks for male and female students. 24/7 security. Furnished rooms, Wi-Fi, study halls." data-hi="परिसर में छात्रावास। पुरुष और महिला छात्रों के लिए अलग ब्लॉक।">On-campus hostels with separate blocks for male and female students. 24/7 security, Wi-Fi, study halls.</p></div>
+      <div class="life-card reveal"><div class="life-icon">💰</div><h4 data-en="Monthly Cost" data-hi="मासिक खर्च">Monthly Cost</h4><p data-en="Approx ₹15,000–25,000/month covers hostel, food, transport, personal. Varies by lifestyle and city." data-hi="लगभग ₹15,000-25,000/माह छात्रावास, भोजन, परिवहन।">Approx ₹15,000–25,000/month for hostel, food, transport, personal. Varies by lifestyle and location.</p></div>
+      <div class="life-card reveal"><div class="life-icon">📱</div><h4 data-en="Connectivity" data-hi="कनेक्टिविटी">Connectivity</h4><p data-en="Indian SIM cards roam in Nepal. Affordable local SIMs available. Good internet in major cities." data-hi="नेपाल में भारतीय SIM कार्ड रोम करते हैं। स्थानीय SIM सस्ते हैं।">Indian SIM cards roam in Nepal. Affordable local SIMs available. Good internet infrastructure in major cities.</p></div>
+      <div class="life-card reveal"><div class="life-icon">🎓</div><h4 data-en="Student Community" data-hi="छात्र समुदाय">Student Community</h4><p data-en="Large Indian student community in Nepal medical colleges. Student associations, cultural events, peer support networks." data-hi="नेपाल मेडिकल कॉलेजों में बड़ा भारतीय छात्र समुदाय।">Large Indian student community in Nepal colleges. Cultural events, student associations, peer support available.</p></div>
+    </div>
+    <div class="curr-box reveal">
+      <h3>💱 <span data-en="INR ↔ NPR Converter" data-hi="INR ↔ NPR कनवर्टर">INR ↔ NPR Converter</span></h3>
+      <div class="curr-row"><span class="curr-lbl">INR ₹</span><input class="curr-inp" type="number" id="inr-val" value="10000" oninput="convertCurr('inr')"></div>
+      <div class="curr-row"><span class="curr-lbl">NPR रू</span><input class="curr-inp" type="number" id="npr-val" value="16000" oninput="convertCurr('npr')"></div>
+      <div class="curr-result" id="curr-out">₹10,000 = रू 16,000</div>
+      <div class="curr-note" data-en="*Approx rate: 1 INR ≈ 1.6 NPR. Verify current rate at xe.com before transactions." data-hi="*अनुमानित दर: 1 INR ≈ 1.6 NPR। लेनदेन से पहले xe.com पर सत्यापित करें।">*Approx rate: 1 INR ≈ 1.6 NPR. Verify current rate at xe.com before any transaction.</div>
+    </div>
+  </div>
+</section>
+
+<!-- COUNSELING -->
+<section class="section counsel" id="counsel">
+  <div class="container">
+    <div class="counsel-inner">
+      <div class="reveal">
+        <div class="sec-eyebrow" style="color:var(--gold)" data-en="Book a Session" data-hi="सत्र बुक करें">Book a Session</div>
+        <div class="sec-title" data-en="Free Counseling — No Pressure" data-hi="निःशुल्क काउंसलिंग — कोई दबाव नहीं">Free Counseling — No Pressure</div>
+        <div class="sec-sub" data-en="Our counselors discuss your NEET score and help you understand your options — honestly. No commitment required." data-hi="हमारे काउंसलर आपके NEET स्कोर पर चर्चा करते हैं और आपको विकल्पों को समझने में मदद करते हैं।">Our counselors discuss your NEET score and help you understand your options honestly. No commitment required.</div>
+        <div class="platform-btns">
+          <a href="https://calendly.com/nepalmedtech/30min" target="_blank" class="pbtn pbtn-meet">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            <span data-en="Book via Calendly" data-hi="Calendly से बुक करें">Book via Calendly</span>
+          </a>
+          <a href="https://wa.me/917080800888?text=I%20want%20to%20book%20a%20free%20counseling%20session%20for%20Nepal%20MBBS." target="_blank" class="pbtn pbtn-wa">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.549 4.116 1.512 5.845L.057 23.273a.75.75 0 00.924.924l5.428-1.455A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22.5c-1.978 0-3.83-.53-5.42-1.452l-.388-.229-4.02 1.078 1.078-4.02-.229-.388A10.45 10.45 0 011.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12 17.799 22.5 12 22.5z"/></svg>
+            <span data-en="WhatsApp to Book" data-hi="WhatsApp से बुक करें">WhatsApp to Book</span>
+          </a>
+        </div>
+        <p style="margin-top:14px;font-size:12px;color:rgba(255,255,255,0.35)" data-en="📧 vinay@nepalmbbs.in  |  info@nepalmbbs.in" data-hi="📧 vinay@nepalmbbs.in  |  info@nepalmbbs.in">📧 vinay@nepalmbbs.in &nbsp;|&nbsp; info@nepalmbbs.in</p>
+      </div>
+      <div class="counsel-card reveal">
+        <h3 data-en="Quick Enquiry" data-hi="त्वरित पूछताछ">Quick Enquiry</h3>
+        <p data-en="Fill in your details — we'll get back to you." data-hi="अपना विवरण भरें — हम संपर्क करेंगे।">Fill in your details — we'll get back to you.</p>
+        <div id="cf-area">
+          <div class="form-field"><label data-en="Student Name" data-hi="छात्र का नाम">Student Name</label><input id="c-name" type="text" placeholder="Full name"></div>
+          <div class="form-row-2">
+            <div class="form-field"><label data-en="WhatsApp No." data-hi="WhatsApp नं.">WhatsApp No.</label><input id="c-phone" type="tel" placeholder="10 digits" maxlength="10"></div>
+            <div class="form-field"><label data-en="NEET Score" data-hi="NEET स्कोर">NEET Score</label><input id="c-neet" type="number" placeholder="Score"></div>
+          </div>
+          <div class="form-field">
+            <label data-en="Preferred Contact" data-hi="पसंदीदा संपर्क">Preferred Contact</label>
+            <select id="c-mode"><option value="WhatsApp">WhatsApp</option><option value="Phone Call">Phone Call</option><option value="Email">Email</option><option value="Calendly">Calendly Session</option></select>
+          </div>
+          <button class="submit-btn" onclick="submitForm('counsel')" data-en="Send Enquiry →" data-hi="पूछताछ भेजें →">Send Enquiry →</button>
+        </div>
+        <div class="form-success" id="cf-success">
+          <div class="check">📩</div>
+          <h3 data-en="Enquiry Received!" data-hi="पूछताछ प्राप्त!">Enquiry Received!</h3>
+          <p data-en="We will contact you on your preferred channel shortly." data-hi="हम जल्द आपके पसंदीदा चैनल पर संपर्क करेंगे।">We will contact you on your preferred channel shortly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOGS -->
+<section class="section" id="blogs">
+  <div class="container">
+    <div class="text-center reveal">
+      <div class="sec-eyebrow" data-en="Resources" data-hi="संसाधन">Resources</div>
+      <div class="sec-title" data-en="Guides for NEET Students" data-hi="NEET छात्रों के लिए मार्गदर्शिकाएं">Guides for NEET Students</div>
+    </div>
+    <div class="blog-grid">
+      <a href="#faq" class="blog-card reveal"><div class="blog-img">📋</div><div class="blog-body"><span class="blog-tag t-neet">NEET</span><h4 data-en="After NEET 2025 — What Are Your Options?" data-hi="NEET 2025 के बाद — आपके क्या विकल्प हैं?">After NEET 2025 — What Are Your Options?</h4><p data-en="An honest look at government seats, private India, Nepal, and other abroad options based on score ranges." data-hi="स्कोर के आधार पर सरकारी सीटों, निजी भारत, नेपाल और विदेशी विकल्पों पर ईमानदार नजर।">An honest look at options based on your NEET score — government, private India, Nepal, and abroad.</p><div class="blog-meta">📖 5 min read</div></div></a>
+      <a href="#official" class="blog-card reveal"><div class="blog-img">🏛️</div><div class="blog-body"><span class="blog-tag t-nepal">Nepal MBBS</span><h4 data-en="MEC Nepal Admission Process — Official Guide" data-hi="MEC नेपाल प्रवेश प्रक्रिया — आधिकारिक मार्गदर्शिका">MEC Nepal Admission Process — Official Guide</h4><p data-en="MECEE-BL exam, NEET quota, seat matching — how the official MEC Nepal process works step by step." data-hi="MECEE-BL परीक्षा, NEET कोटा, सीट मिलान — आधिकारिक MEC नेपाल प्रक्रिया।">MECEE-BL exam, NEET quota, seat matching — the official MEC Nepal process, step by step.</p><div class="blog-meta">📖 7 min read</div></div></a>
+      <a href="#lifestyle" class="blog-card reveal"><div class="blog-img">🌄</div><div class="blog-body"><span class="blog-tag t-life">Lifestyle</span><h4 data-en="Student Life in Nepal — What to Expect" data-hi="नेपाल में छात्र जीवन — क्या उम्मीद करें">Student Life in Nepal — What to Expect</h4><p data-en="Food, hostel, monthly costs, safety, weather — a realistic picture from students currently studying in Nepal." data-hi="भोजन, छात्रावास, मासिक खर्च, सुरक्षा, मौसम — नेपाल में वर्तमान में पढ़ रहे छात्रों की वास्तविक तस्वीर।">Food, hostel, monthly costs, safety — a realistic picture for prospective students and parents.</p><div class="blog-meta">📖 5 min read</div></div></a>
+    </div>
+    <div style="text-align:center;margin-top:28px">
+      <a href="https://wa.me/917080800888?text=Please%20send%20me%20more%20resources%20about%20Nepal%20MBBS." target="_blank" class="btn-gold" data-en="Request More Resources →" data-hi="अधिक संसाधन अनुरोध करें →">Request More Resources →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <a href="#" class="footer-logo">Nepal<span>MBBS</span>.in</a>
+      <p class="footer-desc" data-en="Official guidance platform for NEET qualified Indian students exploring MBBS in Nepal. Information sourced from NMC India and MEC Nepal." data-hi="NEET योग्य भारतीय छात्रों के लिए आधिकारिक मार्गदर्शन मंच।">Official guidance platform for NEET qualified Indian students exploring MBBS in Nepal. Information from NMC India & MEC Nepal.</p>
+      <div class="footer-contact-links">
+        <a href="tel:+917080800888">📞 +91 70808 00888</a>
+        <a href="mailto:info@nepalmbbs.in">✉️ info@nepalmbbs.in</a>
+        <a href="mailto:vinay@nepalmbbs.in">👤 vinay@nepalmbbs.in</a>
+        <a href="https://wa.me/917080800888" target="_blank">💬 WhatsApp</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h5 data-en="Navigation" data-hi="नेविगेशन">Navigation</h5>
+      <a href="#journey" data-en="Admission Process" data-hi="प्रवेश प्रक्रिया">Admission Process</a>
+      <a href="#why-nepal" data-en="Why Nepal" data-hi="नेपाल क्यों">Why Nepal</a>
+      <a href="#official" data-en="Official Links" data-hi="आधिकारिक लिंक">Official Links</a>
+      <a href="#faq" data-en="FAQ" data-hi="FAQ">FAQ</a>
+      <a href="#counsel" data-en="Free Counseling" data-hi="निःशुल्क काउंसलिंग">Free Counseling</a>
+    </div>
+    <div class="footer-col">
+      <h5 data-en="Official Sites" data-hi="आधिकारिक साइटें">Official Sites</h5>
+      <a href="https://nmc.org.in" target="_blank">NMC India ↗</a>
+      <a href="https://mec.gov.np" target="_blank">MEC Nepal ↗</a>
+      <a href="https://entrance.mec.gov.np" target="_blank">MECEE Portal ↗</a>
+      <a href="https://natboard.edu.in" target="_blank">NBE India ↗</a>
+      <a href="https://wdoms.org" target="_blank">WDOMS ↗</a>
+    </div>
+    <div class="footer-col">
+      <h5 data-en="Contact" data-hi="संपर्क">Contact</h5>
+      <a href="https://calendly.com/nepalmedtech/30min" target="_blank" data-en="Book Free Session ↗" data-hi="निःशुल्क सत्र बुक करें ↗">Book Free Session ↗</a>
+      <a href="https://wa.me/917080800888" target="_blank">WhatsApp ↗</a>
+      <a href="mailto:info@nepalmbbs.in">info@nepalmbbs.in</a>
+      <a href="mailto:vinay@nepalmbbs.in">vinay@nepalmbbs.in</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 NepalMBBS.in &nbsp;|&nbsp; <a href="mailto:info@nepalmbbs.in">info@nepalmbbs.in</a></p>
+    <p data-en="Disclaimer: All information is general guidance. Verify fees and policies at official sources — nmc.org.in & mec.gov.np — before making decisions." data-hi="अस्वीकरण: निर्णय लेने से पहले nmc.org.in और mec.gov.np पर सत्यापित करें।">Disclaimer: Verify all fees & policies at <a href="https://nmc.org.in">nmc.org.in</a> & <a href="https://mec.gov.np">mec.gov.np</a> before decisions.</p>
+  </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<div class="wa-float">
+  <div class="wa-tip" data-en="Need guidance? Chat now!" data-hi="मार्गदर्शन चाहिए? अभी चैट करें!">Need guidance? Chat now!</div>
+  <a class="wa-btn" href="https://wa.me/917080800888?text=Hello!%20I%20need%20guidance%20for%20Nepal%20MBBS%20admission." target="_blank" aria-label="WhatsApp us">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.549 4.116 1.512 5.845L.057 23.273a.75.75 0 00.924.924l5.428-1.455A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22.5c-1.978 0-3.83-.53-5.42-1.452l-.388-.229-4.02 1.078 1.078-4.02-.229-.388A10.45 10.45 0 011.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12 17.799 22.5 12 22.5z"/></svg>
+  </a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL='https://fpzgcijbryvddtpegcmm.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwemdjaWpicnl2ZGR0cGVnY21tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NTk3ODIsImV4cCI6MjA5ODAzNTc4Mn0.EiIiB_CR7briJQ7IZB7fTHIzmooiT4TA6zZ7ox_bK1M';
+
+// LANGUAGE SYSTEM
+const T={
+  en:{},
+  hi:{}
+};
+let currentLang='en';
+
+function setLang(lang){
+  currentLang=lang;
+  document.documentElement.setAttribute('data-lang',lang);
+  document.querySelectorAll('[data-'+lang+']').forEach(el=>{
+    const val=el.getAttribute('data-'+lang);
+    if(el.tagName==='INPUT'||el.tagName==='BUTTON'&&el.type==='submit'){
+      el.placeholder=val||el.placeholder;
+    } else {
+      el.innerHTML=val||el.innerHTML;
+    }
+  });
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active',b.textContent.trim()===(lang==='en'?'EN':'हि'));
+  });
+  document.querySelectorAll('.mobile-lang button').forEach(b=>{
+    b.classList.toggle('active',
+      (lang==='en'&&b.textContent.includes('English'))||
+      (lang==='hi'&&b.textContent.includes('हिंदी'))
+    );
+  });
+}
+
+// TOAST
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+type;
+  setTimeout(()=>t.className='toast',3200);
+}
+
+// SUPABASE
+async function saveLead(data){
+  try{
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/leads`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SUPABASE_KEY,
+        'Authorization':'Bearer '+SUPABASE_KEY,
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify(data)
+    });
+    return r.ok||r.status===201;
+  }catch(e){return false;}
+}
+
+// FORMS
+async function submitForm(type){
+  const isHero=type==='hero';
+  const name=document.getElementById(isHero?'h-name':'c-name').value.trim();
+  const phone=document.getElementById(isHero?'h-phone':'c-phone').value.trim();
+  const neet=document.getElementById(isHero?'h-neet':'c-neet').value;
+  const city=isHero?document.getElementById('h-city').value:'';
+  const cat=isHero?document.getElementById('h-cat').value:'';
+  const mode=isHero?'Website Form':document.getElementById('c-mode').value;
+
+  if(!name||!phone){toast(currentLang==='hi'?'नाम और फ़ोन आवश्यक है!':'Name and phone are required!','err');return;}
+  if(phone.length!==10||isNaN(phone)){toast(currentLang==='hi'?'10 अंकों का फ़ोन नंबर दर्ज करें':'Enter a valid 10-digit phone number','err');return;}
+
+  const btns=document.querySelectorAll('.submit-btn');
+  const btn=isHero?btns[0]:btns[1];
+  btn.disabled=true;
+  btn.textContent=currentLang==='hi'?'भेज रहे हैं...':'Submitting...';
+
+  const ok=await saveLead({
+    student_name:name,
+    contact_number:phone,
+    neet_score:neet?parseInt(neet):null,
+    city:city||null,
+    stage:'new',
+    notes:`Cat:${cat||'—'} | Mode:${mode} | Lang:${currentLang} | Source:nepalmbbs.in`
+  });
+
+  if(ok){
+    document.getElementById(isHero?'hf-area':'cf-area').style.display='none';
+    document.getElementById(isHero?'hf-success':'cf-success').style.display='block';
+    toast(currentLang==='hi'?'सफलतापूर्वक पंजीकृत!':'Successfully registered!','ok');
+  } else {
+    toast(currentLang==='hi'?'त्रुटि! WhatsApp पर संपर्क करें।':'Error! Please contact us on WhatsApp.','err');
+    btn.disabled=false;
+    btn.textContent=currentLang==='hi'?'पुनः प्रयास करें':'Try Again';
+  }
+}
+
+// CURRENCY
+function convertCurr(from){
+  const rate=1.6;
+  if(from==='inr'){
+    const v=parseFloat(document.getElementById('inr-val').value)||0;
+    const n=Math.round(v*rate);
+    document.getElementById('npr-val').value=n;
+    document.getElementById('curr-out').textContent='₹'+v.toLocaleString('en-IN')+' = रू '+n.toLocaleString('en-IN');
+  } else {
+    const v=parseFloat(document.getElementById('npr-val').value)||0;
+    const i=Math.round(v/rate);
+    document.getElementById('inr-val').value=i;
+    document.getElementById('curr-out').textContent='₹'+i.toLocaleString('en-IN')+' = रू '+v.toLocaleString('en-IN');
+  }
+}
+
+// FAQ
+document.querySelectorAll('.faq-q').forEach(q=>{
+  q.addEventListener('click',()=>{
+    const item=q.parentElement;
+    const open=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+    if(!open) item.classList.add('open');
+  });
+});
+
+// SCROLL REVEAL
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// MOBILE MENU
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+
+// INIT
+convertCurr('inr');
+</script>
+</body>
+</html>
