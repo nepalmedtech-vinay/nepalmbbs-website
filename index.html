@@ -72,7 +72,7 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 /* HERO */
 .hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden}
 .hero-bg{position:absolute;inset:0;background:linear-gradient(160deg,#020c1b 0%,#071220 35%,#0a1a2e 65%,#0c1f38 100%)}
-.hero-img{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1600&q=80');background-size:cover;background-position:center;opacity:.18}
+.hero-img{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1600&q=80');background-size:cover;background-position:center top;background-size:cover;background-position:center;opacity:.18}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,12,27,.92) 0%,rgba(7,18,32,.85) 50%,rgba(10,26,46,.8) 100%)}
 .hero-content{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:120px 24px 80px;width:100%;display:grid;grid-template-columns:1fr 460px;gap:64px;align-items:center}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,160,32,.12);border:1px solid rgba(232,160,32,.3);padding:8px 18px;border-radius:28px;font-size:12.5px;color:var(--gold);font-weight:600;margin-bottom:24px;backdrop-filter:blur(8px)}
@@ -126,7 +126,18 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* CONTACT BAR */
-.cbar{background:#fff;border-bottom:2px solid var(--border);padding:12px 24px;box-shadow:var(--shadow-sm)}
+.cbar{background:linear-gradient(135deg,var(--navy),#0f2444);padding:14px 24px}
+.cbar-link{color:rgba(255,255,255,.85);transition:all .2s}
+.cbar-link:hover{color:#fff;transform:translateY(-1px)}
+.cbar-pill{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:40px;font-size:13px;font-weight:600;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);transition:all .25s;text-decoration:none;white-space:nowrap}
+.cbar-pill:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.cbar-pill-teal{background:rgba(13,148,136,.25);border-color:rgba(13,148,136,.4)}
+.cbar-pill-teal:hover{background:rgba(13,148,136,.4)}
+.cbar-pill-amber{background:rgba(232,160,32,.2);border-color:rgba(232,160,32,.35)}
+.cbar-pill-amber:hover{background:rgba(232,160,32,.35)}
+.cbar-pill-green{background:rgba(37,211,102,.2);border-color:rgba(37,211,102,.35)}
+.cbar-pill-green:hover{background:rgba(37,211,102,.35)}
+.cbar-icon{font-size:16px;flex-shrink:0}
 .cbar-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap}
 .cbar-link{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);text-decoration:none;font-weight:500;transition:color .2s;padding:4px 0}
 .cbar-link:hover{color:var(--blue)}
@@ -348,7 +359,7 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .counsel-card-sub{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:22px}
 
 /* FLOATING BUTTONS */
-.wa-float{position:fixed;bottom:24px;right:24px;z-index:990;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.wa-float{position:fixed;bottom:24px;right:20px;z-index:990;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
 .wa-tooltip{background:var(--navy);color:#fff;font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:8px;white-space:nowrap;opacity:0;transform:translateX(8px);transition:all .2s;pointer-events:none;border:1px solid rgba(255,255,255,.1)}
 .wa-float:hover .wa-tooltip{opacity:1;transform:translateX(0)}
 .wa-chat-btn{width:54px;height:54px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.45);transition:transform .2s;text-decoration:none}
@@ -358,7 +369,7 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .wa-float svg{fill:#fff}
 
 /* CHATBOT */
-.chat-wrap{position:fixed;bottom:88px;right:24px;z-index:991;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.chat-wrap{position:fixed;bottom:160px;right:16px;z-index:991;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
 .chat-window{width:330px;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.2);border:1px solid var(--border);overflow:hidden;display:none;flex-direction:column;max-height:500px}
 .chat-window.open{display:flex}
 .chat-header{background:linear-gradient(135deg,var(--navy),var(--blue-dark));padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;cursor:grab;user-select:none}
@@ -397,7 +408,7 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .chat-toggle svg{width:24px;height:24px;fill:#fff}
 
 /* TOAST */
-#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:all .3s;border:1px solid rgba(255,255,255,.1);pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+#toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:all .3s;border:1px solid rgba(255,255,255,.1);pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.ok{background:#052e16;border-color:#16a34a;color:#86efac}
 #toast.err{background:#1c0a0a;border-color:#dc2626;color:#fca5a5}
@@ -476,8 +487,8 @@ textarea.a-inp{min-height:80px;resize:vertical}
 #admin-login-view p{color:var(--muted);font-size:13px;margin-bottom:24px}
 .admin-login-form{max-width:320px;margin:0 auto}
 .admin-err{color:#dc2626;font-size:13px;margin-top:8px;min-height:20px;font-weight:500}
-.admin-access-btn{position:fixed;bottom:24px;left:24px;z-index:989;background:rgba(10,22,40,.8);color:rgba(255,255,255,.5);font-size:11px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);transition:all .2s;display:flex;align-items:center;gap:5px}
-.admin-access-btn:hover{background:var(--navy);color:#fff;border-color:rgba(255,255,255,.3)}
+.admin-access-btn{position:fixed;bottom:8px;left:8px;z-index:989;background:rgba(10,22,40,.75);color:rgba(255,255,255,.4);font-size:10px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(8px);transition:all .2s;display:flex;align-items:center;gap:4px;line-height:1}
+.admin-access-btn:hover{background:var(--navy);color:#fff;border-color:rgba(255,255,255,.25)}
 
 /* RESPONSIVE */
 @media(max-width:1024px){
@@ -497,16 +508,21 @@ textarea.a-inp{min-height:80px;resize:vertical}
   .hstat strong{font-size:22px}
   .hbtns{flex-direction:column}
   .ff2{grid-template-columns:1fr}
-  .cbar-in{gap:14px}
-  .wa-float{bottom:18px;right:18px}
-  .chat-wrap{bottom:84px;right:18px}
-  .chat-window{width:calc(100vw - 36px)}
+  .cbar-in{gap:10px;flex-wrap:wrap;justify-content:center}
+  .cbar-pill{font-size:12px;padding:6px 12px}
+  .wa-float{bottom:12px;right:12px;gap:7px}
+  .wa-chat-btn{width:48px;height:48px}
+  .wa-call-btn-f{width:40px;height:40px}
+  .chat-wrap{bottom:148px;right:12px}
+  .chat-window{width:calc(100vw - 24px)}
+  .chat-toggle{width:48px;height:48px}
   .foot-top{grid-template-columns:1fr}
   .calc-grid{grid-template-columns:1fr}
   .a-row{grid-template-columns:1fr}
   .foot-bottom{flex-direction:column;text-align:center}
-  .admin-access-btn{bottom:18px;left:18px}
+  .admin-access-btn{bottom:6px;left:6px;font-size:9px;padding:4px 8px}
   .counsel-grid{padding:44px 20px}
+  #toast{font-size:12px;padding:9px 16px;max-width:85vw}
 }
 @media(prefers-reduced-motion:reduce){.rev{opacity:1;transform:none}.ticker-track{animation:none}}
 </style>
@@ -528,7 +544,7 @@ textarea.a-inp{min-height:80px;resize:vertical}
   </div>
   <div class="nav-right">
     <div class="lang-sw"><button class="lbtn on" onclick="setLang('en')">EN</button><button class="lbtn" onclick="setLang('hi')">हि</button></div>
-    <button class="nav-cta" onclick="switchTab('counsel')">Free Counseling →</button>
+    <button class="nav-cta" onclick="switchTab('counsel')" data-en="Free Counseling →" data-hi="निःशुल्क काउंसलिंग →">Free Counseling →</button>
   </div>
   <div class="hbg" id="hbg" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </div>
@@ -616,10 +632,18 @@ textarea.a-inp{min-height:80px;resize:vertical}
 <!-- CONTACT BAR -->
 <div class="cbar">
 <div class="cbar-in">
-  <a href="tel:+917080800888" class="cbar-link" id="cbar-phone"><div class="cbar-icon ci-p">📞</div><span>+91 70808 00888</span></a>
-  <a id="cbar-wa-call" href="https://wa.me/917080800888?call" target="_blank" rel="noopener" class="cbar-link"><div class="cbar-icon ci-c">📲</div><span>WA Call</span></a>
-  <a href="mailto:info@nepalmbbs.in" class="cbar-link"><div class="cbar-icon ci-e">✉️</div><span>info@nepalmbbs.in</span></a>
-  <a id="cbar-wa-chat" href="https://wa.me/917080800888?text=Hello!%20I%20need%20Nepal%20MBBS%20guidance." target="_blank" rel="noopener" class="cbar-link"><div class="cbar-icon ci-w">💬</div><span>WhatsApp Chat</span></a>
+  <a href="tel:+917080800888" class="cbar-link cbar-pill" id="cbar-phone">
+    <div class="cbar-icon ci-p">📞</div><span id="cbar-phone-txt">+91 70808 00888</span>
+  </a>
+  <a id="cbar-wa-call" href="https://wa.me/917080800888?call" target="_blank" rel="noopener" class="cbar-link cbar-pill cbar-pill-teal">
+    <div class="cbar-icon ci-c">📲</div><span>WA Call</span>
+  </a>
+  <a href="mailto:info@nepalmbbs.in" class="cbar-link cbar-pill cbar-pill-amber">
+    <div class="cbar-icon ci-e">✉️</div><span>info@nepalmbbs.in</span>
+  </a>
+  <a id="cbar-wa-chat" href="https://wa.me/917080800888?text=Hello!%20I%20need%20Nepal%20MBBS%20guidance." target="_blank" rel="noopener" class="cbar-link cbar-pill cbar-pill-green">
+    <div class="cbar-icon ci-w">💬</div><span>WhatsApp Chat</span>
+  </a>
 </div>
 </div>
 
@@ -643,14 +667,14 @@ textarea.a-inp{min-height:80px;resize:vertical}
 <div class="tabs-container">
   <div class="tabs-label">Navigate Sections</div>
   <div class="tabs-grid">
-    <div class="tab-card on" onclick="switchTab('process')" id="tab-process"><div class="tab-icon">📋</div><div class="tab-label">Admission<br>Process</div></div>
-    <div class="tab-card" onclick="switchTab('why')" id="tab-why"><div class="tab-icon">🏛️</div><div class="tab-label">Why<br>Nepal</div></div>
-    <div class="tab-card" onclick="switchTab('calculator')" id="tab-calculator"><div class="tab-icon">🧮</div><div class="tab-label">NEET<br>Calculator</div></div>
-    <div class="tab-card" onclick="switchTab('guidelines')" id="tab-guidelines"><div class="tab-icon">📜</div><div class="tab-label">Official<br>Guidelines</div></div>
-    <div class="tab-card" onclick="switchTab('videos')" id="tab-videos"><div class="tab-icon">🎥</div><div class="tab-label">Videos &<br>Resources</div></div>
-    <div class="tab-card" onclick="switchTab('faq')" id="tab-faq"><div class="tab-icon">❓</div><div class="tab-label">FAQ</div></div>
-    <div class="tab-card" onclick="switchTab('lifestyle')" id="tab-lifestyle"><div class="tab-icon">🌄</div><div class="tab-label">Life in<br>Nepal</div></div>
-    <div class="tab-card" onclick="switchTab('counsel')" id="tab-counsel"><div class="tab-icon">📅</div><div class="tab-label">Free<br>Counseling</div></div>
+    <div class="tab-card on" onclick="switchTab('process')" id="tab-process"><div class="tab-icon">📋</div><div class="tab-label" data-en="Admission<br>Process" data-hi="प्रवेश<br>प्रक्रिया">Admission<br>Process</div></div>
+    <div class="tab-card" onclick="switchTab('why')" id="tab-why"><div class="tab-icon">🏛️</div><div class="tab-label" data-en="Why<br>Nepal" data-hi="क्यों<br>नेपाल">Why<br>Nepal</div></div>
+    <div class="tab-card" onclick="switchTab('calculator')" id="tab-calculator"><div class="tab-icon">🧮</div><div class="tab-label" data-en="NEET<br>Calculator" data-hi="NEET<br>कैलकुलेटर">NEET<br>Calculator</div></div>
+    <div class="tab-card" onclick="switchTab('guidelines')" id="tab-guidelines"><div class="tab-icon">📜</div><div class="tab-label" data-en="Official<br>Guidelines" data-hi="आधिकारिक<br>दिशानिर्देश">Official<br>Guidelines</div></div>
+    <div class="tab-card" onclick="switchTab('videos')" id="tab-videos"><div class="tab-icon">🎥</div><div class="tab-label" data-en="Videos &<br>Resources" data-hi="वीडियो &<br>संसाधन">Videos &<br>Resources</div></div>
+    <div class="tab-card" onclick="switchTab('faq')" id="tab-faq"><div class="tab-icon">❓</div><div class="tab-label" data-en="FAQ" data-hi="सामान्य प्रश्न">FAQ</div></div>
+    <div class="tab-card" onclick="switchTab('lifestyle')" id="tab-lifestyle"><div class="tab-icon">🌄</div><div class="tab-label" data-en="Life in<br>Nepal" data-hi="नेपाल में<br>जीवन">Life in<br>Nepal</div></div>
+    <div class="tab-card" onclick="switchTab('counsel')" id="tab-counsel"><div class="tab-icon">📅</div><div class="tab-label" data-en="Free<br>Counseling" data-hi="निःशुल्क<br>काउंसलिंग">Free<br>Counseling</div></div>
   </div>
 </div>
 </div>
@@ -697,27 +721,27 @@ textarea.a-inp{min-height:80px;resize:vertical}
   <div class="rev"><div class="eyebrow">Honest Comparison</div><div class="sec-title">Why Nepal MBBS — Facts Only</div><div class="sec-sub">No exaggeration. No false promises. Factual advantages verified from official NMC India and MEC Nepal sources only.</div></div>
   <div class="why-grid">
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=600&q=80" alt="Nepal mountains" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">✈️ No Visa Required</div></div>
+      <div class="why-img"><img src="https://images.unsplash.com/photo-1469521669194-babb45599def?w=600&q=80" alt="Nepal Himalaya" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">✈️ No Visa Required</div></div>
       <div class="why-body"><h4>Zero Visa for Indian Citizens</h4><p>India-Nepal bilateral open border agreement allows Indian citizens entry with just a valid passport or Aadhaar card. No visa process, no embassy visits required.</p></div>
     </div>
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600&q=80" alt="Medical education" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🏛️ NMC India Recognised</div></div>
+      <div class="why-img"><img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80" alt="Medical education" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🏛️ NMC India Recognised</div></div>
       <div class="why-body"><h4>NMC India Recognised Colleges</h4><p>Select Nepal medical colleges are recognised by NMC India. Graduates from these colleges are eligible for NExT/FMGE. Always verify your specific college at nmc.org.in before applying.</p></div>
     </div>
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1554734867-bf3c00a49371?w=600&q=80" alt="Medical students studying" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">📚 India-Aligned Curriculum</div></div>
+      <div class="why-img"><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80" alt="Medical students studying" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">📚 India-Aligned Curriculum</div></div>
       <div class="why-body"><h4>India-Aligned MBBS Curriculum</h4><p>Nepal MBBS closely mirrors Indian MBBS syllabus — same core subjects, similar exam patterns. This directly aids NExT/FMGE preparation after graduation.</p></div>
     </div>
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=600&q=80" alt="Students in class" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🗣️ English + Hindi</div></div>
+      <div class="why-img"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80" alt="Students in Nepal" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🗣️ English + Hindi</div></div>
       <div class="why-body"><h4>English Medium + Hindi Understood</h4><p>English is the medium of instruction per Nepal NMC. Hindi is widely spoken and understood in Nepal — no significant language barrier for Indian students in daily life.</p></div>
     </div>
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=600&q=80" alt="Hospital clinical training" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🏥 Clinical Exposure</div></div>
+      <div class="why-img"><img src="https://images.unsplash.com/photo-1559757175-5700dde675bc?w=600&q=80" alt="Hospital clinical training" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🏥 Clinical Exposure</div></div>
       <div class="why-body"><h4>Strong Clinical Exposure from Year 1</h4><p>Affiliated teaching hospitals provide hands-on patient exposure from early years. Disease patterns are similar to India — clinically relevant training for future Indian practice.</p></div>
     </div>
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1567604089580-40b8c94c30eb?w=600&q=80" alt="Kathmandu Nepal" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🍛 Familiar Culture</div></div>
+      <div class="why-img"><img src="https://images.unsplash.com/photo-1608098164765-9b1e5c2c0d2e?w=600&q=80" alt="Kathmandu Nepal" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🍛 Familiar Culture</div></div>
       <div class="why-body"><h4>Familiar Food, Culture & Community</h4><p>Indian food widely available in college hostels. Cultural similarities with India make daily life comfortable. Large Indian student community at all major Nepal colleges.</p></div>
     </div>
   </div>
@@ -874,7 +898,7 @@ textarea.a-inp{min-height:80px;resize:vertical}
 <div class="tab-pane" id="pane-lifestyle">
 <div class="container">
   <div class="lifestyle-hero rev">
-    <img src="https://images.unsplash.com/photo-1571825304178-9e06ae61735c?w=1400&q=80" alt="Kathmandu Nepal" loading="lazy">
+    <img src="https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1400&q=80" alt="Kathmandu Nepal" loading="lazy">
     <div class="lifestyle-hero-overlay"></div>
     <div class="lifestyle-hero-text">
       <h3>Life in Nepal — Honest Picture</h3>
@@ -1103,7 +1127,9 @@ textarea.a-inp{min-height:80px;resize:vertical}
     <!-- VIDEOS -->
     <div class="a-pane" id="ap-videos">
       <div class="a-sect"><div class="a-label">NMC India Guidelines Video (shown in Guidelines tab)</div><input type="text" class="a-inp" id="a-nmc-url" placeholder="YouTube embed URL: https://www.youtube.com/embed/VIDEO_ID"><input type="text" class="a-inp" id="a-nmc-title" placeholder="Video title" style="margin-top:8px"><div class="a-btns"><button class="a-btn a-btn-primary" onclick="saveNMCVid()">💾 Save to Supabase</button><button class="a-btn a-btn-danger" onclick="removeNMCVid()">Remove</button></div></div>
-      <div class="a-sect"><div class="a-label">Add Video to Videos Tab</div><div class="a-row"><input type="text" class="a-inp" id="a-vid-url" placeholder="YouTube/Drive embed URL"><input type="text" class="a-inp" id="a-vid-title" placeholder="Video title"></div><input type="text" class="a-inp" id="a-vid-desc" placeholder="Short description (optional)" style="margin-top:8px"><div class="a-btns"><button class="a-btn a-btn-primary" onclick="addVideo()">💾 Add to Supabase</button></div></div>
+      <div class="a-sect"><div class="a-label">Add Video to Videos Tab</div>
+<p style="font-size:11.5px;color:var(--muted);margin-bottom:8px">For YouTube: paste the video page URL (e.g. https://youtu.be/VIDEO_ID or https://www.youtube.com/watch?v=VIDEO_ID) — system auto-converts to embed format.</p>
+<div class="a-row"><input type="text" class="a-inp" id="a-vid-url" placeholder="YouTube URL or embed URL"><input type="text" class="a-inp" id="a-vid-title" placeholder="Video title"></div><input type="text" class="a-inp" id="a-vid-desc" placeholder="Short description (optional)" style="margin-top:8px"><div class="a-btns"><button class="a-btn a-btn-primary" onclick="addVideo()">💾 Add to Supabase</button></div></div>
       <div class="a-sect"><div class="a-label">Current Videos (from Supabase)</div><div id="admin-vid-list"><p style="color:var(--muted);font-size:13px">Loading...</p></div></div>
     </div>
 
@@ -1158,6 +1184,14 @@ window.addEventListener('load',async()=>{
   setTimeout(()=>{const l=document.getElementById('loader');if(l)l.classList.add('hide');},1600);
   await initSiteSettings();
   await loadDynamicContent();
+  // Supabase realtime polling for live updates
+  setInterval(async()=>{
+    try{
+      const cnt=await sbR('/rest/v1/leads?select=id&limit=1');
+      // silently refresh if admin panel open
+      if(adminLoggedIn && document.getElementById('ap-dash').classList.contains('on')) loadDashboard();
+    }catch(e){}
+  }, 30000); // refresh every 30s
   convertCurr('inr');
   initChatSwipe();
 });
@@ -1175,7 +1209,7 @@ async function initSiteSettings(){
       const p=m.phone;
       document.querySelectorAll('#footer-phone,#counsel-phone').forEach(e=>{if(e)e.textContent=p;});
       const fl=document.getElementById('footer-phone-link');if(fl)fl.href='tel:'+p.replace(/\s+/g,'');
-      const cb=document.getElementById('cbar-phone');if(cb)cb.querySelector('span').textContent=p;
+      const cb=document.getElementById('cbar-phone-txt');if(cb)cb.textContent=p;
     }
     if(m.wa_number){siteWANum=m.wa_number;applyWALinks(m.wa_number);}
     if(m.footer_about){const e=document.getElementById('footer-desc');if(e)e.textContent=m.footer_about;}
@@ -1212,7 +1246,17 @@ async function loadDynamicContent(){
       const c=document.getElementById('videos-container');
       if(c)vids.forEach(v=>{
         const d=document.createElement('div');d.className='vid-card rev';
-        d.innerHTML=`<div class="vid-thumb"><iframe src="${v.url}" loading="lazy" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`;
+        // Convert youtube URLs to nocookie + thumbnail
+        let embedUrl=v.url;
+        let thumbUrl='';
+        const ytMatch=v.url.match(/(?:youtube\.com\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+        if(ytMatch){
+          embedUrl=`https://www.youtube-nocookie.com/embed/${ytMatch[1]}?rel=0`;
+          thumbUrl=`https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+        }
+        d.innerHTML=thumbUrl?
+          `<div class="vid-thumb"><div class="vid-placeholder" onclick="this.innerHTML='<iframe src=\'${embedUrl}?autoplay=1\' style=\'position:absolute;inset:0;width:100%;height:100%;border:none\' allowfullscreen></iframe>';this.style.pointerEvents='none'"><img src="${thumbUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy"><div style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div><div class="play-btn" style="position:relative;z-index:1">▶</div></div></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`
+          :`<div class="vid-thumb"><iframe src="${embedUrl}" loading="lazy" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`;
         c.appendChild(d);revObs.observe(d);
       });
     }
@@ -1253,9 +1297,51 @@ async function loadDynamicContent(){
 // =====================================================
 // LANGUAGE
 // =====================================================
+// Complete translation dictionary
+const TRANS={
+  en:{
+    'hero_badge':'NEET 2025 Results Out — Nepal Admissions Open',
+    'nav_counsel':'Free Counseling →',
+    'hero_h1':'After NEET —<br><em>Nepal MBBS</em><br>The Smartest Path',
+    'hero_sub':'NMC India-recognised colleges. Official MEC Nepal admission process. English medium. Zero visa for Indian citizens. Honest guidance — no pressure, no false promises.',
+    'form_title':'Register for Free Guidance',
+    'form_btn':'Get Free Guidance →',
+    'form_note':'Your information is 100% private and secure',
+    'succ_title':'Successfully Registered!',
+    'succ_msg':'Our expert counselor will contact you on WhatsApp within 2 hours.',
+    'stat_nmc':'NMC Approved','stat_dur':'MBBS Duration','stat_visa':'Visa for Indians','stat_guide':'Students Guided',
+  },
+  hi:{
+    'hero_badge':'NEET 2025 परिणाम आए — नेपाल प्रवेश खुला',
+    'nav_counsel':'निःशुल्क काउंसलिंग →',
+    'hero_h1':'NEET के बाद —<br><em>नेपाल MBBS</em><br>सबसे स्मार्ट रास्ता',
+    'hero_sub':'NMC मान्यता प्राप्त कॉलेज। आधिकारिक MEC नेपाल प्रवेश प्रक्रिया। अंग्रेजी माध्यम। भारतीयों के लिए शून्य वीज़ा। ईमानदार मार्गदर्शन — कोई दबाव नहीं।',
+    'form_title':'निःशुल्क मार्गदर्शन के लिए रजिस्टर करें',
+    'form_btn':'निःशुल्क मार्गदर्शन पाएं →',
+    'form_note':'आपकी जानकारी 100% निजी और सुरक्षित है',
+    'succ_title':'सफलतापूर्वक रजिस्टर हो गए!',
+    'succ_msg':'हमारे काउंसलर 2 घंटे के भीतर WhatsApp पर संपर्क करेंगे।',
+    'stat_nmc':'NMC अनुमोदित','stat_dur':'MBBS अवधि','stat_visa':'वीज़ा भारतीयों के लिए','stat_guide':'छात्र मार्गदर्शित',
+  }
+};
 function setLang(l){
   curLang=l;
-  document.querySelectorAll('[data-'+l+']').forEach(el=>{const v=el.getAttribute('data-'+l);if(v)el.innerHTML=v;});
+  // Apply data-en / data-hi attributes
+  document.querySelectorAll('[data-'+l+']').forEach(el=>{
+    const v=el.getAttribute('data-'+l);if(v)el.innerHTML=v;
+  });
+  // Apply translation dictionary
+  const t=TRANS[l]||TRANS.en;
+  const applyT=(id,key)=>{const el=document.getElementById(id);if(el&&t[key])el.innerHTML=t[key];};
+  applyT('hero-badge-text','hero_badge');
+  applyT('hero-h1','hero_h1');
+  applyT('hero-sub','hero_sub');
+  // Form elements
+  const fbt=document.getElementById('hf-btn');if(fbt)fbt.textContent=t.form_btn||fbt.textContent;
+  const ftit=document.querySelector('.card-title');if(ftit)ftit.textContent=t.form_title||ftit.textContent;
+  // Nav
+  document.querySelectorAll('.nav-cta').forEach(el=>{if(el)el.textContent=t.nav_counsel||el.textContent;});
+  // Lang buttons
   document.querySelectorAll('.lbtn').forEach(b=>b.classList.toggle('on',b.textContent.trim()===(l==='en'?'EN':'हि')));
   document.querySelectorAll('.mob-lang button').forEach(b=>b.classList.toggle('on',(l==='en'&&b.textContent.includes('English'))||(l==='hi'&&b.textContent.includes('हिंदी'))));
 }
@@ -1447,8 +1533,8 @@ async function doAdminLogin(){
   document.getElementById('admin-err').textContent='Checking...';
   try{
     const res = await sbR('/rest/v1/admin_settings?key=eq.admin_password&select=value');
-    const stored = (res&&res.length) ? res[0].value : ADMIN_DEFAULT;
-    if(pass===stored||pass===ADMIN_DEFAULT){
+    const stored = (res&&res.length) ? res[0].value : null;
+    if(stored && pass===stored){
       adminLoggedIn=true;
       document.getElementById('admin-login-view').style.display='none';
       document.getElementById('admin-main').style.display='block';
@@ -1462,14 +1548,7 @@ async function doAdminLogin(){
       document.getElementById('admin-pass').value='';
     }
   } catch(e){
-    if(pass===ADMIN_DEFAULT){
-      adminLoggedIn=true;
-      document.getElementById('admin-login-view').style.display='none';
-      document.getElementById('admin-main').style.display='block';
-      loadDashboard();loadAdminSettings();loadAdminVids();loadAdminTests();loadAdminFAQs();
-    } else {
-      document.getElementById('admin-err').textContent='Connection error. Check internet and try again.';
-    }
+    document.getElementById('admin-err').textContent='Cannot connect to Supabase. Check your internet and try again.';
   }
 }
 
@@ -1645,6 +1724,15 @@ async function removeNMCVid(){
 
 // VIDEOS
 async function addVideo(){
+  // Auto-convert YouTube watch URLs to nocookie embed
+  const rawUrl=document.getElementById('a-vid-url').value.trim();
+  let embedUrl=rawUrl;
+  const yt1=rawUrl.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/);
+  const yt2=rawUrl.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  const ytId=yt1?yt1[1]:yt2?yt2[1]:null;
+  if(ytId) embedUrl=`https://www.youtube-nocookie.com/embed/${ytId}?rel=0`;
+  document.getElementById('a-vid-url').value=embedUrl;
+  // continue with original addVideo logic
   const url=document.getElementById('a-vid-url').value.trim();
   const title=document.getElementById('a-vid-title').value.trim();
   const desc=document.getElementById('a-vid-desc').value.trim();
