@@ -2,22 +2,422 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+<link rel="dns-prefetch" href="https://images.unsplash.com">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title id="meta-title">NepalMBBS.in — Official MBBS in Nepal Guidance 2025 | NMC Approved</title>
 <meta name="description" id="meta-desc" content="NEET qualified? Get official guidance for MBBS in Nepal 2025. NMC India-recognised colleges, MEC Nepal process, free counseling. Trusted by students from Mumbai, Nagpur, Nanded, Nashik, Latur.">
 <meta name="keywords" content="Nepal MBBS 2025, MBBS in Nepal for Indian students, NMC approved Nepal colleges, MEC Nepal admission, NEET qualified Nepal, Nepal MBBS fees">
 <meta property="og:title" content="NepalMBBS.in — Official MBBS in Nepal Guidance 2025">
 <meta property="og:description" content="NMC India recognised colleges. Official MEC Nepal process. Free counseling for NEET qualified Indian students.">
-<meta property="og:image" content="https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1200&q=80">
-<meta name="theme-color" content="#0a1628">
+<meta property="og:image" content="https://images.unsplash.com/photo-1605640840605-14ac1855827b?fm=webp&w=1920&q=95&fit=crop&auto=format&ixlib=rb-4.1.0">
+<meta name="theme-color" content="#0e2347">
 <!-- Google Analytics Slot -->
 <div id="ga-slot"></div>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+
+/* ═══════════════════════════════════════════════════════════════
+   NEPALMBBS.IN — MASTER COLOR SYSTEM v3.0
+   Professional dark theme with full visibility
+   Reference: Vercel / Linear / Apollo.io dark theme
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Core Backgrounds ── */
+  --bg-base:      #0f1724;   /* deepest bg — page base */
+  --bg-surface:   #162032;   /* cards, sections */
+  --bg-raised:    #1c2a3f;   /* elevated cards, modals */
+  --bg-overlay:   #223250;   /* hover states, selected */
+
+  /* ── Brand Colors ── */
+  --gold:         #f0a500;   /* primary CTA — warm amber */
+  --gold-light:   #f7c948;   /* hover state */
+  --gold-dim:     rgba(240,165,0,0.18);
+  --gold-border:  rgba(240,165,0,0.40);
+
+  /* ── Text Hierarchy (WCAG AA compliant) ── */
+  --text-primary:   #f0f4ff;   /* headings, main content — 95% white */
+  --text-secondary: #c8d4e8;   /* body text — 80% */
+  --text-tertiary:  #8fa8c8;   /* captions, labels — 60% */
+  --text-muted:     #607090;   /* placeholder, disabled — 40% */
+  --text-accent:    #60a5fa;   /* links, highlights */
+
+  /* ── Interactive Blue ── */
+  --blue:         #3b82f6;
+  --blue-light:   #60a5fa;
+  --blue-dim:     rgba(59,130,246,0.15);
+  --blue-border:  rgba(59,130,246,0.35);
+
+  /* ── Status Colors ── */
+  --green:        #10b981;
+  --green-dim:    rgba(16,185,129,0.15);
+  --teal:         #14b8a6;
+  --red:          #ef4444;
+
+  /* ── Glass System ── */
+  --glass-bg:     rgba(255,255,255,0.06);
+  --glass-bg-md:  rgba(255,255,255,0.10);
+  --glass-bg-hi:  rgba(255,255,255,0.16);
+  --glass-border: rgba(255,255,255,0.12);
+  --glass-border-md: rgba(255,255,255,0.20);
+  --glass-shine:  rgba(255,255,255,0.18);
+
+  /* ── Legacy aliases (keep working) ── */
+  --navy:         var(--bg-surface);
+  --text:         var(--text-primary);
+  --muted:        var(--text-tertiary);
+  --accent:       var(--gold);
+  --off:          var(--bg-raised);
+  --gray:         var(--bg-raised);
+  --border:       rgba(255,255,255,0.12);
+  --white:        #f0f4ff;
+
+  /* ── Spacing & Radius ── */
+  --r:    12px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+}
+
+/* ─── BASE RESET ─────────────────────────────────────────── */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-base) !important;
+  color: var(--text-primary) !important;
+  font-family: 'Sora', 'Inter', system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* ─── TYPOGRAPHY — Full Visibility ──────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+}
+p, li, td, th, span, label, div {
+  color: var(--text-secondary) !important;
+}
+a { color: var(--text-accent) !important; }
+a:hover { color: var(--gold-light) !important; }
+
+/* ─── SECTIONS ───────────────────────────────────────────── */
+section, .tab-pane, .sec, .pane {
+  background: var(--bg-base) !important;
+}
+section:nth-of-type(even), .sec-alt {
+  background: var(--bg-surface) !important;
+}
+.why-section, .why-card, .why-body {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+}
+.why-card h4 { color: var(--text-primary) !important; }
+.why-body p, .why-body li { color: var(--text-secondary) !important; }
+
+/* ─── SECTION TITLES ─────────────────────────────────────── */
+.sec-title {
+  color: var(--text-primary) !important;
+  font-weight: 800 !important;
+  font-size: clamp(22px,4vw,36px) !important;
+}
+.sec-sub, .sec-desc {
+  color: var(--text-tertiary) !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+}
+.sec-label, .sec-eyebrow, .tabs-label {
+  color: var(--gold) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  font-size: 11px !important;
+}
+
+/* ─── CARDS ──────────────────────────────────────────────── */
+.card, .why-card, .step-card, .college-card,
+.faq-item, .vid-row, .test-card, .life-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  color: var(--text-secondary) !important;
+}
+.card h3, .card h4, .step-card h4,
+.faq-q, .why-card h4 {
+  color: var(--text-primary) !important;
+}
+.card p, .step-body p, .faq-a {
+  color: var(--text-secondary) !important;
+}
+
+/* ─── STEP PROCESS CARDS ─────────────────────────────────── */
+.step-num { color: var(--gold) !important; font-weight: 800 !important; }
+.step-title { color: var(--text-primary) !important; font-weight: 700 !important; }
+.step-body { color: var(--text-secondary) !important; }
+.step-link a { color: var(--blue-light) !important; }
+
+/* ─── COMPARISON TABLE ───────────────────────────────────── */
+.comp-table { border-collapse: collapse !important; width: 100% !important; }
+.comp-table th {
+  background: var(--bg-raised) !important;
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+  padding: 14px !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+.comp-table td {
+  color: var(--text-secondary) !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+.comp-table tr:nth-child(even) td {
+  background: rgba(255,255,255,0.03) !important;
+}
+
+/* ─── FORMS ──────────────────────────────────────────────── */
+.form-label, label, .c-label, .cfield label, .h-label {
+  color: var(--text-tertiary) !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+}
+input, select, textarea, .a-inp {
+  background: var(--bg-raised) !important;
+  border: 1.5px solid rgba(255,255,255,0.15) !important;
+  color: var(--text-primary) !important;
+  border-radius: 10px !important;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--gold-border) !important;
+  box-shadow: 0 0 0 3px var(--gold-dim) !important;
+  outline: none !important;
+}
+input::placeholder, select option:first-child {
+  color: var(--text-muted) !important;
+}
+select option {
+  background: var(--bg-raised) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ─── NAVBAR ─────────────────────────────────────────────── */
+.nav {
+  background: rgba(15,23,36,0.82) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.10) !important;
+}
+.nav-logo { color: var(--text-primary) !important; }
+
+/* ─── TICKER ──────────────────────────────────────────────── */
+.ticker-wrap {
+  background: var(--gold-dim) !important;
+  border-top: 1px solid var(--gold-border) !important;
+  border-bottom: 1px solid var(--gold-border) !important;
+}
+.ticker-text { color: var(--gold-light) !important; font-weight: 600 !important; }
+
+/* ─── TRUST SECTION ──────────────────────────────────────── */
+.trust-section {
+  background: var(--bg-surface) !important;
+  border-top: 1px solid rgba(255,255,255,0.08) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+.trust-title {
+  color: var(--text-tertiary) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.15em !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+}
+
+/* ─── TABS SECTION ───────────────────────────────────────── */
+.tabs-section {
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+/* ─── TAB CARDS (keep glass, fix text) ──────────────────── */
+.tab-card { color: var(--text-primary) !important; }
+.tab-label { color: var(--text-primary) !important; font-weight: 700 !important; }
+.tab-card.on .tab-label { color: var(--gold-light) !important; }
+
+/* ─── COLLEGE CARDS ──────────────────────────────────────── */
+.college-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+.college-name { color: var(--text-primary) !important; font-weight: 700 !important; }
+.college-loc  { color: var(--text-tertiary) !important; }
+.cs-label     { color: var(--text-tertiary) !important; font-size: 10px !important; text-transform: uppercase !important; letter-spacing: 0.08em !important; }
+.cs-val       { color: var(--text-primary) !important; font-weight: 700 !important; font-size: 16px !important; }
+.college-type-badge { background: var(--bg-raised) !important; color: var(--text-tertiary) !important; }
+
+/* ─── FAQs ───────────────────────────────────────────────── */
+.faq-item {
+  background: var(--bg-surface) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+.faq-q {
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+}
+.faq-a {
+  color: var(--text-secondary) !important;
+  line-height: 1.7 !important;
+}
+
+/* ─── VIDEOS SECTION ─────────────────────────────────────── */
+.vid-row { background: var(--bg-surface) !important; }
+.vid-row-title { color: var(--text-primary) !important; font-weight: 600 !important; }
+.vid-row-url   { color: var(--text-muted) !important; }
+
+/* ─── TESTIMONIALS ───────────────────────────────────────── */
+.test-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+.test-name   { color: var(--text-primary) !important; font-weight: 700 !important; }
+.test-city   { color: var(--text-muted) !important; }
+.test-quote  { color: var(--text-secondary) !important; }
+.test-stars  { color: var(--gold) !important; }
+
+/* ─── LIFE IN NEPAL SECTION ──────────────────────────────── */
+.life-card, .life-section {
+  background: var(--bg-surface) !important;
+}
+.life-card h4 { color: var(--text-primary) !important; }
+.life-card p  { color: var(--text-secondary) !important; }
+
+/* ─── WHY NEPAL CARDS ────────────────────────────────────── */
+.why-card {
+  background: var(--bg-raised) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+.why-img-badge {
+  background: rgba(15,23,36,0.85) !important;
+  color: var(--text-primary) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+}
+
+/* ─── CONTACT BAR ────────────────────────────────────────── */
+.cbar {
+  background: var(--bg-raised) !important;
+  border-top: 1px solid rgba(255,255,255,0.10) !important;
+}
+.cbar-country-label { color: var(--text-muted) !important; }
+.cbar-num-txt { color: var(--text-primary) !important; font-weight: 700 !important; }
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+.footer, footer {
+  background: #0a1120 !important;
+  border-top: 1px solid rgba(255,255,255,0.08) !important;
+}
+.footer p, .footer a, .footer span {
+  color: var(--text-muted) !important;
+}
+.footer a:hover { color: var(--text-secondary) !important; }
+
+/* ─── ADMIN PANEL ────────────────────────────────────────── */
+.admin-box {
+  background: var(--bg-raised) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+}
+.admin-top {
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.10) !important;
+}
+.a-sect { background: var(--bg-surface) !important; }
+.a-label { color: var(--text-tertiary) !important; font-weight: 600 !important; }
+.a-tab { color: var(--text-secondary) !important; }
+.a-tab.on { color: var(--gold) !important; background: var(--gold-dim) !important; }
+
+/* ─── MOBILE MENU ────────────────────────────────────────── */
+#mob-menu {
+  background: rgba(15,23,36,0.70) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.12) !important;
+}
+.mob-lang button { color: var(--text-secondary) !important; }
+.mob-lang button.on { color: #fff !important; }
+#mob-menu a { color: var(--text-primary) !important; font-weight: 600 !important; }
+
+/* ─── HERO CARD (form) ───────────────────────────────────── */
+.hero-card {
+  background: rgba(22,32,50,0.72) !important;
+  backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+}
+.hero-card h2, .hero-card h3 {
+  color: var(--text-primary) !important;
+}
+.hero-badge {
+  background: var(--gold-dim) !important;
+  color: var(--gold-light) !important;
+  border: 1px solid var(--gold-border) !important;
+}
+
+/* ─── HERO STATS ─────────────────────────────────────────── */
+.hero-stat { background: rgba(255,255,255,0.06) !important; border: 1px solid rgba(255,255,255,0.10) !important; }
+.hero-stat-val { color: var(--gold-light) !important; font-weight: 800 !important; }
+.hero-stat-label { color: var(--text-tertiary) !important; font-size: 10px !important; }
+
+/* ─── HERO BUTTONS ───────────────────────────────────────── */
+.hbtns .wa-btn, .h-wa-btn {
+  background: rgba(37,211,102,0.18) !important;
+  border: 1.5px solid rgba(37,211,102,0.35) !important;
+  color: #4ade80 !important;
+  font-weight: 700 !important;
+}
+.hbtns .wa-btn:hover {
+  background: rgba(37,211,102,0.28) !important;
+}
+
+/* ─── COLLEGES SUMMARY BAR ───────────────────────────────── */
+.colleges-summary {
+  background: var(--bg-raised) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+.cs-sum strong { color: var(--gold-light) !important; font-weight: 800 !important; }
+.cs-sum span   { color: var(--text-muted) !important; }
+
+/* ─── CALCULATOR SECTION ─────────────────────────────────── */
+.calc-result { background: var(--bg-raised) !important; border: 1px solid rgba(255,255,255,0.12) !important; }
+.calc-result h3 { color: var(--text-primary) !important; }
+.calc-result p  { color: var(--text-secondary) !important; }
+.elig-badge { font-weight: 700 !important; }
+
+/* ─── GUIDELINES SECTION ─────────────────────────────────── */
+.guide-card { background: var(--bg-surface) !important; }
+.guide-card h4 { color: var(--text-primary) !important; }
+.guide-card p  { color: var(--text-secondary) !important; }
+.guide-link { color: var(--blue-light) !important; }
+
+/* ─── NEET CALCULATOR INPUTS ─────────────────────────────── */
+.calc-label { color: var(--text-tertiary) !important; }
+.calc-score-display { color: var(--text-primary) !important; font-weight: 800 !important; }
+
+/* ─── FLOAT BUTTONS ──────────────────────────────────────── */
+.wa-chat-btn { background: #25d366 !important; }
+.wa-call-btn-f { background: #25d366 !important; }
+.phone-call-btn-f { background: var(--gold) !important; }
+
+/* ─── SCROLLBAR ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
+/* ─── SELECTION ──────────────────────────────────────────── */
+::selection { background: var(--gold-dim); color: var(--text-primary); }
+
+/* ══ END MASTER COLOR SYSTEM ══ */
+
+
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --navy:#0a1628;--blue:#1a56db;--blue-light:#3b82f6;--blue-dark:#1e40af;
+  --navy:#0e2347;--blue:#1a56db;--blue-light:#3b82f6;--blue-dark:#1e40af;
   --accent:#e8a020;--gold:#f5c842;--green:#059669;--teal:#0d9488;
   --white:#ffffff;--off:#f0f4ff;--gray:#f8fafc;--text:#1e293b;
   --muted:#64748b;--border:#dbe4f0;--r:12px;--r-lg:20px;
@@ -61,7 +461,15 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .hbg.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
 .hbg.open span:nth-child(2){opacity:0}
 .hbg.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
-#mob-menu{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(10,22,40,.98);backdrop-filter:blur(24px);padding:20px 24px 28px;z-index:999;border-bottom:1px solid rgba(255,255,255,.08)}
+#mob-menu{
+  display:none;position:fixed;top:68px;left:0;right:0;
+  background:rgba(11,30,61,0.35)!important;
+  backdrop-filter:blur(32px) saturate(200%)!important;
+  -webkit-backdrop-filter:blur(32px) saturate(200%)!important;
+  border-bottom:1px solid rgba(255,255,255,0.15)!important;
+  padding:20px 24px 28px;z-index:999;
+  box-shadow:0 8px 40px rgba(0,0,0,0.3)!important;
+}
 #mob-menu.open{display:block}
 #mob-menu a{display:block;color:rgba(255,255,255,.85);text-decoration:none;font-size:15px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.07);cursor:pointer;font-weight:500;transition:color .2s,padding-left .2s}
 #mob-menu a:hover{color:#fff;padding-left:4px}
@@ -73,13 +481,13 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .mob-lang button.on{background:var(--accent);color:var(--navy);border-color:transparent}
 
 /* HERO */
-.hero{min-height:100vh;min-height:100dvh;position:relative;display:flex;align-items:center;overflow:hidden;background:#020c1b}
+.hero{min-height:100vh;min-height:100dvh;position:relative;display:flex;align-items:center;overflow:hidden;background:#0b1e3d}
 
 /* ENSURE FIRST SLIDE VISIBLE */
 .hero-slides > .hero-slide:first-child { opacity: 1; }
 /* HERO SLIDESHOW */
 /* HERO SLIDESHOW — RIGHT-TO-LEFT SLIDE */
-.hero-slides{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:0;overflow:hidden;background:#0a1628}
+.hero-slides{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:0;overflow:hidden;background:#0e2347}
 .hero-slide{position:absolute;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center center;background-repeat:no-repeat;transform:translateX(100%);transition:transform 0.85s cubic-bezier(0.77,0,0.175,1);will-change:transform}
 .hero-slide.active{transform:translateX(0)}
 
@@ -127,7 +535,7 @@ section.hero.sliding .hero-content{
 .slide-caption.show{opacity:1;transform:translateY(0)}
 .slide-caption-text{display:inline-block;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;font-weight:600;padding:8px 20px;border-radius:40px;letter-spacing:.03em}
 /* Static hero background — visible before slides load */
-.hero-bg{position:absolute;inset:0;background:linear-gradient(160deg,#020c1b 0%,#071220 35%,#0a1a2e 65%,#0c1f38 100%);z-index:-1}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(160deg,#0b1e3d 0%,#0e2347 35%,#0a1a2e 65%,#112852 100%);z-index:-1}
 .hero-img{display:none}
 .hero-overlay{display:none}
 .hero-content{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:120px 24px 80px;width:100%;display:grid;grid-template-columns:1fr 460px;gap:64px;align-items:center}
@@ -183,7 +591,7 @@ section.hero.sliding .hero-content{
 
 
 /* CONTACT BAR — REDESIGNED */
-.cbar{background:linear-gradient(135deg,#040e1f 0%,#0a1628 60%,#0d1f3c 100%);padding:16px 24px;border-top:1px solid rgba(255,255,255,.08);box-shadow:0 -4px 32px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.05)}
+.cbar{background:linear-gradient(135deg,#0b1e3d 0%,#0e2347 60%,#162f5e 100%);padding:16px 24px;border-top:1px solid rgba(255,255,255,.08);box-shadow:0 -4px 32px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.05)}
 .cbar-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap}
 .cbar-contact-block{display:flex;flex-direction:column;gap:5px;padding:10px 28px;position:relative}
 .cbar-email-block{text-decoration:none;transition:opacity .2s}
@@ -208,7 +616,7 @@ section.hero.sliding .hero-content{
   .cbar-divider{display:none}
 }
 /* CONTACT BAR */
-.cbar{background:linear-gradient(135deg,#040e1f 0%,#0a1628 50%,#0d1f3c 100%);padding:16px 24px;border-top:1px solid rgba(255,255,255,.06)}
+.cbar{background:linear-gradient(135deg,#0b1e3d 0%,#0e2347 50%,#162f5e 100%);padding:16px 24px;border-top:1px solid rgba(255,255,255,.06)}
 .cbar-link{color:rgba(255,255,255,.9);transition:all .25s;text-decoration:none}
 .cbar-link:hover{color:#fff;transform:translateY(-2px)}
 .cbar-pill{display:flex;align-items:center;gap:9px;padding:10px 20px;border-radius:50px;font-size:13px;font-weight:700;border:1.5px solid;transition:all .25s;text-decoration:none;white-space:nowrap;letter-spacing:.01em;position:relative;overflow:hidden}
@@ -231,7 +639,7 @@ section.hero.sliding .hero-content{
 .ci-e{background:#fffbeb;color:#b45309}.ci-w{background:#f0fdf4;color:#16a34a}
 
 /* GLASS TAB NAVIGATION */
-.tabs-section{background:linear-gradient(135deg,#0a1628,#0f2444);padding:20px 24px;position:sticky;top:68px;z-index:900;border-bottom:1px solid rgba(255,255,255,.08)}
+.tabs-section{background:linear-gradient(135deg,#0e2347,#1a3566);padding:20px 24px;position:sticky;top:68px;z-index:900;border-bottom:1px solid rgba(255,255,255,.08)}
 .tabs-container{max-width:1280px;margin:0 auto}
 .tabs-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px}
 .tabs-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
@@ -303,18 +711,59 @@ section.hero.sliding .hero-content{
 .test-year{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:4px;background:#dbeafe;color:#1d4ed8}
 
 /* TRUST BADGES */
-.trust-section{background:linear-gradient(135deg,var(--navy),#0f2444);padding:40px 24px}
+.trust-section{background:linear-gradient(135deg,var(--navy),#1a3566);padding:40px 24px}
 .trust-in{max-width:1280px;margin:0 auto}
 .trust-title{text-align:center;font-size:13px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:28px}
-.trust-grid{display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap}
-.trust-badge{display:flex;flex-direction:column;align-items:center;gap:6px;opacity:.7;transition:opacity .2s}
-.trust-badge:hover{opacity:1}
-.trust-badge-icon{width:54px;height:54px;background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.1);transition:all .3s}
-.trust-badge:hover .trust-badge-icon{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.3);box-shadow:0 8px 24px rgba(0,0,0,.3);transform:scale(1.08)}
+.trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:560px;margin:0 auto}
+@media(min-width:640px){.trust-grid{grid-template-columns:repeat(6,1fr);max-width:900px}}
+.trust-badge{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:14px 10px 12px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:20px;
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  box-shadow:0 4px 24px rgba(0,0,0,0.18),inset 0 1px 0 rgba(255,255,255,0.22);
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  text-decoration:none;
+  position:relative;overflow:hidden;
+}
+.trust-badge::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:45%;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.14),transparent);
+  border-radius:20px 20px 0 0;pointer-events:none;
+}
+.trust-badge:hover{
+  background:rgba(255,255,255,0.12);
+  border-color:rgba(255,255,255,0.35);
+  transform:translateY(-4px) scale(1.03);
+  box-shadow:0 12px 40px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.30);
+}
+.trust-badge:active{
+  transform:scale(0.95);
+  box-shadow:0 0 0 6px rgba(255,255,255,0.15),0 4px 20px rgba(0,0,0,0.2);
+  transition:all .1s;
+}
+.trust-badge-icon{
+  width:48px;height:48px;
+  background:rgba(255,255,255,0.10);
+  border:1px solid rgba(255,255,255,0.20);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 12px rgba(0,0,0,0.15),inset 0 1px 0 rgba(255,255,255,0.18);
+  transition:all .25s;
+  position:relative;z-index:1;
+}
+.trust-badge:hover .trust-badge-icon{
+  background:rgba(255,255,255,0.18);
+  border-color:rgba(255,255,255,0.35);
+  transform:scale(1.06);
+}
 .trust-badge-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.6);text-align:center}
 
 /* CALCULATOR */
-.calc-wrap{background:linear-gradient(135deg,var(--navy),#0f2444);border-radius:var(--r-lg);padding:40px;margin-top:44px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+.calc-wrap{background:linear-gradient(135deg,var(--navy),#1a3566);border-radius:var(--r-lg);padding:40px;margin-top:44px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
 .calc-wrap::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(232,160,32,.08),transparent 70%);pointer-events:none}
 .calc-wrap h3{font-family:'Sora',sans-serif;color:#fff;font-size:22px;font-weight:700;margin-bottom:6px}
 .calc-wrap>p{color:rgba(255,255,255,.45);font-size:13px;margin-bottom:28px}
@@ -322,7 +771,7 @@ section.hero.sliding .hero-content{
 .cfield label{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,.45);margin-bottom:6px;text-transform:uppercase;letter-spacing:.07em}
 .cfield input,.cfield select{width:100%;padding:12px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:9px;color:#fff;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;-webkit-appearance:none}
 .cfield input:focus,.cfield select:focus{border-color:var(--accent);background:rgba(255,255,255,.12)}
-.cfield select option{background:#0f2444}
+.cfield select option{background:#1a3566}
 .calc-btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--gold));color:var(--navy);padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s;font-family:'Sora',sans-serif}
 .calc-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,160,32,.4)}
 .calc-result{margin-top:20px;display:none}
@@ -410,7 +859,7 @@ section.hero.sliding .hero-content{
 .life-icon{font-size:34px;margin-bottom:12px}
 .life-card h4{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px}
 .life-card p{font-size:12.5px;color:var(--muted);line-height:1.65}
-.curr-wrap{background:linear-gradient(135deg,var(--navy),#0f2444);border-radius:var(--r-lg);padding:32px;max-width:440px;margin:36px auto 0;border:1px solid rgba(255,255,255,.1)}
+.curr-wrap{background:linear-gradient(135deg,var(--navy),#1a3566);border-radius:var(--r-lg);padding:32px;max-width:440px;margin:36px auto 0;border:1px solid rgba(255,255,255,.1)}
 .curr-title{font-family:'Sora',sans-serif;color:#fff;font-size:17px;font-weight:700;margin-bottom:20px;text-align:center}
 .curr-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .curr-lbl{font-size:12px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;width:50px;flex-shrink:0}
@@ -531,17 +980,17 @@ footer{background:var(--navy);padding:56px 24px 24px;border-top:1px solid rgba(2
 .college-link{background:transparent;border:1.5px solid rgba(26,86,219,.3)!important;color:var(--blue)!important}
 .college-link:hover{background:var(--blue)!important;color:#fff!important}
 .hero-card{box-shadow:0 32px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2)}
-.cbar{background:linear-gradient(135deg,#040e1f 0%,#0a1628 50%,#0d1f3c 100%);border-top:1px solid rgba(255,255,255,.06);box-shadow:0 -4px 24px rgba(0,0,0,.2)}
-.tabs-section{background:linear-gradient(135deg,#071220,#0f2444);box-shadow:0 4px 24px rgba(0,0,0,.2)}
+.cbar{background:linear-gradient(135deg,#0b1e3d 0%,#0e2347 50%,#162f5e 100%);border-top:1px solid rgba(255,255,255,.06);box-shadow:0 -4px 24px rgba(0,0,0,.2)}
+.tabs-section{background:linear-gradient(135deg,#0e2347,#1a3566);box-shadow:0 4px 24px rgba(0,0,0,.2)}
 .tab-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(12px)}
 .tab-card.on{background:linear-gradient(135deg,rgba(232,160,32,.3),rgba(245,200,66,.18));border-color:rgba(232,160,32,.6);box-shadow:0 4px 20px rgba(232,160,32,.25),inset 0 1px 0 rgba(255,255,255,.1)}
 .admin-box{box-shadow:0 48px 96px rgba(0,0,0,.5)}
-.admin-top{background:linear-gradient(135deg,#040e1f,#0f2444)}
+.admin-top{background:linear-gradient(135deg,#0b1e3d,#1a3566)}
 /* ADMIN */
 #admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:9500;display:none;align-items:center;justify-content:center;padding:16px}
 #admin-overlay.open{display:flex}
 .admin-box{background:#fff;border-radius:20px;width:100%;max-width:900px;max-height:92vh;overflow-y:auto;box-shadow:0 40px 80px rgba(0,0,0,.4);display:flex;flex-direction:column}
-.admin-top{background:linear-gradient(135deg,var(--navy),#0f2444);padding:20px 26px;display:flex;align-items:center;justify-content:space-between;border-radius:20px 20px 0 0;position:sticky;top:0;z-index:1;flex-shrink:0}
+.admin-top{background:linear-gradient(135deg,var(--navy),#1a3566);padding:20px 26px;display:flex;align-items:center;justify-content:space-between;border-radius:20px 20px 0 0;position:sticky;top:0;z-index:1;flex-shrink:0}
 .admin-top h2{font-family:'Sora',sans-serif;color:#fff;font-size:18px;font-weight:700}
 .admin-top p{font-size:11.5px;color:rgba(255,255,255,.45);margin-top:2px}
 .admin-x{background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0}
@@ -681,11 +1130,847 @@ textarea.a-inp{min-height:80px;resize:vertical}
 .college-enquire{padding:7px 16px;background:linear-gradient(135deg,var(--accent),var(--gold));color:var(--navy);border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Sora',sans-serif}
 .college-enquire:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,160,32,.35)}
 .college-card.hidden{display:none}
-.colleges-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px;background:linear-gradient(135deg,var(--navy),#0f2444);border-radius:var(--r-lg);padding:20px}
+.colleges-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px;background:linear-gradient(135deg,var(--navy),#1a3566);border-radius:var(--r-lg);padding:20px}
 .cs-sum{text-align:center}
 .cs-sum strong{display:block;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .cs-sum span{font-size:11px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
 @media(max-width:640px){#colleges-grid{grid-template-columns:1fr}.colleges-summary{grid-template-columns:repeat(2,1fr)}}
+
+
+
+
+/* BASE GLASS MIXIN — applied to all interactive elements */
+/* [merged into master :root] */
+
+/* Tab cards — glass on dark bg */
+.tab-card {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1) !important;
+  color: rgba(255,255,255,0.85) !important;
+}
+.tab-card:hover {
+  background: rgba(255,255,255,0.20) !important;
+  border-color: rgba(255,255,255,0.45) !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.3), 0 8px 32px rgba(0,0,0,0.25) !important;
+  transform: translateY(-3px) !important;
+  color: #fff !important;
+}
+.tab-card.on {
+  background: linear-gradient(135deg,rgba(232,160,32,0.4),rgba(245,200,66,0.25)) !important;
+  border-color: rgba(232,160,32,0.7) !important;
+  box-shadow: 0 0 0 2px rgba(232,160,32,0.5), 0 8px 24px rgba(232,160,32,0.35) !important;
+  color: #fcd34d !important;
+}
+/* Glow on tap (active state) */
+.tab-card:active {
+  transform: scale(0.96) !important;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.4) !important;
+  transition: all 0.1s !important;
+}
+
+/* Primary CTA buttons — gold glass */
+.hero-cta-btn, .btn-primary, .h-btn-primary,
+button[onclick*="switchTab('counsel')"],
+.counsel-btn, [class*="btn-gold"], [class*="btn-primary"] {
+  background: linear-gradient(135deg, rgba(232,160,32,0.85), rgba(200,130,20,0.9)) !important;
+  border: 1px solid rgba(255,200,50,0.5) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 20px rgba(232,160,32,0.4), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+  color: #fff !important;
+  transition: all 0.25s !important;
+}
+button:active, a[class*="btn"]:active {
+  transform: scale(0.97) !important;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.5), 0 0 16px rgba(255,255,255,0.3) !important;
+}
+
+/* College Enquire Now button */
+.college-enquire {
+  background: linear-gradient(135deg,rgba(232,160,32,0.9),rgba(200,130,20,0.95)) !important;
+  border: 1px solid rgba(255,200,50,0.4) !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 16px rgba(232,160,32,0.35), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+  transition: all 0.22s !important;
+}
+.college-enquire:active {
+  box-shadow: 0 0 0 4px rgba(232,160,32,0.6), 0 0 20px rgba(232,160,32,0.5) !important;
+  transform: scale(0.97) !important;
+}
+
+/* Official website link button */
+.college-link {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  backdrop-filter: blur(8px) !important;
+  transition: all 0.22s !important;
+}
+.college-link:active {
+  box-shadow: 0 0 0 3px rgba(100,180,255,0.5) !important;
+}
+
+/* Filter buttons (All 27, Government, KU...) */
+.college-filter-btn, [onclick*="filterColleges"] {
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  transition: all 0.2s !important;
+}
+.college-filter-btn:active, [onclick*="filterColleges"]:active {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.4), 0 0 12px rgba(255,255,255,0.3) !important;
+  transform: scale(0.96) !important;
+}
+
+/* Hero CTA buttons */
+.hbtns a, .hero-btn, .h-cta-btn {
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  transition: all 0.22s !important;
+}
+.hbtns a:active, .hero-btn:active {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.5), 0 0 18px rgba(255,255,255,0.4) !important;
+  transform: scale(0.96) !important;
+}
+
+/* Trust badges */
+.trust-badge {
+  background: rgba(255,255,255,0.07) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  backdrop-filter: blur(12px) !important;
+  transition: all 0.25s !important;
+}
+.trust-badge:active {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.4) !important;
+  transform: scale(0.95) !important;
+}
+
+/* Float buttons */
+.wa-chat-btn, .wa-call-btn-f, .phone-call-btn-f {
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.2s, box-shadow 0.1s !important;
+}
+.wa-chat-btn:active, .wa-call-btn-f:active, .phone-call-btn-f:active {
+  box-shadow: 0 0 0 5px rgba(255,255,255,0.5), 0 0 24px rgba(255,255,255,0.4) !important;
+  transform: scale(0.92) !important;
+}
+
+/* JS RIPPLE / GLOW on TAP — added via JS below */
+.glass-tap-glow {
+  animation: tapGlow 0.4s ease-out forwards;
+}
+@keyframes tapGlow {
+  0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
+  50%  { box-shadow: 0 0 0 12px rgba(255,255,255,0.2); }
+  100% { box-shadow: 0 0 0 20px rgba(255,255,255,0); }
+}
+
+/* ═══ NAVY BLUE BACKGROUND (hospital theme) ═══ */
+
+/* END GLASSMORPHISM */
+
+/* ─── HERO FULLSCREEN FIX — ALL DEVICES ───────────────── */
+section.hero {
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  width: 100% !important;
+}
+.hero-slides {
+  position: absolute !important;
+  top: 0 !important; left: 0 !important;
+  width: 100% !important; height: 100% !important;
+  overflow: hidden !important;
+}
+.hero-slide {
+  position: absolute !important;
+  top: 0 !important; left: 0 !important;
+  width: 100% !important; height: 100% !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+/* Ensure overlay doesn't reduce visible area */
+.hero-slide-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+}
+/* Nature slides: NO overlay at all */
+.hero-slide.nature-slide .hero-slide-overlay,
+.hero.sliding .hero-slide-overlay {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+/* Why Nepal images — crisp sharp rendering */
+.why-img img {
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: crisp-edges !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+/* ─────────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPLETE GLASSMORPHISM SYSTEM — NepalMBBS.in
+   Based on: frosted glass pill buttons + transparent backdrop
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── ROOT COLORS ── */
+/* [merged into master :root] */
+
+/* ── BODY & BACKGROUND ── */
+body { background: var(--navy-1) !important; }
+
+/* ── NAVBAR — transparent glass over slide ── */
+.nav {
+  background: rgba(11,30,61,0.55) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.12) !important;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.15) !important;
+}
+
+/* ── MOBILE MENU — Image 5 exact style ── */
+#mob-menu {
+  background: rgba(11,30,61,0.45) !important;
+  backdrop-filter: blur(28px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+  border-right: 1px solid rgba(255,255,255,0.15) !important;
+  box-shadow: 4px 0 40px rgba(0,0,0,0.3) !important;
+}
+#mob-menu a {
+  color: rgba(255,255,255,0.92) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  background: transparent !important;
+  transition: all 0.2s !important;
+}
+#mob-menu a:hover {
+  background: rgba(255,255,255,0.10) !important;
+  padding-left: 8px !important;
+}
+
+/* ── LANGUAGE BUTTONS (mob menu) ── */
+.mob-lang button {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid rgba(255,255,255,0.25) !important;
+  backdrop-filter: blur(12px) !important;
+  color: rgba(255,255,255,0.85) !important;
+  border-radius: 50px !important;
+  padding: 8px 20px !important;
+  transition: all 0.2s !important;
+}
+.mob-lang button.on {
+  background: linear-gradient(135deg,rgba(232,160,32,0.6),rgba(200,130,20,0.5)) !important;
+  border-color: rgba(232,160,32,0.7) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 20px rgba(232,160,32,0.4), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+}
+
+/* ══ TAB CARDS — Image 1 exact glass pill style ══ */
+.tab-card {
+  background: rgba(255,255,255,0.10) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255,255,255,0.25) !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.20),
+    inset 0 1px 0 rgba(255,255,255,0.30),
+    inset 0 -1px 0 rgba(0,0,0,0.10) !important;
+  color: rgba(255,255,255,0.90) !important;
+  transition: all 0.28s cubic-bezier(0.4,0,0.2,1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+/* Glass shine effect (top highlight) */
+.tab-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.18), transparent);
+  border-radius: 18px 18px 0 0;
+  pointer-events: none;
+}
+.tab-card:hover {
+  background: rgba(255,255,255,0.18) !important;
+  border-color: rgba(255,255,255,0.45) !important;
+  box-shadow:
+    0 8px 40px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    0 0 0 1px rgba(255,255,255,0.15) !important;
+  transform: translateY(-4px) scale(1.02) !important;
+  color: #fff !important;
+}
+.tab-card.on {
+  background: linear-gradient(135deg,
+    rgba(232,160,32,0.40) 0%,
+    rgba(245,200,66,0.25) 50%,
+    rgba(232,160,32,0.30) 100%) !important;
+  border-color: rgba(232,160,32,0.65) !important;
+  box-shadow:
+    0 0 0 1.5px rgba(232,160,32,0.5),
+    0 8px 32px rgba(232,160,32,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.30) !important;
+  color: #fcd34d !important;
+  transform: translateY(-2px) !important;
+}
+/* TAP GLOW PULSE */
+.tab-card:active {
+  transform: scale(0.95) translateY(0) !important;
+  box-shadow:
+    0 0 0 6px rgba(255,255,255,0.20),
+    0 0 30px rgba(255,255,255,0.25) !important;
+  transition: all 0.1s !important;
+}
+
+/* ── SVG ICONS inside tabs ── */
+.tab-svg {
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+  opacity: 0.85;
+}
+.tab-card.on .tab-svg { opacity: 1; filter: drop-shadow(0 0 8px rgba(252,211,77,0.6)); }
+.tab-card:hover .tab-svg { opacity: 1; }
+
+/* ── TABS SECTION BACKGROUND ── */
+.tabs-section {
+  background: linear-gradient(135deg,
+    rgba(11,30,61,0.85) 0%,
+    rgba(14,35,71,0.90) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+}
+.tabs-label {
+  color: rgba(255,255,255,0.5) !important;
+  letter-spacing: 0.15em !important;
+}
+
+/* ══ ALL BUTTONS — glass pill style like Image 1 ══ */
+
+/* Primary gold CTA buttons */
+.h-cta-btn, .hero-cta-btn, .counsel-cta,
+[onclick*="counsel"], .submit-btn, .h-submit {
+  background: linear-gradient(135deg,
+    rgba(232,160,32,0.80) 0%,
+    rgba(200,130,20,0.85) 100%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255,200,60,0.5) !important;
+  box-shadow:
+    0 4px 24px rgba(232,160,32,0.40),
+    inset 0 1px 0 rgba(255,255,255,0.30),
+    inset 0 -1px 0 rgba(0,0,0,0.15) !important;
+  color: #fff !important;
+  border-radius: 50px !important;
+  transition: all 0.25s !important;
+  position: relative;
+  overflow: hidden;
+}
+.h-cta-btn::before, .submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
+  border-radius: 50px 50px 0 0;
+}
+.h-cta-btn:hover {
+  box-shadow:
+    0 8px 32px rgba(232,160,32,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.35) !important;
+  transform: translateY(-2px) !important;
+}
+.h-cta-btn:active {
+  box-shadow: 0 0 0 6px rgba(232,160,32,0.35) !important;
+  transform: scale(0.97) !important;
+}
+
+/* College enquire buttons */
+.college-enquire {
+  background: linear-gradient(135deg,
+    rgba(232,160,32,0.85),rgba(200,130,20,0.90)) !important;
+  border: 1px solid rgba(255,200,60,0.4) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow:
+    0 4px 20px rgba(232,160,32,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.25) !important;
+  border-radius: 50px !important;
+  position: relative; overflow: hidden;
+}
+.college-enquire::before {
+  content: ''; position: absolute;
+  top:0;left:0;right:0;height:50%;
+  background: linear-gradient(to bottom,rgba(255,255,255,0.2),transparent);
+}
+.college-enquire:active {
+  box-shadow: 0 0 0 5px rgba(232,160,32,0.4) !important;
+  transform: scale(0.96) !important;
+}
+
+/* Official link buttons */
+.college-link {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 50px !important;
+  position: relative; overflow: hidden;
+}
+.college-link::before {
+  content: ''; position: absolute;
+  top:0;left:0;right:0;height:50%;
+  background: linear-gradient(to bottom,rgba(255,255,255,0.12),transparent);
+}
+.college-link:hover {
+  background: rgba(255,255,255,0.18) !important;
+  border-color: rgba(255,255,255,0.4) !important;
+}
+
+/* Filter buttons */
+[onclick*="filterColleges"], .college-filter-btn {
+  background: rgba(255,255,255,0.09) !important;
+  border: 1px solid rgba(255,255,255,0.20) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 50px !important;
+  position: relative; overflow: hidden;
+  transition: all 0.2s !important;
+}
+[onclick*="filterColleges"].on {
+  background: rgba(232,160,32,0.35) !important;
+  border-color: rgba(232,160,32,0.6) !important;
+  box-shadow: 0 4px 16px rgba(232,160,32,0.3) !important;
+}
+[onclick*="filterColleges"]:active {
+  box-shadow: 0 0 0 5px rgba(255,255,255,0.2) !important;
+}
+
+/* Trust badges */
+.trust-badge {
+  background: rgba(255,255,255,0.07) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  backdrop-filter: blur(16px) !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.18) !important;
+  transition: all 0.25s !important;
+}
+.trust-badge:hover {
+  background: rgba(255,255,255,0.14) !important;
+  border-color: rgba(255,255,255,0.35) !important;
+  transform: translateY(-3px) !important;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+.trust-badge:active {
+  box-shadow: 0 0 0 5px rgba(255,255,255,0.2) !important;
+  transform: scale(0.94) !important;
+}
+
+/* Float buttons */
+.wa-chat-btn, .wa-call-btn-f, .phone-call-btn-f {
+  backdrop-filter: blur(16px) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+}
+.wa-chat-btn:active, .wa-call-btn-f:active, .phone-call-btn-f:active {
+  box-shadow: 0 0 0 6px rgba(255,255,255,0.3), 0 4px 20px rgba(0,0,0,0.3) !important;
+  transform: scale(0.90) !important;
+}
+
+/* Contact bar */
+.cbar {
+  background: rgba(11,30,61,0.60) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-top: 1px solid rgba(255,255,255,0.12) !important;
+}
+
+/* ── HERO CARD (form) — Image 5 transparent glass ── */
+.hero-card, .hero-form-wrap {
+  background: rgba(11,30,61,0.40) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  box-shadow:
+    0 16px 64px rgba(0,0,0,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.20) !important;
+}
+
+/* College cards */
+.college-card {
+  background: rgba(255,255,255,0.07) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.12) !important;
+  transition: all 0.28s !important;
+}
+.college-card:hover {
+  background: rgba(255,255,255,0.12) !important;
+  border-color: rgba(255,255,255,0.28) !important;
+  box-shadow:
+    0 16px 48px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.20) !important;
+  transform: translateY(-6px) !important;
+}
+
+/* Admin panel */
+.admin-box {
+  background: rgba(11,30,61,0.70) !important;
+  backdrop-filter: blur(32px) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+}
+.admin-top {
+  background: rgba(11,30,61,0.80) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.10) !important;
+}
+
+/* ── TAP GLOW ANIMATION ── */
+@keyframes glassGlow {
+  0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.5); }
+  40%  { box-shadow: 0 0 0 8px rgba(255,255,255,0.15); }
+  100% { box-shadow: 0 0 0 16px rgba(255,255,255,0); }
+}
+.glass-glow-tap { animation: glassGlow 0.45s ease-out forwards !important; }
+
+/* ── BACKGROUND SECTIONS ── */
+.tabs-section, .trust-section, .ticker-wrap {
+  background: transparent !important;
+}
+section, .sec { background: var(--navy-2) !important; }
+section:nth-child(even), .sec-alt { background: var(--navy-1) !important; }
+
+/* ══ END GLASSMORPHISM ══ */
+
+
+/* ── MOBILE SLIDE FULLSCREEN FIX ── */
+section.hero { min-height:100vh; min-height:100dvh; width:100%; }
+.hero-slides { position:absolute!important; inset:0!important; width:100%!important; height:100%!important; overflow:hidden!important; }
+.hero-slide {
+  position:absolute!important; inset:0!important;
+  width:100%!important; height:100%!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+}
+@media(max-width:640px){
+  .hero-slide { background-position:center top!important; }
+  .hero-content { padding:20px 16px!important; }
+}
+/* Slide caption */
+.slide-caption-text { font-size:11px!important; padding:5px 14px!important; }
+
+
+/* ── 3D GLASS TEXT on Tab Labels ── */
+.tab-label {
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.35),
+    0 -1px 0 rgba(0,0,0,0.25),
+    0 2px 8px rgba(0,0,0,0.20) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+}
+.tab-card.on .tab-label {
+  text-shadow:
+    0 1px 0 rgba(255,220,100,0.5),
+    0 -1px 0 rgba(0,0,0,0.3),
+    0 0 12px rgba(252,211,77,0.4) !important;
+  color: #fcd34d !important;
+}
+/* Mobile menu item text — glass 3D */
+#mob-menu a span {
+  text-shadow: 0 1px 0 rgba(255,255,255,0.2), 0 -1px 0 rgba(0,0,0,0.3) !important;
+}
+/* Hero stat numbers glass effect */
+.hero-stat-val {
+  text-shadow: 0 2px 12px rgba(232,160,32,0.5), 0 1px 0 rgba(255,255,255,0.2) !important;
+}
+/* Slide caption 3D glass text */
+.slide-caption-text {
+  text-shadow: 0 1px 0 rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.4) !important;
+  background: rgba(11,30,61,0.45) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  font-weight: 600 !important;
+}
+
+
+/* ══ PREMIUM GLASS — DARK BOLD TEXT STYLE ══ */
+/* Tab labels — dark bold on glass */
+.tab-label {
+  color: rgba(255,255,255,0.95) !important;
+  font-weight: 700 !important;
+  font-size: 10px !important;
+  letter-spacing: 0.02em !important;
+  text-shadow:
+    0 1px 3px rgba(0,0,0,0.5),
+    0 0 20px rgba(255,255,255,0.1) !important;
+  line-height: 1.3 !important;
+}
+.tab-card.on .tab-label {
+  color: #fcd34d !important;
+  font-weight: 800 !important;
+  text-shadow:
+    0 1px 0 rgba(255,180,0,0.4),
+    0 0 16px rgba(252,211,77,0.5) !important;
+}
+
+/* Trust badge names */
+.trust-badge-name {
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  color: rgba(255,255,255,0.90) !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+  letter-spacing: 0.01em !important;
+  text-align: center;
+}
+
+/* Tab SVGs — brighter, crisper */
+.tab-svg {
+  width: 22px !important;
+  height: 22px !important;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)) brightness(1.1) !important;
+  opacity: 0.88 !important;
+}
+.tab-card.on .tab-svg {
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 8px rgba(252,211,77,0.7)) brightness(1.2) !important;
+}
+
+/* Nav label */
+.tabs-label {
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.14em !important;
+  color: rgba(255,255,255,0.40) !important;
+}
+
+/* College enquire button text */
+.college-enquire {
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.02em !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+/* Hero text */
+.hero-title {
+  font-weight: 800 !important;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.1) !important;
+}
+
+/* Slide dots — premium */
+.slide-dot {
+  width: 8px !important; height: 8px !important;
+  border-radius: 50% !important;
+  background: rgba(255,255,255,0.35) !important;
+  border: 1px solid rgba(255,255,255,0.5) !important;
+  cursor: pointer !important;
+  transition: all 0.3s !important;
+  backdrop-filter: blur(4px) !important;
+}
+.slide-dot.active {
+  background: #e8a020 !important;
+  border-color: #fcd34d !important;
+  width: 24px !important;
+  border-radius: 4px !important;
+  box-shadow: 0 0 10px rgba(232,160,32,0.6) !important;
+}
+
+/* Caption pill — glass */
+.slide-caption-text {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6) !important;
+}
+
+/* ── TRUST BADGE ICON — no background box overlap ── */
+.trust-badge-icon {
+  width: 46px !important;
+  height: 46px !important;
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.18) !important;
+}
+
+/* ── MOBILE MENU ITEMS — premium glass row ── */
+#mob-menu a {
+  border-radius: 14px !important;
+  margin: 0 0 4px 0 !important;
+  padding: 13px 16px !important;
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  backdrop-filter: blur(12px) !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  transition: all 0.2s !important;
+}
+#mob-menu a:hover {
+  background: rgba(255,255,255,0.12) !important;
+  border-color: rgba(255,255,255,0.25) !important;
+  padding-left: 20px !important;
+  box-shadow: inset 3px 0 0 rgba(232,160,32,0.6) !important;
+}
+#mob-menu a:last-child {
+  background: rgba(232,160,32,0.20) !important;
+  border-color: rgba(232,160,32,0.4) !important;
+}
+/* ══ END PREMIUM GLASS TEXT ══ */
+
+
+.hero-content,.hero-form-wrap,.hero-card{z-index:10!important;position:relative!important;}
+
+/* ── HERO FALLBACK — Premium gradient when images loading ── */
+section.hero {
+  background: linear-gradient(
+    135deg,
+    #0f1724 0%,
+    #0d2144 25%,
+    #0a3060 50%,
+    #0d2144 75%,
+    #0f1724 100%
+  ) !important;
+  background-size: 400% 400% !important;
+  animation: heroGradientShift 8s ease infinite !important;
+}
+@keyframes heroGradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.hero-slides { background: transparent !important; }
+
+/* Each slide has its own gradient fallback color */
+.hero-slide { background-color: #0a2040 !important; }
+.hero-slide:nth-child(1)  { background-color: #0f1f3d !important; }
+.hero-slide:nth-child(2)  { background-color: #0d2540 !important; }
+.hero-slide:nth-child(3)  { background-color: #0a1e38 !important; }
+.hero-slide:nth-child(4)  { background-color: #102030 !important; }
+.hero-slide:nth-child(5)  { background-color: #0e1f35 !important; }
+
+/* Hero content always visible — premium look even without images */
+.hero-content {
+  position: relative !important;
+  z-index: 5 !important;
+}
+.hero-title, .hero h1 {
+  color: #f0f4ff !important;
+  text-shadow: 0 2px 40px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1) !important;
+  font-weight: 800 !important;
+}
+.hero-sub, .hero p {
+  color: rgba(200,212,232,0.92) !important;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.6) !important;
+}
+
+/* ── CONTACT BAR — PREMIUM (Apple/Stripe reference) ── */
+.cbar {
+  background: linear-gradient(180deg, #101828 0%, #0d1f38 100%) !important;
+  border-top: 1px solid rgba(255,255,255,0.08) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  padding: 0 !important;
+}
+.cbar-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.cbar-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 32px;
+  flex: 1;
+  min-width: 180px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.cbar-block:hover { background: rgba(255,255,255,0.04) !important; }
+.cbar-email-block { cursor: pointer; }
+.cbar-country {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+.cbar-flag { font-size: 14px; }
+.cbar-country-name {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.38) !important;
+}
+.cbar-number {
+  font-family: 'Sora', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #f0f4ff !important;
+  text-decoration: none !important;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+.cbar-number:hover { color: #f0a500 !important; }
+.cbar-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.cbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none !important;
+  transition: all 0.2s;
+  letter-spacing: 0.01em;
+}
+.cbar-btn-call {
+  background: rgba(59,130,246,0.18);
+  border: 1px solid rgba(59,130,246,0.35);
+  color: #93c5fd !important;
+}
+.cbar-btn-call:hover {
+  background: rgba(59,130,246,0.30);
+  box-shadow: 0 0 16px rgba(59,130,246,0.3);
+}
+.cbar-btn-wa {
+  background: rgba(37,211,102,0.16);
+  border: 1px solid rgba(37,211,102,0.32);
+  color: #4ade80 !important;
+}
+.cbar-btn-wa:hover {
+  background: rgba(37,211,102,0.28);
+  box-shadow: 0 0 16px rgba(37,211,102,0.3);
+}
+.cbar-divider {
+  width: 1px;
+  align-self: stretch;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.12), transparent);
+  margin: 8px 0;
+  flex-shrink: 0;
+}
+@media(max-width:600px) {
+  .cbar-inner { flex-direction: column; align-items: stretch; }
+  .cbar-block { padding: 12px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .cbar-divider { display: none; }
+}
+/* ── END CONTACT BAR ── */
+
 </style>
 </head>
 <body>
@@ -744,32 +2029,69 @@ textarea.a-inp{min-height:80px;resize:vertical}
 <!-- HERO -->
 <section class="hero">
   <div class="hero-slides" id="hero-slides">
-
-  <!-- 7 NEPAL NATURE -->
-  <div class="hero-slide nature-slide" data-caption="🏔️ Himalayan Village — Nepal" style="background-image:url('https://images.unsplash.com/photo-1518002054494-3a6f94352e9d?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="⛰️ The Mighty Himalayas — Nepal" style="background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="🏔️ Annapurna Range — Pokhara" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="🌄 Kathmandu Valley — Nepal" style="background-image:url('https://images.unsplash.com/photo-1571825304178-9e06ae61735c?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="🏞️ Phewa Lake — Pokhara, Nepal" style="background-image:url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="❄️ Everest Region — Nepal Himalaya" style="background-image:url('https://images.unsplash.com/photo-1469521669194-babb45599def?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="🌅 Nepal — Where Mountains Meet the Sky" style="background-image:url('https://images.unsplash.com/photo-1458442310124-dde6edb43d10?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
-
-  <!-- 13 NEPAL MEDICAL COLLEGES + STUDENT LIFE -->
-  <div class="hero-slide active" data-caption="👩‍⚕️ Medical Student — Nepal MBBS" style="background-image:url('https://images.unsplash.com/photo-1624727828489-a1e03b79bba8?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🏥 Medical College Campus — Nepal" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🩺 Clinical Training — Teaching Hospital" style="background-image:url('https://images.unsplash.com/photo-1559757175-5700dde675bc?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🎓 MBBS Students — Nepal Medical College" style="background-image:url('https://images.unsplash.com/photo-1580139557401-58ed2b1d3d87?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="😊 Student Community — Nepal MBBS" style="background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🎓 Graduation Day — Nepal Medical College" style="background-image:url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="📚 Study Group — Nepal MBBS Campus Life" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="📖 Medical Education — Nepal" style="background-image:url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🔬 Medical Research Lab — Nepal" style="background-image:url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🏛️ State-of-the-Art Labs — Nepal" style="background-image:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="📝 NEET to Nepal MBBS — Official Path" style="background-image:url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="⚕️ Teaching Hospital — Hands-On Training" style="background-image:url('https://images.unsplash.com/photo-1551601651-2a8555f1a136?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🏥 Nepal Medical College — NMC Approved" style="background-image:url('https://images.unsplash.com/photo-1505751172876-fa1923c5c528?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-
+  <div class="hero-slide active" data-caption="🫀 Human Anatomy — Medical Education Nepal" style="background-image:url('https://images.unsplash.com/photo-d-Y3h47oaD0?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🧬 Biology & Cell Science — MBBS Foundation" style="background-image:url('https://images.unsplash.com/photo-505eectW54k?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🦷 Anatomy Lab — Cadaveric Study" style="background-image:url('https://images.unsplash.com/photo-WLjm_dL5GK4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🔬 Microscopy — Histology Lab" style="background-image:url('https://images.unsplash.com/photo-0mZnJwXwEEk?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📝 NEET Exam Preparation — Medical Aspirants" style="background-image:url('https://images.unsplash.com/photo-lUaaKCUANVI?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="✏️ MEC Entrance Exam — Nepal MBBS" style="background-image:url('https://images.unsplash.com/photo-s9CC2SKySJM?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📚 Study Hall — Medical Exam Preparation" style="background-image:url('https://images.unsplash.com/photo-7okkFhxrxNw?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🧫 Pathology Lab — Disease Investigation" style="background-image:url('https://images.unsplash.com/photo-hnq1HuKQAVM?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🔭 Pathology Slides — Microscopic Analysis" style="background-image:url('https://images.unsplash.com/photo-zCevd81MJbQ?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="💓 Physiology Lab — Cardiac & Respiratory" style="background-image:url('https://images.unsplash.com/photo-8xArrOgWsqY?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🫁 Human Physiology — Medical Science" style="background-image:url('https://images.unsplash.com/photo-0Bs3et8FYyg?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🧪 Biochemistry Lab — Molecular Research" style="background-image:url('https://images.unsplash.com/photo-4Mta-mIF4vE?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="⚗️ Chemical Analysis — Biochemistry Nepal" style="background-image:url('https://images.unsplash.com/photo-ncpFuoY-MQA?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🦠 Microbiology Lab — Bacterial Culture" style="background-image:url('https://images.unsplash.com/photo-hbb_9I9sMLQ?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🔬 Microbiology Research — Medical College" style="background-image:url('https://images.unsplash.com/photo-4Mta-mIF4vE?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide nature-slide" data-caption="⛰️ The Mighty Himalayas — Nepal" style="background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="🏔️ Annapurna Range — Pokhara" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌄 Kathmandu Valley — Nepal" style="background-image:url('https://images.unsplash.com/photo-1571825304178-9e06ae61735c?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="🏡 Himalayan Village — Nepal" style="background-image:url('https://images.unsplash.com/photo-1518002054494-3a6f94352e9d?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="🏞️ Phewa Lake — Pokhara, Nepal" style="background-image:url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="❄️ Everest Region — Nepal" style="background-image:url('https://images.unsplash.com/photo-1469521669194-babb45599def?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌅 Nepal — Sunrise Over Mountains" style="background-image:url('https://images.unsplash.com/photo-1458442310124-dde6edb43d10?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌤️ Clear Himalayan Sky — Nepal Weather" style="background-image:url('https://images.unsplash.com/photo-0Y6dTnKBEFI?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌧️ Monsoon Season — Nepal Landscape" style="background-image:url('https://images.unsplash.com/photo-qgHGn3-eQ18?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide" data-caption="🍛 Indian Food in Nepal — Dal Bhat Thali" style="background-image:url('https://images.unsplash.com/photo-MqT0asuoIcU?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🫕 Authentic Indian Cuisine — Nepal Campus" style="background-image:url('https://images.unsplash.com/photo-SqYmTDQYMjo?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🍽️ Student Mess — Indian Food Nepal College" style="background-image:url('https://images.unsplash.com/photo-pFqrSYMoKT4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🏘️ Community Medicine — Rural Health Nepal" style="background-image:url('https://images.unsplash.com/photo-6sl88x150Xs?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="👨‍⚕️ Community Healthcare — Nepal" style="background-image:url('https://images.unsplash.com/photo-9wH624ALFQA?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="💊 Pharmacology — Drug Research Lab" style="background-image:url('https://images.unsplash.com/photo-MsGGRtmQ1cQ?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🧴 Pharmacy Lab — Medicine Preparation" style="background-image:url('https://images.unsplash.com/photo-L7en7Lb-Ovc?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="👨‍⚕️ Indian Doctors — Medical Excellence" style="background-image:url('https://images.unsplash.com/photo-ILip77SbmOE?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🩺 Doctor Consultation — Nepal Teaching Hospital" style="background-image:url('https://images.unsplash.com/photo-9wH624ALFQA?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="👩‍⚕️ Medical Professionals — Nepal MBBS Grads" style="background-image:url('https://images.unsplash.com/photo-YuS4X_XfMX0?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🤖 Robotic Surgery — Advanced Medical Tech" style="background-image:url('https://images.unsplash.com/photo-eFTCKiRCMT4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🏥 MRI Machine — Diagnostic Radiology" style="background-image:url('https://images.unsplash.com/photo-LyvAZNG1dGE?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📡 CT Scan Suite — Medical Imaging Nepal" style="background-image:url('https://images.unsplash.com/photo-0Bs3et8FYyg?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🔪 Operation Theater — Surgical Excellence" style="background-image:url('https://images.unsplash.com/photo-ZGa9d1a_4tA?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="💡 High-Tech Medical Equipment — Nepal Hospital" style="background-image:url('https://images.unsplash.com/photo-ar_BfpfMRmo?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="⚕️ Advanced Medical Technology — Teaching Hospital" style="background-image:url('https://images.unsplash.com/photo-pFqrSYMoKT4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🔬 Medical Research Equipment — Nepal" style="background-image:url('https://images.unsplash.com/photo-hWbFVJiXSQY?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="💉 Hospital Pharmacy — Medicine Dispensary" style="background-image:url('https://images.unsplash.com/photo-L7en7Lb-Ovc?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🏪 Pharmacy Department — Nepal Medical College" style="background-image:url('https://images.unsplash.com/photo-MsGGRtmQ1cQ?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="👩‍⚕️ Nursing Care — Nepal Teaching Hospital" style="background-image:url('https://images.unsplash.com/photo-Qx-_HnN7WWs?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="💉 Nursing Students — Clinical Training Nepal" style="background-image:url('https://images.unsplash.com/photo-a9fSdkbLaOk?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🦷 Dental Science — BDS Program Nepal" style="background-image:url('https://images.unsplash.com/photo-WLjm_dL5GK4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="😁 Dental Lab — Oral Health Science" style="background-image:url('https://images.unsplash.com/photo-0mZnJwXwEEk?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🎓 MD/MS Postgraduation — Nepal Medical College" style="background-image:url('https://images.unsplash.com/photo-YuS4X_XfMX0?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="⚕️ MCh Surgery — Super Speciality Nepal" style="background-image:url('https://images.unsplash.com/photo-ILip77SbmOE?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🌿 Green Campus — Nepal Medical College Life" style="background-image:url('https://images.unsplash.com/photo-lRoX0shwjUQ?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="⚽ Students Playing — Open Campus Ground Nepal" style="background-image:url('https://images.unsplash.com/photo-9wH624ALFQA?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📚 Study Group — Campus Life Nepal" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="😊 Student Community — Nepal MBBS" style="background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🍱 College Mess — Indian Students Dining Nepal" style="background-image:url('https://images.unsplash.com/photo-SqYmTDQYMjo?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🫕 Canteen Life — Medical Students Nepal" style="background-image:url('https://images.unsplash.com/photo-MqT0asuoIcU?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📖 Medical Lecture — Nepal College" style="background-image:url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🎓 MBBS Students — White Apron Day" style="background-image:url('https://images.unsplash.com/photo-1580139557401-58ed2b1d3d87?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🩺 Stethoscope — Symbol of Medicine" style="background-image:url('https://images.unsplash.com/photo-1674702727317-d29b2788dc4a?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🫀 Synthetic Organs — Anatomy Training" style="background-image:url('https://images.unsplash.com/photo-d-Y3h47oaD0?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🧴 Dermatology — Skin Science Clinical Training" style="background-image:url('https://images.unsplash.com/photo-6sl88x150Xs?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="👩‍⚕️ Dermatologist — Clinical Skin Care Nepal" style="background-image:url('https://images.unsplash.com/photo-Qx-_HnN7WWs?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
   </div>
+
   <div class="slide-dots" id="slide-dots"></div>
   <div class="slide-caption-grad" id="slide-caption-grad"></div>
   <div class="slide-caption" id="slide-caption"><span class="slide-caption-text" id="slide-caption-text"></span></div>
@@ -891,59 +2213,59 @@ textarea.a-inp{min-height:80px;resize:vertical}
 </div>
 </div>
 
-<!-- CONTACT BAR -->
-<div class="cbar">
-<div class="cbar-in">
+<!-- CONTACT BAR — PREMIUM REDESIGN -->
+<div class="cbar" id="cbar">
+  <div class="cbar-inner">
 
-  <!-- INDIA ROW -->
-  <div class="cbar-contact-block">
-    <div class="cbar-country-label"><span class="cbar-flag">🇮🇳</span> India</div>
-    <div class="cbar-number-row">
-      <a href="tel:+917080800888" class="cbar-num-link" id="cbar-phone" title="Direct Call India">
-        <span class="cbar-num-txt" id="cbar-phone-txt">+91-70808 00888</span>
-      </a>
-      <div class="cbar-action-icons">
-        <a href="tel:+917080800888" class="cbar-icon-btn cbar-icon-phone" title="Call India">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+    <div class="cbar-block">
+      <div class="cbar-country">
+        <span class="cbar-flag">🇮🇳</span>
+        <span class="cbar-country-name">India</span>
+      </div>
+      <a href="tel:+917080800888" class="cbar-number">+91-70808 00888</a>
+      <div class="cbar-actions">
+        <a href="tel:+917080800888" class="cbar-btn cbar-btn-call" title="Direct Call">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02z"/></svg>
+          Call
         </a>
-        <a href="https://wa.me/917080800888" id="cbar-wa-call" target="_blank" rel="noopener" class="cbar-icon-btn cbar-icon-wa" title="WhatsApp India">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.123.549 4.116 1.512 5.845L.057 23.273a.75.75 0 00.924.924l5.428-1.455A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22.5c-1.978 0-3.83-.53-5.42-1.452l-.388-.229-4.02 1.078 1.078-4.02-.229-.388A10.45 10.45 0 011.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12 17.799 22.5 12 22.5z"/></svg>
+        <a href="https://wa.me/917080800888?text=Hello!%20I%20need%20Nepal%20MBBS%20guidance." target="_blank" rel="noopener" class="cbar-btn cbar-btn-wa">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.549 4.116 1.512 5.845L.057 23.273l5.428-1.455A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22.5c-1.978 0-3.83-.53-5.42-1.452l-.388-.229-4.02 1.078 1.078-4.02-.229-.388A10.45 10.45 0 011.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12 17.799 22.5 12 22.5z"/></svg>
+          WhatsApp
         </a>
       </div>
     </div>
-  </div>
 
-  <div class="cbar-divider"></div>
+    <div class="cbar-divider"></div>
 
-  <!-- NEPAL ROW -->
-  <div class="cbar-contact-block">
-    <div class="cbar-country-label"><span class="cbar-flag">🇳🇵</span> Nepal</div>
-    <div class="cbar-number-row">
-      <a href="tel:+9779802769950" class="cbar-num-link" title="Direct Call Nepal">
-        <span class="cbar-num-txt">+977-9802769950</span>
-      </a>
-      <div class="cbar-action-icons">
-        <a href="tel:+9779802769950" class="cbar-icon-btn cbar-icon-phone" title="Call Nepal">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+    <div class="cbar-block">
+      <div class="cbar-country">
+        <span class="cbar-flag">🇳🇵</span>
+        <span class="cbar-country-name">Nepal</span>
+      </div>
+      <a href="tel:+9779802769950" class="cbar-number">+977-9802769950</a>
+      <div class="cbar-actions">
+        <a href="tel:+9779802769950" class="cbar-btn cbar-btn-call" title="Direct Call">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02z"/></svg>
+          Call
         </a>
-        <a href="https://wa.me/9779802769950" id="cbar-wa-nepal" target="_blank" rel="noopener" class="cbar-icon-btn cbar-icon-wa" title="WhatsApp Nepal">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.123.549 4.116 1.512 5.845L.057 23.273a.75.75 0 00.924.924l5.428-1.455A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22.5c-1.978 0-3.83-.53-5.42-1.452l-.388-.229-4.02 1.078 1.078-4.02-.229-.388A10.45 10.45 0 011.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12 17.799 22.5 12 22.5z"/></svg>
+        <a href="https://wa.me/9779802769950?text=Hello!%20I%20need%20Nepal%20MBBS%20guidance." target="_blank" rel="noopener" class="cbar-btn cbar-btn-wa">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.549 4.116 1.512 5.845L.057 23.273l5.428-1.455A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22.5c-1.978 0-3.83-.53-5.42-1.452l-.388-.229-4.02 1.078 1.078-4.02-.229-.388A10.45 10.45 0 011.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12 17.799 22.5 12 22.5z"/></svg>
+          WhatsApp
         </a>
       </div>
     </div>
+
+    <div class="cbar-divider"></div>
+
+    <a href="mailto:info@nepalmbbs.in" class="cbar-block cbar-email-block">
+      <div class="cbar-country">
+        <span class="cbar-flag">✉️</span>
+        <span class="cbar-country-name">Email</span>
+      </div>
+      <span class="cbar-number" style="font-size:13px">info@nepalmbbs.in</span>
+    </a>
+
   </div>
-
-  <div class="cbar-divider"></div>
-
-  <!-- EMAIL -->
-  <a href="mailto:info@nepalmbbs.in" class="cbar-contact-block cbar-email-block" title="Email Us">
-    <div class="cbar-country-label"><span class="cbar-flag">✉️</span> Email</div>
-    <div class="cbar-number-row">
-      <span class="cbar-num-txt" style="color:#fcd34d">info@nepalmbbs.in</span>
-    </div>
-  </a>
-
-</div>
 </div>
 
 <!-- TRUST BADGES -->
@@ -1039,27 +2361,27 @@ textarea.a-inp{min-height:80px;resize:vertical}
   <div class="rev"><div class="eyebrow">Honest Comparison</div><div class="sec-title">Why Nepal MBBS — Facts Only</div><div class="sec-sub">No exaggeration. No false promises. Factual advantages verified from official NMC India and MEC Nepal sources only.</div></div>
   <div class="why-grid">
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1469521669194-babb45599def?w=600&q=80" alt="Nepal Himalaya" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">✈️ No Visa Required</div></div>
+      <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1469521669194-babb45599def?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Nepal Himalaya" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">✈️ No Visa Required</div></div>
       <div class="why-body"><h4>Zero Visa for Indian Citizens</h4><p>India-Nepal bilateral open border agreement allows Indian citizens entry with just a valid passport or Aadhaar card. No visa process, no embassy visits required.</p></div>
     </div>
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80" alt="Medical education" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🏛️ NMC India Recognised</div></div>
+      <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Medical education" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🏛️ NMC India Recognised</div></div>
       <div class="why-body"><h4>NMC India Recognised Colleges</h4><p>Select Nepal medical colleges are recognised by NMC India. Graduates from these colleges are eligible for NExT/FMGE. Always verify your specific college at nmc.org.in before applying.</p></div>
     </div>
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80" alt="Medical students studying" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">📚 India-Aligned Curriculum</div></div>
+      <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Medical students studying" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">📚 India-Aligned Curriculum</div></div>
       <div class="why-body"><h4>India-Aligned MBBS Curriculum</h4><p>Nepal MBBS closely mirrors Indian MBBS syllabus — same core subjects, similar exam patterns. This directly aids NExT/FMGE preparation after graduation.</p></div>
     </div>
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80" alt="Students in Nepal" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🗣️ English + Hindi</div></div>
+      <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Students in Nepal" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🗣️ English + Hindi</div></div>
       <div class="why-body"><h4>English Medium + Hindi Understood</h4><p>English is the medium of instruction per Nepal NMC. Hindi is widely spoken and understood in Nepal — no significant language barrier for Indian students in daily life.</p></div>
     </div>
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1559757175-5700dde675bc?w=600&q=80" alt="Hospital clinical training" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🏥 Clinical Exposure</div></div>
+      <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1559757175-5700dde675bc?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Hospital clinical training" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🏥 Clinical Exposure</div></div>
       <div class="why-body"><h4>Strong Clinical Exposure from Year 1</h4><p>Affiliated teaching hospitals provide hands-on patient exposure from early years. Disease patterns are similar to India — clinically relevant training for future Indian practice.</p></div>
     </div>
     <div class="why-card rev">
-      <div class="why-img"><img src="https://images.unsplash.com/photo-1608098164765-9b1e5c2c0d2e?w=600&q=80" alt="Kathmandu Nepal" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🍛 Familiar Culture</div></div>
+      <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1571825304178-9e06ae61735c?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Kathmandu Nepal" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🍛 Familiar Culture</div></div>
       <div class="why-body"><h4>Familiar Food, Culture & Community</h4><p>Indian food widely available in college hostels. Cultural similarities with India make daily life comfortable. Large Indian student community at all major Nepal colleges.</p></div>
     </div>
   </div>
@@ -1239,7 +2561,7 @@ textarea.a-inp{min-height:80px;resize:vertical}
 <div class="tab-pane" id="pane-lifestyle">
 <div class="container">
   <div class="lifestyle-hero rev">
-    <img src="https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1400&q=80" alt="Kathmandu Nepal" loading="lazy">
+    <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1605640840605-14ac1855827b?fm=webp&w=1920&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Kathmandu Nepal" loading="lazy">
     <div class="lifestyle-hero-overlay"></div>
     <div class="lifestyle-hero-text">
       <h3>Life in Nepal — Honest Picture</h3>
@@ -2093,7 +3415,7 @@ function initChatSwipe(){
   document.addEventListener('mouseup',()=>{dr=false;});
 }
 
-const COLLEGE_PHOTOS = {'kmc': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1571825304178-9e06ae61735c', 'photo-1571825304178-9e06ae61735c', 'photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef'], 'kist': ['photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef', 'photo-1551601651-2a8555f1a136', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1581091226825-a6a2a5aee158'], 'gandaki': ['photo-1506905925346-21bda4d32df4', 'photo-1544735716-392fe2489ffa', 'photo-1458442310124-dde6edb43d10', 'photo-1576091160399-112ba8d25d1d', 'photo-1517048676732-d65bc937f952', 'photo-1530026186672-2cd00ffc50fe'], 'manipal': ['photo-1544735716-392fe2489ffa', 'photo-1506905925346-21bda4d32df4', 'photo-1581091226825-a6a2a5aee158', 'photo-1559757148-5c350d0d3c56', 'photo-1523050854058-8df90110c9f1', 'photo-1576091160399-112ba8d25d1d'], 'cms': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1529156069898-49953e39b3ac', 'photo-1580139557401-58ed2b1d3d87']};
+const COLLEGE_PHOTOS = {'kmc': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1571825304178-9e06ae61735c', 'photo-1571825304178-9e06ae61735c', 'photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef'], 'kist': ['photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef', 'photo-1551601651-2a8555f1a136', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1581091226825-a6a2a5aee158'], 'gandaki': ['photo-1506905925346-21bda4d32df4', 'photo-1544735716-392fe2489ffa', 'photo-1458442310124-dde6edb43d10', 'photo-1576091160399-112ba8d25d1d', 'photo-1517048676732-d65bc937f952', 'photo-1530026186672-2cd00ffc50fe'], 'manipal': ['photo-1544735716-392fe2489ffa', 'photo-1506905925346-21bda4d32df4', 'photo-1581091226825-a6a2a5aee158', 'photo-1576091160550-2173dba999ef', 'photo-1523050854058-8df90110c9f1', 'photo-1576091160399-112ba8d25d1d'], 'cms': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1529156069898-49953e39b3ac', 'photo-1580139557401-58ed2b1d3d87']};
 const DEFAULT_COLLEGE_PHOTOS = ['photo-1576091160550-2173dba999ef', 'photo-1580139557401-58ed2b1d3d87', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1551601651-2a8555f1a136', 'photo-1517048676732-d65bc937f952'];
 
 // =====================================================
@@ -2141,7 +3463,7 @@ function initHeroSlideshow() {
     const bgStyle = s.style.backgroundImage;
     const urlMatch = bgStyle.match(/url\(['"]?([^'"]+)['"]?\)/);
     if(urlMatch) {
-      const img = new Image();
+      const img = new Image(); img.crossOrigin = "anonymous";
       img.src = urlMatch[1];
       // If image fails, mark slide to skip
       img.onerror = () => { s.dataset.broken = 'true'; };
@@ -2167,7 +3489,7 @@ function startSlideAuto() {
   window._heroSlidInterval = setInterval(() => {
     const slides = document.querySelectorAll('.hero-slide');
     goToSlide((heroSlideIndex + 1) % slides.length);
-  }, 3000);
+  }, 2000);
 }
 
 function goToSlide(idx) {
@@ -2496,7 +3818,7 @@ function enquireCollege(collegeName) {
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
   modal.innerHTML = `<div style="background:#fff;border-radius:20px;padding:28px;max-width:340px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.3);text-align:center">
     <div style="font-size:28px;margin-bottom:8px">💬</div>
-    <h3 style="font-family:Sora,sans-serif;font-size:17px;font-weight:700;color:#0a1628;margin-bottom:4px">Enquire about ${collegeName}</h3>
+    <h3 style="font-family:Sora,sans-serif;font-size:17px;font-weight:700;color:#0e2347;margin-bottom:4px">Enquire about ${collegeName}</h3>
     <p style="font-size:12px;color:#64748b;margin-bottom:20px">WhatsApp available on both numbers</p>
     <a href="https://wa.me/917080800888?text=${msg}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#25d366;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;margin-bottom:10px">
       <span style="font-size:20px">📱</span><div style="text-align:left"><div>+91 70808 00888</div><div style="font-size:11px;opacity:.8;font-weight:500">India • WhatsApp</div></div>
@@ -2934,5 +4256,37 @@ async function exportCSV(){
   toast('✅ CSV downloaded!','ok');
 }
 </script>
+
+// ═══ GLASS TAP GLOW — COMPREHENSIVE ═══
+(function(){
+  function addGlow(e){
+    const el = e.currentTarget;
+    el.classList.remove('glass-glow-tap');
+    void el.offsetWidth;
+    el.classList.add('glass-glow-tap');
+    setTimeout(()=>el.classList.remove('glass-glow-tap'),450);
+  }
+  const SEL = [
+    '.tab-card','.trust-badge','.college-enquire','.college-link',
+    '.wa-chat-btn','.wa-call-btn-f','.phone-call-btn-f',
+    '[onclick*="filterColleges"]','.mob-lang button',
+    '.h-cta-btn','.hbtns a','.a-btn','.cbar-icon-btn',
+    '.college-filter-btn','button[type="submit"]'
+  ];
+  function bind(){
+    SEL.forEach(s=>{
+      document.querySelectorAll(s).forEach(el=>{
+        if(el._glassGlow) return;
+        el._glassGlow = true;
+        el.addEventListener('touchstart',addGlow,{passive:true});
+        el.addEventListener('mousedown',addGlow);
+      });
+    });
+  }
+  document.addEventListener('DOMContentLoaded',bind);
+  setTimeout(bind,1500);
+  setTimeout(bind,4000);
+})();
+
 </body>
 </html>
