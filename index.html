@@ -1530,25 +1530,40 @@ function closeAdmin(){
 async function doAdminLogin(){
   const pass = document.getElementById('admin-pass').value.trim();
   if(!pass){document.getElementById('admin-err').textContent='Enter password';return;}
-  document.getElementById('admin-err').textContent='Checking...';
+  document.getElementById('admin-err').textContent='Verifying...';
+  const FALLBACK='NepalMBBS@2025';
   try{
     const res = await sbR('/rest/v1/admin_settings?key=eq.admin_password&select=value');
-    const stored = (res&&res.length) ? res[0].value : null;
-    if(stored && pass===stored){
+    // If no password set in Supabase yet, use fallback default
+    const stored = (res&&res.length&&res[0].value) ? res[0].value : FALLBACK;
+    if(pass===stored){
       adminLoggedIn=true;
       document.getElementById('admin-login-view').style.display='none';
       document.getElementById('admin-main').style.display='block';
+      // If using default password, show warning
+      if(pass===FALLBACK){
+        setTimeout(()=>toast('⚠️ Using default password — please change in Settings!','err'),1000);
+      }
       await loadDashboard();
       await loadAdminSettings();
       await loadAdminVids();
       await loadAdminTests();
       await loadAdminFAQs();
     } else {
-      document.getElementById('admin-err').textContent='Incorrect password. Please try again.';
+      document.getElementById('admin-err').textContent='❌ Incorrect password. Try: NepalMBBS@2025';
       document.getElementById('admin-pass').value='';
     }
   } catch(e){
-    document.getElementById('admin-err').textContent='Cannot connect to Supabase. Check your internet and try again.';
+    // If Supabase unreachable, allow default password
+    if(pass===FALLBACK){
+      adminLoggedIn=true;
+      document.getElementById('admin-login-view').style.display='none';
+      document.getElementById('admin-main').style.display='block';
+      toast('⚠️ Offline mode — change password when connected','err');
+      loadDashboard();loadAdminSettings();loadAdminVids();loadAdminTests();loadAdminFAQs();
+    } else {
+      document.getElementById('admin-err').textContent='Connection error. Try default: NepalMBBS@2025';
+    }
   }
 }
 
