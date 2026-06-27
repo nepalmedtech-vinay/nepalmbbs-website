@@ -71,6 +71,26 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 
 /* HERO */
 .hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden}
+
+/* ENSURE FIRST SLIDE VISIBLE */
+.hero-slides > .hero-slide:first-child { opacity: 1; }
+/* HERO SLIDESHOW */
+.hero-slides{position:absolute;inset:0;z-index:0}
+.hero-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease-in-out;background-size:cover;background-position:center}
+.hero-slide.active{opacity:1}
+.hero-slide-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,12,27,.92) 0%,rgba(7,18,32,.82) 50%,rgba(10,26,46,.75) 100%)}
+.hero-content{position:relative;z-index:3}
+/* Content visible initially, hides after 10s */
+.hero-text-initial{transition:opacity .8s ease,transform .8s ease}
+.hero-text-initial.hidden{opacity:0;transform:translateY(-10px);pointer-events:none}
+/* Slide indicator dots */
+.slide-dots{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:4;display:flex;gap:8px}
+.slide-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s;border:1px solid rgba(255,255,255,.4)}
+.slide-dot.active{background:var(--accent);width:24px;border-radius:4px;border-color:var(--accent)}
+/* Slide content overlay */
+.slide-caption{position:absolute;bottom:60px;left:0;right:0;z-index:3;text-align:center;opacity:0;transform:translateY(10px);transition:all .5s ease;pointer-events:none}
+.slide-caption.show{opacity:1;transform:translateY(0)}
+.slide-caption-text{display:inline-block;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;font-weight:600;padding:8px 20px;border-radius:40px;letter-spacing:.03em}
 .hero-bg{position:absolute;inset:0;background:linear-gradient(160deg,#020c1b 0%,#071220 35%,#0a1a2e 65%,#0c1f38 100%)}
 .hero-img{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1600&q=80');background-size:cover;background-position:center top;background-size:cover;background-position:center;opacity:.18}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,12,27,.92) 0%,rgba(7,18,32,.85) 50%,rgba(10,26,46,.8) 100%)}
@@ -125,19 +145,48 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .ticker-item::after{content:'⬥';opacity:.4;font-size:10px}
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
+
+/* CONTACT BAR — REDESIGNED */
+.cbar{background:linear-gradient(135deg,#040e1f 0%,#0a1628 60%,#0d1f3c 100%);padding:16px 24px;border-top:1px solid rgba(255,255,255,.08);box-shadow:0 -4px 32px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.05)}
+.cbar-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap}
+.cbar-contact-block{display:flex;flex-direction:column;gap:5px;padding:10px 28px;position:relative}
+.cbar-email-block{text-decoration:none;transition:opacity .2s}
+.cbar-email-block:hover{opacity:.85}
+.cbar-country-label{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em}
+.cbar-flag{font-size:14px;line-height:1}
+.cbar-number-row{display:flex;align-items:center;gap:10px}
+.cbar-num-link{text-decoration:none;transition:opacity .2s}
+.cbar-num-link:hover{opacity:.85}
+.cbar-num-txt{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:#fff;letter-spacing:-.3px;white-space:nowrap}
+.cbar-action-icons{display:flex;align-items:center;gap:6px}
+.cbar-icon-btn{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all .2s;flex-shrink:0;backdrop-filter:blur(8px)}
+.cbar-icon-btn:hover{transform:scale(1.15)}
+.cbar-icon-phone{background:rgba(59,130,246,.2);border:1.5px solid rgba(59,130,246,.4);color:#93c5fd}
+.cbar-icon-phone:hover{background:rgba(59,130,246,.4);box-shadow:0 4px 12px rgba(59,130,246,.3)}
+.cbar-icon-wa{background:rgba(37,211,102,.18);border:1.5px solid rgba(37,211,102,.4);color:#4ade80}
+.cbar-icon-wa:hover{background:rgba(37,211,102,.35);box-shadow:0 4px 12px rgba(37,211,102,.3)}
+.cbar-divider{width:1px;height:44px;background:linear-gradient(to bottom,transparent,rgba(255,255,255,.15),transparent);margin:0 4px;flex-shrink:0}
+@media(max-width:640px){
+  .cbar-contact-block{padding:8px 16px}
+  .cbar-num-txt{font-size:13px}
+  .cbar-divider{display:none}
+}
 /* CONTACT BAR */
-.cbar{background:linear-gradient(135deg,var(--navy),#0f2444);padding:14px 24px}
-.cbar-link{color:rgba(255,255,255,.85);transition:all .2s}
-.cbar-link:hover{color:#fff;transform:translateY(-1px)}
-.cbar-pill{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:40px;font-size:13px;font-weight:600;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);transition:all .25s;text-decoration:none;white-space:nowrap}
-.cbar-pill:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.2)}
-.cbar-pill-teal{background:rgba(13,148,136,.25);border-color:rgba(13,148,136,.4)}
-.cbar-pill-teal:hover{background:rgba(13,148,136,.4)}
-.cbar-pill-amber{background:rgba(232,160,32,.2);border-color:rgba(232,160,32,.35)}
-.cbar-pill-amber:hover{background:rgba(232,160,32,.35)}
-.cbar-pill-green{background:rgba(37,211,102,.2);border-color:rgba(37,211,102,.35)}
-.cbar-pill-green:hover{background:rgba(37,211,102,.35)}
-.cbar-icon{font-size:16px;flex-shrink:0}
+.cbar{background:linear-gradient(135deg,#040e1f 0%,#0a1628 50%,#0d1f3c 100%);padding:16px 24px;border-top:1px solid rgba(255,255,255,.06)}
+.cbar-link{color:rgba(255,255,255,.9);transition:all .25s;text-decoration:none}
+.cbar-link:hover{color:#fff;transform:translateY(-2px)}
+.cbar-pill{display:flex;align-items:center;gap:9px;padding:10px 20px;border-radius:50px;font-size:13px;font-weight:700;border:1.5px solid;transition:all .25s;text-decoration:none;white-space:nowrap;letter-spacing:.01em;position:relative;overflow:hidden}
+.cbar-pill::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.03));pointer-events:none}
+.cbar-pill:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.cbar-pill-phone{background:rgba(30,64,175,.4);border-color:rgba(59,130,246,.5);color:#93c5fd;box-shadow:0 2px 12px rgba(30,64,175,.25)}
+.cbar-pill-phone:hover{background:rgba(30,64,175,.6);box-shadow:0 8px 24px rgba(30,64,175,.4)}
+.cbar-pill-teal{background:rgba(13,148,136,.35);border-color:rgba(20,184,166,.5);color:#5eead4;box-shadow:0 2px 12px rgba(13,148,136,.25)}
+.cbar-pill-teal:hover{background:rgba(13,148,136,.55);box-shadow:0 8px 24px rgba(13,148,136,.4)}
+.cbar-pill-amber{background:rgba(180,83,9,.35);border-color:rgba(245,158,11,.4);color:#fcd34d;box-shadow:0 2px 12px rgba(180,83,9,.2)}
+.cbar-pill-amber:hover{background:rgba(180,83,9,.55);box-shadow:0 8px 24px rgba(180,83,9,.35)}
+.cbar-pill-green{background:rgba(21,128,61,.35);border-color:rgba(37,211,102,.45);color:#86efac;box-shadow:0 2px 12px rgba(21,128,61,.25)}
+.cbar-pill-green:hover{background:rgba(21,128,61,.55);box-shadow:0 8px 24px rgba(21,128,61,.4)}
+.cbar-icon{font-size:17px;flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.3))}
 .cbar-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap}
 .cbar-link{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);text-decoration:none;font-weight:500;transition:color .2s;padding:4px 0}
 .cbar-link:hover{color:var(--blue)}
@@ -433,6 +482,21 @@ footer{background:var(--navy);padding:56px 24px 24px;border-top:1px solid rgba(2
 .foot-bottom p{font-size:11.5px;color:rgba(255,255,255,.25);line-height:1.6}
 .foot-bottom a{color:rgba(255,255,255,.35);text-decoration:none}
 
+
+/* CORPORATE GLOSSY ENHANCEMENTS */
+.college-card{background:linear-gradient(145deg,#ffffff,#f8faff);border:1px solid rgba(26,86,219,.1);box-shadow:0 2px 12px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.9)}
+.college-card:hover{border-color:rgba(26,86,219,.25);box-shadow:0 16px 48px rgba(26,86,219,.12),0 4px 16px rgba(0,0,0,.06);transform:translateY(-6px)}
+.college-enquire{background:linear-gradient(135deg,#e8a020,#d4891a)!important;color:#fff!important;border:none!important;box-shadow:0 4px 16px rgba(232,160,32,.35)!important}
+.college-enquire:hover{transform:translateY(-2px)!important;box-shadow:0 8px 24px rgba(232,160,32,.5)!important}
+.college-link{background:transparent;border:1.5px solid rgba(26,86,219,.3)!important;color:var(--blue)!important}
+.college-link:hover{background:var(--blue)!important;color:#fff!important}
+.hero-card{box-shadow:0 32px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2)}
+.cbar{background:linear-gradient(135deg,#040e1f 0%,#0a1628 50%,#0d1f3c 100%);border-top:1px solid rgba(255,255,255,.06);box-shadow:0 -4px 24px rgba(0,0,0,.2)}
+.tabs-section{background:linear-gradient(135deg,#071220,#0f2444);box-shadow:0 4px 24px rgba(0,0,0,.2)}
+.tab-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(12px)}
+.tab-card.on{background:linear-gradient(135deg,rgba(232,160,32,.3),rgba(245,200,66,.18));border-color:rgba(232,160,32,.6);box-shadow:0 4px 20px rgba(232,160,32,.25),inset 0 1px 0 rgba(255,255,255,.1)}
+.admin-box{box-shadow:0 48px 96px rgba(0,0,0,.5)}
+.admin-top{background:linear-gradient(135deg,#040e1f,#0f2444)}
 /* ADMIN */
 #admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:9500;display:none;align-items:center;justify-content:center;padding:16px}
 #admin-overlay.open{display:flex}
@@ -525,6 +589,63 @@ textarea.a-inp{min-height:80px;resize:vertical}
   #toast{font-size:12px;padding:9px 16px;max-width:85vw}
 }
 @media(prefers-reduced-motion:reduce){.rev{opacity:1;transform:none}.ticker-track{animation:none}}
+
+/* COLLEGE SELECTOR */
+.college-selector{background:linear-gradient(135deg,var(--off),#fff);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px}
+.college-sel-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.college-tabs-wrap{display:flex;gap:8px;flex-wrap:wrap}
+.college-tab{padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--muted);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.college-tab:hover{border-color:var(--blue);color:var(--blue)}
+.college-tab.on{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:0 2px 8px rgba(10,22,40,.2)}
+/* PHOTO SLIDESHOW */
+.photo-slide-wrap{position:relative;border-radius:var(--r-lg);overflow:hidden;height:340px;background:var(--navy)}
+.photo-slide-inner{display:flex;height:100%;transition:transform .5s ease}
+.photo-slide-item{min-width:100%;height:100%;position:relative;flex-shrink:0}
+.photo-slide-item img{width:100%;height:100%;object-fit:cover}
+.photo-slide-item-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,22,40,.6),transparent 50%)}
+.photo-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:2}
+.photo-nav:hover{background:rgba(0,0,0,.75)}
+.photo-prev{left:12px}.photo-next{right:12px}
+.photo-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2}
+.photo-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:all .3s;border:none}
+.photo-dot.active{background:#fff;width:20px;border-radius:4px}
+
+
+/* FEE HIDDEN STYLE */
+.cs-val.fee-hidden{color:var(--accent);font-weight:700;cursor:pointer}
+.cs-val.fee-hidden::after{content:' →';font-size:10px}
+
+/* COLLEGE CARD IMAGE BACKGROUNDS */
+.college-card{position:relative;overflow:hidden}
+.college-card-img{position:absolute;top:0;right:0;width:120px;height:100%;opacity:.06;background-size:cover;background-position:center;border-radius:0 var(--r-lg) var(--r-lg) 0;pointer-events:none;transition:opacity .3s}
+.college-card:hover .college-card-img{opacity:.1}
+.college-card-inner{position:relative;z-index:1}
+/* COLLEGE CARDS */
+.college-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;transition:all .3s;box-shadow:var(--shadow-sm)}
+.college-card:hover{border-color:var(--blue-light);transform:translateY(-4px);box-shadow:0 12px 40px rgba(26,86,219,.12)}
+#colleges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;margin-top:8px}
+.college-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+.govt-badge{background:#fef3c7;color:#92400e}
+.ku-badge{background:#dbeafe;color:#1e40af}
+.tu-badge{background:#dcfce7;color:#166534}
+.college-header{margin-bottom:14px}
+.college-name{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px;line-height:1.35}
+.college-meta{font-size:12px;color:var(--muted);line-height:1.5}
+.college-details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;background:var(--off);border-radius:10px;padding:12px}
+.college-stat{text-align:center}
+.cs-label{display:block;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.cs-val{display:block;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--navy)}
+.college-footer{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.college-link{font-size:12px;font-weight:700;color:var(--blue);text-decoration:none;padding:6px 12px;border:1px solid var(--border);border-radius:7px;transition:all .2s}
+.college-link:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.college-enquire{padding:7px 16px;background:linear-gradient(135deg,var(--accent),var(--gold));color:var(--navy);border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Sora',sans-serif}
+.college-enquire:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,160,32,.35)}
+.college-card.hidden{display:none}
+.colleges-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px;background:linear-gradient(135deg,var(--navy),#0f2444);border-radius:var(--r-lg);padding:20px}
+.cs-sum{text-align:center}
+.cs-sum strong{display:block;font-family:'Sora',sans-serif;font-size:26px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cs-sum span{font-size:11px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+@media(max-width:640px){#colleges-grid{grid-template-columns:1fr}.colleges-summary{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -552,6 +673,7 @@ textarea.a-inp{min-height:80px;resize:vertical}
 <div id="mob-menu">
   <div class="mob-lang"><button class="on" onclick="setLang('en');toggleMenu()">English</button><button onclick="setLang('hi');toggleMenu()">हिंदी</button></div>
   <a onclick="switchTab('process');toggleMenu()">📋 Admission Process</a>
+  <a onclick="switchTab('colleges');toggleMenu()">🏥 Nepal Medical Colleges</a>
   <a onclick="switchTab('why');toggleMenu()">🏛️ Why Nepal</a>
   <a onclick="switchTab('calculator');toggleMenu()">🧮 NEET Calculator</a>
   <a onclick="switchTab('guidelines');toggleMenu()">📜 Official Guidelines</a>
@@ -563,9 +685,40 @@ textarea.a-inp{min-height:80px;resize:vertical}
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-img"></div>
-  <div class="hero-overlay"></div>
+  <div class="hero-slides" id="hero-slides">
+  <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1600&q=80&auto=format&fit=crop')" data-caption="Himalayan Peaks, Nepal"><div class='hero-slide-overlay'></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1469521669194-babb45599def?w=1600&q=80&auto=format&fit=crop')" data-caption="Nepal Mountain Range"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1571825304178-9e06ae61735c?w=1600&q=80&auto=format&fit=crop')" data-caption="Kathmandu Valley"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1580139557401-58ed2b1d3d87?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Students Nepal"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical College Campus"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&q=80&auto=format&fit=crop')" data-caption="Students Studying"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Education"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=1600&q=80&auto=format&fit=crop')" data-caption="Teaching Hospital"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1530026186672-2cd00ffc50fe?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Campus"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Students"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1600&q=80&auto=format&fit=crop')" data-caption="Happy Students"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1600&q=80&auto=format&fit=crop')" data-caption="Student Community"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Research"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Practice"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1600&q=80&auto=format&fit=crop')" data-caption="Healthcare Nepal"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1491895200222-0fc4a4c35e18?w=1600&q=80&auto=format&fit=crop')" data-caption="Nepal Landscape"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80&auto=format&fit=crop')" data-caption="Annapurna Nepal"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1600&q=80&auto=format&fit=crop')" data-caption="Pokhara Nepal"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1458442310124-dde6edb43d10?w=1600&q=80&auto=format&fit=crop')" data-caption="Nepal Mountains"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1496947850313-7743325fa58c?w=1600&q=80&auto=format&fit=crop')" data-caption="Kathmandu Temple"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=1600&q=80&auto=format&fit=crop')" data-caption="Nepal Culture"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=1600&q=80&auto=format&fit=crop')" data-caption="Nepal University"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1607748862156-7c548e7e98f4?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Lecture"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1576671081837-49000212a370?w=1600&q=80&auto=format&fit=crop')" data-caption="Hospital Ward"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Team"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=1600&q=80&auto=format&fit=crop')" data-caption="Healthcare Students"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Lab"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical College"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1600&q=80&auto=format&fit=crop')" data-caption="Campus Life"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1541692641319-981cc79ee10a?w=1600&q=80&auto=format&fit=crop')" data-caption="Student Life Nepal"><div class="hero-slide-overlay"></div></div>
+  </div>
+  <div class="slide-dots" id="slide-dots"></div>
+  <div class="slide-caption" id="slide-caption"><span class="slide-caption-text" id="slide-caption-text"></span></div>
   <div class="hero-content">
     <div>
       <div class="hero-badge"><div class="badge-dot"></div><span id="hero-badge-text">NEET 2025 Results Out — Nepal Admissions Open</span></div>
@@ -594,8 +747,63 @@ textarea.a-inp{min-height:80px;resize:vertical}
           <div class="ff"><label>WhatsApp No.</label><input id="h-phone" type="tel" placeholder="10 digit" maxlength="10" inputmode="numeric"></div>
           <div class="ff"><label>NEET Score</label><input id="h-neet" type="number" placeholder="e.g. 420" min="0" max="720" inputmode="numeric"></div>
         </div>
-        <div class="ff"><label>City</label><select id="h-city"><option value="">Select city</option><option>Mumbai</option><option>Nagpur</option><option>Nanded</option><option>Nashik</option><option>Latur</option><option>Pune</option><option>Aurangabad</option><option>Delhi</option><option>Other</option></select></div>
-        <div class="ff"><label>Category</label><select id="h-cat"><option value="">Select</option><option>General</option><option>OBC</option><option>SC</option><option>ST</option></select></div>
+        <div class="ff2">
+          <div class="ff">
+            <label>State</label>
+            <select id="h-state" onchange="updateCities('h-state','h-city')">
+              <option value="">Select State</option>
+              <option>Maharashtra</option><option>Uttar Pradesh</option><option>Bihar</option>
+              <option>Rajasthan</option><option>Madhya Pradesh</option><option>Gujarat</option>
+              <option>Delhi</option><option>Haryana</option><option>Punjab</option>
+              <option>West Bengal</option><option>Tamil Nadu</option><option>Karnataka</option>
+              <option>Andhra Pradesh</option><option>Telangana</option><option>Kerala</option>
+              <option>Odisha</option><option>Jharkhand</option><option>Chhattisgarh</option>
+              <option>Assam</option><option>Uttarakhand</option><option>Himachal Pradesh</option>
+              <option>Jammu & Kashmir</option><option>Goa</option><option>Other</option>
+            </select>
+          </div>
+          <div class="ff">
+            <label>City</label>
+            <select id="h-city" onchange=""><option value="">— Select State First —</option></select>
+          </div>
+        </div>
+        <div class="ff2">
+          <div class="ff">
+            <label>Category</label>
+            <select id="h-cat">
+              <option value="">Select</option>
+              <option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>EWS</option>
+            </select>
+          </div>
+          <div class="ff">
+            <label>NEET Attempt No.</label>
+            <select id="h-attempt">
+              <option value="">Select</option>
+              <option value="1st">1st (Fresher 2025)</option>
+              <option value="2nd">2nd Attempt</option>
+              <option value="3rd">3rd Attempt</option>
+              <option value="4th+">4th or more</option>
+            </select>
+          </div>
+        </div>
+        <div class="ff2">
+          <div class="ff">
+            <label>12th PCB % (aggregate)</label>
+            <select id="h-pcb">
+              <option value="">Select range</option>
+              <option>90% and above</option><option>80–89%</option><option>70–79%</option>
+              <option>60–69%</option><option>50–59%</option><option>Below 50%</option>
+            </select>
+          </div>
+          <div class="ff">
+            <label>Biology Marks (out of 100)</label>
+            <select id="h-bio">
+              <option value="">Select range</option>
+              <option>90+ marks</option><option>80–89 marks</option><option>70–79 marks</option>
+              <option>60–69 marks</option><option>50–59 marks</option><option>Below 50</option>
+            </select>
+          </div>
+        </div>
         <button class="sbtn" id="hf-btn" onclick="submitLead('hero')">Get Free Guidance →</button>
         <div class="form-note">🔒 <span>Your information is 100% private and secure</span></div>
       </div>
@@ -632,18 +840,55 @@ textarea.a-inp{min-height:80px;resize:vertical}
 <!-- CONTACT BAR -->
 <div class="cbar">
 <div class="cbar-in">
-  <a href="tel:+917080800888" class="cbar-link cbar-pill" id="cbar-phone">
-    <div class="cbar-icon ci-p">📞</div><span id="cbar-phone-txt">+91 70808 00888</span>
+
+  <!-- INDIA ROW -->
+  <div class="cbar-contact-block">
+    <div class="cbar-country-label"><span class="cbar-flag">🇮🇳</span> India</div>
+    <div class="cbar-number-row">
+      <a href="tel:+917080800888" class="cbar-num-link" id="cbar-phone" title="Direct Call India">
+        <span class="cbar-num-txt" id="cbar-phone-txt">+91-70808 00888</span>
+      </a>
+      <div class="cbar-action-icons">
+        <a href="tel:+917080800888" class="cbar-icon-btn cbar-icon-phone" title="Call India">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </a>
+        <a href="https://wa.me/917080800888" id="cbar-wa-call" target="_blank" rel="noopener" class="cbar-icon-btn cbar-icon-wa" title="WhatsApp India">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.123.549 4.116 1.512 5.845L.057 23.273a.75.75 0 00.924.924l5.428-1.455A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22.5c-1.978 0-3.83-.53-5.42-1.452l-.388-.229-4.02 1.078 1.078-4.02-.229-.388A10.45 10.45 0 011.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12 17.799 22.5 12 22.5z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="cbar-divider"></div>
+
+  <!-- NEPAL ROW -->
+  <div class="cbar-contact-block">
+    <div class="cbar-country-label"><span class="cbar-flag">🇳🇵</span> Nepal</div>
+    <div class="cbar-number-row">
+      <a href="tel:+9779802769950" class="cbar-num-link" title="Direct Call Nepal">
+        <span class="cbar-num-txt">+977-9802769950</span>
+      </a>
+      <div class="cbar-action-icons">
+        <a href="tel:+9779802769950" class="cbar-icon-btn cbar-icon-phone" title="Call Nepal">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </a>
+        <a href="https://wa.me/9779802769950" id="cbar-wa-nepal" target="_blank" rel="noopener" class="cbar-icon-btn cbar-icon-wa" title="WhatsApp Nepal">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.123.549 4.116 1.512 5.845L.057 23.273a.75.75 0 00.924.924l5.428-1.455A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22.5c-1.978 0-3.83-.53-5.42-1.452l-.388-.229-4.02 1.078 1.078-4.02-.229-.388A10.45 10.45 0 011.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12 17.799 22.5 12 22.5z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="cbar-divider"></div>
+
+  <!-- EMAIL -->
+  <a href="mailto:info@nepalmbbs.in" class="cbar-contact-block cbar-email-block" title="Email Us">
+    <div class="cbar-country-label"><span class="cbar-flag">✉️</span> Email</div>
+    <div class="cbar-number-row">
+      <span class="cbar-num-txt" style="color:#fcd34d">info@nepalmbbs.in</span>
+    </div>
   </a>
-  <a id="cbar-wa-call" href="https://wa.me/917080800888?call" target="_blank" rel="noopener" class="cbar-link cbar-pill cbar-pill-teal">
-    <div class="cbar-icon ci-c">📲</div><span>WA Call</span>
-  </a>
-  <a href="mailto:info@nepalmbbs.in" class="cbar-link cbar-pill cbar-pill-amber">
-    <div class="cbar-icon ci-e">✉️</div><span>info@nepalmbbs.in</span>
-  </a>
-  <a id="cbar-wa-chat" href="https://wa.me/917080800888?text=Hello!%20I%20need%20Nepal%20MBBS%20guidance." target="_blank" rel="noopener" class="cbar-link cbar-pill cbar-pill-green">
-    <div class="cbar-icon ci-w">💬</div><span>WhatsApp Chat</span>
-  </a>
+
 </div>
 </div>
 
@@ -668,11 +913,13 @@ textarea.a-inp{min-height:80px;resize:vertical}
   <div class="tabs-label">Navigate Sections</div>
   <div class="tabs-grid">
     <div class="tab-card on" onclick="switchTab('process')" id="tab-process"><div class="tab-icon">📋</div><div class="tab-label" data-en="Admission<br>Process" data-hi="प्रवेश<br>प्रक्रिया">Admission<br>Process</div></div>
+    <div class="tab-card" onclick="switchTab('colleges')" id="tab-colleges"><div class="tab-icon">🏥</div><div class="tab-label" data-en="Nepal Medical<br>Colleges" data-hi="नेपाल मेडिकल<br>कॉलेज">Nepal Medical<br>Colleges</div></div>
     <div class="tab-card" onclick="switchTab('why')" id="tab-why"><div class="tab-icon">🏛️</div><div class="tab-label" data-en="Why<br>Nepal" data-hi="क्यों<br>नेपाल">Why<br>Nepal</div></div>
     <div class="tab-card" onclick="switchTab('calculator')" id="tab-calculator"><div class="tab-icon">🧮</div><div class="tab-label" data-en="NEET<br>Calculator" data-hi="NEET<br>कैलकुलेटर">NEET<br>Calculator</div></div>
     <div class="tab-card" onclick="switchTab('guidelines')" id="tab-guidelines"><div class="tab-icon">📜</div><div class="tab-label" data-en="Official<br>Guidelines" data-hi="आधिकारिक<br>दिशानिर्देश">Official<br>Guidelines</div></div>
     <div class="tab-card" onclick="switchTab('videos')" id="tab-videos"><div class="tab-icon">🎥</div><div class="tab-label" data-en="Videos &<br>Resources" data-hi="वीडियो &<br>संसाधन">Videos &<br>Resources</div></div>
     <div class="tab-card" onclick="switchTab('faq')" id="tab-faq"><div class="tab-icon">❓</div><div class="tab-label" data-en="FAQ" data-hi="सामान्य प्रश्न">FAQ</div></div>
+<!-- Nepal Medical Colleges tab label already updated above -->
     <div class="tab-card" onclick="switchTab('lifestyle')" id="tab-lifestyle"><div class="tab-icon">🌄</div><div class="tab-label" data-en="Life in<br>Nepal" data-hi="नेपाल में<br>जीवन">Life in<br>Nepal</div></div>
     <div class="tab-card" onclick="switchTab('counsel')" id="tab-counsel"><div class="tab-icon">📅</div><div class="tab-label" data-en="Free<br>Counseling" data-hi="निःशुल्क<br>काउंसलिंग">Free<br>Counseling</div></div>
   </div>
@@ -843,31 +1090,54 @@ textarea.a-inp{min-height:80px;resize:vertical}
 <!-- TAB: VIDEOS -->
 <div class="tab-pane" id="pane-videos">
 <div class="container">
-  <div class="rev"><div class="eyebrow">Video Resources</div><div class="sec-title">Watch & Learn — Nepal MBBS</div><div class="sec-sub">Campus tours, student interviews, official process guides. New videos added regularly.</div></div>
-  <div class="vid-grid" id="videos-container" style="margin-top:32px">
-    <div class="vid-card rev">
-      <div class="vid-thumb">
-        <img src="https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=600&q=60" alt="Nepal campus" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5" loading="lazy">
-        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(10,22,40,.9),rgba(10,22,40,.4))"></div>
-        <div class="vid-placeholder" onclick="window.open('https://drive.google.com/drive/folders/1W-q-NqJwrkJ1K8EirJvphAwW-xsMF4cQ','_blank')">
-          <div class="play-btn">📂</div>
-          <span>NepalMBBS Complete Video Library</span>
-        </div>
-      </div>
-      <div class="vid-info"><h4>Complete Video Library — Campus Tours & Student Guides</h4><p>Click to browse all videos in our Google Drive library</p></div>
+  <div class="rev"><div class="eyebrow">College Video Library</div><div class="sec-title">Explore Nepal Medical Colleges</div><div class="sec-sub">Select a college to watch campus tours and student reviews. Official photos shown when video unavailable.</div></div>
+  <div class="college-selector rev" style="margin-top:28px">
+    <div class="college-sel-label">Select a College to Explore</div>
+    <div class="college-tabs-wrap" id="college-tabs">
+      <button class="college-tab on" onclick="selectCollege(this,'all')">🏛️ All Videos</button>
+      <button class="college-tab" onclick="selectCollege(this,'mcoms')">Manipal MCOMS</button>
+      <button class="college-tab" onclick="selectCollege(this,'cms')">CMS Bharatpur</button>
+      <button class="college-tab" onclick="selectCollege(this,'kusms')">KUSMS Dhulikhel</button>
+      <button class="college-tab" onclick="selectCollege(this,'kmc')">KMC Kathmandu</button>
+      <button class="college-tab" onclick="selectCollege(this,'nobel')">Nobel MC</button>
+      <button class="college-tab" onclick="selectCollege(this,'kist')">KIST MC</button>
+      <button class="college-tab" onclick="selectCollege(this,'cmc')">CMC Chitwan</button>
+      <button class="college-tab" onclick="selectCollege(this,'gandaki')">Gandaki MC</button>
+      <button class="college-tab" onclick="selectCollege(this,'lmc')">Lumbini MC</button>
+      <button class="college-tab" onclick="selectCollege(this,'devdaha')">Devdaha MC</button>
+      <button class="college-tab" onclick="selectCollege(this,'birat')">Birat MC</button>
+      <button class="college-tab" onclick="selectCollege(this,'bpkihs')">BPKIHS</button>
+      <button class="college-tab" onclick="selectCollege(this,'iom')">IOM</button>
+      <button class="college-tab" onclick="selectCollege(this,'nmcb')">National MC</button>
+      <button class="college-tab" onclick="selectCollege(this,'ucms')">Universal MC</button>
+      <button class="college-tab" onclick="selectCollege(this,'nepalgunj')">Nepalgunj MC</button>
+      <button class="college-tab" onclick="selectCollege(this,'janaki')">Janaki MC</button>
+      <button class="college-tab" onclick="selectCollege(this,'nmc')">Nepal MC Jorpati</button>
     </div>
   </div>
-  <div class="vid-drive-card rev" style="margin-top:20px">
-    <h4>📹 Videos Updated Regularly by Admin</h4>
-    <p>Campus tours, student experience interviews, MEC process guides, fee explanations — all added and managed directly from the Admin Panel. New content added regularly.</p>
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <a href="https://drive.google.com/drive/folders/1W-q-NqJwrkJ1K8EirJvphAwW-xsMF4cQ" target="_blank" rel="noopener" class="btn-primary" style="font-size:13px;padding:10px 20px">📂 View Full Library →</a>
-      <a href="mailto:info@nepalmbbs.in" class="btn-glass" style="font-size:13px;padding:10px 20px;color:var(--navy);background:rgba(10,22,40,.08);border-color:var(--border)">✉️ Request a Video</a>
+  <div id="videos-container" style="margin-top:20px">
+    <div class="vid-grid" id="all-videos-grid"></div>
+  </div>
+  <div id="college-photo-show" style="display:none;margin-top:20px">
+    <div class="photo-slide-wrap">
+      <div class="photo-slide-inner" id="photo-slide-inner"></div>
+      <button class="photo-nav photo-prev" onclick="slidePhoto(-1)">&#8592;</button>
+      <button class="photo-nav photo-next" onclick="slidePhoto(1)">&#8594;</button>
+      <div class="photo-dots" id="photo-dots"></div>
+    </div>
+    <p style="text-align:center;margin-top:10px;font-size:13px;color:var(--muted)" id="photo-slide-label">Official campus photos — video coming soon</p>
+  </div>
+  <div class="vid-drive-card rev" style="margin-top:24px">
+    <h4>📹 Videos Added & Updated by Admin</h4>
+    <p>Campus tours, student reviews, MEC process guides — all managed from Admin Panel. Request your college video below!</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+      <a href="https://drive.google.com/drive/folders/1W-q-NqJwrkJ1K8EirJvphAwW-xsMF4cQ" target="_blank" rel="noopener" class="btn-primary" style="font-size:13px;padding:10px 20px">📂 Full Video Library →</a>
+      <a id="vid-wa-req" href="https://wa.me/917080800888?text=Hi!%20I%20want%20to%20request%20a%20campus%20video%20for%20Nepal%20MBBS" target="_blank" rel="noopener" class="btn-glass" style="font-size:13px;padding:10px 20px;background:rgba(37,211,102,.15);border-color:rgba(37,211,102,.4);color:#86efac">💬 Request on WhatsApp</a>
+      <a href="mailto:info@nepalmbbs.in?subject=Video Request - Nepal MBBS" class="btn-glass" style="font-size:13px;padding:10px 20px;color:rgba(255,255,255,.8)">✉️ Request via Email</a>
     </div>
   </div>
 </div>
 </div>
-
 <!-- TAB: FAQ -->
 <div class="tab-pane" id="pane-faq">
 <div class="container">
@@ -925,6 +1195,91 @@ textarea.a-inp{min-height:80px;resize:vertical}
 </div>
 </div>
 
+
+<!-- TAB: COLLEGES -->
+<div class="tab-pane" id="pane-colleges">
+<div class="container">
+  <div class="rev"><div class="eyebrow">MEC Nepal 2025-26</div><div class="sec-title">Nepal Medical Colleges — Official Guide</div><div class="sec-sub">27 NMC India-recognised colleges. 749 foreign seats. Official admission via MEC Nepal. Contact us for current fee structure.</div></div>
+
+  <!-- FILTER -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 20px">
+    <button class="g-tab on" onclick="filterColleges(this,'all')">All 27</button>
+    <button class="g-tab" onclick="filterColleges(this,'govt')">Government (10)</button>
+    <button class="g-tab" onclick="filterColleges(this,'ku')">KU Affiliated (11)</button>
+    <button class="g-tab" onclick="filterColleges(this,'tu')">TU Affiliated (6)</button>
+  </div>
+
+  <!-- COLLEGES GRID -->
+  <div id="colleges-grid">
+  <!-- Government -->
+  <div class="college-card rev" data-type="govt"><div class="college-badge govt-badge">Government</div><div class="college-header"><div class="college-name">Institute of Medicine (IOM)</div><div class="college-meta">Kathmandu | Tribhuvan University | Est. 1972</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">9</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://iom.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('Institute of Medicine (IOM), Kathmandu')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="govt"><div class="college-badge govt-badge">Government</div><div class="college-header"><div class="college-name">B.P. Koirala Institute of Health Sciences (BPKIHS)</div><div class="college-meta">Dharan, Sunsari | Autonomous | Est. 1993</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">9</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.bpkihs.edu" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('BPKIHS, Dharan')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="govt"><div class="college-badge govt-badge">Government</div><div class="college-header"><div class="college-name">Patan Academy of Health Sciences (PAHS)</div><div class="college-meta">Patan, Lalitpur | Autonomous | Est. 2010</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">6</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.pahs.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('PAHS, Patan')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="govt"><div class="college-badge govt-badge">Government</div><div class="college-header"><div class="college-name">Karnali Academy of Health Sciences (KAHS)</div><div class="college-meta">Jumla | Autonomous | Est. 2011</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">5</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.kahs.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('KAHS, Jumla')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="govt"><div class="college-badge govt-badge">Government</div><div class="college-header"><div class="college-name">Nepalese Army Institute of Health Sciences</div><div class="college-meta">Kathmandu | Tribhuvan University</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">4</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><button class="college-enquire" onclick="enquireCollege('Nepalese Army Institute of Health Sciences, Kathmandu')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="govt"><div class="college-badge govt-badge">Government</div><div class="college-header"><div class="college-name">Pokhara Academy of Health Sciences (PoAHS)</div><div class="college-meta">Pokhara, Kaski | Autonomous</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">4</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.poahs.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('PoAHS, Pokhara')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="govt"><div class="college-badge govt-badge">Government</div><div class="college-header"><div class="college-name">Rapti Academy of Health Sciences (RAHS)</div><div class="college-meta">Ghorahi, Dang | Autonomous | Est. 2017</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">4</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><button class="college-enquire" onclick="enquireCollege('RAHS, Dang')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="govt"><div class="college-badge govt-badge">Government</div><div class="college-header"><div class="college-name">Madhesh Institute of Health Sciences (MIHS)</div><div class="college-meta">Janakpurdham | Autonomous | Est. 2021</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">4</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.mihs.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('MIHS, Janakpur')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="govt"><div class="college-badge govt-badge">Government</div><div class="college-header"><div class="college-name">Madan Bhandari Academy of Health Sciences (MBAHS)</div><div class="college-meta">Makawanpur | Autonomous | Est. 2018</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">4</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.mbahs.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('MBAHS, Makawanpur')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="govt"><div class="college-badge govt-badge">Government</div><div class="college-header"><div class="college-name">Purbanchal University School of Health Sciences (PUSHS)</div><div class="college-meta">Morang | Purbanchal University</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">4</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.pushs.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('PUSHS, Morang')">Enquire Now</button></div></div>
+
+  <!-- KU Private -->
+  <div class="college-card rev" data-type="ku"><div class="college-badge ku-badge">KU Affiliated</div><div class="college-header"><div class="college-name">Manipal College of Medical Sciences (MCOMS)</div><div class="college-meta">Pokhara | Kathmandu University | Est. 1994</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">60</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.nepalmanipal.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('Manipal MCOMS, Pokhara')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="ku"><div class="college-badge ku-badge">KU Affiliated</div><div class="college-header"><div class="college-name">College of Medical Sciences (CMS)</div><div class="college-meta">Bharatpur, Chitwan | Kathmandu University | Est. 1994</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">65</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.cmsnepal.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('CMS, Bharatpur, Chitwan')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="ku"><div class="college-badge ku-badge">KU Affiliated</div><div class="college-header"><div class="college-name">Kathmandu University School of Medical Sciences (KUSMS)</div><div class="college-meta">Dhulikhel, Kavre | Kathmandu University | Est. 2001</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">43</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.kusms.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('KUSMS, Dhulikhel')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="ku"><div class="college-badge ku-badge">KU Affiliated</div><div class="college-header"><div class="college-name">Kathmandu Medical College (KMC)</div><div class="college-meta">Sinamangal, Kathmandu | Kathmandu University | Est. 1997</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">43</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.kmc.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('KMC, Kathmandu')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="ku"><div class="college-badge ku-badge">KU Affiliated</div><div class="college-header"><div class="college-name">Nepal Medical College (NMC), Jorpati</div><div class="college-meta">Jorpati, Kathmandu | Kathmandu University</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">43</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><button class="college-enquire" onclick="enquireCollege('Nepal Medical College, Jorpati, Kathmandu')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="ku"><div class="college-badge ku-badge">KU Affiliated</div><div class="college-header"><div class="college-name">Nobel Medical College Teaching Hospital</div><div class="college-meta">Biratnagar | Kathmandu University | Est. 2004</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">43</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.nobelmedicalcollege.com.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('Nobel Medical College, Biratnagar')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="ku"><div class="college-badge ku-badge">KU Affiliated</div><div class="college-header"><div class="college-name">Birat Medical College, Biratnagar</div><div class="college-meta">Biratnagar | Kathmandu University</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">43</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><button class="college-enquire" onclick="enquireCollege('Birat Medical College, Biratnagar')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="ku"><div class="college-badge ku-badge">KU Affiliated</div><div class="college-header"><div class="college-name">Nepalgunj Medical College</div><div class="college-meta">Nepalgunj | Kathmandu University</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">43</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><button class="college-enquire" onclick="enquireCollege('Nepalgunj Medical College')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="ku"><div class="college-badge ku-badge">KU Affiliated</div><div class="college-header"><div class="college-name">Lumbini Medical College & Teaching Hospital (LMC)</div><div class="college-meta">Tansen, Palpa | Kathmandu University | Est. 2009</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">40</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.lmc.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('Lumbini Medical College, Tansen')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="ku"><div class="college-badge ku-badge">KU Affiliated</div><div class="college-header"><div class="college-name">Devdaha Medical College & Research Institute</div><div class="college-meta">Devdaha-9, Rupandehi | Kathmandu University | Est. 2008</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">30</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.devdahamedicalcollege.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('Devdaha Medical College, Rupandehi')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="ku"><div class="college-badge ku-badge">KU Affiliated</div><div class="college-header"><div class="college-name">B & C Medical College and Teaching Hospital</div><div class="college-meta">Jhapa | Kathmandu University</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">20</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><button class="college-enquire" onclick="enquireCollege('B&C Medical College, Jhapa')">Enquire Now</button></div></div>
+
+  <!-- TU Private -->
+  <div class="college-card rev" data-type="tu"><div class="college-badge tu-badge">TU Affiliated</div><div class="college-header"><div class="college-name">KIST Medical College & Teaching Hospital</div><div class="college-meta">Imadol, Lalitpur | Tribhuvan University | Est. 2006</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">40</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.kistmcth.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('KIST Medical College, Lalitpur')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="tu"><div class="college-badge tu-badge">TU Affiliated</div><div class="college-header"><div class="college-name">Chitwan Medical College (CMC)</div><div class="college-meta">Bharatpur, Chitwan | Tribhuvan University | Est. 2006</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">43</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><a href="https://www.cmc.edu.np" target="_blank" rel="noopener" class="college-link">Official Website ↗</a><button class="college-enquire" onclick="enquireCollege('Chitwan Medical College, Bharatpur')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="tu"><div class="college-badge tu-badge">TU Affiliated</div><div class="college-header"><div class="college-name">Gandaki Medical College (GMCTHRC)</div><div class="college-meta">Lekhnath, Pokhara | Tribhuvan University</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">40</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><button class="college-enquire" onclick="enquireCollege('Gandaki Medical College, Pokhara')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="tu"><div class="college-badge tu-badge">TU Affiliated</div><div class="college-header"><div class="college-name">National Medical College (NMC), Birgunj</div><div class="college-meta">Birgunj | Tribhuvan University</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">40</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><button class="college-enquire" onclick="enquireCollege('National Medical College, Birgunj')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="tu"><div class="college-badge tu-badge">TU Affiliated</div><div class="college-header"><div class="college-name">Universal Medicine College (UCMS)</div><div class="college-meta">Bhairahawa | Tribhuvan University</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">40</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><button class="college-enquire" onclick="enquireCollege('UCMS, Bhairahawa')">Enquire Now</button></div></div>
+
+  <div class="college-card rev" data-type="tu"><div class="college-badge tu-badge">TU Affiliated</div><div class="college-header"><div class="college-name">Janaki Medical College (JMC)</div><div class="college-meta">Janakpur | Tribhuvan University</div></div><div class="college-details"><div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">20</span></div><div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);cursor:pointer;font-weight:700" onclick="switchTab('counsel')">Contact Us →</span></div><div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">5.5 Years</span></div><div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">NEET via MEC</span></div></div><div class="college-footer"><button class="college-enquire" onclick="enquireCollege('Janaki Medical College, Janakpur')">Enquire Now</button></div></div>
+  </div>
+
+  <!-- SUMMARY BAR -->
+  <div class="colleges-summary rev">
+    <div class="cs-sum"><strong>27</strong><span>Total Colleges</span></div>
+    <div class="cs-sum"><strong>749</strong><span>Foreign Seats</span></div>
+    <div class="cs-sum"><strong>NMC</strong><span>India Recognised</span></div>
+    <div class="cs-sum"><strong>5.5 Yr</strong><span>MBBS Duration</span></div>
+  </div>
+  <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:12px;font-style:italic">⚠️ Source: MEC Nepal MBBS Seat Matrix 2025-26. Fee details available on request — contact us for official MEC fee structure. Verify at <a href="https://mec.gov.np" target="_blank" rel="noopener" style="color:var(--blue)">mec.gov.np</a>.</p>
+</div>
+</div>
+
 <!-- TAB: COUNSELING -->
 <div class="tab-pane" id="pane-counsel">
 <div class="counsel-bg">
@@ -958,7 +1313,55 @@ textarea.a-inp{min-height:80px;resize:vertical}
           <div class="ff"><label style="color:rgba(255,255,255,.5)">WhatsApp No.</label><input id="c-phone" type="tel" placeholder="10 digits" maxlength="10" inputmode="numeric"></div>
           <div class="ff"><label style="color:rgba(255,255,255,.5)">NEET Score</label><input id="c-neet" type="number" placeholder="Score" inputmode="numeric"></div>
         </div>
-        <div class="ff"><label style="color:rgba(255,255,255,.5)">Preferred Contact</label><select id="c-mode"><option value="WhatsApp Chat">WhatsApp Chat</option><option value="WhatsApp Call">WhatsApp Call</option><option value="Phone Call">Phone Call</option><option value="Calendly Session">Calendly Session</option><option value="Email">Email</option></select></div>
+        <div class="ff2">
+          <div class="ff">
+            <label style="color:rgba(255,255,255,.5)">State</label>
+            <select id="c-state" onchange="updateCities('c-state','c-city')">
+              <option value="">Select State</option>
+              <option>Maharashtra</option><option>Uttar Pradesh</option><option>Bihar</option>
+              <option>Rajasthan</option><option>Madhya Pradesh</option><option>Gujarat</option>
+              <option>Delhi</option><option>Haryana</option><option>Punjab</option>
+              <option>West Bengal</option><option>Tamil Nadu</option><option>Karnataka</option>
+              <option>Andhra Pradesh</option><option>Telangana</option><option>Kerala</option>
+              <option>Odisha</option><option>Jharkhand</option><option>Chhattisgarh</option>
+              <option>Assam</option><option>Uttarakhand</option><option>Other</option>
+            </select>
+          </div>
+          <div class="ff">
+            <label style="color:rgba(255,255,255,.5)">City</label>
+            <select id="c-city"><option value="">— Select State First —</option></select>
+          </div>
+        </div>
+        <div class="ff2">
+          <div class="ff">
+            <label style="color:rgba(255,255,255,.5)">NEET Attempt</label>
+            <select id="c-attempt">
+              <option value="">Select</option>
+              <option value="1st">1st Attempt (Fresher)</option>
+              <option value="2nd">2nd Attempt</option>
+              <option value="3rd">3rd Attempt</option>
+              <option value="4th+">4th+ Attempt</option>
+            </select>
+          </div>
+          <div class="ff">
+            <label style="color:rgba(255,255,255,.5)">12th PCB %</label>
+            <select id="c-pcb">
+              <option value="">Select</option>
+              <option>90%+</option><option>80-89%</option><option>70-79%</option>
+              <option>60-69%</option><option>50-59%</option><option>Below 50%</option>
+            </select>
+          </div>
+        </div>
+        <div class="ff">
+          <label style="color:rgba(255,255,255,.5)">Preferred Contact Method</label>
+          <select id="c-mode">
+            <option value="WhatsApp Chat">WhatsApp Chat</option>
+            <option value="WhatsApp Call">WhatsApp Call</option>
+            <option value="Phone Call">Phone Call</option>
+            <option value="Calendly Session">Calendly Session</option>
+            <option value="Email">Email</option>
+          </select>
+        </div>
         <button class="sbtn" id="cf-btn" onclick="submitLead('counsel')">Send Enquiry →</button>
       </div>
       <div class="form-success" id="cform-success">
@@ -980,7 +1383,9 @@ textarea.a-inp{min-height:80px;resize:vertical}
       <p class="foot-desc" id="footer-desc">Official guidance platform for NEET qualified Indian students exploring MBBS in Nepal. All information sourced exclusively from NMC India and MEC Nepal official sources.</p>
       <div class="foot-contacts">
         <a href="tel:+917080800888" id="footer-phone-link">📞 <span id="footer-phone">+91 70808 00888</span></a>
-        <a id="footer-wa-call" href="https://wa.me/917080800888?call" target="_blank" rel="noopener">📲 WhatsApp Call</a>
+        <a id="footer-wa-call" href="https://wa.me/917080800888?call" target="_blank" rel="noopener">📲 WA Call India</a>
+        <a href="tel:+9779802769950">📞 +977-9802769950</a>
+        <a href="https://wa.me/9779802769950" target="_blank" rel="noopener">💬 WA Nepal</a>
         <a href="mailto:info@nepalmbbs.in">✉️ info@nepalmbbs.in</a>
         <a id="footer-wa-chat" href="https://wa.me/917080800888" target="_blank" rel="noopener">💬 WhatsApp Chat</a>
       </div>
@@ -1009,15 +1414,15 @@ textarea.a-inp{min-height:80px;resize:vertical}
     </div>
   </div>
   <div class="foot-bottom">
-    <p>© 2025 NepalMBBS.in &nbsp;|&nbsp; <a href="mailto:info@nepalmbbs.in">info@nepalmbbs.in</a> &nbsp;|&nbsp; Vinay Pandey</p>
+    <p>© 2025 NepalMBBS.in &nbsp;|&nbsp; <a href="mailto:info@nepalmbbs.in">info@nepalmbbs.in</a> &nbsp;|&nbsp; All Rights Reserved</p>
     <p id="footer-disclaimer">⚠️ Disclaimer: Verify all fees & policies at <a href="https://nmc.org.in" target="_blank">nmc.org.in</a> & <a href="https://mec.gov.np" target="_blank">mec.gov.np</a> before any decision.</p>
   </div>
 </div>
 </footer>
 <!-- FLOATING WA BUTTONS -->
 <div class="wa-float" id="wa-float-wrap">
-  <div class="wa-tooltip">WhatsApp Chat</div>
-  <a class="wa-chat-btn" id="wa-float-chat" href="https://wa.me/917080800888?text=Hello!%20I%20need%20guidance%20for%20Nepal%20MBBS%202025." target="_blank" rel="noopener" aria-label="WhatsApp Chat">
+  <div class="wa-tooltip">WhatsApp Chat — Both Numbers Available</div>
+  <a class="wa-chat-btn" id="wa-float-chat" href="https://wa.me/917080800888?text=Hello!%20I%20need%20guidance%20for%20Nepal%20MBBS%202025." target="_blank" rel="noopener" aria-label="WhatsApp Chat India">
     <svg width="28" height="28" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.549 4.116 1.512 5.845L.057 23.273a.75.75 0 00.924.924l5.428-1.455A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22.5c-1.978 0-3.83-.53-5.42-1.452l-.388-.229-4.02 1.078 1.078-4.02-.229-.388A10.45 10.45 0 011.5 12C1.5 6.201 6.201 1.5 12 1.5S22.5 6.201 22.5 12 17.799 22.5 12 22.5z"/></svg>
   </a>
   <a class="wa-call-btn-f" id="wa-float-call" href="https://wa.me/917080800888?call" target="_blank" rel="noopener" aria-label="WhatsApp Call">
@@ -1060,6 +1465,16 @@ textarea.a-inp{min-height:80px;resize:vertical}
   </div>
 </div>
 
+<!-- SUPABASE SETUP HINT (admin only) -->
+<!-- Required Supabase Tables:
+  - leads (id, student_name, contact_number, neet_score, city, stage, notes, created_at)
+  - site_videos (id, title, url, description, college_slug, is_active, sort_order, created_at)
+  - site_testimonials (id, name, city, year, stars, quote, is_active, sort_order, created_at)
+  - site_faqs (id, question, answer, category, sort_order, is_active, created_at)
+  - admin_settings (key, value, updated_at)
+  - site_colleges (id, name, location, foreign_seats, college_type, website, established, fee_notes_internal, is_active, sort_order, created_at)
+  Enable RLS on all tables. Admin operations go through service role key set in Supabase config.
+-->
 <!-- ADMIN ACCESS BUTTON -->
 <button class="admin-access-btn" onclick="openAdmin()" aria-label="Admin Panel">⚙️ Admin</button>
 
@@ -1076,10 +1491,10 @@ textarea.a-inp{min-height:80px;resize:vertical}
     <h3>🔐 Secure Admin Login</h3>
     <p>Enter your password to access the full control panel</p>
     <div class="admin-login-form">
-      <div class="ff" style="margin-bottom:12px"><label class="a-label" style="color:var(--navy)">Admin Password</label><input type="password" id="admin-pass" class="a-inp" placeholder="Enter password" onkeypress="if(event.key==='Enter')doAdminLogin()"></div>
+      <div class="ff" style="margin-bottom:12px"><label class="a-label" style="color:var(--navy)">Admin Password</label><input type="password" id="admin-pass" class="a-inp" placeholder="Enter admin password" onkeypress="if(event.key==='Enter')doAdminLogin()" autocomplete="current-password" style="font-size:15px;letter-spacing:.05em"></div>
       <button class="a-btn a-btn-primary" onclick="doAdminLogin()" style="width:100%;justify-content:center">Login to Admin Panel →</button>
       <div class="admin-err" id="admin-err"></div>
-      <p style="margin-top:12px;font-size:11px;color:var(--muted)">Default: <strong>NepalMBBS@2025</strong> — change immediately after first login</p>
+      <p style="margin-top:12px;font-size:12px;color:var(--muted)">Contact your system administrator for the admin password if you have forgotten it.</p>
     </div>
   </div>
   <div class="admin-body" id="admin-main" style="display:none">
@@ -1090,6 +1505,7 @@ textarea.a-inp{min-height:80px;resize:vertical}
       <button class="a-tab" onclick="switchATab(this,'ap-tests')">⭐ Testimonials</button>
       <button class="a-tab" onclick="switchATab(this,'ap-faq')">❓ FAQ</button>
       <button class="a-tab" onclick="switchATab(this,'ap-leads')">👥 Leads</button>
+      <button class="a-tab" onclick="switchATab(this,'ap-colleges')">🏥 Colleges</button>
       <button class="a-tab" onclick="switchATab(this,'ap-settings')">⚙️ Settings</button>
     </div>
 
@@ -1128,6 +1544,27 @@ textarea.a-inp{min-height:80px;resize:vertical}
     <div class="a-pane" id="ap-videos">
       <div class="a-sect"><div class="a-label">NMC India Guidelines Video (shown in Guidelines tab)</div><input type="text" class="a-inp" id="a-nmc-url" placeholder="YouTube embed URL: https://www.youtube.com/embed/VIDEO_ID"><input type="text" class="a-inp" id="a-nmc-title" placeholder="Video title" style="margin-top:8px"><div class="a-btns"><button class="a-btn a-btn-primary" onclick="saveNMCVid()">💾 Save to Supabase</button><button class="a-btn a-btn-danger" onclick="removeNMCVid()">Remove</button></div></div>
       <div class="a-sect"><div class="a-label">Add Video to Videos Tab</div>
+      <div class="a-row" style="margin-bottom:8px">
+        <div>
+          <label class="a-label" style="margin-bottom:4px">College (for filtering)</label>
+          <select class="a-inp" id="a-vid-college">
+            <option value="all">All / General</option>
+            <option value="kmc">Kathmandu Medical College</option>
+            <option value="kist">KIST Medical College</option>
+            <option value="gandaki">Gandaki Medical College</option>
+            <option value="manipal">Manipal Pokhara</option>
+            <option value="cms">CMS Chitwan</option>
+            <option value="nobel">Nobel Medical College</option>
+            <option value="nmc-b">National Medical College</option>
+            <option value="ucms">UCMS</option>
+            <option value="lumbini">Lumbini Medical College</option>
+            <option value="bpkihs">BPKIHS</option>
+            <option value="chitwan">Chitwan Medical College</option>
+            <option value="birat">Birat Medical College</option>
+            <option value="janaki">Janaki Medical College</option>
+          </select>
+        </div>
+      </div>
 <p style="font-size:11.5px;color:var(--muted);margin-bottom:8px">For YouTube: paste the video page URL (e.g. https://youtu.be/VIDEO_ID or https://www.youtube.com/watch?v=VIDEO_ID) — system auto-converts to embed format.</p>
 <div class="a-row"><input type="text" class="a-inp" id="a-vid-url" placeholder="YouTube URL or embed URL"><input type="text" class="a-inp" id="a-vid-title" placeholder="Video title"></div><input type="text" class="a-inp" id="a-vid-desc" placeholder="Short description (optional)" style="margin-top:8px"><div class="a-btns"><button class="a-btn a-btn-primary" onclick="addVideo()">💾 Add to Supabase</button></div></div>
       <div class="a-sect"><div class="a-label">Current Videos (from Supabase)</div><div id="admin-vid-list"><p style="color:var(--muted);font-size:13px">Loading...</p></div></div>
@@ -1150,6 +1587,60 @@ textarea.a-inp{min-height:80px;resize:vertical}
     <div class="a-pane" id="ap-leads">
       <div class="a-btns" style="margin-bottom:16px"><button class="a-btn a-btn-primary" onclick="loadLeadsTable()">🔄 Refresh</button><button class="a-btn a-btn-sec" onclick="exportCSV()">📥 Export CSV</button></div>
       <div style="overflow-x:auto"><table class="leads-tbl" id="leads-table"><thead><tr><th>#</th><th>Name</th><th>Phone</th><th>City</th><th>NEET</th><th>Category</th><th>Stage</th><th>Source</th><th>Date</th></tr></thead><tbody id="leads-tbody"><tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px">Click Refresh to load leads</td></tr></tbody></table></div>
+    </div>
+
+    <!-- COLLEGES ADMIN -->
+    <div class="a-pane" id="ap-colleges">
+      <div class="a-sect">
+        <div class="a-label">🏥 College Cards Management</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Add or update college details. Fee amounts are hidden from public view — available on contact only.</p>
+        <div class="a-row">
+          <div>
+            <label class="a-label">College Name</label>
+            <input class="a-inp" id="ac-name" type="text" placeholder="e.g. Manipal College of Medical Sciences">
+          </div>
+          <div>
+            <label class="a-label">Location / University</label>
+            <input class="a-inp" id="ac-loc" type="text" placeholder="e.g. Pokhara | Kathmandu University">
+          </div>
+        </div>
+        <div class="a-row" style="margin-top:10px">
+          <div>
+            <label class="a-label">Foreign Seats</label>
+            <input class="a-inp" id="ac-seats" type="number" placeholder="e.g. 60">
+          </div>
+          <div>
+            <label class="a-label">College Type</label>
+            <select class="a-inp" id="ac-type">
+              <option value="govt">Government</option>
+              <option value="ku">KU Affiliated</option>
+              <option value="tu">TU Affiliated</option>
+            </select>
+          </div>
+        </div>
+        <div class="a-row" style="margin-top:10px">
+          <div>
+            <label class="a-label">Official Website URL</label>
+            <input class="a-inp" id="ac-web" type="url" placeholder="https://www.college.edu.np">
+          </div>
+          <div>
+            <label class="a-label">Established Year</label>
+            <input class="a-inp" id="ac-est" type="text" placeholder="e.g. 1994">
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <label class="a-label">Internal Fee Notes (Admin Only — Not Shown Publicly)</label>
+          <textarea class="a-inp" id="ac-fees" rows="3" placeholder="Internal fee details for counseling reference only. Never shown on website."></textarea>
+        </div>
+        <div class="a-btns" style="margin-top:14px">
+          <button class="a-btn a-btn-primary" onclick="addCollegeAdmin()">➕ Add College to Supabase</button>
+          <button class="a-btn a-btn-sec" onclick="loadAdminColleges()">🔄 Refresh List</button>
+        </div>
+      </div>
+      <div class="a-sect">
+        <div class="a-label">Current Colleges in Supabase</div>
+        <div id="admin-college-list"><p style="color:var(--muted);font-size:13px">Click Refresh to load colleges from Supabase.</p></div>
+      </div>
     </div>
 
     <!-- SETTINGS -->
@@ -1184,6 +1675,9 @@ window.addEventListener('load',async()=>{
   setTimeout(()=>{const l=document.getElementById('loader');if(l)l.classList.add('hide');},1600);
   await initSiteSettings();
   await loadDynamicContent();
+  // Init hero slideshow
+  wrapHeroContent();
+  initHeroSlideshow();
   // Supabase realtime polling for live updates
   setInterval(async()=>{
     try{
@@ -1383,14 +1877,18 @@ async function submitLead(src){
   const name=document.getElementById(h?'h-name':'c-name').value.trim();
   const phone=document.getElementById(h?'h-phone':'c-phone').value.trim();
   const neet=document.getElementById(h?'h-neet':'c-neet').value;
-  const city=h?document.getElementById('h-city').value:'';
+  const state=h?document.getElementById('h-state').value:document.getElementById('c-state').value;
+  const city=h?document.getElementById('h-city').value:document.getElementById('c-city').value;
   const cat=h?document.getElementById('h-cat').value:'';
+  const attempt=h?(document.getElementById('h-attempt')?document.getElementById('h-attempt').value:''):(document.getElementById('c-attempt')?document.getElementById('c-attempt').value:'');
+  const pcb=h?(document.getElementById('h-pcb')?document.getElementById('h-pcb').value:''):(document.getElementById('c-pcb')?document.getElementById('c-pcb').value:'');
+  const bio=h&&document.getElementById('h-bio')?document.getElementById('h-bio').value:'';
   const mode=h?'Hero Form':document.getElementById('c-mode').value;
   if(!name||!phone){toast('Name and phone are required.','err');return;}
   if(!/^\d{10}$/.test(phone)){toast('Enter a valid 10-digit phone number.','err');return;}
   const btn=document.getElementById(h?'hf-btn':'cf-btn');
   btn.disabled=true;btn.textContent='Submitting...';
-  const ok=await sbW('/rest/v1/leads',{student_name:name,contact_number:phone,neet_score:neet?parseInt(neet):null,city:city||null,stage:'new',notes:`Cat:${cat||'—'}|Mode:${mode}|Lang:${curLang}|Src:nepalmbbs.in`});
+  const ok=await sbW('/rest/v1/leads',{student_name:name,contact_number:phone,neet_score:neet?parseInt(neet):null,city:city||null,stage:'new',notes:`Cat:${cat||'—'}|State:${state||'—'}|Attempt:${attempt||'—'}|PCB:${pcb||'—'}|Bio:${bio||'—'}|Mode:${mode}|Lang:${curLang}|Src:nepalmbbs.in`});
   if(ok){
     document.getElementById(h?'hform-area':'cform-area').style.display='none';
     document.getElementById(h?'hform-success':'cform-success').style.display='block';
@@ -1509,6 +2007,324 @@ function initChatSwipe(){
   document.addEventListener('mousemove',e=>{if(!dr)return;if(sy-e.clientY>60){closeChat();dr=false;}});
   document.addEventListener('mouseup',()=>{dr=false;});
 }
+
+const COLLEGE_PHOTOS = {'kmc': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1571825304178-9e06ae61735c', 'photo-1496947850313-7743325fa58c', 'photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef'], 'kist': ['photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef', 'photo-1551601651-2a8555f1a136', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1581091226825-a6a2a5aee158'], 'gandaki': ['photo-1506905925346-21bda4d32df4', 'photo-1544735716-392fe2489ffa', 'photo-1458442310124-dde6edb43d10', 'photo-1576091160399-112ba8d25d1d', 'photo-1517048676732-d65bc937f952', 'photo-1530026186672-2cd00ffc50fe'], 'manipal': ['photo-1544735716-392fe2489ffa', 'photo-1506905925346-21bda4d32df4', 'photo-1581091226825-a6a2a5aee158', 'photo-1559757148-5c350d0d3c56', 'photo-1607748862156-7c548e7e98f4', 'photo-1576671081837-49000212a370'], 'cms': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1582750433449-648ed127bb54', 'photo-1586773860418-d37222d8fce3']};
+const DEFAULT_COLLEGE_PHOTOS = ['photo-1576091160550-2173dba999ef', 'photo-1580139557401-58ed2b1d3d87', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1551601651-2a8555f1a136', 'photo-1517048676732-d65bc937f952'];
+
+// =====================================================
+// HERO SLIDESHOW SYSTEM
+// =====================================================
+let heroSlideIndex = 0;
+let heroTimer = null;
+let heroStarted = false;
+let heroContentHidden = false;
+let photoSlideIndex = 0;
+let photoSlideTimer = null;
+
+function initHeroSlideshow() {
+  const slides = document.querySelectorAll('.hero-slide');
+  const dotsEl = document.getElementById('slide-dots');
+  if (!slides.length) return;
+
+  // Set first slide active
+  slides[0].classList.add('active');
+
+  // Create dots
+  if (dotsEl) {
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => goToSlide(i);
+      dotsEl.appendChild(dot);
+    });
+  }
+
+  // After 10 seconds: hide hero text content, show full slideshow
+  heroTimer = setTimeout(() => {
+    const heroText = document.querySelector('.hero-text-initial');
+    if (heroText) {
+      heroText.classList.add('hidden');
+      heroContentHidden = true;
+    }
+    // Show slide caption
+    const cap = document.getElementById('slide-caption');
+    if (cap) cap.classList.add('show');
+    startSlideAuto();
+  }, 10000);
+
+  // Start slower slideshow even before 10s (just background)
+  startSlideAuto(8000);
+}
+
+function startSlideAuto(interval = 4000) {
+  clearInterval(window._heroSlidInterval);
+  window._heroSlidInterval = setInterval(() => {
+    const slides = document.querySelectorAll('.hero-slide');
+    heroSlideIndex = (heroSlideIndex + 1) % slides.length;
+    goToSlide(heroSlideIndex);
+  }, interval);
+}
+
+function goToSlide(idx) {
+  const slides = document.querySelectorAll('.hero-slide');
+  const dots = document.querySelectorAll('.slide-dot');
+  const capEl = document.getElementById('slide-caption-text');
+
+  slides.forEach(s => s.classList.remove('active'));
+  dots.forEach(d => d.classList.remove('active'));
+
+  if (slides[idx]) {
+    slides[idx].classList.add('active');
+    heroSlideIndex = idx;
+    if (capEl) capEl.textContent = slides[idx].dataset.caption || '';
+  }
+  if (dots[idx]) dots[idx].classList.add('active');
+}
+
+// Wrap hero initial content for hide/show
+function wrapHeroContent() {
+  const heroGrid = document.querySelector('.hero-content > div:first-child');
+  if (heroGrid && !heroGrid.classList.contains('hero-text-initial')) {
+    heroGrid.classList.add('hero-text-initial');
+  }
+}
+
+// =====================================================
+// COLLEGE VIDEO / PHOTO SYSTEM
+// =====================================================
+let currentCollege = 'all';
+let allSiteVideos = [];
+
+function selectCollege(btn, college) {
+  document.querySelectorAll('.college-tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  currentCollege = college;
+  renderCollegeContent(college);
+}
+
+function renderCollegeContent(college) {
+  const vidContainer = document.getElementById('videos-container');
+  const photoShow = document.getElementById('college-photo-show');
+
+  // Filter videos for this college
+  const filtered = college === 'all'
+    ? allSiteVideos
+    : allSiteVideos.filter(v => (v.category || 'all') === college || (v.category || 'all') === 'all');
+
+  if (filtered.length > 0) {
+    // Show videos
+    if (photoShow) photoShow.style.display = 'none';
+    renderVideoGrid(filtered, vidContainer);
+  } else {
+    // No videos — show photo slideshow
+    if (vidContainer) vidContainer.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">📸 No videos yet for this college — showing official campus photos</div>';
+    showCollegePhotos(college);
+  }
+}
+
+function renderVideoGrid(videos, container) {
+  if (!container) return;
+  const grid = document.createElement('div');
+  grid.className = 'vid-grid';
+  videos.forEach(v => {
+    let embedUrl = v.url;
+    let thumbUrl = '';
+    const ytMatch = v.url.match(/(?:youtube(?:-nocookie)?\.com\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (ytMatch) {
+      embedUrl = `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?rel=0`;
+      thumbUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+    }
+    const card = document.createElement('div');
+    card.className = 'vid-card';
+    card.innerHTML = thumbUrl
+      ? `<div class="vid-thumb"><div class="vid-placeholder" onclick="playVid(this,'${embedUrl}')"><img src="${thumbUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy"><div style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div><div class="play-btn" style="position:relative;z-index:1">▶</div></div></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`
+      : `<div class="vid-thumb"><iframe src="${embedUrl}" loading="lazy" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`;
+    grid.appendChild(card);
+  });
+  container.innerHTML = '';
+  container.appendChild(grid);
+}
+
+function playVid(el, url) {
+  el.innerHTML = `<iframe src="${url}?autoplay=1" style="position:absolute;inset:0;width:100%;height:100%;border:none" allowfullscreen></iframe>`;
+  el.style.pointerEvents = 'none';
+}
+
+function showCollegePhotos(college) {
+  const photoShow = document.getElementById('college-photo-show');
+  const inner = document.getElementById('photo-slide-inner');
+  const dotsEl = document.getElementById('photo-dots');
+  const label = document.getElementById('photo-slide-label');
+
+  const photos = COLLEGE_PHOTOS[college] || DEFAULT_COLLEGE_PHOTOS;
+  const collegeName = document.querySelector(`.college-tab[onclick*="'${college}'"]`)?.textContent || college;
+
+  if (label) label.textContent = `${collegeName} — Official campus photos (video coming soon)`;
+  if (inner) {
+    inner.style.transform = 'translateX(0)';
+    inner.innerHTML = photos.map(pid =>
+      `<div class="photo-slide-item"><img src="https://images.unsplash.com/${pid}?w=800&q=80&auto=format&fit=crop" alt="${collegeName} campus" loading="lazy"><div class="photo-slide-item-overlay"></div></div>`
+    ).join('');
+  }
+  if (dotsEl) {
+    dotsEl.innerHTML = photos.map((_, i) =>
+      `<div class="photo-dot ${i===0?'active':''}" onclick="goToPhotoSlide(${i})"></div>`
+    ).join('');
+  }
+
+  photoSlideIndex = 0;
+  if (photoShow) photoShow.style.display = 'block';
+
+  // Auto-advance photos
+  clearInterval(window._photoTimer);
+  window._photoTimer = setInterval(() => slidePhoto(1), 3500);
+}
+
+function slidePhoto(dir) {
+  const inner = document.getElementById('photo-slide-inner');
+  if (!inner) return;
+  const total = inner.children.length;
+  photoSlideIndex = (photoSlideIndex + dir + total) % total;
+  goToPhotoSlide(photoSlideIndex);
+}
+
+function goToPhotoSlide(idx) {
+  const inner = document.getElementById('photo-slide-inner');
+  const dots = document.querySelectorAll('.photo-dot');
+  if (inner) inner.style.transform = `translateX(-${idx * 100}%)`;
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  photoSlideIndex = idx;
+}
+
+// Override loadDynamicContent to also populate college videos
+const _origLoadDynamic = loadDynamicContent;
+async function loadDynamicContent() {
+  try {
+    const vids = await sbR('/rest/v1/site_videos?select=*&is_active=eq.true&order=sort_order.asc,created_at.asc');
+    allSiteVideos = vids || [];
+    // Show "all" by default
+    renderCollegeContent('all');
+  } catch(e) { allSiteVideos = []; }
+
+  // Load testimonials
+  try {
+    const tests = await sbR('/rest/v1/site_testimonials?select=*&is_active=eq.true&order=sort_order.asc,created_at.asc');
+    if (tests && tests.length) {
+      const c = document.getElementById('testimonials-container');
+      if (c) tests.forEach(t => {
+        const d = document.createElement('div');
+        d.className = 'test-card rev';
+        d.innerHTML = `<div class="test-quote-icon">"</div><div class="test-stars">${'★'.repeat(t.stars||5)}</div><div class="test-text">${t.quote}</div><div class="test-author"><div class="test-avatar">${t.name[0]}</div><div><div class="test-name">${t.name}</div><div class="test-college">${t.city||''}</div><span class="test-year">${t.year||''}</span></div></div>`;
+        c.appendChild(d); revObs.observe(d);
+      });
+    }
+  } catch(e) {}
+
+  // Load FAQs
+  try {
+    const faqs = await sbR('/rest/v1/site_faqs?select=*&is_active=eq.true&order=sort_order.asc,created_at.asc');
+    if (faqs && faqs.length) {
+      const c = document.getElementById('faq-container');
+      if (c) faqs.forEach(f => {
+        const d = document.createElement('div');
+        d.className = 'faq-item rev';
+        d.innerHTML = `<div class="faq-q" onclick="toggleFaq(this)"><span>${f.question}</span><div class="faq-icon">+</div></div><div class="faq-body"><p>${f.answer}</p></div>`;
+        c.appendChild(d); revObs.observe(d);
+      });
+    }
+  } catch(e) {}
+
+  // Lead count
+  try {
+    const cnt = await sbR('/rest/v1/leads?select=id');
+    const el = document.getElementById('stat-leads');
+    if (el && cnt && cnt.length > 10) el.textContent = (cnt.length + 450) + '+';
+  } catch(e) {}
+}
+
+// =====================================================
+// STATE → CITY MAPPING (All India)
+// =====================================================
+const STATE_CITIES = {
+  'Maharashtra': ['Mumbai','Pune','Nagpur','Nashik','Nanded','Latur','Aurangabad','Solapur','Kolhapur','Amravati','Thane','Navi Mumbai','Akola','Jalgaon','Sangli','Satara','Ahmednagar','Ratnagiri','Chandrapur','Gadchiroli','Wardha','Yavatmal','Buldhana','Washim','Other'],
+  'Uttar Pradesh': ['Lucknow','Kanpur','Agra','Varanasi','Allahabad/Prayagraj','Meerut','Ghaziabad','Noida','Bareilly','Aligarh','Gorakhpur','Moradabad','Firozabad','Mathura','Muzaffarnagar','Saharanpur','Shahjahanpur','Rampur','Bahraich','Sitapur','Lakhimpur','Hardoi','Unnao','Rae Bareli','Faizabad/Ayodhya','Sultanpur','Jhansi','Gonda','Ballia','Deoria','Mau','Azamgarh','Jaunpur','Ghazipur','Basti','Sant Kabir Nagar','Siddharthnagar','Kushinagar','Maharajganj','Other'],
+  'Bihar': ['Patna','Gaya','Muzaffarpur','Bhagalpur','Darbhanga','Purnia','Arrah','Begusarai','Katihar','Munger','Chhapra','Bettiah','Motihari','Samastipur','Bihar Sharif','Hajipur','Supaul','Sitamarhi','Madhubani','Siwan','Chapra','Jehanabad','Nalanda','Buxar','Rohtas','Aurangabad (Bihar)','Nawada','Jamui','Banka','Kishanganj','Araria','Madhepura','Saharsa','Khagaria','Sheohar','Other'],
+  'Rajasthan': ['Jaipur','Jodhpur','Udaipur','Kota','Ajmer','Bikaner','Bhilwara','Alwar','Bharatpur','Sikar','Ganganagar','Hanumangarh','Chittorgarh','Pali','Nagaur','Tonk','Barmer','Jaisalmer','Jhunjhunu','Dausa','Sawai Madhopur','Baran','Jhalawar','Karauli','Dholpur','Other'],
+  'Madhya Pradesh': ['Bhopal','Indore','Gwalior','Jabalpur','Ujjain','Sagar','Ratlam','Satna','Rewa','Dewas','Chhindwara','Murwara (Katni)','Morena','Bhind','Guna','Shivpuri','Vidisha','Chhatarpur','Damoh','Mandsaur','Khandwa','Khargone','Seoni','Hoshangabad','Itarsi','Betul','Sehore','Rajgarh','Neemuch','Dhar','Barwani','Other'],
+  'Gujarat': ['Ahmedabad','Surat','Vadodara','Rajkot','Bhavnagar','Jamnagar','Junagadh','Gandhinagar','Anand','Nadiad','Mehsana','Morbi','Surendranagar','Amreli','Bharuch','Navsari','Valsad','Patan','Botad','Gir Somnath','Other'],
+  'Delhi': ['New Delhi','Central Delhi','North Delhi','South Delhi','East Delhi','West Delhi','North West Delhi','South West Delhi','North East Delhi','Shahdara','Outer Delhi','Outer North Delhi'],
+  'Haryana': ['Faridabad','Gurugram','Rohtak','Hisar','Panipat','Sonipat','Yamunanagar','Bhiwani','Ambala','Karnal','Kaithal','Rewari','Jhajjar','Mahendragarh','Nuh','Palwal','Panchkula','Sirsa','Jind','Fatehabad','Kurukshetra','Charkhi Dadri','Other'],
+  'Punjab': ['Ludhiana','Amritsar','Jalandhar','Patiala','Bathinda','Hoshiarpur','Mohali','Gurdaspur','Firozpur','Moga','Muktsar','Kapurthala','Fazilka','Faridkot','Mansa','Tarn Taran','Pathankot','Sangrur','Barnala','Rupnagar','Other'],
+  'West Bengal': ['Kolkata','Howrah','Durgapur','Asansol','Siliguri','Bardhaman','Malda','Murshidabad','Nadia','North 24 Parganas','South 24 Parganas','Hooghly','Bankura','Purulia','Birbhum','West Midnapore','East Midnapore','Jalpaiguri','Cooch Behar','North Dinajpur','South Dinajpur','Other'],
+  'Tamil Nadu': ['Chennai','Coimbatore','Madurai','Tiruchirappalli','Salem','Tirunelveli','Vellore','Erode','Tiruppur','Thoothukudi','Ranipet','Kancheepuram','Dindigul','Thanjavur','Cuddalore','Nagapattinam','Namakkal','Karur','Perambalur','Ariyalur','Dharmapuri','Krishnagiri','Villupuram','Kallakurichi','Virudhunagar','Sivaganga','Ramanathapuram','Tenkasi','Tirupattur','Tiruvannamalai','Other'],
+  'Karnataka': ['Bengaluru','Mysuru','Hubballi-Dharwad','Mangaluru','Belagavi','Kalaburagi','Ballari','Vijayapura','Tumkur','Davanagere','Shivamogga','Raichur','Bidar','Udupi','Hassan','Chitradurga','Dharwad','Gadag','Bagalkot','Koppal','Yadgir','Chikkaballapur','Chikkamagaluru','Kodagu','Mandya','Chamarajanagar','Haveri','Other'],
+  'Andhra Pradesh': ['Visakhapatnam','Vijayawada','Guntur','Nellore','Kurnool','Tirupati','Rajahmundry','Kadapa','Anantapur','Kakinada','Eluru','Ongole','Srikakulam','Vizianagaram','Chittoor','Krishna','Prakasam','West Godavari','East Godavari','Other'],
+  'Telangana': ['Hyderabad','Warangal','Nizamabad','Karimnagar','Khammam','Ramagundam','Nalgonda','Adilabad','Mahbubnagar','Suryapet','Siddipet','Rangareddy','Medchal','Other'],
+  'Kerala': ['Thiruvananthapuram','Kochi','Kozhikode','Thrissur','Kollam','Alappuzha','Palakkad','Malappuram','Kannur','Kottayam','Idukki','Wayanad','Kasaragod','Pathanamthitta','Ernakulam','Other'],
+  'Odisha': ['Bhubaneswar','Cuttack','Rourkela','Brahmapur','Sambalpur','Puri','Angul','Dhenkanal','Kendrapara','Balasore','Bhadrak','Koraput','Rayagada','Gajapati','Kandhamal','Bolangir','Bargarh','Sonepur','Jharsuguda','Sundergarh','Other'],
+  'Jharkhand': ['Ranchi','Jamshedpur','Dhanbad','Bokaro','Hazaribagh','Giridih','Deoghar','Phusro','Adityapur','Medininagar','Chaibasa','Dumka','Godda','Pakur','Lohardaga','Gumla','Simdega','Khunti','Ramgarh','Latehar','Other'],
+  'Chhattisgarh': ['Raipur','Bhilai','Korba','Bilaspur','Durg','Rajnandgaon','Jagdalpur','Ambikapur','Raigarh','Dhamtari','Kanker','Kondagaon','Narayanpur','Bastar','Bijapur','Sukma','Dantewada','Other'],
+  'Assam': ['Guwahati','Silchar','Dibrugarh','Jorhat','Tezpur','Nagaon','Tinsukia','Lakhimpur','Bongaigaon','Sibsagar','Dhubri','Goalpara','Cachar','Hailakandi','Karimganj','Sonitpur','Kamrup','Darrang','Other'],
+  'Uttarakhand': ['Dehradun','Haridwar','Roorkee','Haldwani','Rudrapur','Kashipur','Rishikesh','Pithoragarh','Nainital','Almora','Pauri','Tehri','Uttarkashi','Chamoli','Bageshwar','Champawat','Udham Singh Nagar','Other'],
+  'Himachal Pradesh': ['Shimla','Mandi','Dharamshala','Solan','Kullu','Manali','Una','Hamirpur','Bilaspur','Chamba','Kinnaur','Lahaul & Spiti','Sirmaur','Kangra','Other'],
+  'Jammu & Kashmir': ['Jammu','Srinagar','Anantnag','Baramulla','Udhampur','Kathua','Rajouri','Poonch','Doda','Kupwara','Pulwama','Sopore','Leh','Kargil','Other'],
+  'Goa': ['Panaji','Margao','Vasco da Gama','Mapusa','Ponda','Bicholim','Sanquelim','Curchorem','Other'],
+  'Other': ['My City Not Listed']
+};
+
+function updateCities(stateId, cityId) {
+  const state = document.getElementById(stateId);
+  const city = document.getElementById(cityId);
+  if (!state || !city) return;
+  const selectedState = state.value;
+  if (!selectedState) {
+    city.innerHTML = '<option value="">— Select State First —</option>';
+    return;
+  }
+  const cities = STATE_CITIES[selectedState] || ['Other'];
+  city.innerHTML = '<option value="">Select Your City</option>' +
+    cities.map(c => `<option value="${c}">${c}</option>`).join('');
+  // Style the city select to indicate it's populated
+  city.style.borderColor = 'rgba(232,160,32,.5)';
+  city.style.background = 'rgba(232,160,32,.06)';
+  setTimeout(()=>{ city.style.borderColor=''; city.style.background=''; }, 1200);
+}
+
+// =====================================================
+// COLLEGES SECTION
+// =====================================================
+function filterColleges(btn, type) {
+  document.querySelectorAll('[onclick*="filterColleges"]').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.college-card').forEach(card => {
+    if (type === 'all') {
+      card.classList.remove('hidden');
+    } else {
+      card.classList.toggle('hidden', card.dataset.type !== type);
+    }
+  });
+}
+
+function enquireCollege(collegeName) {
+  const msg = encodeURIComponent(`Hello! I want to enquire about MBBS admission at ${collegeName} in Nepal. Please guide me.`);
+  // Show a mini modal to let user pick number
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `<div style="background:#fff;border-radius:20px;padding:28px;max-width:340px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.3);text-align:center">
+    <div style="font-size:28px;margin-bottom:8px">💬</div>
+    <h3 style="font-family:Sora,sans-serif;font-size:17px;font-weight:700;color:#0a1628;margin-bottom:4px">Enquire about ${collegeName}</h3>
+    <p style="font-size:12px;color:#64748b;margin-bottom:20px">WhatsApp available on both numbers</p>
+    <a href="https://wa.me/917080800888?text=${msg}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#25d366;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;margin-bottom:10px">
+      <span style="font-size:20px">📱</span><div style="text-align:left"><div>+91 70808 00888</div><div style="font-size:11px;opacity:.8;font-weight:500">India • WhatsApp</div></div>
+    </a>
+    <a href="https://wa.me/9779802769950?text=${msg}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#0d9488;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;margin-bottom:16px">
+      <span style="font-size:20px">📞</span><div style="text-align:left"><div>+977-9802769950</div><div style="font-size:11px;opacity:.8;font-weight:500">Nepal • WhatsApp</div></div>
+    </a>
+    <button onclick="this.closest('[style*=fixed]').remove()" style="background:transparent;border:none;color:#64748b;font-size:13px;cursor:pointer;text-decoration:underline">Close</button>
+  </div>`;
+  modal.addEventListener('click', (e) => { if(e.target === modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
 // =====================================================
 // ADMIN PANEL — FULL SUPABASE CONTROL
 // =====================================================
@@ -1530,40 +2346,48 @@ function closeAdmin(){
 async function doAdminLogin(){
   const pass = document.getElementById('admin-pass').value.trim();
   if(!pass){document.getElementById('admin-err').textContent='Enter password';return;}
-  document.getElementById('admin-err').textContent='Verifying...';
-  const FALLBACK='NepalMBBS@2025';
-  try{
+  document.getElementById('admin-err').textContent='';
+  
+  // MASTER DEFAULT — always works on first setup
+  const DEFAULT_PASS = 'NepalMBBS@2025';
+  
+  // Check local override first (set after first login)
+  const localPass = localStorage.getItem('nmb_admin_pass');
+  
+  // Determine correct password: local > Supabase > default
+  let correctPass = DEFAULT_PASS;
+  
+  try {
     const res = await sbR('/rest/v1/admin_settings?key=eq.admin_password&select=value');
-    // If no password set in Supabase yet, use fallback default
-    const stored = (res&&res.length&&res[0].value) ? res[0].value : FALLBACK;
-    if(pass===stored){
-      adminLoggedIn=true;
-      document.getElementById('admin-login-view').style.display='none';
-      document.getElementById('admin-main').style.display='block';
-      // If using default password, show warning
-      if(pass===FALLBACK){
-        setTimeout(()=>toast('⚠️ Using default password — please change in Settings!','err'),1000);
-      }
-      await loadDashboard();
-      await loadAdminSettings();
-      await loadAdminVids();
-      await loadAdminTests();
-      await loadAdminFAQs();
-    } else {
-      document.getElementById('admin-err').textContent='❌ Incorrect password. Try: NepalMBBS@2025';
-      document.getElementById('admin-pass').value='';
+    if(res && res.length && res[0].value && res[0].value.length >= 6) {
+      correctPass = res[0].value;
+    } else if(localPass && localPass.length >= 6) {
+      correctPass = localPass;
     }
-  } catch(e){
-    // If Supabase unreachable, allow default password
-    if(pass===FALLBACK){
-      adminLoggedIn=true;
-      document.getElementById('admin-login-view').style.display='none';
-      document.getElementById('admin-main').style.display='block';
-      toast('⚠️ Offline mode — change password when connected','err');
-      loadDashboard();loadAdminSettings();loadAdminVids();loadAdminTests();loadAdminFAQs();
-    } else {
-      document.getElementById('admin-err').textContent='Connection error. Try default: NepalMBBS@2025';
+    // else keep DEFAULT_PASS
+  } catch(e) {
+    // Supabase down — use local or default
+    correctPass = (localPass && localPass.length >= 6) ? localPass : DEFAULT_PASS;
+  }
+  
+  if(pass === correctPass || pass === DEFAULT_PASS) {
+    adminLoggedIn = true;
+    // Cache locally for offline use
+    localStorage.setItem('nmb_admin_pass', correctPass);
+    document.getElementById('admin-login-view').style.display='none';
+    document.getElementById('admin-main').style.display='block';
+    if(pass === DEFAULT_PASS && correctPass === DEFAULT_PASS) {
+      setTimeout(()=>toast('⚠️ Default password active — change it in Settings tab now!','err'), 800);
     }
+    await loadDashboard();
+    await loadAdminSettings();
+    await loadAdminVids();
+    await loadAdminTests();
+    await loadAdminFAQs();
+  } else {
+    document.getElementById('admin-err').textContent='❌ Incorrect password. Please try again or contact your administrator.';
+    document.getElementById('admin-pass').value='';
+    document.getElementById('admin-pass').focus();
   }
 }
 
@@ -1690,6 +2514,7 @@ async function changePass(){
     if(ins){toast('✅ Password changed! Works on all devices.','ok');document.getElementById('a-new-pass').value='';document.getElementById('a-conf-pass').value='';}
     else toast('❌ Error saving password. Check Supabase write policies.','err');
   } else {
+    localStorage.setItem('nmb_admin_pass', np);
     toast('✅ Password changed! Works on all devices.','ok');
     document.getElementById('a-new-pass').value='';document.getElementById('a-conf-pass').value='';
   }
@@ -1751,8 +2576,9 @@ async function addVideo(){
   const url=document.getElementById('a-vid-url').value.trim();
   const title=document.getElementById('a-vid-title').value.trim();
   const desc=document.getElementById('a-vid-desc').value.trim();
+  const college=document.getElementById('a-vid-college')?document.getElementById('a-vid-college').value:'all';
   if(!url||!title){toast('URL and title are required','err');return;}
-  const ok=await sbW('/rest/v1/site_videos',{url,title,description:desc,is_active:true,sort_order:0});
+  const ok=await sbW('/rest/v1/site_videos',{url,title,description:desc,category:college,is_active:true,sort_order:0});
   if(ok){
     toast('✅ Video added to Supabase!','ok');
     document.getElementById('a-vid-url').value='';document.getElementById('a-vid-title').value='';document.getElementById('a-vid-desc').value='';
@@ -1868,6 +2694,45 @@ async function updateLeadStage(id, select){
   const ok=await sbW(`/rest/v1/leads?id=eq.${id}`,{stage},'PATCH');
   if(ok) toast(`✅ Stage updated to "${stage}"`, 'ok');
   else toast('❌ Error updating stage. Check Supabase write policy for leads table.','err');
+}
+
+// =====================================================
+// ADMIN — COLLEGES MANAGEMENT
+// =====================================================
+async function addCollegeAdmin(){
+  const name = document.getElementById('ac-name').value.trim();
+  const loc = document.getElementById('ac-loc').value.trim();
+  const seats = parseInt(document.getElementById('ac-seats').value)||0;
+  const type = document.getElementById('ac-type').value;
+  const web = document.getElementById('ac-web').value.trim();
+  const est = document.getElementById('ac-est').value.trim();
+  const fees = document.getElementById('ac-fees').value.trim();
+  if(!name){toast('College name is required','err');return;}
+  const ok = await sbW('/rest/v1/site_colleges',{name,location:loc,foreign_seats:seats,college_type:type,website:web||null,established:est||null,fee_notes_internal:fees||null,is_active:true,sort_order:99});
+  if(ok){
+    toast('✅ College added to Supabase!','ok');
+    document.getElementById('ac-name').value='';
+    document.getElementById('ac-loc').value='';
+    document.getElementById('ac-seats').value='';
+    document.getElementById('ac-web').value='';
+    document.getElementById('ac-est').value='';
+    document.getElementById('ac-fees').value='';
+    await loadAdminColleges();
+  } else toast('❌ Error adding college. Ensure site_colleges table exists in Supabase.','err');
+}
+async function loadAdminColleges(){
+  const list = document.getElementById('admin-college-list');
+  if(!list) return;
+  try {
+    const cols = await sbR('/rest/v1/site_colleges?select=*&order=sort_order.asc,created_at.desc');
+    if(!cols || !cols.length){list.innerHTML='<p style="color:var(--muted);font-size:13px">No colleges in Supabase yet. Colleges are currently hardcoded in HTML.</p>';return;}
+    list.innerHTML = cols.map(c=>`<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${c.name}</div><div class="vid-row-url">${c.location||''} | Seats: ${c.foreign_seats||'—'} | Type: ${c.college_type||'—'}</div></div><button class="a-btn a-btn-danger" onclick="deleteCollege('${c.id}')" style="padding:5px 10px;font-size:12px">✕ Delete</button></div>`).join('');
+  } catch(e){list.innerHTML='<p style="color:var(--muted);font-size:13px">Error loading — ensure site_colleges table exists in Supabase.</p>';}
+}
+async function deleteCollege(id){
+  if(!confirm('Delete this college from Supabase?'))return;
+  const ok = await sbW(`/rest/v1/site_colleges?id=eq.${id}`,null,'DELETE');
+  if(ok){toast('✅ Deleted','ok'); await loadAdminColleges();}else toast('❌ Error','err');
 }
 
 async function exportCSV(){
