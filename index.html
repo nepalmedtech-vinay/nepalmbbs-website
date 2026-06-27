@@ -73,28 +73,51 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .mob-lang button.on{background:var(--accent);color:var(--navy);border-color:transparent}
 
 /* HERO */
-.hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden}
+.hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden;background:#020c1b}
 
 /* ENSURE FIRST SLIDE VISIBLE */
 .hero-slides > .hero-slide:first-child { opacity: 1; }
 /* HERO SLIDESHOW */
 /* HERO SLIDESHOW — RIGHT-TO-LEFT SLIDE */
-.hero-slides{position:absolute;inset:0;z-index:0;overflow:hidden}
-.hero-slide{position:absolute;inset:0;background-size:cover;background-position:center center;transform:translateX(100%);transition:transform 0.9s cubic-bezier(0.77,0,0.175,1);will-change:transform}
+.hero-slides{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0a1628}
+.hero-slide{position:absolute;inset:0;background-size:cover;background-position:center center;transform:translateX(100%);transition:transform 0.85s cubic-bezier(0.77,0,0.175,1);will-change:transform}
 .hero-slide.active{transform:translateX(0)}
-.hero-slide.slide-out{transform:translateX(-100%)}
-.hero-slide-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,12,27,.90) 0%,rgba(7,18,32,.78) 45%,rgba(10,26,46,.65) 100%)}
-/* Nature slides: lighter overlay so image is fully visible */
-.hero-slide.nature-slide{background-size:cover;background-position:center}
-.hero-slide.nature-slide .hero-slide-overlay{background:linear-gradient(160deg,rgba(2,12,27,.55) 0%,rgba(7,18,32,.35) 50%,rgba(10,26,46,.25) 100%)}
-/* Caption bar at bottom */
-.slide-caption{position:absolute;bottom:60px;left:0;right:0;z-index:5;text-align:center;opacity:0;transform:translateY(10px);transition:all .5s ease .4s;pointer-events:none}
-.slide-caption.show{opacity:1;transform:translateY(0)}
-.slide-caption-text{display:inline-block;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:13px;font-weight:600;padding:8px 22px;border-radius:40px;letter-spacing:.03em;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+
+/* CONTENT MODE (initial state): dark overlay so text is readable */
+.hero-slide-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(160deg,rgba(2,12,27,.88) 0%,rgba(7,18,32,.80) 40%,rgba(10,26,46,.72) 100%);
+  transition:opacity .8s ease;
+}
+/* SLIDE MODE: when .sliding class on hero, overlays become transparent */
+.hero.sliding .hero-slide-overlay{opacity:0}
+.hero.sliding .nature-slide .hero-slide-overlay{opacity:0}
+
+/* Nature slides always get zero overlay in slide mode */
+.hero-slide.nature-slide .hero-slide-overlay{background:transparent}
+
+/* Bottom gradient for caption readability only (not darkening full image) */
+.slide-caption-grad{position:absolute;bottom:0;left:0;right:0;height:160px;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 100%);pointer-events:none;z-index:1;opacity:0;transition:opacity .8s ease}
+.hero.sliding .slide-caption-grad{opacity:1}
+
+/* Caption pill */
+.slide-caption{position:absolute;bottom:28px;left:0;right:0;z-index:5;text-align:center;opacity:0;transition:opacity .5s ease;pointer-events:none}
+.slide-caption.show{opacity:1}
+.slide-caption-text{display:inline-block;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;font-weight:600;padding:7px 20px;border-radius:40px;letter-spacing:.03em}
+
+/* Hero content z-index above slides */
 .hero-content{position:relative;z-index:3}
+/* When sliding, hero content fades out gracefully */
+.hero.sliding .hero-content{opacity:0;pointer-events:none;transition:opacity .8s ease}
 /* Content visible initially, hides after 10s */
 .hero-text-initial{transition:opacity .8s ease,transform .8s ease}
 .hero-text-initial.hidden{opacity:0;transform:translateY(-10px);pointer-events:none}
+/* Slide mode: entire hero-content fades out */
+section.hero.sliding .hero-content{
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.8s ease;
+}
 /* Slide indicator dots */
 .slide-dots{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:4;display:flex;gap:8px}
 .slide-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s;border:1px solid rgba(255,255,255,.4)}
@@ -103,9 +126,10 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .slide-caption{position:absolute;bottom:60px;left:0;right:0;z-index:3;text-align:center;opacity:0;transform:translateY(10px);transition:all .5s ease;pointer-events:none}
 .slide-caption.show{opacity:1;transform:translateY(0)}
 .slide-caption-text{display:inline-block;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;font-weight:600;padding:8px 20px;border-radius:40px;letter-spacing:.03em}
-.hero-bg{position:absolute;inset:0;background:linear-gradient(160deg,#020c1b 0%,#071220 35%,#0a1a2e 65%,#0c1f38 100%)}
-.hero-img{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1600&q=80');background-size:cover;background-position:center top;background-size:cover;background-position:center;opacity:.18}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,12,27,.92) 0%,rgba(7,18,32,.85) 50%,rgba(10,26,46,.8) 100%)}
+/* Static hero background — visible before slides load */
+.hero-bg{position:absolute;inset:0;background:linear-gradient(160deg,#020c1b 0%,#071220 35%,#0a1a2e 65%,#0c1f38 100%);z-index:-1}
+.hero-img{display:none}
+.hero-overlay{display:none}
 .hero-content{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:120px 24px 80px;width:100%;display:grid;grid-template-columns:1fr 460px;gap:64px;align-items:center}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,160,32,.12);border:1px solid rgba(232,160,32,.3);padding:8px 18px;border-radius:28px;font-size:12.5px;color:var(--gold);font-weight:600;margin-bottom:24px;backdrop-filter:blur(8px)}
 .badge-dot{width:8px;height:8px;border-radius:50%;background:#ef4444;animation:blink 1.5s infinite;flex-shrink:0;box-shadow:0 0 8px rgba(239,68,68,.6)}
@@ -687,32 +711,32 @@ textarea.a-inp{min-height:80px;resize:vertical}
 </div>
 </nav>
 <div id="mob-menu">
-  <div class="mob-lang"><button class="on" onclick="setLang('en');toggleMenu()">English</button><button onclick="setLang('hi');toggleMenu()">हिंदी</button></div>
-  <a onclick="switchTab('process');toggleMenu()">
+  <div class="mob-lang"><button class="on" onclick="setLang('en');closeMenu()">English</button><button onclick="setLang('hi');closeMenu()">हिंदी</button></div>
+  <a onclick="closeMenu();switchTab('process')">
     <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>Admission Process</span>
   </a>
-  <a onclick="switchTab('colleges');toggleMenu()">
+  <a onclick="closeMenu();switchTab('colleges')">
     <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21V12h6v9"/></svg>Nepal Medical Colleges</span>
   </a>
-  <a onclick="switchTab('why');toggleMenu()">
+  <a onclick="closeMenu();switchTab('why')">
     <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Why Nepal</span>
   </a>
-  <a onclick="switchTab('calculator');toggleMenu()">
+  <a onclick="closeMenu();switchTab('calculator')">
     <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><circle cx="8" cy="10" r="1" fill="currentColor"/><circle cx="12" cy="10" r="1" fill="currentColor"/><circle cx="16" cy="10" r="1" fill="currentColor"/><circle cx="8" cy="14" r="1" fill="currentColor"/><circle cx="12" cy="14" r="1" fill="currentColor"/><line x1="16" y1="14" x2="16" y2="18"/></svg>NEET Calculator</span>
   </a>
-  <a onclick="switchTab('guidelines');toggleMenu()">
+  <a onclick="closeMenu();switchTab('guidelines')">
     <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Official Guidelines</span>
   </a>
-  <a onclick="switchTab('videos');toggleMenu()">
+  <a onclick="closeMenu();switchTab('videos')">
     <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Videos &amp; Resources</span>
   </a>
-  <a onclick="switchTab('faq');toggleMenu()">
+  <a onclick="closeMenu();switchTab('faq')">
     <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2.5"/></svg>FAQ</span>
   </a>
-  <a onclick="switchTab('lifestyle');toggleMenu()">
+  <a onclick="closeMenu();switchTab('lifestyle')">
     <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18l4-8 4 5 3-3 4 6"/><circle cx="12" cy="6" r="2"/></svg>Life in Nepal</span>
   </a>
-  <a onclick="switchTab('counsel');toggleMenu()">
+  <a onclick="closeMenu();switchTab('counsel')">
     <span style="display:inline-flex;align-items:center;gap:10px;color:var(--gold)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Free Counseling →</span>
   </a>
 </div>
@@ -755,6 +779,7 @@ textarea.a-inp{min-height:80px;resize:vertical}
   <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1541692641319-981cc79ee10a?w=1600&q=80&auto=format&fit=crop')" data-caption="Student Life Nepal"><div class="hero-slide-overlay"></div></div>
   </div>
   <div class="slide-dots" id="slide-dots"></div>
+  <div class="slide-caption-grad" id="slide-caption-grad"></div>
   <div class="slide-caption" id="slide-caption"><span class="slide-caption-text" id="slide-caption-text"></span></div>
   <div class="hero-content">
     <div>
@@ -1893,33 +1918,38 @@ function setLang(l){
   document.querySelectorAll('.lbtn').forEach(b=>b.classList.toggle('on',b.textContent.trim()===(l==='en'?'EN':'हि')));
   document.querySelectorAll('.mob-lang button').forEach(b=>b.classList.toggle('on',(l==='en'&&b.textContent.includes('English'))||(l==='hi'&&b.textContent.includes('हिंदी'))));
 }
-function toggleMenu(){document.getElementById('mob-menu').classList.toggle('open');document.getElementById('hbg').classList.toggle('open');}
+function toggleMenu(){
+  document.getElementById('mob-menu').classList.toggle('open');
+  document.getElementById('hbg').classList.toggle('open');
+}
+function closeMenu(){
+  document.getElementById('mob-menu').classList.remove('open');
+  document.getElementById('hbg').classList.remove('open');
+}
 
 // =====================================================
 // TABS
 // =====================================================
 function switchTab(name){
+  // Deactivate all tabs and panes
   document.querySelectorAll('.tab-card').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
-  const btn=document.getElementById('tab-'+name);
-  const pane=document.getElementById('pane-'+name);
-  if(btn)btn.classList.add('on');
-  if(pane){
-    pane.classList.add('on');
-    const ts=document.getElementById('tabs-section');
-    if(ts){
-      // Scroll directly to content — skip hero section entirely
-      setTimeout(()=>{
-        const offset = ts.offsetTop - 68;
-        window.scrollTo({top: offset, behavior:'smooth'});
-      }, 60);
-    }
+  
+  const btn = document.getElementById('tab-'+name);
+  const pane = document.getElementById('pane-'+name);
+  if(btn) btn.classList.add('on');
+  if(pane) pane.classList.add('on');
+
+  // ALWAYS close mobile menu immediately (fix: use remove not toggle)
+  document.getElementById('mob-menu').classList.remove('open');
+  document.getElementById('hbg').classList.remove('open');
+
+  // Scroll to tabs section — past the hero — immediately
+  const ts = document.getElementById('tabs-section');
+  if(ts){
+    const targetY = ts.getBoundingClientRect().top + window.pageYOffset - 68;
+    window.scrollTo({top: targetY, behavior: 'smooth'});
   }
-  // Close mobile menu
-  const mm = document.getElementById('mob-menu');
-  const hb = document.getElementById('hbg');
-  if(mm) mm.classList.remove('open');
-  if(hb) hb.classList.remove('open');
 }
 function switchGuide(btn,id){
   document.querySelectorAll('.g-tab').forEach(b=>b.classList.remove('on'));
@@ -2087,35 +2117,38 @@ let heroIsAnimating = false;
 
 function initHeroSlideshow() {
   const slides = document.querySelectorAll('.hero-slide');
+  const heroSection = document.querySelector('section.hero');
   const dotsEl = document.getElementById('slide-dots');
   if (!slides.length) return;
 
-  // First slide starts visible (translateX(0)), others off-screen right
+  // Position all slides: first visible, rest off-screen right
   slides.forEach((s, i) => {
-    if (i === 0) {
-      s.style.transform = 'translateX(0)';
-      s.classList.add('active');
-    } else {
-      s.style.transform = 'translateX(100%)';
-    }
+    s.style.transition = 'none';
+    s.style.transform = i === 0 ? 'translateX(0)' : 'translateX(100%)';
+    if (i === 0) s.classList.add('active');
   });
 
-  // Build dots
+  // Build dot indicators
   if (dotsEl) {
     slides.forEach((_, i) => {
       const dot = document.createElement('div');
       dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
-      dot.onclick = () => goToSlide(i);
+      dot.onclick = () => { if(!heroIsAnimating) goToSlide(i); };
       dotsEl.appendChild(dot);
     });
   }
 
-  // After 5 seconds: start auto-sliding (right-to-left)
+  // After EXACTLY 5 seconds: activate slide mode
   setTimeout(() => {
-    startSlideAuto();
+    // Add .sliding class → CSS removes dark overlay, content fades
+    if (heroSection) heroSection.classList.add('sliding');
+
     // Show caption
     const cap = document.getElementById('slide-caption');
     if (cap) cap.classList.add('show');
+
+    // Start auto-advance every 4 seconds
+    startSlideAuto();
   }, 5000);
 }
 
@@ -2123,9 +2156,8 @@ function startSlideAuto() {
   clearInterval(window._heroSlidInterval);
   window._heroSlidInterval = setInterval(() => {
     const slides = document.querySelectorAll('.hero-slide');
-    const nextIdx = (heroSlideIndex + 1) % slides.length;
-    goToSlide(nextIdx);
-  }, 4500);
+    goToSlide((heroSlideIndex + 1) % slides.length);
+  }, 4000);
 }
 
 function goToSlide(idx) {
@@ -2135,30 +2167,28 @@ function goToSlide(idx) {
   const slides = document.querySelectorAll('.hero-slide');
   const dots = document.querySelectorAll('.slide-dot');
   const capEl = document.getElementById('slide-caption-text');
-  const isNature = slides[idx] && slides[idx].classList.contains('nature-slide');
-
   const prevIdx = heroSlideIndex;
+
   if (prevIdx === idx) { heroIsAnimating = false; return; }
 
-  // Outgoing slide: slide left (translateX(-100%))
+  // OUT: current slide exits LEFT
   if (slides[prevIdx]) {
     slides[prevIdx].style.transition = 'transform 0.85s cubic-bezier(0.77,0,0.175,1)';
     slides[prevIdx].style.transform = 'translateX(-100%)';
     slides[prevIdx].classList.remove('active');
   }
 
-  // Incoming slide: start from right, slide to center
+  // IN: next slide enters from RIGHT
   if (slides[idx]) {
     slides[idx].style.transition = 'none';
     slides[idx].style.transform = 'translateX(100%)';
     slides[idx].classList.add('active');
-    // Force reflow then animate
-    slides[idx].getBoundingClientRect();
+    slides[idx].getBoundingClientRect(); // force reflow
     slides[idx].style.transition = 'transform 0.85s cubic-bezier(0.77,0,0.175,1)';
     slides[idx].style.transform = 'translateX(0)';
   }
 
-  // Update caption
+  // Update caption text
   if (capEl && slides[idx]) capEl.textContent = slides[idx].dataset.caption || '';
 
   // Update dots
