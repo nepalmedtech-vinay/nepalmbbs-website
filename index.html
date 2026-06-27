@@ -73,14 +73,14 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .mob-lang button.on{background:var(--accent);color:var(--navy);border-color:transparent}
 
 /* HERO */
-.hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden;background:#020c1b}
+.hero{min-height:100vh;min-height:100dvh;position:relative;display:flex;align-items:center;overflow:hidden;background:#020c1b}
 
 /* ENSURE FIRST SLIDE VISIBLE */
 .hero-slides > .hero-slide:first-child { opacity: 1; }
 /* HERO SLIDESHOW */
 /* HERO SLIDESHOW — RIGHT-TO-LEFT SLIDE */
-.hero-slides{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0a1628}
-.hero-slide{position:absolute;inset:0;background-size:cover;background-position:center center;transform:translateX(100%);transition:transform 0.85s cubic-bezier(0.77,0,0.175,1);will-change:transform}
+.hero-slides{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:0;overflow:hidden;background:#0a1628}
+.hero-slide{position:absolute;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center center;background-repeat:no-repeat;transform:translateX(100%);transition:transform 0.85s cubic-bezier(0.77,0,0.175,1);will-change:transform}
 .hero-slide.active{transform:translateX(0)}
 
 /* CONTENT MODE (initial state): dark overlay so text is readable */
@@ -745,120 +745,29 @@ textarea.a-inp{min-height:80px;resize:vertical}
 <section class="hero">
   <div class="hero-slides" id="hero-slides">
 
-  <!-- ═══ 13 NEPAL MEDICAL COLLEGE IMAGES ═══ -->
-  <div class="hero-slide active"
-       data-caption="🏥 Nepal Medical Colleges — NMC India Recognised"
-       style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
+  <!-- 7 NEPAL NATURE -->
+  <div class="hero-slide nature-slide" data-caption="🏔️ Himalayan Village — Nepal" style="background-image:url('https://images.unsplash.com/photo-1518002054494-3a6f94352e9d?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="⛰️ The Mighty Himalayas — Nepal" style="background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="🏔️ Annapurna Range — Pokhara" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌄 Kathmandu Valley — Nepal" style="background-image:url('https://images.unsplash.com/photo-1571825304178-9e06ae61735c?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="🏞️ Phewa Lake — Pokhara, Nepal" style="background-image:url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="❄️ Everest Region — Nepal Himalaya" style="background-image:url('https://images.unsplash.com/photo-1469521669194-babb45599def?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌅 Nepal — Where Mountains Meet the Sky" style="background-image:url('https://images.unsplash.com/photo-1458442310124-dde6edb43d10?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"></div>
 
-  <div class="hero-slide"
-       data-caption="📚 World-Class Medical Training — English Medium"
-       style="background-image:url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <div class="hero-slide"
-       data-caption="👨‍⚕️ Clinical Training — Teaching Hospital Nepal"
-       style="background-image:url('https://images.unsplash.com/photo-1559757175-5700dde675bc?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <div class="hero-slide"
-       data-caption="🔬 Medical Research Facilities — Nepal"
-       style="background-image:url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <div class="hero-slide"
-       data-caption="👩‍🎓 Indian Students — Nepal MBBS Journey"
-       style="background-image:url('https://images.unsplash.com/photo-1580139557401-58ed2b1d3d87?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <div class="hero-slide"
-       data-caption="🎓 MBBS Graduation — Nepal Medical College"
-       style="background-image:url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <div class="hero-slide"
-       data-caption="📖 Study Groups — Nepal Medical Campus Life"
-       style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <div class="hero-slide"
-       data-caption="🎯 NEET to Nepal MBBS — Direct Official Path"
-       style="background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <div class="hero-slide"
-       data-caption="🩺 Hands-On Medical Practice — Year 1"
-       style="background-image:url('https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <div class="hero-slide"
-       data-caption="🏥 State-of-the-Art Labs — Nepal Medical College"
-       style="background-image:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <div class="hero-slide"
-       data-caption="🌟 Student Community — Indian Students in Nepal"
-       style="background-image:url('https://images.unsplash.com/photo-1543165796-5426273eaab3?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <div class="hero-slide"
-       data-caption="🏛️ Modern Campus — Nepal MBBS College"
-       style="background-image:url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <div class="hero-slide"
-       data-caption="⚕️ Teaching Hospital — Hands-On Patient Care"
-       style="background-image:url('https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=1920&q=90&fit=crop&auto=format')">
-    <div class="hero-slide-overlay"></div>
-  </div>
-
-  <!-- ═══ 7 NEPAL NATURE IMAGES — No Overlay ═══ -->
-  <div class="hero-slide nature-slide"
-       data-caption="🏔️ The Mighty Himalayas — Nepal"
-       style="background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1920&q=90&fit=crop&auto=format')">
-  </div>
-
-  <div class="hero-slide nature-slide"
-       data-caption="⛰️ Annapurna Range — Pokhara, Nepal"
-       style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=90&fit=crop&auto=format')">
-  </div>
-
-  <div class="hero-slide nature-slide"
-       data-caption="🌄 Kathmandu Valley — Nepal"
-       style="background-image:url('https://images.unsplash.com/photo-1571825304178-9e06ae61735c?w=1920&q=90&fit=crop&auto=format')">
-  </div>
-
-  <div class="hero-slide nature-slide"
-       data-caption="🏞️ Phewa Lake — Pokhara, Nepal"
-       style="background-image:url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1920&q=90&fit=crop&auto=format')">
-  </div>
-
-  <div class="hero-slide nature-slide"
-       data-caption="🌿 Lush Green Nepal — Land of Beauty"
-       style="background-image:url('https://images.unsplash.com/photo-1491895200222-0fc4a4c35e18?w=1920&q=90&fit=crop&auto=format')">
-  </div>
-
-  <div class="hero-slide nature-slide"
-       data-caption="❄️ Everest Region — Nepal Himalaya"
-       style="background-image:url('https://images.unsplash.com/photo-1469521669194-babb45599def?w=1920&q=90&fit=crop&auto=format')">
-  </div>
-
-  <div class="hero-slide nature-slide"
-       data-caption="🌅 Nepal — Where Mountains Meet the Sky"
-       style="background-image:url('https://images.unsplash.com/photo-1458442310124-dde6edb43d10?w=1920&q=90&fit=crop&auto=format')">
-  </div>
+  <!-- 13 NEPAL MEDICAL COLLEGES + STUDENT LIFE -->
+  <div class="hero-slide active" data-caption="👩‍⚕️ Medical Student — Nepal MBBS" style="background-image:url('https://images.unsplash.com/photo-1624727828489-a1e03b79bba8?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🏥 Medical College Campus — Nepal" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🩺 Clinical Training — Teaching Hospital" style="background-image:url('https://images.unsplash.com/photo-1559757175-5700dde675bc?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🎓 MBBS Students — Nepal Medical College" style="background-image:url('https://images.unsplash.com/photo-1580139557401-58ed2b1d3d87?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="😊 Student Community — Nepal MBBS" style="background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🎓 Graduation Day — Nepal Medical College" style="background-image:url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📚 Study Group — Nepal MBBS Campus Life" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📖 Medical Education — Nepal" style="background-image:url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🔬 Medical Research Lab — Nepal" style="background-image:url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🏛️ State-of-the-Art Labs — Nepal" style="background-image:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📝 NEET to Nepal MBBS — Official Path" style="background-image:url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="⚕️ Teaching Hospital — Hands-On Training" style="background-image:url('https://images.unsplash.com/photo-1551601651-2a8555f1a136?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🏥 Nepal Medical College — NMC Approved" style="background-image:url('https://images.unsplash.com/photo-1505751172876-fa1923c5c528?fm=jpg&q=90&w=1920&auto=format&fit=crop&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
 
   </div>
   <div class="slide-dots" id="slide-dots"></div>
@@ -2184,7 +2093,7 @@ function initChatSwipe(){
   document.addEventListener('mouseup',()=>{dr=false;});
 }
 
-const COLLEGE_PHOTOS = {'kmc': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1571825304178-9e06ae61735c', 'photo-1496947850313-7743325fa58c', 'photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef'], 'kist': ['photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef', 'photo-1551601651-2a8555f1a136', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1581091226825-a6a2a5aee158'], 'gandaki': ['photo-1506905925346-21bda4d32df4', 'photo-1544735716-392fe2489ffa', 'photo-1458442310124-dde6edb43d10', 'photo-1576091160399-112ba8d25d1d', 'photo-1517048676732-d65bc937f952', 'photo-1530026186672-2cd00ffc50fe'], 'manipal': ['photo-1544735716-392fe2489ffa', 'photo-1506905925346-21bda4d32df4', 'photo-1581091226825-a6a2a5aee158', 'photo-1559757148-5c350d0d3c56', 'photo-1607748862156-7c548e7e98f4', 'photo-1576671081837-49000212a370'], 'cms': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1582750433449-648ed127bb54', 'photo-1586773860418-d37222d8fce3']};
+const COLLEGE_PHOTOS = {'kmc': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1571825304178-9e06ae61735c', 'photo-1571825304178-9e06ae61735c', 'photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef'], 'kist': ['photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef', 'photo-1551601651-2a8555f1a136', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1581091226825-a6a2a5aee158'], 'gandaki': ['photo-1506905925346-21bda4d32df4', 'photo-1544735716-392fe2489ffa', 'photo-1458442310124-dde6edb43d10', 'photo-1576091160399-112ba8d25d1d', 'photo-1517048676732-d65bc937f952', 'photo-1530026186672-2cd00ffc50fe'], 'manipal': ['photo-1544735716-392fe2489ffa', 'photo-1506905925346-21bda4d32df4', 'photo-1581091226825-a6a2a5aee158', 'photo-1559757148-5c350d0d3c56', 'photo-1523050854058-8df90110c9f1', 'photo-1576091160399-112ba8d25d1d'], 'cms': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1529156069898-49953e39b3ac', 'photo-1580139557401-58ed2b1d3d87']};
 const DEFAULT_COLLEGE_PHOTOS = ['photo-1576091160550-2173dba999ef', 'photo-1580139557401-58ed2b1d3d87', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1551601651-2a8555f1a136', 'photo-1517048676732-d65bc937f952'];
 
 // =====================================================
@@ -2204,11 +2113,17 @@ function initHeroSlideshow() {
   const dotsEl = document.getElementById('slide-dots');
   if (!slides.length) return;
 
-  // Position all slides: first visible, rest off-screen right
+  // Find the slide with class 'active' (the college slide at index 7)
+  let activeIdx = 0;
+  slides.forEach((s, i) => {
+    if (s.classList.contains('active')) activeIdx = i;
+  });
+  heroSlideIndex = activeIdx;
+
+  // Position all slides: active one visible, rest off-screen right
   slides.forEach((s, i) => {
     s.style.transition = 'none';
-    s.style.transform = i === 0 ? 'translateX(0)' : 'translateX(100%)';
-    if (i === 0) s.classList.add('active');
+    s.style.transform = i === activeIdx ? 'translateX(0)' : 'translateX(100%)';
   });
 
   // Build dot indicators
