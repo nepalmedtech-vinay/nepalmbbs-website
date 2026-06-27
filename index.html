@@ -63,8 +63,11 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .hbg.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
 #mob-menu{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(10,22,40,.98);backdrop-filter:blur(24px);padding:20px 24px 28px;z-index:999;border-bottom:1px solid rgba(255,255,255,.08)}
 #mob-menu.open{display:block}
-#mob-menu a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:15px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;font-weight:500}
-#mob-menu a:last-child{color:var(--gold);font-weight:700;border:none}
+#mob-menu a{display:block;color:rgba(255,255,255,.85);text-decoration:none;font-size:15px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.07);cursor:pointer;font-weight:500;transition:color .2s,padding-left .2s}
+#mob-menu a:hover{color:#fff;padding-left:4px}
+#mob-menu a:last-child{font-weight:700;border:none}
+#mob-menu svg{opacity:.7;flex-shrink:0}
+#mob-menu a:hover svg{opacity:1}
 .mob-lang{display:flex;gap:8px;padding:14px 0 8px}
 .mob-lang button{padding:7px 18px;border-radius:22px;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.65);font-size:13px;font-weight:600;cursor:pointer}
 .mob-lang button.on{background:var(--accent);color:var(--navy);border-color:transparent}
@@ -75,10 +78,19 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 /* ENSURE FIRST SLIDE VISIBLE */
 .hero-slides > .hero-slide:first-child { opacity: 1; }
 /* HERO SLIDESHOW */
-.hero-slides{position:absolute;inset:0;z-index:0}
-.hero-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease-in-out;background-size:cover;background-position:center}
-.hero-slide.active{opacity:1}
-.hero-slide-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,12,27,.92) 0%,rgba(7,18,32,.82) 50%,rgba(10,26,46,.75) 100%)}
+/* HERO SLIDESHOW — RIGHT-TO-LEFT SLIDE */
+.hero-slides{position:absolute;inset:0;z-index:0;overflow:hidden}
+.hero-slide{position:absolute;inset:0;background-size:cover;background-position:center center;transform:translateX(100%);transition:transform 0.9s cubic-bezier(0.77,0,0.175,1);will-change:transform}
+.hero-slide.active{transform:translateX(0)}
+.hero-slide.slide-out{transform:translateX(-100%)}
+.hero-slide-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,12,27,.90) 0%,rgba(7,18,32,.78) 45%,rgba(10,26,46,.65) 100%)}
+/* Nature slides: lighter overlay so image is fully visible */
+.hero-slide.nature-slide{background-size:cover;background-position:center}
+.hero-slide.nature-slide .hero-slide-overlay{background:linear-gradient(160deg,rgba(2,12,27,.55) 0%,rgba(7,18,32,.35) 50%,rgba(10,26,46,.25) 100%)}
+/* Caption bar at bottom */
+.slide-caption{position:absolute;bottom:60px;left:0;right:0;z-index:5;text-align:center;opacity:0;transform:translateY(10px);transition:all .5s ease .4s;pointer-events:none}
+.slide-caption.show{opacity:1;transform:translateY(0)}
+.slide-caption-text{display:inline-block;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:13px;font-weight:600;padding:8px 22px;border-radius:40px;letter-spacing:.03em;text-shadow:0 1px 4px rgba(0,0,0,.5)}
 .hero-content{position:relative;z-index:3}
 /* Content visible initially, hides after 10s */
 .hero-text-initial{transition:opacity .8s ease,transform .8s ease}
@@ -199,11 +211,14 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .tabs-container{max-width:1280px;margin:0 auto}
 .tabs-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px}
 .tabs-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
-.tab-card{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;cursor:pointer;transition:all .25s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);text-decoration:none;color:rgba(255,255,255,.65);font-size:11px;font-weight:600;text-align:center;line-height:1.3;white-space:nowrap}
-.tab-card:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.25);color:#fff;transform:translateY(-2px)}
-.tab-card.on{background:linear-gradient(135deg,rgba(232,160,32,.25),rgba(245,200,66,.15));border-color:rgba(232,160,32,.5);color:var(--gold);box-shadow:0 4px 16px rgba(232,160,32,.2)}
-.tab-card .tab-icon{font-size:18px;line-height:1}
-.tab-card .tab-label{font-size:10.5px}
+.tab-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px 10px;background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.14);border-radius:14px;cursor:pointer;transition:all .28s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);text-decoration:none;color:rgba(255,255,255,.6);font-size:10.5px;font-weight:600;text-align:center;line-height:1.3;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.08)}
+.tab-card:hover{background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.1));border-color:rgba(255,255,255,.3);color:#fff;transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.15)}
+.tab-card.on{background:linear-gradient(135deg,rgba(232,160,32,.32),rgba(245,200,66,.18));border-color:rgba(232,160,32,.65);color:var(--gold);box-shadow:0 6px 24px rgba(232,160,32,.3),inset 0 1px 0 rgba(255,255,255,.15);transform:translateY(-2px)}
+.tab-card.on .tab-svg{filter:drop-shadow(0 0 6px rgba(245,200,66,.6))}
+.tab-svg{width:22px;height:22px;opacity:.75;transition:all .28s}
+.tab-card:hover .tab-svg{opacity:1;transform:scale(1.1)}
+.tab-card.on .tab-svg{opacity:1}
+.tab-card .tab-label{font-size:10px;letter-spacing:.01em}
 /* Mobile tab scroll */
 @media(max-width:768px){
   .tabs-grid{grid-template-columns:repeat(4,1fr)}
@@ -270,7 +285,8 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .trust-grid{display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap}
 .trust-badge{display:flex;flex-direction:column;align-items:center;gap:6px;opacity:.7;transition:opacity .2s}
 .trust-badge:hover{opacity:1}
-.trust-badge-icon{width:52px;height:52px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.trust-badge-icon{width:54px;height:54px;background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.1);transition:all .3s}
+.trust-badge:hover .trust-badge-icon{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.3);box-shadow:0 8px 24px rgba(0,0,0,.3);transform:scale(1.08)}
 .trust-badge-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.6);text-align:center}
 
 /* CALCULATOR */
@@ -672,39 +688,60 @@ textarea.a-inp{min-height:80px;resize:vertical}
 </nav>
 <div id="mob-menu">
   <div class="mob-lang"><button class="on" onclick="setLang('en');toggleMenu()">English</button><button onclick="setLang('hi');toggleMenu()">हिंदी</button></div>
-  <a onclick="switchTab('process');toggleMenu()">📋 Admission Process</a>
-  <a onclick="switchTab('colleges');toggleMenu()">🏥 Nepal Medical Colleges</a>
-  <a onclick="switchTab('why');toggleMenu()">🏛️ Why Nepal</a>
-  <a onclick="switchTab('calculator');toggleMenu()">🧮 NEET Calculator</a>
-  <a onclick="switchTab('guidelines');toggleMenu()">📜 Official Guidelines</a>
-  <a onclick="switchTab('videos');toggleMenu()">🎥 Videos</a>
-  <a onclick="switchTab('faq');toggleMenu()">❓ FAQ</a>
-  <a onclick="switchTab('lifestyle');toggleMenu()">🌄 Life in Nepal</a>
-  <a onclick="switchTab('counsel');toggleMenu()">📅 Free Counseling →</a>
+  <a onclick="switchTab('process');toggleMenu()">
+    <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>Admission Process</span>
+  </a>
+  <a onclick="switchTab('colleges');toggleMenu()">
+    <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21V12h6v9"/></svg>Nepal Medical Colleges</span>
+  </a>
+  <a onclick="switchTab('why');toggleMenu()">
+    <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Why Nepal</span>
+  </a>
+  <a onclick="switchTab('calculator');toggleMenu()">
+    <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><circle cx="8" cy="10" r="1" fill="currentColor"/><circle cx="12" cy="10" r="1" fill="currentColor"/><circle cx="16" cy="10" r="1" fill="currentColor"/><circle cx="8" cy="14" r="1" fill="currentColor"/><circle cx="12" cy="14" r="1" fill="currentColor"/><line x1="16" y1="14" x2="16" y2="18"/></svg>NEET Calculator</span>
+  </a>
+  <a onclick="switchTab('guidelines');toggleMenu()">
+    <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Official Guidelines</span>
+  </a>
+  <a onclick="switchTab('videos');toggleMenu()">
+    <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Videos &amp; Resources</span>
+  </a>
+  <a onclick="switchTab('faq');toggleMenu()">
+    <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2.5"/></svg>FAQ</span>
+  </a>
+  <a onclick="switchTab('lifestyle');toggleMenu()">
+    <span style="display:inline-flex;align-items:center;gap:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18l4-8 4 5 3-3 4 6"/><circle cx="12" cy="6" r="2"/></svg>Life in Nepal</span>
+  </a>
+  <a onclick="switchTab('counsel');toggleMenu()">
+    <span style="display:inline-flex;align-items:center;gap:10px;color:var(--gold)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Free Counseling →</span>
+  </a>
 </div>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-slides" id="hero-slides">
-  <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1600&q=80&auto=format&fit=crop')" data-caption="Himalayan Peaks, Nepal"><div class='hero-slide-overlay'></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1469521669194-babb45599def?w=1600&q=80&auto=format&fit=crop')" data-caption="Nepal Mountain Range"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1571825304178-9e06ae61735c?w=1600&q=80&auto=format&fit=crop')" data-caption="Kathmandu Valley"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1580139557401-58ed2b1d3d87?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Students Nepal"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical College Campus"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&q=80&auto=format&fit=crop')" data-caption="Students Studying"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Education"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=1600&q=80&auto=format&fit=crop')" data-caption="Teaching Hospital"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1530026186672-2cd00ffc50fe?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Campus"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Students"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1600&q=80&auto=format&fit=crop')" data-caption="Happy Students"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1600&q=80&auto=format&fit=crop')" data-caption="Student Community"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Research"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1600&q=80&auto=format&fit=crop')" data-caption="Medical Practice"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1600&q=80&auto=format&fit=crop')" data-caption="Healthcare Nepal"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1491895200222-0fc4a4c35e18?w=1600&q=80&auto=format&fit=crop')" data-caption="Nepal Landscape"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80&auto=format&fit=crop')" data-caption="Annapurna Nepal"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1600&q=80&auto=format&fit=crop')" data-caption="Pokhara Nepal"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1458442310124-dde6edb43d10?w=1600&q=80&auto=format&fit=crop')" data-caption="Nepal Mountains"><div class="hero-slide-overlay"></div></div>
+  <!-- NEPAL MEDICAL COLLEGE IMAGES (13) -->
+  <div class="hero-slide active" data-caption="🏥 Nepal Medical Colleges — NMC India Recognised" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🎓 Medical Education in Nepal — English Medium" style="background-image:url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📚 World-Class Medical Training" style="background-image:url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🏛️ Modern Medical Campus — Nepal" style="background-image:url('https://images.unsplash.com/photo-1559757175-5700dde675bc?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="👨‍⚕️ Clinical Training — Teaching Hospital" style="background-image:url('https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🔬 Medical Research Facilities" style="background-image:url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="👩‍🎓 Indian Students in Nepal MBBS" style="background-image:url('https://images.unsplash.com/photo-1580139557401-58ed2b1d3d87?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📖 Study Groups — Nepal Medical College" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🏥 State-of-the-Art Laboratories" style="background-image:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🎯 NEET to Nepal MBBS — Direct Path" style="background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🩺 Hands-On Medical Practice" style="background-image:url('https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🎓 Graduation — Nepal MBBS Success" style="background-image:url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🏫 Student Life — Nepal Medical College" style="background-image:url('https://images.unsplash.com/photo-1543165796-5426273eaab3?w=1920&q=95&auto=format&fit=crop')"><div class="hero-slide-overlay"></div></div>
+  <!-- NEPAL NATURE IMAGES (7) — No overlay so fully visible -->
+  <div class="hero-slide nature-slide" data-caption="🏔️ The Himalayas — Nepal" style="background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1920&q=95&auto=format&fit=crop')"></div>
+  <div class="hero-slide nature-slide" data-caption="⛰️ Annapurna Range — Pokhara" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=95&auto=format&fit=crop')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌄 Kathmandu Valley at Sunrise" style="background-image:url('https://images.unsplash.com/photo-1571825304178-9e06ae61735c?w=1920&q=95&auto=format&fit=crop')"></div>
+  <div class="hero-slide nature-slide" data-caption="🏞️ Phewa Lake — Pokhara Nepal" style="background-image:url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1920&q=95&auto=format&fit=crop')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌿 Lush Nepal Landscape" style="background-image:url('https://images.unsplash.com/photo-1491895200222-0fc4a4c35e18?w=1920&q=95&auto=format&fit=crop')"></div>
+  <div class="hero-slide nature-slide" data-caption="❄️ Everest Base Camp — Nepal" style="background-image:url('https://images.unsplash.com/photo-1469521669194-babb45599def?w=1920&q=95&auto=format&fit=crop')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌅 Nepal — Land of Mountains" style="background-image:url('https://images.unsplash.com/photo-1458442310124-dde6edb43d10?w=1920&q=95&auto=format&fit=crop')"></div>
   <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1496947850313-7743325fa58c?w=1600&q=80&auto=format&fit=crop')" data-caption="Kathmandu Temple"><div class="hero-slide-overlay"></div></div>
   <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=1600&q=80&auto=format&fit=crop')" data-caption="Nepal Culture"><div class="hero-slide-overlay"></div></div>
   <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=1600&q=80&auto=format&fit=crop')" data-caption="Nepal University"><div class="hero-slide-overlay"></div></div>
@@ -897,12 +934,30 @@ textarea.a-inp{min-height:80px;resize:vertical}
 <div class="trust-in">
   <div class="trust-title">Verified & Trusted Sources — Official Government Bodies Only</div>
   <div class="trust-grid">
-    <a href="https://nmc.org.in" target="_blank" rel="noopener" class="trust-badge"><div class="trust-badge-icon">🇮🇳</div><div class="trust-badge-name">NMC India</div></a>
-    <a href="https://mec.gov.np" target="_blank" rel="noopener" class="trust-badge"><div class="trust-badge-icon">🇳🇵</div><div class="trust-badge-name">MEC Nepal</div></a>
-    <a href="https://nmc.org.np" target="_blank" rel="noopener" class="trust-badge"><div class="trust-badge-icon">🏥</div><div class="trust-badge-name">Nepal NMC</div></a>
-    <a href="https://natboard.edu.in" target="_blank" rel="noopener" class="trust-badge"><div class="trust-badge-icon">📊</div><div class="trust-badge-name">NBE India</div></a>
-    <a href="https://wdoms.org" target="_blank" rel="noopener" class="trust-badge"><div class="trust-badge-icon">🌍</div><div class="trust-badge-name">WDOMS</div></a>
-    <a href="https://entrance.mec.gov.np" target="_blank" rel="noopener" class="trust-badge"><div class="trust-badge-icon">📝</div><div class="trust-badge-name">MECEE Portal</div></a>
+    <a href="https://nmc.org.in" target="_blank" rel="noopener" class="trust-badge">
+      <div class="trust-badge-icon"><svg width="26" height="26" viewBox="0 0 36 36"><circle cx="18" cy="18" r="18" fill="#FF9933"/><circle cx="18" cy="18" r="12" fill="#fff"/><circle cx="18" cy="18" r="12" fill="none" stroke="#138808" stroke-width="2"/><circle cx="18" cy="18" r="4" fill="#000080"/></svg></div>
+      <div class="trust-badge-name">NMC India</div>
+    </a>
+    <a href="https://mec.gov.np" target="_blank" rel="noopener" class="trust-badge">
+      <div class="trust-badge-icon"><svg width="26" height="26" viewBox="0 0 36 36"><rect width="36" height="36" rx="4" fill="#003580"/><path d="M18 8l2.5 7.5H28l-6.5 4.5 2.5 7.5L18 23l-6 4.5 2.5-7.5L8 15.5h7.5z" fill="#fff"/></svg></div>
+      <div class="trust-badge-name">MEC Nepal</div>
+    </a>
+    <a href="https://nmc.org.np" target="_blank" rel="noopener" class="trust-badge">
+      <div class="trust-badge-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5eead4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+      <div class="trust-badge-name">Nepal NMC</div>
+    </a>
+    <a href="https://natboard.edu.in" target="_blank" rel="noopener" class="trust-badge">
+      <div class="trust-badge-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
+      <div class="trust-badge-name">NBE India</div>
+    </a>
+    <a href="https://wdoms.org" target="_blank" rel="noopener" class="trust-badge">
+      <div class="trust-badge-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+      <div class="trust-badge-name">WDOMS</div>
+    </a>
+    <a href="https://entrance.mec.gov.np" target="_blank" rel="noopener" class="trust-badge">
+      <div class="trust-badge-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <div class="trust-badge-name">MECEE Portal</div>
+    </a>
   </div>
 </div>
 </div>
@@ -912,16 +967,15 @@ textarea.a-inp{min-height:80px;resize:vertical}
 <div class="tabs-container">
   <div class="tabs-label">Navigate Sections</div>
   <div class="tabs-grid">
-    <div class="tab-card on" onclick="switchTab('process')" id="tab-process"><div class="tab-icon">📋</div><div class="tab-label" data-en="Admission<br>Process" data-hi="प्रवेश<br>प्रक्रिया">Admission<br>Process</div></div>
-    <div class="tab-card" onclick="switchTab('colleges')" id="tab-colleges"><div class="tab-icon">🏥</div><div class="tab-label" data-en="Nepal Medical<br>Colleges" data-hi="नेपाल मेडिकल<br>कॉलेज">Nepal Medical<br>Colleges</div></div>
-    <div class="tab-card" onclick="switchTab('why')" id="tab-why"><div class="tab-icon">🏛️</div><div class="tab-label" data-en="Why<br>Nepal" data-hi="क्यों<br>नेपाल">Why<br>Nepal</div></div>
-    <div class="tab-card" onclick="switchTab('calculator')" id="tab-calculator"><div class="tab-icon">🧮</div><div class="tab-label" data-en="NEET<br>Calculator" data-hi="NEET<br>कैलकुलेटर">NEET<br>Calculator</div></div>
-    <div class="tab-card" onclick="switchTab('guidelines')" id="tab-guidelines"><div class="tab-icon">📜</div><div class="tab-label" data-en="Official<br>Guidelines" data-hi="आधिकारिक<br>दिशानिर्देश">Official<br>Guidelines</div></div>
-    <div class="tab-card" onclick="switchTab('videos')" id="tab-videos"><div class="tab-icon">🎥</div><div class="tab-label" data-en="Videos &<br>Resources" data-hi="वीडियो &<br>संसाधन">Videos &<br>Resources</div></div>
-    <div class="tab-card" onclick="switchTab('faq')" id="tab-faq"><div class="tab-icon">❓</div><div class="tab-label" data-en="FAQ" data-hi="सामान्य प्रश्न">FAQ</div></div>
-<!-- Nepal Medical Colleges tab label already updated above -->
-    <div class="tab-card" onclick="switchTab('lifestyle')" id="tab-lifestyle"><div class="tab-icon">🌄</div><div class="tab-label" data-en="Life in<br>Nepal" data-hi="नेपाल में<br>जीवन">Life in<br>Nepal</div></div>
-    <div class="tab-card" onclick="switchTab('counsel')" id="tab-counsel"><div class="tab-icon">📅</div><div class="tab-label" data-en="Free<br>Counseling" data-hi="निःशुल्क<br>काउंसलिंग">Free<br>Counseling</div></div>
+    <div class="tab-card on" onclick="switchTab('process')" id="tab-process"><svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg><div class="tab-label" data-en="Admission<br>Process" data-hi="प्रवेश<br>प्रक्रिया">Admission<br>Process</div></div>
+    <div class="tab-card" onclick="switchTab('colleges')" id="tab-colleges"><svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21V12h6v9"/><path d="M12 3v3"/><circle cx="12" cy="9" r="1" fill="currentColor"/></svg><div class="tab-label" data-en="Nepal Medical<br>Colleges" data-hi="नेपाल मेडिकल<br>कॉलेज">Nepal Medical<br>Colleges</div></div>
+    <div class="tab-card" onclick="switchTab('why')" id="tab-why"><svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><div class="tab-label" data-en="Why<br>Nepal" data-hi="क्यों<br>नेपाल">Why<br>Nepal</div></div>
+    <div class="tab-card" onclick="switchTab('calculator')" id="tab-calculator"><svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10" stroke-width="2.5"/><line x1="12" y1="10" x2="12" y2="10" stroke-width="2.5"/><line x1="16" y1="10" x2="16" y2="10" stroke-width="2.5"/><line x1="8" y1="14" x2="8" y2="14" stroke-width="2.5"/><line x1="12" y1="14" x2="12" y2="14" stroke-width="2.5"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="8" y1="18" x2="8" y2="18" stroke-width="2.5"/><line x1="12" y1="18" x2="12" y2="18" stroke-width="2.5"/></svg><div class="tab-label" data-en="NEET<br>Calculator" data-hi="NEET<br>कैलकुलेटर">NEET<br>Calculator</div></div>
+    <div class="tab-card" onclick="switchTab('guidelines')" id="tab-guidelines"><svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg><div class="tab-label" data-en="Official<br>Guidelines" data-hi="आधिकारिक<br>दिशानिर्देश">Official<br>Guidelines</div></div>
+    <div class="tab-card" onclick="switchTab('videos')" id="tab-videos"><svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="23,7 16,12 23,17"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><div class="tab-label" data-en="Videos &<br>Resources" data-hi="वीडियो &<br>संसाधन">Videos &<br>Resources</div></div>
+    <div class="tab-card" onclick="switchTab('faq')" id="tab-faq"><svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2.5"/></svg><div class="tab-label" data-en="FAQ" data-hi="सामान्य प्रश्न">FAQ</div></div>
+    <div class="tab-card" onclick="switchTab('lifestyle')" id="tab-lifestyle"><svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18l4-8 4 5 3-3 4 6"/><circle cx="12" cy="6" r="2"/></svg><div class="tab-label" data-en="Life in<br>Nepal" data-hi="नेपाल में<br>जीवन">Life in<br>Nepal</div></div>
+    <div class="tab-card" onclick="switchTab('counsel')" id="tab-counsel"><svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg><div class="tab-label" data-en="Free<br>Counseling" data-hi="निःशुल्क<br>काउंसलिंग">Free<br>Counseling</div></div>
   </div>
 </div>
 </div>
@@ -1853,10 +1907,19 @@ function switchTab(name){
   if(pane){
     pane.classList.add('on');
     const ts=document.getElementById('tabs-section');
-    if(ts)setTimeout(()=>window.scrollTo({top:ts.offsetTop-70,behavior:'smooth'}),50);
+    if(ts){
+      // Scroll directly to content — skip hero section entirely
+      setTimeout(()=>{
+        const offset = ts.offsetTop - 68;
+        window.scrollTo({top: offset, behavior:'smooth'});
+      }, 60);
+    }
   }
-  document.getElementById('mob-menu').classList.remove('open');
-  document.getElementById('hbg').classList.remove('open');
+  // Close mobile menu
+  const mm = document.getElementById('mob-menu');
+  const hb = document.getElementById('hbg');
+  if(mm) mm.classList.remove('open');
+  if(hb) hb.classList.remove('open');
 }
 function switchGuide(btn,id){
   document.querySelectorAll('.g-tab').forEach(b=>b.classList.remove('on'));
@@ -2020,16 +2083,24 @@ let heroStarted = false;
 let heroContentHidden = false;
 let photoSlideIndex = 0;
 let photoSlideTimer = null;
+let heroIsAnimating = false;
 
 function initHeroSlideshow() {
   const slides = document.querySelectorAll('.hero-slide');
   const dotsEl = document.getElementById('slide-dots');
   if (!slides.length) return;
 
-  // Set first slide active
-  slides[0].classList.add('active');
+  // First slide starts visible (translateX(0)), others off-screen right
+  slides.forEach((s, i) => {
+    if (i === 0) {
+      s.style.transform = 'translateX(0)';
+      s.classList.add('active');
+    } else {
+      s.style.transform = 'translateX(100%)';
+    }
+  });
 
-  // Create dots
+  // Build dots
   if (dotsEl) {
     slides.forEach((_, i) => {
       const dot = document.createElement('div');
@@ -2039,46 +2110,62 @@ function initHeroSlideshow() {
     });
   }
 
-  // After 10 seconds: hide hero text content, show full slideshow
-  heroTimer = setTimeout(() => {
-    const heroText = document.querySelector('.hero-text-initial');
-    if (heroText) {
-      heroText.classList.add('hidden');
-      heroContentHidden = true;
-    }
-    // Show slide caption
+  // After 5 seconds: start auto-sliding (right-to-left)
+  setTimeout(() => {
+    startSlideAuto();
+    // Show caption
     const cap = document.getElementById('slide-caption');
     if (cap) cap.classList.add('show');
-    startSlideAuto();
-  }, 10000);
-
-  // Start slower slideshow even before 10s (just background)
-  startSlideAuto(8000);
+  }, 5000);
 }
 
-function startSlideAuto(interval = 4000) {
+function startSlideAuto() {
   clearInterval(window._heroSlidInterval);
   window._heroSlidInterval = setInterval(() => {
     const slides = document.querySelectorAll('.hero-slide');
-    heroSlideIndex = (heroSlideIndex + 1) % slides.length;
-    goToSlide(heroSlideIndex);
-  }, interval);
+    const nextIdx = (heroSlideIndex + 1) % slides.length;
+    goToSlide(nextIdx);
+  }, 4500);
 }
 
 function goToSlide(idx) {
+  if (heroIsAnimating) return;
+  heroIsAnimating = true;
+
   const slides = document.querySelectorAll('.hero-slide');
   const dots = document.querySelectorAll('.slide-dot');
   const capEl = document.getElementById('slide-caption-text');
+  const isNature = slides[idx] && slides[idx].classList.contains('nature-slide');
 
-  slides.forEach(s => s.classList.remove('active'));
-  dots.forEach(d => d.classList.remove('active'));
+  const prevIdx = heroSlideIndex;
+  if (prevIdx === idx) { heroIsAnimating = false; return; }
 
-  if (slides[idx]) {
-    slides[idx].classList.add('active');
-    heroSlideIndex = idx;
-    if (capEl) capEl.textContent = slides[idx].dataset.caption || '';
+  // Outgoing slide: slide left (translateX(-100%))
+  if (slides[prevIdx]) {
+    slides[prevIdx].style.transition = 'transform 0.85s cubic-bezier(0.77,0,0.175,1)';
+    slides[prevIdx].style.transform = 'translateX(-100%)';
+    slides[prevIdx].classList.remove('active');
   }
-  if (dots[idx]) dots[idx].classList.add('active');
+
+  // Incoming slide: start from right, slide to center
+  if (slides[idx]) {
+    slides[idx].style.transition = 'none';
+    slides[idx].style.transform = 'translateX(100%)';
+    slides[idx].classList.add('active');
+    // Force reflow then animate
+    slides[idx].getBoundingClientRect();
+    slides[idx].style.transition = 'transform 0.85s cubic-bezier(0.77,0,0.175,1)';
+    slides[idx].style.transform = 'translateX(0)';
+  }
+
+  // Update caption
+  if (capEl && slides[idx]) capEl.textContent = slides[idx].dataset.caption || '';
+
+  // Update dots
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+
+  heroSlideIndex = idx;
+  setTimeout(() => { heroIsAnimating = false; }, 900);
 }
 
 // Wrap hero initial content for hide/show
