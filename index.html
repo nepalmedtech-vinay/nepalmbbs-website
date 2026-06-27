@@ -1971,6 +1971,144 @@ section.hero {
 }
 /* ── END CONTACT BAR ── */
 
+
+/* ── STEP CARDS — Dark readable text ── */
+.step-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  color: #1e293b !important;
+}
+.step-title {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  font-size: 17px !important;
+}
+.step-body, .step-body p, .step-body li {
+  color: #334155 !important;
+  font-size: 14px !important;
+  line-height: 1.75 !important;
+  font-weight: 450 !important;
+}
+.step-body strong { color: #0f172a !important; font-weight: 700 !important; }
+.step-num {
+  background: #1a3a8f !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+.step-icon { font-size: 28px !important; }
+.step-link a {
+  color: #1d4ed8 !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+}
+.step-link a:hover { color: #f0a500 !important; }
+
+/* Why Nepal cards — dark text on white bg */
+.why-card {
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+.why-card h4 { color: #0f172a !important; font-weight: 700 !important; }
+.why-card p, .why-card li { color: #475569 !important; font-size: 14px !important; }
+
+/* Comparison table — dark text */
+.comp-table th { background: #1a3a8f !important; color: #ffffff !important; font-weight: 700 !important; }
+.comp-table td { color: #1e293b !important; background: #ffffff !important; }
+.comp-table tr:nth-child(even) td { background: #f8fafc !important; }
+
+/* FAQ — dark text */
+.faq-item { background: #ffffff !important; }
+.faq-q { color: #0f172a !important; font-weight: 600 !important; }
+.faq-a { color: #334155 !important; line-height: 1.7 !important; }
+
+/* Calculator results */
+.calc-result { background: #ffffff !important; }
+.calc-result h3, .calc-result p { color: #0f172a !important; }
+
+/* ── TRUST BADGES — Visible text ── */
+.trust-section {
+  background: #f0f4ff !important;
+  border-top: 2px solid #1a3a8f !important;
+  border-bottom: 2px solid #1a3a8f !important;
+}
+.trust-title {
+  color: #1a3a8f !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.12em !important;
+}
+.trust-badge {
+  background: #ffffff !important;
+  border: 1.5px solid #dbeafe !important;
+  box-shadow: 0 2px 12px rgba(26,58,143,0.10) !important;
+  border-radius: 16px !important;
+  padding: 14px 10px 12px !important;
+}
+.trust-badge:hover {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 4px 20px rgba(59,130,246,0.20) !important;
+  transform: translateY(-3px) !important;
+}
+.trust-badge-name {
+  color: #1e3a5f !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+}
+.trust-badge-icon {
+  background: #eff6ff !important;
+  border: 1px solid #bfdbfe !important;
+  border-radius: 12px !important;
+}
+
+/* ── ALL LINK/BUTTON TEXT — Teal/blue for visibility ── */
+/* Tab section background */
+.tabs-section {
+  background: #111827 !important;
+}
+
+/* Tab cards on dark bg */
+.tab-card {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1.5px solid rgba(255,255,255,0.20) !important;
+}
+.tab-label {
+  color: #e2e8f0 !important;
+  font-weight: 700 !important;
+  font-size: 10.5px !important;
+}
+.tab-card.on { background: rgba(240,165,0,0.25) !important; }
+.tab-card.on .tab-label { color: #fde68a !important; font-weight: 800 !important; }
+.tab-svg { opacity: 0.85 !important; }
+.tab-card.on .tab-svg { opacity: 1 !important; }
+
+/* College card action links */
+.college-link {
+  color: #38bdf8 !important;
+  border-color: rgba(56,189,248,0.40) !important;
+  font-weight: 600 !important;
+}
+.college-link:hover { color: #0ea5e9 !important; }
+
+/* Step links */
+.step-link a, .guide-link, .faq-a a {
+  color: #0ea5e9 !important;
+  font-weight: 600 !important;
+}
+.step-link a:hover { color: #f0a500 !important; }
+
+/* Ticker */
+.ticker-wrap {
+  background: #1a3a8f !important;
+  border: none !important;
+}
+.ticker-text { color: #e0f2fe !important; font-weight: 600 !important; }
+
+/* Admin button */
+.admin-access-btn {
+  background: rgba(255,255,255,0.10) !important;
+  color: rgba(255,255,255,0.50) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+}
+
 </style>
 </head>
 <body>
@@ -2029,67 +2167,57 @@ section.hero {
 <!-- HERO -->
 <section class="hero">
   <div class="hero-slides" id="hero-slides">
-  <div class="hero-slide active" data-caption="🫀 Human Anatomy — Medical Education Nepal" style="background-image:url('https://images.unsplash.com/photo-d-Y3h47oaD0?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🧬 Biology & Cell Science — MBBS Foundation" style="background-image:url('https://images.unsplash.com/photo-505eectW54k?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🦷 Anatomy Lab — Cadaveric Study" style="background-image:url('https://images.unsplash.com/photo-WLjm_dL5GK4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🔬 Microscopy — Histology Lab" style="background-image:url('https://images.unsplash.com/photo-0mZnJwXwEEk?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="📝 NEET Exam Preparation — Medical Aspirants" style="background-image:url('https://images.unsplash.com/photo-lUaaKCUANVI?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="✏️ MEC Entrance Exam — Nepal MBBS" style="background-image:url('https://images.unsplash.com/photo-s9CC2SKySJM?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="📚 Study Hall — Medical Exam Preparation" style="background-image:url('https://images.unsplash.com/photo-7okkFhxrxNw?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🧫 Pathology Lab — Disease Investigation" style="background-image:url('https://images.unsplash.com/photo-hnq1HuKQAVM?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🔭 Pathology Slides — Microscopic Analysis" style="background-image:url('https://images.unsplash.com/photo-zCevd81MJbQ?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="💓 Physiology Lab — Cardiac & Respiratory" style="background-image:url('https://images.unsplash.com/photo-8xArrOgWsqY?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🫁 Human Physiology — Medical Science" style="background-image:url('https://images.unsplash.com/photo-0Bs3et8FYyg?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🧪 Biochemistry Lab — Molecular Research" style="background-image:url('https://images.unsplash.com/photo-4Mta-mIF4vE?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="⚗️ Chemical Analysis — Biochemistry Nepal" style="background-image:url('https://images.unsplash.com/photo-ncpFuoY-MQA?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🦠 Microbiology Lab — Bacterial Culture" style="background-image:url('https://images.unsplash.com/photo-hbb_9I9sMLQ?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🔬 Microbiology Research — Medical College" style="background-image:url('https://images.unsplash.com/photo-4Mta-mIF4vE?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide nature-slide" data-caption="⛰️ The Mighty Himalayas — Nepal" style="background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="🏔️ Annapurna Range — Pokhara" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="🌄 Kathmandu Valley — Nepal" style="background-image:url('https://images.unsplash.com/photo-1571825304178-9e06ae61735c?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="🏡 Himalayan Village — Nepal" style="background-image:url('https://images.unsplash.com/photo-1518002054494-3a6f94352e9d?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="🏞️ Phewa Lake — Pokhara, Nepal" style="background-image:url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="❄️ Everest Region — Nepal" style="background-image:url('https://images.unsplash.com/photo-1469521669194-babb45599def?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="🌅 Nepal — Sunrise Over Mountains" style="background-image:url('https://images.unsplash.com/photo-1458442310124-dde6edb43d10?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="🌤️ Clear Himalayan Sky — Nepal Weather" style="background-image:url('https://images.unsplash.com/photo-0Y6dTnKBEFI?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide nature-slide" data-caption="🌧️ Monsoon Season — Nepal Landscape" style="background-image:url('https://images.unsplash.com/photo-qgHGn3-eQ18?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"></div>
-  <div class="hero-slide" data-caption="🍛 Indian Food in Nepal — Dal Bhat Thali" style="background-image:url('https://images.unsplash.com/photo-MqT0asuoIcU?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🫕 Authentic Indian Cuisine — Nepal Campus" style="background-image:url('https://images.unsplash.com/photo-SqYmTDQYMjo?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🍽️ Student Mess — Indian Food Nepal College" style="background-image:url('https://images.unsplash.com/photo-pFqrSYMoKT4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🏘️ Community Medicine — Rural Health Nepal" style="background-image:url('https://images.unsplash.com/photo-6sl88x150Xs?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="👨‍⚕️ Community Healthcare — Nepal" style="background-image:url('https://images.unsplash.com/photo-9wH624ALFQA?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="💊 Pharmacology — Drug Research Lab" style="background-image:url('https://images.unsplash.com/photo-MsGGRtmQ1cQ?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🧴 Pharmacy Lab — Medicine Preparation" style="background-image:url('https://images.unsplash.com/photo-L7en7Lb-Ovc?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="👨‍⚕️ Indian Doctors — Medical Excellence" style="background-image:url('https://images.unsplash.com/photo-ILip77SbmOE?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🩺 Doctor Consultation — Nepal Teaching Hospital" style="background-image:url('https://images.unsplash.com/photo-9wH624ALFQA?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="👩‍⚕️ Medical Professionals — Nepal MBBS Grads" style="background-image:url('https://images.unsplash.com/photo-YuS4X_XfMX0?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🤖 Robotic Surgery — Advanced Medical Tech" style="background-image:url('https://images.unsplash.com/photo-eFTCKiRCMT4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🏥 MRI Machine — Diagnostic Radiology" style="background-image:url('https://images.unsplash.com/photo-LyvAZNG1dGE?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="📡 CT Scan Suite — Medical Imaging Nepal" style="background-image:url('https://images.unsplash.com/photo-0Bs3et8FYyg?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🔪 Operation Theater — Surgical Excellence" style="background-image:url('https://images.unsplash.com/photo-ZGa9d1a_4tA?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="💡 High-Tech Medical Equipment — Nepal Hospital" style="background-image:url('https://images.unsplash.com/photo-ar_BfpfMRmo?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="⚕️ Advanced Medical Technology — Teaching Hospital" style="background-image:url('https://images.unsplash.com/photo-pFqrSYMoKT4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🔬 Medical Research Equipment — Nepal" style="background-image:url('https://images.unsplash.com/photo-hWbFVJiXSQY?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="💉 Hospital Pharmacy — Medicine Dispensary" style="background-image:url('https://images.unsplash.com/photo-L7en7Lb-Ovc?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🏪 Pharmacy Department — Nepal Medical College" style="background-image:url('https://images.unsplash.com/photo-MsGGRtmQ1cQ?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="👩‍⚕️ Nursing Care — Nepal Teaching Hospital" style="background-image:url('https://images.unsplash.com/photo-Qx-_HnN7WWs?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="💉 Nursing Students — Clinical Training Nepal" style="background-image:url('https://images.unsplash.com/photo-a9fSdkbLaOk?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🦷 Dental Science — BDS Program Nepal" style="background-image:url('https://images.unsplash.com/photo-WLjm_dL5GK4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="😁 Dental Lab — Oral Health Science" style="background-image:url('https://images.unsplash.com/photo-0mZnJwXwEEk?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🎓 MD/MS Postgraduation — Nepal Medical College" style="background-image:url('https://images.unsplash.com/photo-YuS4X_XfMX0?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="⚕️ MCh Surgery — Super Speciality Nepal" style="background-image:url('https://images.unsplash.com/photo-ILip77SbmOE?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🌿 Green Campus — Nepal Medical College Life" style="background-image:url('https://images.unsplash.com/photo-lRoX0shwjUQ?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="⚽ Students Playing — Open Campus Ground Nepal" style="background-image:url('https://images.unsplash.com/photo-9wH624ALFQA?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="📚 Study Group — Campus Life Nepal" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="😊 Student Community — Nepal MBBS" style="background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🍱 College Mess — Indian Students Dining Nepal" style="background-image:url('https://images.unsplash.com/photo-SqYmTDQYMjo?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🫕 Canteen Life — Medical Students Nepal" style="background-image:url('https://images.unsplash.com/photo-MqT0asuoIcU?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="📖 Medical Lecture — Nepal College" style="background-image:url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🎓 MBBS Students — White Apron Day" style="background-image:url('https://images.unsplash.com/photo-1580139557401-58ed2b1d3d87?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🩺 Stethoscope — Symbol of Medicine" style="background-image:url('https://images.unsplash.com/photo-1674702727317-d29b2788dc4a?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🫀 Synthetic Organs — Anatomy Training" style="background-image:url('https://images.unsplash.com/photo-d-Y3h47oaD0?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="🧴 Dermatology — Skin Science Clinical Training" style="background-image:url('https://images.unsplash.com/photo-6sl88x150Xs?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
-  <div class="hero-slide" data-caption="👩‍⚕️ Dermatologist — Clinical Skin Care Nepal" style="background-image:url('https://images.unsplash.com/photo-Qx-_HnN7WWs?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format&ixlib=rb-4.1.0')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide active" data-caption="🫀 Human Anatomy — Medical Education" style="background-image:url('https://images.unsplash.com/photo-d-Y3h47oaD0?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🧬 Biology & Cell Science — MBBS Foundation" style="background-image:url('https://images.unsplash.com/photo-ar_BfpfMRmo?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🔬 Histology Microscopy — Anatomy Lab" style="background-image:url('https://images.unsplash.com/photo-0mZnJwXwEEk?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🦴 Skeletal Anatomy — Medical College Nepal" style="background-image:url('https://images.unsplash.com/photo-L8tWZT4CcVQ?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📝 NEET Exam Preparation — Medical Aspirants" style="background-image:url('https://images.unsplash.com/photo-lUaaKCUANVI?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="✏️ MEC Entrance Exam — Nepal MBBS 2025" style="background-image:url('https://images.unsplash.com/photo-s9CC2SKySJM?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📚 Study Hall — Exam Preparation" style="background-image:url('https://images.unsplash.com/photo-7okkFhxrxNw?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📖 Medical Books — NEET Study Material" style="background-image:url('https://images.unsplash.com/photo-gYdjZpxLEAQ?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🧫 Pathology Lab — Disease Investigation" style="background-image:url('https://images.unsplash.com/photo-hnq1HuKQAVM?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🔭 Pathology Slides — Microscopic Analysis" style="background-image:url('https://images.unsplash.com/photo-zCevd81MJbQ?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🧪 Biopsy Analysis — Pathology Department" style="background-image:url('https://images.unsplash.com/photo-hWbFVJiXSQY?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="💓 Physiology Lab — Cardiac Study" style="background-image:url('https://images.unsplash.com/photo-8xArrOgWsqY?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🫁 Human Physiology — Respiratory System" style="background-image:url('https://images.unsplash.com/photo-0Bs3et8FYyg?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🧪 Biochemistry Lab — Molecular Research" style="background-image:url('https://images.unsplash.com/photo-4Mta-mIF4vE?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="⚗️ Chemical Analysis — Biochemistry Nepal" style="background-image:url('https://images.unsplash.com/photo-ncpFuoY-MQA?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🦠 Microbiology Lab — Bacterial Culture" style="background-image:url('https://images.unsplash.com/photo-hbb_9I9sMLQ?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🔬 Microbiology Research — Medical College" style="background-image:url('https://images.unsplash.com/photo-vXymirxr5ac?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide nature-slide" data-caption="⛰️ The Mighty Himalayas — Nepal" style="background-image:url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"></div>
+  <div class="hero-slide nature-slide" data-caption="🏔️ Annapurna Range — Pokhara, Nepal" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌄 Kathmandu Valley — Nepal" style="background-image:url('https://images.unsplash.com/photo-1571825304178-9e06ae61735c?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"></div>
+  <div class="hero-slide nature-slide" data-caption="🏡 Himalayan Village — Premium Nepal" style="background-image:url('https://images.unsplash.com/photo-1518002054494-3a6f94352e9d?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"></div>
+  <div class="hero-slide nature-slide" data-caption="🏞️ Phewa Lake — Pokhara, Nepal" style="background-image:url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"></div>
+  <div class="hero-slide nature-slide" data-caption="❄️ Everest Region — Nepal Himalaya" style="background-image:url('https://images.unsplash.com/photo-1469521669194-babb45599def?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌅 Nepal — Sunrise Over Mountains" style="background-image:url('https://images.unsplash.com/photo-1458442310124-dde6edb43d10?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌤️ Clear Himalayan Sky — Nepal Weather" style="background-image:url('https://images.unsplash.com/photo-0Y6dTnKBEFI?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"></div>
+  <div class="hero-slide nature-slide" data-caption="🌧️ Monsoon Nepal — Lush Green Landscape" style="background-image:url('https://images.unsplash.com/photo-qgHGn3-eQ18?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"></div>
+  <div class="hero-slide nature-slide" data-caption="🏘️ Premium Nepal Village — Mountain Life" style="background-image:url('https://images.unsplash.com/photo-_rS62zl7lsM?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"></div>
+  <div class="hero-slide" data-caption="🍛 Indian Thali — Dal Bhat in Nepal" style="background-image:url('https://images.unsplash.com/photo-MqT0asuoIcU?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🫕 Indian Cuisine — Nepal Campus Mess" style="background-image:url('https://images.unsplash.com/photo-SqYmTDQYMjo?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🍽️ Student Mess — Indian Food Nepal College" style="background-image:url('https://images.unsplash.com/photo-pFqrSYMoKT4?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🏘️ Community Medicine — Rural Health Nepal" style="background-image:url('https://images.unsplash.com/photo-6sl88x150Xs?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="👨‍⚕️ Community Health Camp — Nepal Village" style="background-image:url('https://images.unsplash.com/photo-9wH624ALFQA?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="💊 Pharmacology — Drug Research Lab" style="background-image:url('https://images.unsplash.com/photo-MsGGRtmQ1cQ?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🧴 Pharmacy Lab — Medicine Preparation" style="background-image:url('https://images.unsplash.com/photo-L7en7Lb-Ovc?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="👨‍⚕️ Indian Doctors — Medical Excellence" style="background-image:url('https://images.unsplash.com/photo-ILip77SbmOE?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="👩‍⚕️ Medical Professionals — Nepal MBBS Grads" style="background-image:url('https://images.unsplash.com/photo-YuS4X_XfMX0?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🤖 Robotic Surgery — Advanced Medical Tech" style="background-image:url('https://images.unsplash.com/photo-eFTCKiRCMT4?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🦾 Da Vinci Surgical Robot — Nepal Hospital" style="background-image:url('https://images.unsplash.com/photo-kna1SaGjKEU?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🏥 MRI Machine — Diagnostic Radiology" style="background-image:url('https://images.unsplash.com/photo-LyvAZNG1dGE?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🔪 Operation Theater — Surgical Excellence" style="background-image:url('https://images.unsplash.com/photo-ZGa9d1a_4tA?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="💡 High-Tech Medical Equipment — Nepal" style="background-image:url('https://images.unsplash.com/photo-VLaKst0EjEk?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="👩‍⚕️ Nursing Care — Nepal Teaching Hospital" style="background-image:url('https://images.unsplash.com/photo-Qx-_HnN7WWs?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="💉 Nursing Students — Clinical Training" style="background-image:url('https://images.unsplash.com/photo-a9fSdkbLaOk?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🦷 Dental Science — BDS Program Nepal" style="background-image:url('https://images.unsplash.com/photo-WLjm_dL5GK4?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="😁 Dental Lab — Oral Health Science Nepal" style="background-image:url('https://images.unsplash.com/photo-xekxE_VR0Ec?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🎓 Graduation Day — Nepal MBBS Success" style="background-image:url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🌿 Green Campus — Nepal Medical College" style="background-image:url('https://images.unsplash.com/photo-lRoX0shwjUQ?fm=webp&w=1920&h=1080&fit=crop&crop=entropy&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📚 Study Group — Campus Life Nepal" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="📖 Medical Lecture — Nepal MBBS" style="background-image:url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🎓 MBBS Students — White Apron Day" style="background-image:url('https://images.unsplash.com/photo-1580139557401-58ed2b1d3d87?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
+  <div class="hero-slide" data-caption="🩺 Stethoscope — Symbol of Medicine" style="background-image:url('https://images.unsplash.com/photo-1674702727317-d29b2788dc4a?fm=webp&w=1920&h=1080&fit=crop&crop=center&q=92&auto=format')"><div class="hero-slide-overlay"></div></div>
   </div>
 
   <div class="slide-dots" id="slide-dots"></div>
@@ -4255,7 +4383,8 @@ async function exportCSV(){
   a.click();
   toast('✅ CSV downloaded!','ok');
 }
-</script>
+
+
 
 // ═══ GLASS TAP GLOW — COMPREHENSIVE ═══
 (function(){
@@ -4288,5 +4417,6 @@ async function exportCSV(){
   setTimeout(bind,4000);
 })();
 
-</body>
+
+</script></body>
 </html>
