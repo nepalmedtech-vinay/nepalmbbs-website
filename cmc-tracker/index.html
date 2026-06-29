@@ -250,7 +250,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;b
     <div id="lpf" class="fld" style="display:none;"><label>Phone Number</label><input class="gi" id="lPhone" type="tel" placeholder="+91 or +977 number"></div>
     <div class="fld"><label>Your Name *</label><input class="gi" id="lName" placeholder="Full name" autocomplete="name"></div>
     <div class="fld"><label>Role</label>
-      <select class="gs" id="lRole" onchange="document.getElementById('lAdminPin').style.display=this.value==='admin'?'block':'none'">
+      <select class="gs" id="lRole" onchange="handleRoleChange(this)">
         <option value="staff">👤 Staff / Coordinator</option>
         <option value="admin">🔑 Admin (View All)</option>
         <option value="faculty">👨‍🏫 Faculty</option>
@@ -293,7 +293,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;b
       <input class="gi" id="lPinInput" type="password" placeholder="Enter your admin password" autocomplete="current-password">
       <div style="font-size:10px;color:var(--text3);margin-top:4px;">🔐 Password verified securely. Contact super-admin if forgotten.</div>
     </div>
-    <button class="gbtn gbtn-pu gbtn-full" onclick="doLogin()" style="margin-top:6px;">🚀 Enter App</button>
+    <button class="gbtn gbtn-pu gbtn-full" onclick="handleLogin()" style="margin-top:6px;">🚀 Enter App</button>
     <p style="font-size:10px;color:var(--text3);text-align:center;margin-top:12px;">Data saved on your device — works offline</p>
   </div>
 </div>
@@ -879,6 +879,9 @@ function closeM(id){document.getElementById(id).classList.remove('open')}
 // ── LOGIN ──
 let lm='email';
 function setLT(m,el){lm=m;document.querySelectorAll('.ltab').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('lef').style.display=m==='email'?'block':'none';document.getElementById('lpf').style.display=m==='phone'?'block':'none';}
+function handleRoleChange(el){
+  document.getElementById('lAdminPin').style.display=el.value==='admin'?'block':'none';
+}
 function orgChanged(val){
   document.getElementById('lCustomOrg').style.display=val==='__custom__'?'block':'none';
   document.getElementById('lAdminPin').style.display=document.getElementById('lRole').value==='admin'?'block':'none';
@@ -893,6 +896,15 @@ async function hashPassword(password){
   return hashArray.map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
+function handleLogin(){
+  const btn=document.querySelector('.gbtn-pu.gbtn-full');
+  if(btn){btn.textContent='Loading...';btn.disabled=true;}
+  doLogin().catch(e=>{
+    console.error(e);
+    if(btn){btn.textContent='🚀 Enter App';btn.disabled=false;}
+    toast('Error: '+e.message,true);
+  });
+}
 async function doLogin(){
   const name=document.getElementById('lName').value.trim();
   const email=document.getElementById('lEmail').value.trim();
@@ -977,6 +989,8 @@ function chkAuth(){
   }
 }
 function startApp(){
+  const btn=document.querySelector('#LS .gbtn-pu');
+  if(btn){btn.textContent='🚀 Enter App';btn.disabled=false;}
   document.getElementById('LS').style.display='none';
   document.getElementById('MA').style.display='flex';
   initUI();loadDash();
