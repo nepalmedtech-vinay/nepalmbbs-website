@@ -1,0 +1,1492 @@
+// ============================================================
+// WRC NEPAL STAFF TRACKER — app.js
+// ============================================================
+var SU='https://tgsiltcuisgejmdkovxz.supabase.co';
+var SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnc2lsdGN1aXNnZWptZGtvdnh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNjg1MTcsImV4cCI6MjA5NjY0NDUxN30.QfB5QQAnQR7-lFNHQwXmILZIdX96eJ6Q1hO-O2zt6gc';
+var I2N=1.6,N2I=0.625;
+var CU=null,DB=null;
+var allV=[],allE=[],vSF='',eSF='all';
+var rData=null,admCurData='visitors';
+var noticesCache=[];
+var visitMode='physical';
+
+// ============================================================
+// CONFIG DATA
+// ============================================================
+var NEPAL_COLLEGES=["WRC Nepal","Tribhuvan University Institute of Medicine (IOM)","Kathmandu University School of Medical Sciences (KUSMS)","B.P. Koirala Institute of Health Sciences (BPKIHS)","Patan Academy of Health Sciences (PAHS)","Kathmandu Medical College (KMC)","Nepal Medical College (NMC)","Kist Medical College","National Medical College","Chitwan Medical College","College of Medical Sciences (CMC) Bharatpur","Manipal College of Medical Sciences Pokhara","Gandaki Medical College Pokhara","Universal College of Medical Sciences Bhairahawa","Lumbini Medical College Palpa","Devdaha Medical College Rupandehi","Nepalgunj Medical College","National Academy of Medical Sciences (NAMS)","Birat Medical College Biratnagar","Nobel Medical College Biratnagar","Janaki Medical College Janakpur","Bharatpur Hospital Medical College","Karnali Academy of Health Sciences","Province Health Science Academy","Madhesh Institute of Health Sciences","Universal Medical College Nepal","Janamaitri Medical College"];
+
+var INDIA_STATES={
+"Andhra Pradesh":["Visakhapatnam","Vijayawada","Guntur","Tirupati"],
+"Bihar":["Patna","Gaya","Muzaffarpur","Bhagalpur","Darbhanga","Purnia"],
+"Delhi":["New Delhi","Delhi"],
+"Gujarat":["Ahmedabad","Surat","Vadodara","Rajkot"],
+"Haryana":["Gurugram","Faridabad","Panipat"],
+"Karnataka":["Bengaluru","Mysuru","Hubli"],
+"Kerala":["Kochi","Thiruvananthapuram","Kozhikode"],
+"Madhya Pradesh":["Bhopal","Indore","Gwalior","Jabalpur"],
+"Maharashtra":["Mumbai","Pune","Nagpur","Nashik"],
+"Punjab":["Ludhiana","Amritsar","Jalandhar","Chandigarh"],
+"Rajasthan":["Jaipur","Jodhpur","Udaipur","Kota"],
+"Tamil Nadu":["Chennai","Coimbatore","Madurai"],
+"Telangana":["Hyderabad","Warangal"],
+"Uttar Pradesh":["Lucknow","Kanpur","Varanasi","Agra","Noida","Allahabad","Gorakhpur","Meerut","Ghaziabad"],
+"Uttarakhand":["Dehradun","Haridwar"],
+"West Bengal":["Kolkata","Howrah","Siliguri"],
+"Assam":["Guwahati"],
+"Odisha":["Bhubaneswar","Cuttack"],
+"Jharkhand":["Ranchi","Jamshedpur"],
+"Chhattisgarh":["Raipur","Bhilai"],
+"Other State":["Other City"]
+};
+
+var SL={
+  'MBBS 2024':['Student 1','Student 2','Student 3','Student 4','Student 5','Student 6','Student 7','Student 8']
+};
+function genBatchYears(){
+  var years=[];
+  var cy=new Date().getFullYear();
+  for(var y=cy;y>=2010;y--){years.push('MBBS '+y);}
+  return years;
+}
+
+// ============================================================
+// INDEXEDDB
+// ============================================================
+function initDB(){
+  return new Promise(function(res,rej){
+    var r=indexedDB.open('WRC_v1',1);
+    r.onupgradeneeded=function(e){
+      var db=e.target.result;
+      ['visitors','expenses','attendance','notices_sent','batches'].forEach(function(s){
+        if(!db.objectStoreNames.contains(s)){
+          db.createObjectStore(s,{keyPath:'id',autoIncrement:true});
+        }
+      });
+    };
+    r.onsuccess=function(e){DB=e.target.result;res();};
+    r.onerror=rej;
+  });
+}
+function dbAll(store){
+  return new Promise(function(res,rej){
+    var tx=DB.transaction(store,'readonly');
+    tx.objectStore(store).getAll().onsuccess=function(e){res(e.target.result);};
+    tx.onerror=rej;
+  });
+}
+function dbAdd(store,data){
+  return new Promise(function(res,rej){
+    var d=Object.assign({},data,{ts:Date.now()});
+    var tx=DB.transaction(store,'readwrite');
+    tx.objectStore(store).add(d).onsuccess=function(e){res(e.target.result);};
+    tx.onerror=rej;
+  });
+}
+function dbDel(store,id){
+  return new Promise(function(res,rej){
+    var tx=DB.transaction(store,'readwrite');
+    tx.objectStore(store).delete(id).onsuccess=res;
+    tx.onerror=rej;
+  });
+}
+
+// ============================================================
+// CLOUD (Supabase)
+// ============================================================
+function cGet(table,extra){
+  extra=extra||'';
+  return fetch(SU+'/rest/v1/'+table+'?order=ts.desc'+extra,{
+    headers:{'apikey':SK,'Authorization':'Bearer '+SK}
+  }).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});
+}
+function cPost(table,data){
+  return fetch(SU+'/rest/v1/'+table,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK,'Prefer':'return=minimal'},
+    body:JSON.stringify(data)
+  }).catch(function(){});
+}
+
+// ============================================================
+// TOAST / MODAL
+// ============================================================
+function toast(m,err){
+  var t=document.getElementById('toast');
+  t.textContent=m;
+  t.style.background=err?'rgba(200,50,50,0.95)':'rgba(28,22,58,0.97)';
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3000);
+}
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+
+// ============================================================
+// LOGIN
+// ============================================================
+var lm='email';
+function populateLoginDropdowns(){
+  var orgSel=document.getElementById('lOrg');
+  var html='';
+  for(var i=0;i<NEPAL_COLLEGES.length;i++){
+    html+='<option value="'+NEPAL_COLLEGES[i]+'">'+NEPAL_COLLEGES[i]+'</option>';
+  }
+  html+='<option value="__custom__">+ Type Custom Organization</option>';
+  orgSel.innerHTML=html;
+}
+function setLT(m){
+  lm=m;
+  document.getElementById('ltab-email').classList.toggle('active',m==='email');
+  document.getElementById('ltab-phone').classList.toggle('active',m==='phone');
+  document.getElementById('lef').style.display=m==='email'?'block':'none';
+  document.getElementById('lpf').style.display=m==='phone'?'block':'none';
+}
+function onRoleChange(){
+  var r=document.getElementById('lRole').value;
+  document.getElementById('lAdminPin').style.display=r==='admin'?'block':'none';
+}
+function onOrgChange(){
+  var v=document.getElementById('lOrg').value;
+  document.getElementById('lCustomOrg').style.display=v==='__custom__'?'block':'none';
+}
+function handleLogin(){
+  var name=document.getElementById('lName').value.trim();
+  var email=document.getElementById('lEmail').value.trim();
+  var phone=document.getElementById('lPhone').value.trim();
+  var role=document.getElementById('lRole').value;
+  var orgEl=document.getElementById('lOrg');
+  var org=orgEl?orgEl.value:'WRC Nepal';
+  var customEl=document.getElementById('lCustomOrgInput');
+  if(org==='__custom__' && customEl){org=customEl.value.trim();}
+  if(!name){toast('Please enter your name',true);return;}
+  if(lm==='email' && !email){toast('Please enter your email',true);return;}
+  if(lm==='phone' && !phone){toast('Please enter your phone',true);return;}
+  if(!org || org==='__custom__'){toast('Please select organization',true);return;}
+  if(role==='admin'){
+    var pinEl=document.getElementById('lPinInput');
+    var pwd=pinEl?pinEl.value.trim():'';
+    if(!pwd){toast('Admin password required',true);return;}
+    doAdminLogin(name,email,phone,role,org,pwd);
+    return;
+  }
+  doFinalLogin(name,email,phone,role,org);
+}
+function doAdminLogin(name,email,phone,role,org,pwd){
+  var btn=document.getElementById('loginBtn');
+  if(btn){btn.textContent='🔐 Verifying...';btn.disabled=true;}
+  verifyAdmin(email||phone,pwd).then(function(ok){
+    if(btn){btn.textContent='🚀 Enter App';btn.disabled=false;}
+    if(!ok){toast('Invalid admin credentials',true);return;}
+    doFinalLogin(name,email,phone,role,org);
+  }).catch(function(){
+    if(btn){btn.textContent='🚀 Enter App';btn.disabled=false;}
+    toast('Verification failed',true);
+  });
+}
+function doFinalLogin(name,email,phone,role,org){
+  var orgKey=org.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();
+  var id=lm==='email'?email:phone;
+  CU={name:name,email:email,phone:phone,org:org,orgKey:orgKey,role:role,id:id,loginTime:Date.now()};
+  localStorage.setItem('wrc_u',JSON.stringify(CU));
+  startApp();
+}
+function checkAuth(){
+  var s=localStorage.getItem('wrc_u');
+  if(s){
+    try{
+      var u=JSON.parse(s);
+      if(u.loginTime && Date.now()-u.loginTime > 30*24*60*60*1000){
+        localStorage.removeItem('wrc_u');return;
+      }
+      CU=u;startApp();
+    }catch(e){localStorage.removeItem('wrc_u');}
+  }
+}
+function startApp(){
+  document.getElementById('LS').style.display='none';
+  document.getElementById('MA').style.display='flex';
+  initUI();
+  loadDash();
+  if(CU && CU.role==='admin'){
+    document.getElementById('adminNavBtn').style.display='flex';
+  }
+  if('Notification' in window && Notification.permission==='default'){
+    setTimeout(function(){Notification.requestPermission();},3000);
+  }
+  setTimeout(loadNotifBadge,2000);
+}
+function doLogout(){
+  if(!confirm('Logout?'))return;
+  localStorage.removeItem('wrc_u');
+  location.reload();
+}
+
+// ============================================================
+// UI INIT
+// ============================================================
+function populateModalDropdowns(){
+  // College dropdown in Add Visit modal
+  var ciSel=document.getElementById('vciSel');
+  var html='';
+  for(var i=0;i<NEPAL_COLLEGES.length;i++){
+    html+='<option value="'+NEPAL_COLLEGES[i]+'">'+NEPAL_COLLEGES[i]+'</option>';
+  }
+  html+='<option value="__custom__">+ Type Custom College</option>';
+  ciSel.innerHTML=html;
+
+  // State dropdown
+  var stateSel=document.getElementById('vstateSel');
+  var sHtml='';
+  var states=Object.keys(INDIA_STATES);
+  for(var j=0;j<states.length;j++){
+    sHtml+='<option value="'+states[j]+'">'+states[j]+'</option>';
+  }
+  stateSel.innerHTML=sHtml;
+  onStateChange();
+
+  // Batch year dropdown
+  var batchSel=document.getElementById('abatch');
+  var years=genBatchYears();
+  var bHtml='';
+  for(var k=0;k<years.length;k++){
+    bHtml+='<option value="'+years[k]+'">'+years[k]+'</option>';
+  }
+  bHtml+='<option value="__custom__">+ Custom Batch Name</option>';
+  batchSel.innerHTML=bHtml;
+}
+function onStateChange(){
+  var state=document.getElementById('vstateSel').value;
+  var citySel=document.getElementById('vcitySel');
+  var cities=INDIA_STATES[state]||['Other City'];
+  var html='';
+  for(var i=0;i<cities.length;i++){
+    html+='<option value="'+cities[i]+'">'+cities[i]+'</option>';
+  }
+  html+='<option value="__custom__">+ Type Custom City</option>';
+  citySel.innerHTML=html;
+  document.getElementById('vcityCustomWrap').style.display='none';
+}
+function onCityChange(){
+  var v=document.getElementById('vcitySel').value;
+  document.getElementById('vcityCustomWrap').style.display=v==='__custom__'?'block':'none';
+}
+function onCollegeChange(){
+  var v=document.getElementById('vciSel').value;
+  document.getElementById('vciCustomWrap').style.display=v==='__custom__'?'block':'none';
+}
+function onBatchChange(){
+  var v=document.getElementById('abatch').value;
+  document.getElementById('abatchCustomWrap').style.display=v==='__custom__'?'block':'none';
+}
+function setVisitMode(mode){
+  visitMode=mode;
+  document.getElementById('vmode-physical').classList.toggle('active',mode==='physical');
+  document.getElementById('vmode-virtual').classList.toggle('active',mode==='virtual');
+  document.getElementById('physicalFields').style.display=mode==='physical'?'block':'none';
+  document.getElementById('virtualFields').style.display=mode==='virtual'?'block':'none';
+}
+function openAddVisit(){
+  openM('mav');
+}
+
+function initUI(){
+  var now=new Date();
+  var h=now.getHours();
+  var g=h<12?'Good Morning ☀️':h<17?'Good Afternoon 🌤️':'Good Evening 🌙';
+  document.getElementById('dgreet').textContent=g;
+  document.getElementById('dname').textContent=CU.name+' · '+(CU.org||'WRC Nepal');
+  document.getElementById('hOrg').textContent=CU.org||'WRC Nepal';
+  var av=document.getElementById('uav');
+  if(av){av.textContent=CU.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();}
+  document.getElementById('sn').value=CU.name||'';
+  document.getElementById('se').value=CU.email||'';
+  document.getElementById('sp').value=CU.phone||'';
+  document.getElementById('sc').value=CU.org||'';
+  document.getElementById('appurl').textContent=window.location.href;
+  var td=new Date().toISOString().slice(0,10);
+  ['vvd','edf','edt','adate'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value=td;
+  });
+  var as=localStorage.getItem('wrc_ai_svc');
+  var ak=localStorage.getItem('wrc_ai_key');
+  if(as){var el=document.getElementById('aiSvc');if(el)el.value=as;}
+  if(ak){var el2=document.getElementById('aiK');if(el2)el2.value=ak;}
+  populateModalDropdowns();
+  setupPWA();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showSec(name,navEl){
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.nbtn').forEach(function(n){n.classList.remove('active');});
+  var sec=document.getElementById('sec-'+name);
+  if(sec)sec.classList.add('active');
+  if(navEl)navEl.classList.add('active');
+  document.getElementById('MC').scrollTop=0;
+  if(name==='dashboard')loadDash();
+  if(name==='visitors')loadV();
+  if(name==='expenses')loadE();
+  if(name==='reports')loadRep('v');
+  if(name==='notices')loadNotices();
+  if(name==='admin')loadAdminOverview();
+  if(name==='attendance')loadAttHist();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function loadDash(){
+  Promise.all([dbAll('visitors'),dbAll('expenses'),dbAll('attendance')]).then(function(results){
+    var v=results[0],e=results[1],a=results[2];
+    document.getElementById('sv1').textContent=v.length;
+    document.getElementById('sv2').textContent=a.length;
+    var m=new Date().toISOString().slice(0,7);
+    var me=e.filter(function(x){return (x.df||'').slice(0,7)===m;});
+    var ti=me.reduce(function(s,x){return s+(x.cur==='INR'?+x.amt:+x.amt*N2I);},0);
+    document.getElementById('sv3').textContent='₹'+Math.round(ti).toLocaleString('en-IN');
+    var fu=v.filter(function(x){return x.fd && new Date(x.fd)<=new Date();});
+    document.getElementById('sv4').textContent=fu.length;
+    document.getElementById('dr').innerHTML=renderVList(v.slice(-5).reverse())||'<div class="empty"><div class="emico">👥</div><div class="emtxt">Add your first visitor!</div></div>';
+    document.getElementById('dfu').innerHTML=fu.length?renderVList(fu):'<div class="empty"><div class="emico">✅</div><div class="emtxt">No pending follow-ups</div></div>';
+  });
+}
+
+// ============================================================
+// VISITORS
+// ============================================================
+var CLR=['#ff8fa3','#06d6a0','#b39dff','#ff9a5c','#4fc3f7','#ffd166'];
+var SM={'New':'bdg-pu','Interested':'bdg-tl','Hot lead':'bdg-or','Admitted':'bdg-tl','Not interested':'bdg-rd','Follow-up':'bdg-yl'};
+function renderVList(list){
+  if(!list||!list.length)return '';
+  return list.map(function(v,i){
+    var c=CLR[i%CLR.length];
+    var ini=v.n.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
+    var tags='';
+    if(v.vt)tags+='<span class="bdg bdg-pu" style="font-size:10px;">'+v.vt+'</span>';
+    if(v.ci)tags+='<span class="bdg bdg-tl" style="font-size:10px;">🏫 '+v.ci+'</span>';
+    if(v.mode==='virtual')tags+='<span class="bdg bdg-yl" style="font-size:10px;">🎥 Virtual</span>';
+    var badge=v.st2?'<span class="bdg '+(SM[v.st2]||'bdg-pu')+'" style="font-size:10px;">'+v.st2+'</span>':'';
+    var dt=v.vd?new Date(v.vd).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
+    var loc=v.mode==='virtual'?(v.vvCity||'')+' '+(v.vvState||''):(v.cy||'')+' '+(v.st||'');
+    return '<div class="li" onclick="showVD('+v.id+')">'
+      +'<div class="liav" style="background:'+c+'22;color:'+c+'">'+ini+'</div>'
+      +'<div class="libody"><div class="liname">'+v.n+'</div>'
+      +'<div class="limeta">'+loc+' '+(v.rn?'· '+v.rn:'')+'</div>'
+      +'<div class="litags">'+tags+'</div></div>'
+      +'<div class="lirght"><div class="lidate">'+dt+'</div>'+badge+'</div></div>';
+  }).join('');
+}
+function loadV(){
+  dbAll('visitors').then(function(v){
+    allV=v;
+    cGet('visitors').then(function(cv){
+      if(cv&&cv.length>allV.length)allV=cv;
+      renderV();
+    });
+  });
+}
+function renderV(){
+  var list=allV.slice().reverse();
+  var q=document.getElementById('vsrch')?document.getElementById('vsrch').value.toLowerCase():'';
+  if(q)list=list.filter(function(v){return JSON.stringify(v).toLowerCase().indexOf(q)>-1;});
+  if(vSF)list=list.filter(function(v){return v.st2===vSF;});
+  var el=document.getElementById('vlist');
+  el.innerHTML=renderVList(list)||'<div class="empty"><div class="emico">👥</div><div class="emtxt">No visitors found</div></div>';
+}
+function setVF(s,el){
+  vSF=s;
+  document.querySelectorAll('#sec-visitors .stab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  renderV();
+}
+function getSelectedChecks(ids){
+  var out=[];
+  ids.forEach(function(id){
+    var el=document.getElementById(id);
+    if(el&&el.checked)out.push(el.value);
+  });
+  return out;
+}
+function saveV(){
+  var n=document.getElementById('vn').value.trim();
+  if(!n){toast('Please enter visitor name',true);return;}
+
+  var vTypes=getSelectedChecks(['vt1','vt2','vt3','vt4','vt5','vt6','vt7','vt8','vt9','vt10']);
+  var docs=getSelectedChecks(['dc1','dc2','dc3','dc4','dc5','dc6','dc7']);
+  var nvEl=document.querySelector('input[name="nv"]:checked');
+
+  var college=document.getElementById('vciSel').value;
+  if(college==='__custom__'){
+    var ciCustom=document.getElementById('vciCustom');
+    college=ciCustom?ciCustom.value.trim():'';
+  }
+
+  var data={
+    n:n,
+    mode:visitMode,
+    vt:document.getElementById('vvt').value,
+    ph:document.getElementById('vph').value,
+    em:document.getElementById('vem').value,
+    ci:college,
+    vd:document.getElementById('vvd').value,
+    nv:nvEl?nvEl.value:'',
+    vis:vTypes,
+    rt:document.getElementById('vrt').value,
+    rn:document.getElementById('vrn').value,
+    ns:document.getElementById('vns').value,
+    ap:document.getElementById('vap').value,
+    doc:docs,
+    mq:document.getElementById('vmq').value,
+    st2:document.getElementById('vst2').value,
+    fd:document.getElementById('vfd').value,
+    nt:document.getElementById('vnt').value,
+    user_org:CU.orgKey,
+    user_name:CU.name
+  };
+
+  if(visitMode==='physical'){
+    var city=document.getElementById('vcitySel').value;
+    if(city==='__custom__'){
+      var cityCustom=document.getElementById('vcityCustom');
+      city=cityCustom?cityCustom.value.trim():'';
+    }
+    data.cy=city;
+    data.st=document.getElementById('vstateSel').value;
+  } else {
+    var platEl=document.querySelector('input[name="vplatform"]:checked');
+    data.platform=platEl?platEl.value:'';
+    data.vvCity=document.getElementById('vvCity').value;
+    data.vvState=document.getElementById('vvState').value;
+    data.vvDuration=document.getElementById('vvDuration').value;
+  }
+
+  dbAdd('visitors',data).then(function(){
+    cPost('visitors',data);
+    closeM('mav');
+    clearVForm();
+    toast('✅ Visit saved!');
+    loadV();loadDash();
+  });
+}
+function clearVForm(){
+  ['vn','vph','vem','vmq','vrn','vns','vnt','vfd','vcityCustom','vciCustom','vvCity','vvState','vvDuration'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  document.querySelectorAll('#mav .chi').forEach(function(c){c.checked=false;});
+  setVisitMode('physical');
+}
+function showVD(id){
+  dbAll('visitors').then(function(vs){
+    var v=vs.find(function(x){return x.id===id;});
+    if(!v)return;
+    document.getElementById('vdtitle').innerHTML=v.n+' <button class="cbtn" onclick="closeM(\'mvd\')">✕</button>';
+    var sm=SM[v.st2]||'bdg-pu';
+    var ph=v.ph?v.ph.replace(/\D/g,''):'';
+    var locRow=v.mode==='virtual'
+      ? '<div class="rr"><span class="rk">📍 Caller Location</span><span class="rv">'+(v.vvCity||'')+' '+(v.vvState||'')+'</span></div>'
+        +'<div class="rr"><span class="rk">🎥 Platform</span><span class="rv">'+(v.platform||'—')+'</span></div>'
+        +'<div class="rr"><span class="rk">⏱️ Duration</span><span class="rv">'+(v.vvDuration||'—')+' min</span></div>'
+      : '<div class="rr"><span class="rk">📍 Location</span><span class="rv">'+(v.cy||'')+' '+(v.st||'')+'</span></div>';
+    var body='<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;">'
+      +'<span class="bdg '+sm+'">'+(v.st2||'New')+'</span>'
+      +'<span class="bdg bdg-yl">'+(v.mode==='virtual'?'🎥 Virtual':'🏫 Physical')+'</span>'
+      +(v.vt?'<span class="bdg bdg-pu">'+v.vt+'</span>':'')
+      +(v.nv?'<span class="bdg bdg-tl">'+v.nv+'</span>':'')
+      +'</div>'
+      +'<div class="rc">'
+      +'<div class="rr"><span class="rk">📞 Contact</span><span class="rv">'+(v.ph||'—')+'</span></div>'
+      +'<div class="rr"><span class="rk">📧 Email</span><span class="rv">'+(v.em||'—')+'</span></div>'
+      +locRow
+      +'<div class="rr"><span class="rk">🏫 College Interest</span><span class="rv">'+(v.ci||'—')+'</span></div>'
+      +'<div class="rr"><span class="rk">📅 Visit Date</span><span class="rv">'+(v.vd||'—')+'</span></div>'
+      +'<div class="rr"><span class="rk">🎯 Visit Types</span><span class="rv" style="max-width:55%;text-align:right;font-size:11px;">'+((v.vis||[]).join(', ')||'—')+'</span></div>'
+      +'<div class="rr"><span class="rk">🔗 Reference</span><span class="rv">'+(v.rt||'')+' '+(v.rn?'— '+v.rn:'')+'</span></div>'
+      +'<div class="rr"><span class="rk">🎯 NEET</span><span class="rv">'+(v.ns||'—')+'</span></div>'
+      +'<div class="rr"><span class="rk">📋 Plan</span><span class="rv">'+(v.ap||'—')+'</span></div>'
+      +'<div class="rr"><span class="rk">📄 Docs</span><span class="rv">'+((v.doc||[]).join(', ')||'None')+'</span></div>'
+      +'<div class="rr"><span class="rk">💬 Queries</span><span class="rv" style="max-width:55%;text-align:right;font-size:11px;">'+(v.mq||'—')+'</span></div>'
+      +(v.fd?'<div class="rr"><span class="rk">⏰ Follow-up</span><span class="rv" style="color:var(--yl);">'+v.fd+'</span></div>':'')
+      +'</div>'
+      +'<div class="brow">'
+      +(ph?'<a href="https://wa.me/'+ph+'" target="_blank" class="gbtn gbtn-tl gbtn-sm">💬 WhatsApp</a>':'')
+      +(ph?'<a href="tel:'+v.ph+'" class="gbtn gbtn-bl gbtn-sm">📞 Call</a>':'')
+      +'<button class="gbtn gbtn-gl gbtn-sm" onclick="shrV('+id+')">📤 Share</button>'
+      +'<button class="gbtn gbtn-gl gbtn-sm" style="color:var(--rd);" onclick="delV('+id+')">🗑️ Delete</button>'
+      +'</div>';
+    document.getElementById('vdbody').innerHTML=body;
+    openM('mvd');
+  });
+}
+function delV(id){
+  if(!confirm('Delete this record?'))return;
+  dbDel('visitors',id).then(function(){
+    allV=allV.filter(function(x){return x.id!==id;});
+    closeM('mvd');renderV();loadDash();
+    toast('Deleted');
+  });
+}
+
+// WhatsApp report builder for ONE visitor - matches the form fields exactly
+function buildVisitorReportText(v){
+  var lines=[];
+  lines.push('*WRC NEPAL — VISITOR REPORT*');
+  lines.push('================================');
+  lines.push('');
+  lines.push('*Name:* '+v.n);
+  lines.push('*Visitor Type:* '+(v.vt||'-'));
+  lines.push('*Visit Mode:* '+(v.mode==='virtual'?'Virtual':'Physical'));
+  lines.push('*Contact:* '+(v.ph||'-'));
+  lines.push('*Email:* '+(v.em||'-'));
+  lines.push('');
+  if(v.mode==='virtual'){
+    lines.push('*--- Virtual Visit Details ---*');
+    lines.push('*Platform:* '+(v.platform||'-'));
+    lines.push('*Caller Location:* '+(v.vvCity||'-')+', '+(v.vvState||'-'));
+    lines.push('*Call Duration:* '+(v.vvDuration||'-')+' min');
+  } else {
+    lines.push('*--- Physical Visit Details ---*');
+    lines.push('*City:* '+(v.cy||'-'));
+    lines.push('*State:* '+(v.st||'-'));
+  }
+  lines.push('');
+  lines.push('*College Interest:* '+(v.ci||'-'));
+  lines.push('*Visit Date:* '+(v.vd||'-'));
+  lines.push('*Nepal Visit:* '+(v.nv||'-'));
+  lines.push('*Visit Types:* '+((v.vis||[]).join(', ')||'-'));
+  lines.push('');
+  lines.push('*Reference Type:* '+(v.rt||'-'));
+  lines.push('*Reference Name:* '+(v.rn||'-'));
+  lines.push('*NEET Score:* '+(v.ns||'-'));
+  lines.push('*Admission Plan:* '+(v.ap||'-'));
+  lines.push('');
+  lines.push('*Documents Submitted:* '+((v.doc||[]).join(', ')||'None'));
+  lines.push('');
+  lines.push('*Major Queries:*');
+  lines.push(v.mq||'-');
+  lines.push('');
+  lines.push('*Status:* '+(v.st2||'New'));
+  if(v.fd)lines.push('*Follow-up Date:* '+v.fd);
+  if(v.nt)lines.push('*Notes:* '+v.nt);
+  lines.push('');
+  lines.push('================================');
+  lines.push('Recorded by: '+(v.user_name||CU.name));
+  lines.push('Organization: '+(v.user_org||CU.org));
+  return lines.join('\n');
+}
+function shrV(id){
+  dbAll('visitors').then(function(vs){
+    var v=vs.find(function(x){return x.id===id;});
+    if(!v)return;
+    var t=buildVisitorReportText(v);
+    if(navigator.share)navigator.share({title:'Visitor Report - '+v.n,text:t});
+    else{navigator.clipboard.writeText(t).then(function(){toast('Copied!');});}
+  });
+}
+
+// ============================================================
+// EXPENSES
+// ============================================================
+function expSub(){
+  var cat=document.getElementById('ecat').value;
+  ['Travel','Food','Hotel','Media','Other'].forEach(function(c){
+    var el=document.getElementById('sub-'+c);
+    if(el)el.style.display=c===cat?'block':'none';
+  });
+}
+function updateCvt(){
+  var a=parseFloat(document.getElementById('eamt').value)||0;
+  var c=document.getElementById('ecur').value;
+  var box=document.getElementById('cvbox');
+  if(!box)return;
+  if(a>0){
+    box.style.display='block';
+    if(c==='INR'){
+      document.getElementById('cvf').textContent='₹'+a.toLocaleString('en-IN')+' INR';
+      document.getElementById('cvt2').textContent='रू'+Math.round(a*I2N).toLocaleString()+' NPR';
+    } else {
+      document.getElementById('cvf').textContent='रू'+a.toLocaleString()+' NPR';
+      document.getElementById('cvt2').textContent='₹'+Math.round(a*N2I).toLocaleString('en-IN')+' INR';
+    }
+  } else {box.style.display='none';}
+}
+function handleR(e){
+  var f=e.target.files[0];
+  if(!f)return;
+  document.getElementById('rtxt').textContent='✅ '+f.name;
+  var reader=new FileReader();
+  reader.onload=function(ev){rData=ev.target.result;};
+  reader.readAsDataURL(f);
+}
+function saveE(){
+  var amt=parseFloat(document.getElementById('eamt').value)||0;
+  if(!amt){toast('Please enter amount',true);return;}
+  var cat=document.getElementById('ecat').value;
+  if(!cat){toast('Please select category',true);return;}
+  var meals=getSelectedChecks(['f1','f2','f3','f4','f5']);
+  var mdt=getSelectedChecks(['m1','m2','m3','m4','m5']);
+  var pmEl=document.querySelector('input[name="pm"]:checked');
+  var pm=pmEl?pmEl.value:'';
+  var data={
+    cat:cat,
+    df:document.getElementById('edf').value,
+    dt:document.getElementById('edt').value,
+    amt:amt,
+    cur:document.getElementById('ecur').value,
+    pm:pm,
+    pur:document.getElementById('epur').value,
+    rv:document.getElementById('erv').value,
+    tm:document.getElementById('etm')?document.getElementById('etm').value:'',
+    fl:document.getElementById('efl')?document.getElementById('efl').value:'',
+    tl:document.getElementById('etl')?document.getElementById('etl').value:'',
+    mt:meals,
+    fp:document.getElementById('efp')?document.getElementById('efp').value:'',
+    hn:document.getElementById('ehn')?document.getElementById('ehn').value:'',
+    eci:document.getElementById('eci')?document.getElementById('eci').value:'',
+    eco:document.getElementById('eco')?document.getElementById('eco').value:'',
+    ermt:document.getElementById('ermt')?document.getElementById('ermt').value:'',
+    ents:document.getElementById('ents')?document.getElementById('ents').value:'',
+    mdt:mdt,
+    oth:document.getElementById('eoth')?document.getElementById('eoth').value:'',
+    rcpt:rData,
+    user_org:CU.orgKey,
+    user_name:CU.name
+  };
+  rData=null;
+  dbAdd('expenses',data).then(function(){
+    cPost('expenses',data);
+    closeM('mae');
+    clearEForm();
+    toast('✅ Expense saved!');
+    loadE();
+  });
+}
+function clearEForm(){
+  ['eamt','epur','erv','efl','etl','efp','ehn','eoth'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  document.querySelectorAll('#mae .chi').forEach(function(c){c.checked=false;});
+  document.getElementById('cvbox').style.display='none';
+  document.getElementById('rtxt').textContent='Tap to upload receipt';
+  document.getElementById('ecat').value='';
+  ['Travel','Food','Hotel','Media','Other'].forEach(function(c){
+    var el=document.getElementById('sub-'+c);if(el)el.style.display='none';
+  });
+}
+function setEF(f,el){
+  eSF=f;
+  document.querySelectorAll('#sec-expenses .stab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  renderE();
+}
+function loadE(){
+  dbAll('expenses').then(function(e){
+    allE=e;
+    cGet('expenses').then(function(ce){
+      if(ce&&ce.length>allE.length)allE=ce;
+      var ti=allE.reduce(function(s,x){return s+(x.cur==='INR'?+x.amt:+x.amt*N2I);},0);
+      var tn=allE.reduce(function(s,x){return s+(x.cur==='NPR'?+x.amt:+x.amt*I2N);},0);
+      document.getElementById('etinr').textContent='₹'+Math.round(ti).toLocaleString('en-IN');
+      document.getElementById('etnpr').textContent='रू'+Math.round(tn).toLocaleString();
+      renderE();
+    });
+  });
+}
+function renderE(){
+  var list=allE.slice().reverse();
+  if(eSF!=='all')list=list.filter(function(e){return e.cat===eSF;});
+  var el=document.getElementById('elist');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="emico">🧾</div><div class="emtxt">No expenses</div></div>';return;}
+  var icons={Travel:'🚗',Food:'🍽️',Hotel:'🏨',Media:'📰',Other:'📦'};
+  var cols={Travel:'#ff9a5c',Food:'#06d6a0',Hotel:'#b39dff',Media:'#4fc3f7',Other:'#ffd166'};
+  el.innerHTML=list.map(function(x){
+    var ico=icons[x.cat]||'📦';
+    var col=cols[x.cat]||'#ffd166';
+    var sub=x.tm||(x.mt||[]).join(', ')||x.hn||(x.mdt||[]).join(', ')||x.oth||x.pur||'';
+    var ainr=x.cur==='INR'?x.amt:Math.round(+x.amt*N2I);
+    var anpr=x.cur==='NPR'?x.amt:Math.round(+x.amt*I2N);
+    return '<div class="li" style="cursor:default;">'
+      +'<div class="liav" style="background:'+col+'22;color:'+col+';font-size:20px;">'+ico+'</div>'
+      +'<div class="libody">'
+      +'<div class="liname">'+x.cat+(sub?' — '+sub:'')+'</div>'
+      +'<div class="limeta">'+(x.df||'')+' '+(x.pm?'· '+x.pm:'')+'</div>'
+      +'</div>'
+      +'<div class="lirght">'
+      +'<div style="font-size:15px;font-weight:700;color:'+col+';">'+(x.cur==='INR'?'₹':'रू')+parseFloat(x.amt).toLocaleString()+'</div>'
+      +'<div style="font-size:10px;color:var(--t3);">'+(x.cur==='INR'?'रू'+anpr+' NPR':'₹'+ainr+' INR')+'</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+// ============================================================
+// ATTENDANCE (with Excel upload)
+// ============================================================
+var currentStudentList=[];
+function loadAtt(){
+  var b=document.getElementById('abatch').value;
+  if(b==='__custom__'){
+    var cb=document.getElementById('abatchCustom');
+    b=cb?cb.value.trim():'';
+    if(!b){toast('Please enter custom batch name',true);return;}
+  }
+  var students=SL[b]||currentStudentList.slice();
+  if(!students.length){
+    toast('No student list. Upload Excel or use default batch.',true);
+    students=SL['MBBS 2024'];
+  }
+  renderAttTable(students);
+}
+function renderAttTable(students){
+  document.getElementById('atbody').innerHTML=students.map(function(name,i){
+    return '<tr>'
+      +'<td style="color:var(--t3);">'+(i+1)+'</td>'
+      +'<td style="font-weight:500;font-size:12px;">'+name+'</td>'
+      +'<td><div style="display:flex;gap:5px;">'
+      +'<input type="radio" class="ar pr" name="a'+i+'" id="p'+i+'" value="P"><label class="arl" for="p'+i+'">✅</label>'
+      +'<input type="radio" class="ar ab" name="a'+i+'" id="a'+i+'" value="A"><label class="arl" for="a'+i+'">❌</label>'
+      +'</div></td>'
+      +'<td><input class="gi" style="padding:5px 8px;font-size:11px;" placeholder="Reason..." id="r'+i+'"></td>'
+      +'</tr>';
+  }).join('');
+  currentStudentList=students;
+  document.getElementById('attc').style.display='block';
+}
+function handleExcelUpload(e){
+  var f=e.target.files[0];
+  if(!f)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      var data=new Uint8Array(ev.target.result);
+      var wb=XLSX.read(data,{type:'array'});
+      var sheetName=wb.SheetNames[0];
+      var sheet=wb.Sheets[sheetName];
+      var rows=XLSX.utils.sheet_to_json(sheet,{header:1});
+      var names=[];
+      for(var i=0;i<rows.length;i++){
+        var row=rows[i];
+        if(!row||!row.length)continue;
+        var val=row[0];
+        if(typeof val==='string'){
+          var low=val.toLowerCase().trim();
+          if(low==='name'||low==='student name'||low==='s.no'||low==='sno'||low==='')continue;
+        }
+        if(val&&String(val).trim()){
+          names.push(String(val).trim());
+        }
+      }
+      if(!names.length){toast('No names found in Excel file',true);return;}
+      renderAttTable(names);
+      toast('✅ Loaded '+names.length+' students from Excel');
+    }catch(err){
+      toast('Could not read Excel file',true);
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(f);
+}
+function markAllP(){
+  currentStudentList.forEach(function(_,i){
+    var el=document.getElementById('p'+i);
+    if(el)el.checked=true;
+  });
+}
+function getCurrentBatchName(){
+  var b=document.getElementById('abatch').value;
+  if(b==='__custom__'){
+    var cb=document.getElementById('abatchCustom');
+    return cb?cb.value.trim():'';
+  }
+  return b;
+}
+function saveAtt(){
+  var b=getCurrentBatchName();
+  var d=document.getElementById('adate').value;
+  var sub=document.getElementById('asubj').value;
+  var s=currentStudentList;
+  if(!s.length){toast('Load students first',true);return;}
+  var recs=s.map(function(name,i){
+    var stEl=document.querySelector('input[name="a'+i+'"]:checked');
+    return {n:name,st:stEl?stEl.value:'—',reason:document.getElementById('r'+i)?document.getElementById('r'+i).value:''};
+  });
+  dbAdd('attendance',{b:b,d:d,sub:sub,recs:recs,user_org:CU.orgKey,user_name:CU.name}).then(function(){
+    cPost('attendance',{b:b,d:d,sub:sub,recs:recs,user_org:CU.orgKey,user_name:CU.name});
+    toast('✅ Attendance saved!');
+    loadAttHist();
+  });
+}
+function loadAttHist(){
+  dbAll('attendance').then(function(all){
+    var el=document.getElementById('attHist');
+    if(!all.length){el.innerHTML='<div class="empty"><div class="emico">📋</div><div class="emtxt">No records yet</div></div>';return;}
+    el.innerHTML=all.slice().reverse().slice(0,8).map(function(a,idx){
+      var p=(a.recs||[]).filter(function(r){return r.st==='P';}).length;
+      var ab=(a.recs||[]).filter(function(r){return r.st==='A';}).length;
+      return '<div class="rc" style="margin-bottom:8px;">'
+        +'<div style="font-size:13px;font-weight:600;">'+a.b+' · '+a.d+(a.sub?' · '+a.sub:'')+'</div>'
+        +'<div style="display:flex;gap:8px;font-size:12px;margin-top:5px;">'
+        +'<span style="color:var(--tl);">✅ '+p+' Present</span>'
+        +'<span style="color:var(--rd);">❌ '+ab+' Absent</span>'
+        +'</div>'
+        +'<button class="gbtn gbtn-gl gbtn-sm" style="margin-top:8px;" onclick="shrAttIdx('+idx+')">📤 Share</button>'
+        +'</div>';
+    }).join('');
+  });
+}
+var attHistCache=[];
+function shrAttIdx(idx){
+  dbAll('attendance').then(function(all){
+    attHistCache=all.slice().reverse();
+    var a=attHistCache[idx];
+    if(!a)return;
+    var t=buildAttendanceReportText(a);
+    if(navigator.share)navigator.share({title:'Attendance Report',text:t});
+    else{navigator.clipboard.writeText(t).then(function(){toast('Copied!');});}
+  });
+}
+function buildAttendanceReportText(a){
+  var lines=[];
+  lines.push('*WRC NEPAL — ATTENDANCE REPORT*');
+  lines.push('================================');
+  lines.push('');
+  lines.push('*Batch:* '+a.b);
+  lines.push('*Date:* '+(a.d||'-'));
+  if(a.sub)lines.push('*Subject:* '+a.sub);
+  lines.push('');
+  var p=0,ab=0;
+  (a.recs||[]).forEach(function(r,i){
+    var status=r.st==='P'?'Present':r.st==='A'?'Absent':'-';
+    if(r.st==='P')p++;
+    if(r.st==='A')ab++;
+    lines.push((i+1)+'. '+r.n+' — '+status+(r.reason?' ('+r.reason+')':''));
+  });
+  lines.push('');
+  lines.push('================================');
+  lines.push('*Total Present:* '+p+' | *Total Absent:* '+ab);
+  lines.push('Recorded by: '+(a.user_name||CU.name));
+  lines.push('Organization: '+(a.user_org||CU.org));
+  return lines.join('\n');
+}
+function shareAtt(){
+  var b=getCurrentBatchName();
+  var d=document.getElementById('adate').value;
+  var sub=document.getElementById('asubj').value;
+  var s=currentStudentList;
+  var recs=s.map(function(name,i){
+    var stEl=document.querySelector('input[name="a'+i+'"]:checked');
+    return {n:name,st:stEl?stEl.value:'—',reason:document.getElementById('r'+i)?document.getElementById('r'+i).value:''};
+  });
+  var t=buildAttendanceReportText({b:b,d:d,sub:sub,recs:recs,user_name:CU.name,user_org:CU.org});
+  if(navigator.share)navigator.share({title:'Attendance',text:t});
+  else{navigator.clipboard.writeText(t).then(function(){toast('Copied!');});}
+}
+
+// ============================================================
+// REPORTS - Individual generate/export/share per section
+// ============================================================
+function loadRep(type){
+  var el=document.getElementById('rpc');
+  el.innerHTML='<div class="loading"><span class="spin"></span>Loading...</div>';
+  Promise.all([dbAll('visitors'),dbAll('expenses'),dbAll('attendance')]).then(function(res){
+    var v=res[0],e=res[1],a=res[2];
+    allV=v;allE=e;
+    if(type==='v')renderVisitorReport(v);
+    else if(type==='e')renderExpenseReport(e);
+    else renderAttendanceReport(a);
+  });
+}
+function rpTab(t,el){
+  document.querySelectorAll('#sec-reports .stab').forEach(function(x){x.classList.remove('active');});
+  el.classList.add('active');
+  loadRep(t);
+}
+function renderVisitorReport(v){
+  var el=document.getElementById('rpc');
+  var tot=v.length,adm=v.filter(function(x){return x.st2==='Admitted';}).length;
+  var hot=v.filter(function(x){return x.st2==='Hot lead';}).length;
+  var docs=v.filter(function(x){return x.doc&&x.doc.length;}).length;
+  var virt=v.filter(function(x){return x.mode==='virtual';}).length;
+  var byRef={};
+  v.forEach(function(x){var r=x.rn||x.rt||'Direct';byRef[r]=(byRef[r]||0)+1;});
+  var refRows=Object.keys(byRef).sort(function(a,b){return byRef[b]-byRef[a];}).map(function(k){
+    return '<div class="rr"><span class="rk">'+k+'</span><span class="rv">'+byRef[k]+'</span></div>';
+  }).join('');
+  el.innerHTML='<div class="rc"><div class="rr"><span class="rk">Total Visitors</span><span class="rv" style="color:var(--pu);">'+tot+'</span></div>'
+    +'<div class="rr"><span class="rk">Physical Visits</span><span class="rv">'+(tot-virt)+'</span></div>'
+    +'<div class="rr"><span class="rk">Virtual Visits</span><span class="rv">'+virt+'</span></div>'
+    +'<div class="rr"><span class="rk">Admitted</span><span class="rv" style="color:var(--tl);">'+adm+'</span></div>'
+    +'<div class="rr"><span class="rk">Hot Leads</span><span class="rv" style="color:var(--or);">'+hot+'</span></div>'
+    +'<div class="rr"><span class="rk">Docs Received</span><span class="rv">'+docs+'</span></div>'
+    +'<div class="rtot"><span>Conversion</span><span style="color:var(--tl);">'+(tot?Math.round(adm/tot*100):0)+'%</span></div></div>'
+    +'<div class="rc"><div style="font-size:13px;font-weight:600;margin-bottom:8px;">By Reference</div>'+(refRows||'<div class="emtxt">No data</div>')+'</div>'
+    +'<div class="sh"><div class="sht">Generate Full Report</div></div>'
+    +'<div class="srow">'
+    +'<div class="sbtn" onclick="shrVisitorsReport(\'wa\')"><div class="sico2" style="background:rgba(37,211,102,0.15);">💬</div><div class="slbl2">WhatsApp</div></div>'
+    +'<div class="sbtn" onclick="shrVisitorsReport(\'em\')"><div class="sico2" style="background:rgba(79,195,247,0.15);">📧</div><div class="slbl2">Email</div></div>'
+    +'<div class="sbtn" onclick="shrVisitorsReport(\'cp\')"><div class="sico2">📋</div><div class="slbl2">Copy</div></div>'
+    +'<div class="sbtn" onclick="dlVisitorsCSV()"><div class="sico2" style="background:rgba(179,157,255,0.15);">⬇️</div><div class="slbl2">CSV</div></div>'
+    +'</div>';
+}
+function buildVisitorsReportText(v){
+  var lines=[];
+  lines.push('*WRC NEPAL — VISITORS SUMMARY REPORT*');
+  lines.push('Date: '+new Date().toLocaleDateString('en-IN'));
+  lines.push('================================');
+  var tot=v.length,adm=v.filter(function(x){return x.st2==='Admitted';}).length;
+  var hot=v.filter(function(x){return x.st2==='Hot lead';}).length;
+  lines.push('Total Visitors: '+tot);
+  lines.push('Admitted: '+adm);
+  lines.push('Hot Leads: '+hot);
+  lines.push('Conversion Rate: '+(tot?Math.round(adm/tot*100):0)+'%');
+  lines.push('================================');
+  lines.push('');
+  v.slice().reverse().forEach(function(x,i){
+    lines.push((i+1)+'. '+x.n+' — '+(x.cy||x.vvCity||'-')+' — '+(x.st2||'New')+' — '+(x.vd||'-'));
+  });
+  lines.push('');
+  lines.push('Generated by: '+CU.name+' | '+CU.org);
+  return lines.join('\n');
+}
+function shrVisitorsReport(via){
+  var t=buildVisitorsReportText(allV);
+  doShare(via,'WRC Visitors Report',t);
+}
+function dlVisitorsCSV(){
+  var cols=['n','vt','mode','ph','em','cy','st','vvCity','vvState','platform','ci','ns','ap','st2','vd','fd','rn','rt'];
+  var hdrs='Name,Type,Mode,Phone,Email,City,State,VirtualCity,VirtualState,Platform,College,NEET,Plan,Status,VisitDate,Followup,RefName,RefType';
+  var rows=allV.map(function(x){return cols.map(function(c){return '"'+(x[c]||'').toString().replace(/"/g,"'")+'"';}).join(',');});
+  var csv=hdrs+'\n'+rows.join('\n');
+  downloadCSV(csv,'WRC_Visitors_'+new Date().toISOString().slice(0,10)+'.csv');
+}
+
+function renderExpenseReport(e){
+  var el=document.getElementById('rpc');
+  var ti=e.reduce(function(s,x){return s+(x.cur==='INR'?+x.amt:+x.amt*N2I);},0);
+  var byCat={};
+  e.forEach(function(x){byCat[x.cat]=(byCat[x.cat]||0)+(x.cur==='INR'?+x.amt:+x.amt*N2I);});
+  var catRows=Object.keys(byCat).map(function(k){
+    return '<div class="rr"><span class="rk">'+k+'</span><span class="rv">₹'+Math.round(byCat[k]).toLocaleString('en-IN')+'</span></div>';
+  }).join('');
+  el.innerHTML='<div class="rc">'+(catRows||'<div class="emtxt">No expenses</div>')+'<div class="rtot"><span>Total INR</span><span style="color:var(--or);">₹'+Math.round(ti).toLocaleString('en-IN')+'</span></div>'
+    +'<div class="rtot"><span>Total NPR</span><span style="color:var(--tl);">रू'+Math.round(ti*I2N).toLocaleString()+'</span></div></div>'
+    +'<div class="sh"><div class="sht">Generate Full Report</div></div>'
+    +'<div class="srow">'
+    +'<div class="sbtn" onclick="shrExpensesReport(\'wa\')"><div class="sico2" style="background:rgba(37,211,102,0.15);">💬</div><div class="slbl2">WhatsApp</div></div>'
+    +'<div class="sbtn" onclick="shrExpensesReport(\'em\')"><div class="sico2">📧</div><div class="slbl2">Email</div></div>'
+    +'<div class="sbtn" onclick="shrExpensesReport(\'cp\')"><div class="sico2">📋</div><div class="slbl2">Copy</div></div>'
+    +'<div class="sbtn" onclick="dlExpensesCSV()"><div class="sico2" style="background:rgba(179,157,255,0.15);">⬇️</div><div class="slbl2">CSV</div></div>'
+    +'</div>';
+}
+function buildExpensesReportText(e){
+  var lines=[];
+  lines.push('*WRC NEPAL — EXPENSE REPORT*');
+  lines.push('Date: '+new Date().toLocaleDateString('en-IN'));
+  lines.push('================================');
+  var byCat={};
+  e.forEach(function(x){byCat[x.cat]=(byCat[x.cat]||0)+(x.cur==='INR'?+x.amt:+x.amt*N2I);});
+  Object.keys(byCat).forEach(function(k){
+    lines.push(k+': ₹'+Math.round(byCat[k]).toLocaleString('en-IN'));
+  });
+  var ti=e.reduce(function(s,x){return s+(x.cur==='INR'?+x.amt:+x.amt*N2I);},0);
+  lines.push('--------------------------------');
+  lines.push('Total: ₹'+Math.round(ti).toLocaleString('en-IN')+' INR / रू'+Math.round(ti*I2N).toLocaleString()+' NPR');
+  lines.push('================================');
+  lines.push('');
+  lines.push('*Detailed Entries:*');
+  e.slice().reverse().forEach(function(x,i){
+    var sub=x.tm||(x.mt||[]).join(', ')||x.hn||(x.mdt||[]).join(', ')||x.oth||x.pur||'';
+    lines.push((i+1)+'. '+x.cat+(sub?' ('+sub+')':'')+' — '+(x.cur==='INR'?'₹':'रू')+x.amt+' — '+(x.df||'-'));
+  });
+  lines.push('');
+  lines.push('Generated by: '+CU.name+' | '+CU.org);
+  return lines.join('\n');
+}
+function shrExpensesReport(via){
+  var t=buildExpensesReportText(allE);
+  doShare(via,'WRC Expense Report',t);
+}
+function dlExpensesCSV(){
+  var cols=['cat','df','dt','amt','cur','pm','pur','rv','tm','fl','tl','hn','user_name'];
+  var hdrs='Category,DateFrom,DateTo,Amount,Currency,Payment,Purpose,RelatedVisitor,TransportMode,From,To,Hotel,RecordedBy';
+  var rows=allE.map(function(x){return cols.map(function(c){return '"'+(x[c]||'').toString().replace(/"/g,"'")+'"';}).join(',');});
+  var csv=hdrs+'\n'+rows.join('\n');
+  downloadCSV(csv,'WRC_Expenses_'+new Date().toISOString().slice(0,10)+'.csv');
+}
+
+var allAtt=[];
+function renderAttendanceReport(a){
+  allAtt=a;
+  var el=document.getElementById('rpc');
+  if(!a.length){
+    el.innerHTML='<div class="empty"><div class="emico">📋</div><div class="emtxt">No attendance yet</div></div>';
+    return;
+  }
+  el.innerHTML=a.slice().reverse().map(function(x,idx){
+    var p=(x.recs||[]).filter(function(r){return r.st==='P';}).length;
+    var ab=(x.recs||[]).filter(function(r){return r.st==='A';}).length;
+    return '<div class="rc"><div style="font-size:13px;font-weight:600;">'+x.b+' · '+x.d+(x.sub?' · '+x.sub:'')+'</div>'
+      +'<div style="font-size:12px;color:var(--t3);margin-top:4px;">Present: '+p+' | Absent: '+ab+'</div>'
+      +'<div class="brow" style="margin-top:8px;">'
+      +'<button class="gbtn gbtn-tl gbtn-sm" onclick="shrSingleAtt('+idx+',\'wa\')">💬 WhatsApp</button>'
+      +'<button class="gbtn gbtn-gl gbtn-sm" onclick="shrSingleAtt('+idx+',\'cp\')">📋 Copy</button>'
+      +'<button class="gbtn gbtn-gl gbtn-sm" onclick="dlSingleAttCSV('+idx+')">⬇️ CSV</button>'
+      +'</div></div>';
+  }).join('');
+}
+function shrSingleAtt(idx,via){
+  var a=allAtt.slice().reverse()[idx];
+  if(!a)return;
+  var t=buildAttendanceReportText(a);
+  doShare(via,'Attendance - '+a.b,t);
+}
+function dlSingleAttCSV(idx){
+  var a=allAtt.slice().reverse()[idx];
+  if(!a)return;
+  var hdrs='S.No,Name,Status,Reason';
+  var rows=(a.recs||[]).map(function(r,i){
+    var st=r.st==='P'?'Present':r.st==='A'?'Absent':'-';
+    return (i+1)+',"'+r.n+'","'+st+'","'+(r.reason||'')+'"';
+  });
+  var csv=hdrs+'\n'+rows.join('\n');
+  downloadCSV(csv,'WRC_Attendance_'+a.b.replace(/\s/g,'_')+'_'+(a.d||'')+'.csv');
+}
+
+function doShare(via,title,text){
+  if(via==='wa'){window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(text),'_blank');}
+  else if(via==='em'){window.open('mailto:?subject='+encodeURIComponent(title)+'&body='+encodeURIComponent(text),'_blank');}
+  else if(via==='cp'){navigator.clipboard.writeText(text).then(function(){toast('✅ Copied!');});}
+  else if(navigator.share){navigator.share({title:title,text:text});}
+}
+function downloadCSV(csv,filename){
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=filename;
+  a.click();
+  toast('✅ Downloaded!');
+}
+
+// ============================================================
+// NOTICES
+// ============================================================
+function loadNotices(){
+  var el=document.getElementById('nlist');
+  el.innerHTML='<div class="loading"><span class="spin"></span>Loading...</div>';
+  cGet('notices').then(function(notices){
+    if(!notices||!notices.length){
+      dbAll('notices_sent').then(function(local){
+        noticesCache=local.slice().reverse();
+        renderNotices(el);
+      });
+      return;
+    }
+    noticesCache=notices;
+    renderNotices(el);
+    updNotifBadge(notices.length);
+  }).catch(function(){
+    el.innerHTML='<div class="empty"><div class="emico">🔔</div><div class="emtxt">No notices yet</div></div>';
+  });
+}
+function renderNotices(el){
+  if(!noticesCache.length){el.innerHTML='<div class="empty"><div class="emico">🔔</div><div class="emtxt">No notices yet</div></div>';return;}
+  var now=new Date();
+  var visible=noticesCache.filter(function(n){
+    if(n.target && n.target!=='all' && n.target!==CU.role)return false;
+    if(n.expiry && new Date(n.expiry)<now)return false;
+    return true;
+  });
+  el.innerHTML=visible.map(function(n,i){
+    return renderNCard(n,i,false);
+  }).join('');
+}
+function renderNCard(n,i,isAdmin){
+  var typeIco={General:'📢',Urgent:'🚨',Holiday:'🎉',Exam:'📝',Admission:'🎓',Meeting:'🤝'};
+  var ico=typeIco[n.type]||'📢';
+  var urgent=n.priority==='High'||n.type==='Urgent';
+  var timeAgo=getTimeAgo(n.sent_at||n.ts);
+  var html='<div class="ncard'+(urgent?' urgent':'')+'">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">'
+    +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--tx);margin-bottom:4px;">'+ico+' '+n.title+'</div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;">'
+    +(urgent?'<span class="bdg bdg-rd" style="font-size:10px;">🔴 Urgent</span>':'')
+    +(n.target&&n.target!=='all'?'<span class="bdg bdg-yl" style="font-size:10px;">'+n.target+'</span>':'')
+    +'</div></div>'
+    +'<div style="font-size:10px;color:var(--t3);white-space:nowrap;">'+timeAgo+'</div>'
+    +'</div>'
+    +'<div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:8px;">'+n.body+'</div>'
+    +(n.video?'<a href="'+n.video+'" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(255,0,0,0.15);border:1px solid rgba(255,0,0,0.3);border-radius:20px;font-size:12px;color:#ff6b6b;text-decoration:none;margin-bottom:8px;">▶️ Watch Video</a>':'')
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">'
+    +'<div style="font-size:10px;color:var(--t3);">By '+(n.sent_by||'Admin')+'</div>'
+    +'<div style="display:flex;gap:6px;">'
+    +'<button class="gbtn gbtn-gl gbtn-sm" onclick="shrNotice('+i+')">📤</button>'
+    +(isAdmin?'<button class="gbtn gbtn-gl gbtn-sm" style="color:var(--rd);" onclick="delNotice('+i+')">🗑️</button>':'')
+    +'</div></div>'
+    +(n.expiry?'<div style="font-size:10px;color:var(--yl);margin-top:4px;">⏰ Valid until: '+n.expiry+'</div>':'')
+    +'</div>';
+  return html;
+}
+function shrNotice(i){
+  var n=noticesCache[i];
+  if(!n)return;
+  var t=n.title+'\n\n'+n.body+(n.video?'\n\nVideo: '+n.video:'');
+  if(navigator.share)navigator.share({title:n.title,text:t});
+  else{navigator.clipboard.writeText(t).then(function(){toast('Copied!');});}
+}
+function delNotice(i){
+  var n=noticesCache[i];
+  if(!n||!confirm('Delete notice?'))return;
+  fetch(SU+'/rest/v1/notices?ts=eq.'+n.ts,{method:'DELETE',headers:{'apikey':SK,'Authorization':'Bearer '+SK}})
+    .then(function(){noticesCache.splice(i,1);loadAdminSentNotices();toast('Deleted');})
+    .catch(function(){toast('Error',true);});
+}
+function updNotifBadge(count){
+  var b=document.getElementById('nbadge');
+  if(!b)return;
+  if(count&&count>0){b.style.display='block';b.textContent=count>9?'9+':count;}
+  else b.style.display='none';
+}
+function loadNotifBadge(){
+  cGet('notices').then(function(n){if(n&&n.length)updNotifBadge(n.length);}).catch(function(){});
+}
+function getTimeAgo(ts){
+  if(!ts)return '';
+  var d=new Date(typeof ts==='number'?ts:ts);
+  var diff=Date.now()-d.getTime();
+  var mins=Math.floor(diff/60000);
+  if(mins<1)return 'Just now';
+  if(mins<60)return mins+'m ago';
+  var hrs=Math.floor(mins/60);
+  if(hrs<24)return hrs+'h ago';
+  return Math.floor(hrs/24)+'d ago';
+}
+
+// ============================================================
+// ADMIN
+// ============================================================
+function admTab(tab,el){
+  document.querySelectorAll('#admTabs .stab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  ['overview','sendnotice','alldata','admSettings'].forEach(function(t){
+    var d=document.getElementById('adm-'+t);if(d)d.style.display='none';
+  });
+  var show=document.getElementById('adm-'+tab);
+  if(show)show.style.display='block';
+  if(tab==='overview')loadAdminOverview();
+  if(tab==='sendnotice')loadAdminSentNotices();
+  if(tab==='alldata')admData('visitors',document.querySelector('#adm-alldata .stab'));
+  if(tab==='admSettings')loadAdminsList();
+}
+function loadAdminOverview(){
+  Promise.all([
+    cGet('visitors'),cGet('expenses'),cGet('notices')
+  ]).then(function(res){
+    var v=res[0]||[],e=res[1]||[],n=res[2]||[];
+    var orgs={};
+    v.forEach(function(x){var o=x.user_org||'Unknown';if(!orgs[o])orgs[o]={v:0,e:0};orgs[o].v++;});
+    e.forEach(function(x){var o=x.user_org||'Unknown';if(!orgs[o])orgs[o]={v:0,e:0};orgs[o].e+=(x.cur==='INR'?+x.amt:+x.amt*N2I);});
+    var ti=e.reduce(function(s,x){return s+(x.cur==='INR'?+x.amt:+x.amt*N2I);},0);
+    document.getElementById('adv').textContent=v.length;
+    document.getElementById('ado').textContent=Object.keys(orgs).length;
+    document.getElementById('ade').textContent='₹'+Math.round(ti).toLocaleString('en-IN');
+    document.getElementById('adn').textContent=n.length;
+    var el=document.getElementById('admOrgList');
+    if(!Object.keys(orgs).length){el.innerHTML='<div class="emtxt">No cloud data yet. Users need internet once to sync.</div>';return;}
+    el.innerHTML=Object.keys(orgs).sort(function(a,b){return orgs[b].v-orgs[a].v;}).map(function(org){
+      return '<div style="background:var(--s2);border:1px solid var(--b);border-radius:var(--rx);padding:10px 12px;margin-bottom:8px;">'
+        +'<div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:5px;">🏫 '+org+'</div>'
+        +'<div style="display:flex;gap:12px;font-size:12px;">'
+        +'<span style="color:var(--pu);">👥 '+orgs[org].v+' visitors</span>'
+        +'<span style="color:var(--or);">💰 ₹'+Math.round(orgs[org].e).toLocaleString('en-IN')+'</span>'
+        +'</div></div>';
+    }).join('');
+  }).catch(function(){
+    document.getElementById('admOrgList').innerHTML='<div class="emtxt">Connect to internet to view all data</div>';
+  });
+}
+function sendNotice(){
+  var title=document.getElementById('ntitle').value.trim();
+  var body=document.getElementById('nbody').value.trim();
+  if(!title||!body){toast('Title and message required',true);return;}
+  var data={
+    title:title,body:body,
+    type:document.getElementById('ntype').value,
+    target:document.getElementById('ntarget').value,
+    video:document.getElementById('nvideo').value,
+    priority:document.getElementById('npriority').value,
+    expiry:document.getElementById('nexpiry').value,
+    sent_by:CU.name,org:CU.orgKey,org_name:CU.org,
+    sent_at:new Date().toISOString(),ts:Date.now()
+  };
+  dbAdd('notices_sent',data).then(function(){
+    cPost('notices',data).then(function(){
+      sendPushNotif(data);
+      toast('📢 Notice published!');
+      document.getElementById('ntitle').value='';
+      document.getElementById('nbody').value='';
+      document.getElementById('nvideo').value='';
+      loadAdminSentNotices();
+    });
+  });
+}
+function sendPushNotif(notice){
+  if('Notification' in window && Notification.permission==='granted'){
+    navigator.serviceWorker.ready.then(function(reg){
+      reg.showNotification(notice.title,{
+        body:notice.body.slice(0,100),
+        tag:'wrc-'+Date.now(),vibrate:[200,100,200]
+      });
+    }).catch(function(){});
+  }
+}
+function loadAdminSentNotices(){
+  var el=document.getElementById('sentNotices');
+  if(!el)return;
+  cGet('notices').then(function(notices){
+    if(!notices||!notices.length){
+      dbAll('notices_sent').then(function(local){
+        noticesCache=local.slice().reverse();
+        if(!noticesCache.length){el.innerHTML='<div class="empty"><div class="emico">📢</div><div class="emtxt">No notices sent yet</div></div>';return;}
+        el.innerHTML=noticesCache.map(function(n,i){return renderNCard(n,i,true);}).join('');
+      });
+      return;
+    }
+    noticesCache=notices;
+    el.innerHTML=notices.map(function(n,i){return renderNCard(n,i,true);}).join('');
+  }).catch(function(){el.innerHTML='<div class="emtxt">Could not load notices</div>';});
+}
+function admData(type,el){
+  admCurData=type;
+  if(el){document.querySelectorAll('#adm-alldata .stab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');}
+  var listEl=document.getElementById('admDataList');
+  listEl.innerHTML='<div class="loading"><span class="spin"></span>Loading...</div>';
+  cGet(type).then(function(data){
+    if(!data||!data.length){listEl.innerHTML='<div class="empty"><div class="emico">📋</div><div class="emtxt">No data yet</div></div>';return;}
+    if(type==='visitors'){
+      listEl.innerHTML=data.map(function(v){
+        return '<div style="background:var(--s1);border:1px solid var(--b);border-radius:var(--rx);padding:10px;margin-bottom:8px;font-size:12px;">'
+          +'<div style="display:flex;justify-content:space-between;"><span style="font-weight:600;">'+(v.n||'—')+'</span>'
+          +'<span class="bdg '+(SM[v.st2]||'bdg-pu')+'" style="font-size:10px;">'+(v.st2||'New')+'</span></div>'
+          +'<div style="color:var(--t3);margin-top:3px;">'+(v.user_org||'')+' · '+(v.cy||v.vvCity||'')+'</div></div>';
+      }).join('');
+    } else if(type==='expenses'){
+      listEl.innerHTML=data.map(function(ex){
+        return '<div style="background:var(--s1);border:1px solid var(--b);border-radius:var(--rx);padding:10px;margin-bottom:8px;font-size:12px;display:flex;justify-content:space-between;">'
+          +'<div><div style="font-weight:600;">'+(ex.cat||'—')+'</div><div style="color:var(--t3);">'+(ex.user_org||'')+' · '+(ex.user_name||'')+'</div></div>'
+          +'<div style="font-weight:700;color:var(--or);">'+(ex.cur==='INR'?'₹':'रू')+parseFloat(ex.amt||0).toLocaleString()+'</div></div>';
+      }).join('');
+    } else {
+      listEl.innerHTML=data.map(function(a){
+        var p=(a.recs||[]).filter(function(r){return r.st==='P';}).length;
+        return '<div style="background:var(--s1);border:1px solid var(--b);border-radius:var(--rx);padding:10px;margin-bottom:8px;font-size:12px;">'
+          +'<div style="font-weight:600;">'+(a.b||'')+' · '+(a.d||'')+'</div>'
+          +'<div style="color:var(--t3);">Present: '+p+' / '+(a.recs||[]).length+' | Org: '+(a.user_org||'—')+'</div></div>';
+      }).join('');
+    }
+  }).catch(function(){listEl.innerHTML='<div class="emtxt">Connect to internet to view all data</div>';});
+}
+function admExport(){
+  cGet(admCurData).then(function(data){
+    if(!data||!data.length){toast('No data',true);return;}
+    var keys=Object.keys(data[0]).filter(function(k){return k!=='rcpt'&&k!=='attachment';});
+    var csv=keys.join(',')+'\n'+data.map(function(r){
+      return keys.map(function(k){return '"'+(r[k]||'').toString().replace(/"/g,"'")+'"';}).join(',');
+    }).join('\n');
+    downloadCSV(csv,'WRC_Admin_'+admCurData+'_'+new Date().toISOString().slice(0,10)+'.csv');
+  }).catch(function(){toast('Error downloading',true);});
+}
+
+// ============================================================
+// ADMIN AUTH
+// ============================================================
+function hashPwd(pwd){
+  var encoder=new TextEncoder();
+  var data=encoder.encode(pwd+'WRC_SALT_2025');
+  return crypto.subtle.digest('SHA-256',data).then(function(buf){
+    return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+  });
+}
+function verifyAdmin(identifier,pwd){
+  return hashPwd(pwd).then(function(hash){
+    return fetch(SU+'/rest/v1/admin_users?select=id,name&identifier=eq.'+encodeURIComponent(identifier)+'&pwd_hash=eq.'+hash+'&is_active=eq.true',{
+      headers:{'apikey':SK,'Authorization':'Bearer '+SK}
+    }).then(function(r){return r.ok?r.json():[];}).then(function(data){
+      if(data&&data.length>0)return true;
+      var lh=localStorage.getItem('wrc_sa_hash');
+      var li=localStorage.getItem('wrc_sa_id');
+      return lh&&li===identifier&&lh===hash;
+    }).catch(function(){
+      var lh=localStorage.getItem('wrc_sa_hash');
+      var li=localStorage.getItem('wrc_sa_id');
+      if(lh&&li===identifier){
+        return hashPwd(pwd).then(function(h2){return h2===lh;});
+      }
+      return false;
+    });
+  });
+}
+function setupAdmin(){
+  var id=document.getElementById('saId').value.trim();
+  var pwd=document.getElementById('saPwd').value;
+  var conf=document.getElementById('saConf').value;
+  if(!id){toast('Email/Phone required',true);return;}
+  if(pwd.length<8){toast('Password min 8 characters',true);return;}
+  if(pwd!==conf){toast('Passwords do not match',true);return;}
+  hashPwd(pwd).then(function(hash){
+    var data={identifier:id,pwd_hash:hash,name:CU.name||'Super Admin',admin_level:'superadmin',org:CU.orgKey||'all',is_active:true,created_at:new Date().toISOString()};
+    cPost('admin_users',data).then(function(){
+      localStorage.setItem('wrc_sa_hash',hash);
+      localStorage.setItem('wrc_sa_id',id);
+      toast('✅ Admin password saved!');
+      document.getElementById('saPwd').value='';
+      document.getElementById('saConf').value='';
+      loadAdminsList();
+    });
+  });
+}
+function addAdmin(){
+  var name=document.getElementById('newAdmName').value.trim();
+  var id=document.getElementById('newAdmId').value.trim();
+  var pwd=document.getElementById('newAdmPwd').value;
+  var level=document.getElementById('newAdmLevel').value;
+  if(!name||!id||!pwd){toast('All fields required',true);return;}
+  if(pwd.length<6){toast('Password min 6 chars',true);return;}
+  hashPwd(pwd).then(function(hash){
+    var data={identifier:id,pwd_hash:hash,name:name,admin_level:level,org:'all',is_active:true,created_by:CU.id,created_at:new Date().toISOString()};
+    cPost('admin_users',data).then(function(){
+      toast('✅ Admin added!');
+      document.getElementById('newAdmName').value='';
+      document.getElementById('newAdmId').value='';
+      document.getElementById('newAdmPwd').value='';
+      loadAdminsList();
+    });
+  });
+}
+function loadAdminsList(){
+  var el=document.getElementById('adminsList');
+  if(!el)return;
+  fetch(SU+'/rest/v1/admin_users?select=id,name,identifier,admin_level,is_active&order=created_at.desc',{
+    headers:{'apikey':SK,'Authorization':'Bearer '+SK}
+  }).then(function(r){return r.ok?r.json():[];}).then(function(admins){
+    if(!admins.length){el.innerHTML='<div class="emtxt">No admins yet. Setup above first.</div>';return;}
+    el.innerHTML=admins.map(function(a){
+      return '<div style="background:var(--s2);border:1px solid var(--b);border-radius:var(--rx);padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">'
+        +'<div><div style="font-size:13px;font-weight:600;">'+a.name+'</div>'
+        +'<div style="font-size:11px;color:var(--t3);">'+a.identifier+' · '+a.admin_level+'</div></div>'
+        +'<span class="bdg '+(a.is_active?'bdg-tl':'bdg-rd')+'" style="font-size:10px;">'+(a.is_active?'Active':'Inactive')+'</span>'
+        +'</div>';
+    }).join('');
+  }).catch(function(){el.innerHTML='<div class="emtxt">Could not load. Check connection.</div>';});
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function saveSett(){
+  CU.name=document.getElementById('sn').value;
+  CU.email=document.getElementById('se').value;
+  CU.phone=document.getElementById('sp').value;
+  CU.org=document.getElementById('sc').value;
+  CU.orgKey=CU.org.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();
+  localStorage.setItem('wrc_u',JSON.stringify(CU));
+  initUI();toast('✅ Profile saved!');
+}
+function saveAI(){
+  localStorage.setItem('wrc_ai_svc',document.getElementById('aiSvc').value);
+  localStorage.setItem('wrc_ai_key',document.getElementById('aiK').value);
+  toast('✅ AI settings saved!');
+}
+function cpLink(){navigator.clipboard.writeText(window.location.href).then(function(){toast('✅ Link copied!');});}
+function shrLink(){
+  if(navigator.share)navigator.share({title:'WRC Nepal Staff Tracker',url:window.location.href,text:'WRC Nepal Staff Tracker app'});
+  else cpLink();
+}
+
+// ============================================================
+// AI
+// ============================================================
+function aiSend(){
+  var q=document.getElementById('aiq').value.trim();
+  if(!q)return;
+  aiQ(q);
+}
+function aiQ(q){
+  document.getElementById('aiq').value=q;
+  var rp=document.getElementById('airp');
+  rp.style.display='block';
+  rp.innerHTML='<span class="spin"></span> Thinking...';
+  var tot=allV.length;
+  var hot=allV.filter(function(v){return v.st2==='Hot lead';}).length;
+  var adm=allV.filter(function(v){return v.st2==='Admitted';}).length;
+  var ti=allE.reduce(function(s,x){return s+(x.cur==='INR'?+x.amt:+x.amt*N2I);},0);
+  var key=localStorage.getItem('wrc_ai_key')||'';
+  var svc=localStorage.getItem('wrc_ai_svc')||'gemini';
+  if(!key){
+    rp.innerHTML='📊 <b>Quick Summary:</b><br>Visitors: '+tot+' | Hot: '+hot+' | Admitted: '+adm+'<br>Expenses: ₹'+Math.round(ti).toLocaleString('en-IN')+'<br><br><em>Add AI key in Settings for detailed analysis!</em>';
+    return;
+  }
+  var ctx='WRC Nepal Staff data - Visitors:'+tot+', Hot leads:'+hot+', Admitted:'+adm+', Total expenses INR:'+Math.round(ti)+'. Today:'+new Date().toLocaleDateString('en-IN')+'. Answer briefly.';
+  if(svc==='gemini'){
+    fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key='+key,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:ctx+'\n\nQuestion: '+q}]}]})
+    }).then(function(r){return r.json();}).then(function(d){
+      var resp=d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts?d.candidates[0].content.parts[0].text:'No response';
+      rp.innerHTML=resp.replace(/\n/g,'<br>');
+    }).catch(function(){rp.innerHTML='⚠️ AI error. Check API key in Settings.';});
+  } else if(svc==='claude'){
+    fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-haiku-20240307',max_tokens:300,system:ctx,messages:[{role:'user',content:q}]})
+    }).then(function(r){return r.json();}).then(function(d){
+      rp.innerHTML=d.content&&d.content[0]?d.content[0].text.replace(/\n/g,'<br>'):'No response';
+    }).catch(function(){rp.innerHTML='⚠️ AI error. Check API key.';});
+  } else {
+    fetch('https://api.openai.com/v1/chat/completions',{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model:'gpt-3.5-turbo',max_tokens:300,messages:[{role:'system',content:ctx},{role:'user',content:q}]})
+    }).then(function(r){return r.json();}).then(function(d){
+      rp.innerHTML=d.choices&&d.choices[0]?d.choices[0].message.content.replace(/\n/g,'<br>'):'No response';
+    }).catch(function(){rp.innerHTML='⚠️ AI error. Check API key.';});
+  }
+}
+
+// ============================================================
+// PWA
+// ============================================================
+var deferredPrompt=null;
+function setupPWA(){
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();deferredPrompt=e;
+    var c=document.getElementById('pwabtn');
+    if(c)c.innerHTML='<button class="gbtn gbtn-pu gbtn-full" onclick="instPWA()">📲 Install App Now</button>';
+    var ib=document.getElementById('ibc');
+    if(ib)ib.innerHTML='<div class="ibanner"><div style="font-size:24px;">📲</div><div class="ibtxt"><strong>Install as App</strong>Works offline on phone</div><button class="gbtn gbtn-pu gbtn-sm" onclick="instPWA()">Install</button></div>';
+  });
+}
+function instPWA(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(r){
+      if(r.outcome==='accepted')toast('✅ App installed!');
+      deferredPrompt=null;
+    });
+  }
+}
+
+// ============================================================
+// SERVICE WORKER
+// ============================================================
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(function(){});
+}
+
+// ============================================================
+// INIT
+// ============================================================
+initDB().then(function(){
+  populateLoginDropdowns();
+  checkAuth();
+}).catch(function(e){
+  console.error('DB error:',e);
+  populateLoginDropdowns();
+  checkAuth();
+});
