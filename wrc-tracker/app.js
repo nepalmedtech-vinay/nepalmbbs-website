@@ -143,6 +143,20 @@ function setLT(m){
 function onRoleChange(){
   var r=document.getElementById('lRole').value;
   document.getElementById('lAdminPin').style.display=r==='admin'?'block':'none';
+  document.getElementById('bootstrapInfo').style.display='none';
+  if(r==='admin'){checkIfNoAdminsExist();}
+}
+function checkIfNoAdminsExist(){
+  fetch(SU+'/rest/v1/admin_users?select=id&limit=1',{
+    headers:{'apikey':SK,'Authorization':'Bearer '+SK}
+  }).then(function(r){return r.ok?r.json():null;}).then(function(data){
+    if(data && data.length===0){
+      document.getElementById('bootstrapInfo').style.display='block';
+    }
+  }).catch(function(){});
+}
+function showBootstrapInfo(){
+  document.getElementById('bootstrapInfo').style.display='block';
 }
 function onOrgChange(){
   var v=document.getElementById('lOrg').value;
@@ -1305,21 +1319,45 @@ function hashPwd(pwd){
   });
 }
 function verifyAdmin(identifier,pwd){
-  return hashPwd(pwd).then(function(hash){
-    return fetch(SU+'/rest/v1/admin_users?select=id,name&identifier=eq.'+encodeURIComponent(identifier)+'&pwd_hash=eq.'+hash+'&is_active=eq.true',{
-      headers:{'apikey':SK,'Authorization':'Bearer '+SK}
-    }).then(function(r){return r.ok?r.json():[];}).then(function(data){
-      if(data&&data.length>0)return true;
-      var lh=localStorage.getItem('wrc_sa_hash');
-      var li=localStorage.getItem('wrc_sa_id');
-      return lh&&li===identifier&&lh===hash;
-    }).catch(function(){
-      var lh=localStorage.getItem('wrc_sa_hash');
-      var li=localStorage.getItem('wrc_sa_id');
-      if(lh&&li===identifier){
-        return hashPwd(pwd).then(function(h2){return h2===lh;});
+  return fetch(SU+'/rest/v1/admin_users?select=id&limit=1',{
+    headers:{'apikey':SK,'Authorization':'Bearer '+SK}
+  }).then(function(r){return r.ok?r.json():null;}).then(function(allAdmins){
+    // BOOTSTRAP: no admin exists anywhere yet -> this login becomes the first Super Admin
+    if(allAdmins && allAdmins.length===0){
+      if(pwd.length<8){
+        return Promise.reject(new Error('First admin password must be at least 8 characters'));
       }
+      return hashPwd(pwd).then(function(hash){
+        var data={identifier:identifier,pwd_hash:hash,name:CU&&CU.name?CU.name:'Super Admin',admin_level:'superadmin',org:'all',is_active:true,created_at:new Date().toISOString()};
+        return cPost('admin_users',data).then(function(){
+          localStorage.setItem('wrc_sa_hash',hash);
+          localStorage.setItem('wrc_sa_id',identifier);
+          toast('🎉 First Admin account created!');
+          return true;
+        });
+      });
+    }
+    // Normal path: verify against existing records
+    return hashPwd(pwd).then(function(hash){
+      return fetch(SU+'/rest/v1/admin_users?select=id,name&identifier=eq.'+encodeURIComponent(identifier)+'&pwd_hash=eq.'+hash+'&is_active=eq.true',{
+        headers:{'apikey':SK,'Authorization':'Bearer '+SK}
+      }).then(function(r){return r.ok?r.json():[];}).then(function(data){
+        if(data&&data.length>0)return true;
+        var lh=localStorage.getItem('wrc_sa_hash');
+        var li=localStorage.getItem('wrc_sa_id');
+        return !!(lh&&li===identifier&&lh===hash);
+      });
+    });
+  }).catch(function(err){
+    // Offline fallback: check local super-admin hash only
+    if(err && err.message && err.message.indexOf('8 characters')>-1){
+      toast(err.message,true);
       return false;
+    }
+    return hashPwd(pwd).then(function(hash){
+      var lh=localStorage.getItem('wrc_sa_hash');
+      var li=localStorage.getItem('wrc_sa_id');
+      return !!(lh&&li===identifier&&lh===hash);
     });
   });
 }
@@ -1340,6 +1378,79 @@ function setupAdmin(){
       document.getElementById('saConf').value='';
       loadAdminsList();
     });
+  });
+}
+
+// ============================================================
+// PASSWORD RECOVERY / REGENERATE
+// ============================================================
+var recoverTargetId='';
+function checkRecoverEligibility(){
+  var id=document.getElementById('recId').value.trim();
+  var msg=document.getElementById('recoverMsg');
+  if(!id){msg.innerHTML='<span style="color:var(--rd);">Please enter email or phone</span>';return;}
+  msg.innerHTML='<span class="spin"></span> Checking...';
+  fetch(SU+'/rest/v1/admin_users?select=id,name,admin_level,is_active&identifier=eq.'+encodeURIComponent(id),{
+    headers:{'apikey':SK,'Authorization':'Bearer '+SK}
+  }).then(function(r){return r.ok?r.json():[];}).then(function(data){
+    if(!data||!data.length){
+      msg.innerHTML='<span style="color:var(--rd);">No admin found with this email/phone. Ask your Super Admin to add you, or login as Admin role to bootstrap the first account if none exists yet.</span>';
+      return;
+    }
+    if(!data[0].is_active){
+      msg.innerHTML='<span style="color:var(--rd);">This admin account is disabled. Contact your Super Admin.</span>';
+      return;
+    }
+    fetch(SU+'/rest/v1/admin_users?select=id&limit=2',{
+      headers:{'apikey':SK,'Authorization':'Bearer '+SK}
+    }).then(function(r2){return r2.ok?r2.json():[];}).then(function(allAdmins){
+      if(allAdmins.length===1){
+        recoverTargetId=id;
+        msg.innerHTML='<span style="color:var(--tl);">✅ Account found: '+data[0].name+'. You are the only admin, so you can reset your password directly below.</span>';
+        document.getElementById('recoverStep2').style.display='block';
+      } else {
+        msg.innerHTML='<span style="color:var(--yl);">Account found: '+data[0].name+'. For security, multiple admins exist — please ask your Super Admin to reset your password from Admin Panel → Settings → Existing Admins.</span>';
+      }
+    });
+  }).catch(function(){
+    msg.innerHTML='<span style="color:var(--rd);">Could not check — connect to internet and try again.</span>';
+  });
+}
+function doPasswordReset(){
+  var np=document.getElementById('recNewPwd').value;
+  var cp=document.getElementById('recConfPwd').value;
+  if(np.length<8){toast('Password min 8 characters',true);return;}
+  if(np!==cp){toast('Passwords do not match',true);return;}
+  hashPwd(np).then(function(hash){
+    fetch(SU+'/rest/v1/admin_users?identifier=eq.'+encodeURIComponent(recoverTargetId),{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK},
+      body:JSON.stringify({pwd_hash:hash})
+    }).then(function(){
+      localStorage.setItem('wrc_sa_hash',hash);
+      localStorage.setItem('wrc_sa_id',recoverTargetId);
+      toast('✅ Password reset! You can login now.');
+      closeM('mrecover');
+      document.getElementById('recNewPwd').value='';
+      document.getElementById('recConfPwd').value='';
+      document.getElementById('recId').value='';
+      document.getElementById('recoverStep2').style.display='none';
+      document.getElementById('recoverMsg').innerHTML='';
+    }).catch(function(){toast('Reset failed — check connection',true);});
+  });
+}
+function regenerateAdminPwd(identifier,adminName){
+  var np=prompt('Set a new password for '+adminName+' (min 6 characters):');
+  if(!np)return;
+  if(np.length<6){toast('Password min 6 characters',true);return;}
+  hashPwd(np).then(function(hash){
+    fetch(SU+'/rest/v1/admin_users?identifier=eq.'+encodeURIComponent(identifier),{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK},
+      body:JSON.stringify({pwd_hash:hash})
+    }).then(function(){
+      toast('✅ Password regenerated for '+adminName);
+    }).catch(function(){toast('Failed to regenerate',true);});
   });
 }
 function addAdmin(){
@@ -1368,10 +1479,15 @@ function loadAdminsList(){
   }).then(function(r){return r.ok?r.json():[];}).then(function(admins){
     if(!admins.length){el.innerHTML='<div class="emtxt">No admins yet. Setup above first.</div>';return;}
     el.innerHTML=admins.map(function(a){
-      return '<div style="background:var(--s2);border:1px solid var(--b);border-radius:var(--rx);padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">'
+      return '<div style="background:var(--s2);border:1px solid var(--b);border-radius:var(--rx);padding:10px 12px;margin-bottom:8px;">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;">'
         +'<div><div style="font-size:13px;font-weight:600;">'+a.name+'</div>'
         +'<div style="font-size:11px;color:var(--t3);">'+a.identifier+' · '+a.admin_level+'</div></div>'
         +'<span class="bdg '+(a.is_active?'bdg-tl':'bdg-rd')+'" style="font-size:10px;">'+(a.is_active?'Active':'Inactive')+'</span>'
+        +'</div>'
+        +'<div class="brow" style="margin-top:8px;">'
+        +'<button class="gbtn gbtn-gl gbtn-sm" onclick="regenerateAdminPwd(\''+a.identifier+'\',\''+a.name.replace(/'/g,"\\'")+'\')">🔄 Regenerate Password</button>'
+        +'</div>'
         +'</div>';
     }).join('');
   }).catch(function(){el.innerHTML='<div class="emtxt">Could not load. Check connection.</div>';});

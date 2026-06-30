@@ -201,7 +201,9 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,sans-seri
     <div id="lAdminPin" class="fld" style="display:none;">
       <label>Admin Password</label>
       <input class="gi" id="lPinInput" type="password" placeholder="Enter admin password">
+      <p style="font-size:10px;color:var(--t3);margin-top:6px;line-height:1.6;">First time setting up admin? <span style="color:var(--pu);cursor:pointer;text-decoration:underline;" onclick="showBootstrapInfo()">Tap here</span><br>Forgot password? <span style="color:var(--pu);cursor:pointer;text-decoration:underline;" onclick="openM('mrecover')">Reset it here</span></p>
     </div>
+    <div id="bootstrapInfo" style="display:none;font-size:11px;color:var(--tl);background:rgba(6,214,160,0.12);border:1px solid rgba(6,214,160,0.3);border-radius:var(--rs);padding:10px 12px;margin-bottom:12px;line-height:1.6;">✅ No admin exists yet. Enter any password above (min 8 characters) — it will become the permanent Super Admin password and create your account.</div>
     <button class="gbtn gbtn-pk gbtn-full" id="loginBtn" onclick="handleLogin()" style="margin-top:8px;">🚀 Enter App</button>
     <p style="font-size:10px;color:var(--t3);text-align:center;margin-top:12px;">Data saved on your device — works offline</p>
   </div>
@@ -731,6 +733,22 @@ html,body{height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,sans-seri
   <div class="mhandle"></div>
   <div class="mtitle" id="vdtitle">Details <button class="cbtn" onclick="closeM('mvd')">✕</button></div>
   <div id="vdbody"></div>
+</div></div>
+
+<div class="mov" id="mrecover"><div class="modal">
+  <div class="mhandle"></div>
+  <div class="mtitle">🔐 Reset Admin Password <button class="cbtn" onclick="closeM('mrecover')">✕</button></div>
+  <div id="recoverStep1">
+    <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.6;">Enter the admin email or phone you want to reset. If this is the only admin account on the system, you can set a new password directly. Otherwise, ask your Super Admin to reset it for you from Admin Panel → Settings.</p>
+    <div class="fld"><label>Admin Email/Phone</label><input class="gi" id="recId" placeholder="admin@email.com"></div>
+    <button class="gbtn gbtn-pu gbtn-full" onclick="checkRecoverEligibility()">🔍 Check Account</button>
+    <div id="recoverMsg" style="font-size:12px;margin-top:10px;"></div>
+  </div>
+  <div id="recoverStep2" style="display:none;">
+    <div class="fld"><label>New Password (min 8 chars)</label><input class="gi" id="recNewPwd" type="password" placeholder="New password"></div>
+    <div class="fld"><label>Confirm New Password</label><input class="gi" id="recConfPwd" type="password" placeholder="Confirm new password"></div>
+    <button class="gbtn gbtn-tl gbtn-full" onclick="doPasswordReset()">✅ Set New Password</button>
+  </div>
 </div></div>
 
 <div class="toast" id="toast"></div>
