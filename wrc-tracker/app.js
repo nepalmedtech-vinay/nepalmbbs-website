@@ -1320,16 +1320,36 @@ function hashPwd(pwd){
 }
 function verifyAdmin(identifier,pwd){
   return fetch(SU+'/rest/v1/admin_users?select=id&limit=1',{
-    headers:{'apikey':SK,'Authorization':'Bearer '+SK}
-  }).then(function(r){return r.ok?r.json():null;}).then(function(allAdmins){
+    method:'GET',
+    headers:{'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json'}
+  }).then(function(r){
+    if(!r.ok){
+      toast('Could not reach server (status '+r.status+'). Check internet connection.',true);
+      throw new Error('count-check-failed');
+    }
+    return r.json();
+  }).then(function(allAdmins){
+    var count=(allAdmins && allAdmins.length) ? allAdmins.length : 0;
+
     // BOOTSTRAP: no admin exists anywhere yet -> this login becomes the first Super Admin
-    if(allAdmins && allAdmins.length===0){
+    if(count===0){
       if(pwd.length<8){
-        return Promise.reject(new Error('First admin password must be at least 8 characters'));
+        toast('First admin password must be at least 8 characters',true);
+        return false;
       }
       return hashPwd(pwd).then(function(hash){
-        var data={identifier:identifier,pwd_hash:hash,name:CU&&CU.name?CU.name:'Super Admin',admin_level:'superadmin',org:'all',is_active:true,created_at:new Date().toISOString()};
-        return cPost('admin_users',data).then(function(){
+        var data={identifier:identifier,pwd_hash:hash,name:(CU&&CU.name)?CU.name:'Super Admin',admin_level:'superadmin',org:'all',is_active:true,created_at:new Date().toISOString()};
+        return fetch(SU+'/rest/v1/admin_users',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK,'Prefer':'return=representation'},
+          body:JSON.stringify(data)
+        }).then(function(r2){
+          if(!r2.ok){
+            return r2.text().then(function(errText){
+              toast('Could not create admin: '+errText.slice(0,80),true);
+              return false;
+            });
+          }
           localStorage.setItem('wrc_sa_hash',hash);
           localStorage.setItem('wrc_sa_id',identifier);
           toast('🎉 First Admin account created!');
@@ -1337,27 +1357,29 @@ function verifyAdmin(identifier,pwd){
         });
       });
     }
+
     // Normal path: verify against existing records
     return hashPwd(pwd).then(function(hash){
       return fetch(SU+'/rest/v1/admin_users?select=id,name&identifier=eq.'+encodeURIComponent(identifier)+'&pwd_hash=eq.'+hash+'&is_active=eq.true',{
         headers:{'apikey':SK,'Authorization':'Bearer '+SK}
-      }).then(function(r){return r.ok?r.json():[];}).then(function(data){
+      }).then(function(r3){return r3.ok?r3.json():[];}).then(function(data){
         if(data&&data.length>0)return true;
         var lh=localStorage.getItem('wrc_sa_hash');
         var li=localStorage.getItem('wrc_sa_id');
-        return !!(lh&&li===identifier&&lh===hash);
+        if(lh&&li===identifier&&lh===hash)return true;
+        toast('Password does not match any admin account for this email/phone',true);
+        return false;
       });
     });
   }).catch(function(err){
+    if(err && err.message==='count-check-failed'){return false;}
     // Offline fallback: check local super-admin hash only
-    if(err && err.message && err.message.indexOf('8 characters')>-1){
-      toast(err.message,true);
-      return false;
-    }
     return hashPwd(pwd).then(function(hash){
       var lh=localStorage.getItem('wrc_sa_hash');
       var li=localStorage.getItem('wrc_sa_id');
-      return !!(lh&&li===identifier&&lh===hash);
+      if(lh&&li===identifier&&lh===hash)return true;
+      toast('Offline and no local admin match found',true);
+      return false;
     });
   });
 }
