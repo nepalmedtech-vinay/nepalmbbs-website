@@ -1,0 +1,399 @@
+/* NepalMBBS.in — tokens.css
+   Design tokens: color system, brand palette, text hierarchy
+   Extracted from index.html in Phase 1; content is byte-identical.
+   Load order matters: see index.html. */
+
+
+/* ═══════════════════════════════════════════════════════════════
+   NEPALMBBS.IN — MASTER COLOR SYSTEM v3.0
+   Professional dark theme with full visibility
+   Reference: Vercel / Linear / Apollo.io dark theme
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Core Backgrounds ── */
+  --bg-base:      #0f1724;   /* deepest bg — page base */
+  --bg-surface:   #162032;   /* cards, sections */
+  --bg-raised:    #1c2a3f;   /* elevated cards, modals */
+  --bg-overlay:   #223250;   /* hover states, selected */
+
+  /* ── Brand Colors ── */
+  --gold:         #f0a500;   /* primary CTA — warm amber */
+  --gold-light:   #f7c948;   /* hover state */
+  --gold-dim:     rgba(240,165,0,0.18);
+  --gold-border:  rgba(240,165,0,0.40);
+
+  /* ── Text Hierarchy (WCAG AA compliant) ── */
+  --text-primary:   #f0f4ff;   /* headings, main content — 95% white */
+  --text-secondary: #c8d4e8;   /* body text — 80% */
+  --text-tertiary:  #8fa8c8;   /* captions, labels — 60% */
+  --text-muted:     #607090;   /* placeholder, disabled — 40% */
+  --text-accent:    #60a5fa;   /* links, highlights */
+
+  /* ── Interactive Blue ── */
+  --blue:         #3b82f6;
+  --blue-light:   #60a5fa;
+  --blue-dim:     rgba(59,130,246,0.15);
+  --blue-border:  rgba(59,130,246,0.35);
+
+  /* ── Status Colors ── */
+  --green:        #10b981;
+  --green-dim:    rgba(16,185,129,0.15);
+  --teal:         #14b8a6;
+  --red:          #ef4444;
+
+  /* ── Glass System ── */
+  --glass-bg:     rgba(255,255,255,0.06);
+  --glass-bg-md:  rgba(255,255,255,0.10);
+  --glass-bg-hi:  rgba(255,255,255,0.16);
+  --glass-border: rgba(255,255,255,0.12);
+  --glass-border-md: rgba(255,255,255,0.20);
+  --glass-shine:  rgba(255,255,255,0.18);
+
+  /* ── Legacy aliases (keep working) ── */
+  --navy:         var(--bg-surface);
+  --text:         var(--text-primary);
+  --muted:        var(--text-tertiary);
+  --accent:       var(--gold);
+  --off:          var(--bg-raised);
+  --gray:         var(--bg-raised);
+  --border:       rgba(255,255,255,0.12);
+  --white:        #f0f4ff;
+
+  /* ── Spacing & Radius ── */
+  --r:    12px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+}
+
+/* ─── BASE RESET ─────────────────────────────────────────── */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-base) !important;
+  color: var(--text-primary) !important;
+  font-family: 'Sora', 'Inter', system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* ─── TYPOGRAPHY — Full Visibility ──────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+}
+p, li, td, th, span, label, div {
+  color: var(--text-secondary) !important;
+}
+a { color: var(--text-accent) !important; }
+a:hover { color: var(--gold-light) !important; }
+
+/* ─── SECTIONS ───────────────────────────────────────────── */
+section, .tab-pane, .sec, .pane {
+  background: var(--bg-base) !important;
+}
+section:nth-of-type(even), .sec-alt {
+  background: var(--bg-surface) !important;
+}
+.why-section, .why-card, .why-body {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+}
+.why-card h4 { color: var(--text-primary) !important; }
+.why-body p, .why-body li { color: var(--text-secondary) !important; }
+
+/* ─── SECTION TITLES ─────────────────────────────────────── */
+.sec-title {
+  color: var(--text-primary) !important;
+  font-weight: 800 !important;
+  font-size: clamp(22px,4vw,36px) !important;
+}
+.sec-sub, .sec-desc {
+  color: var(--text-tertiary) !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+}
+.sec-label, .sec-eyebrow, .tabs-label {
+  color: var(--gold) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  font-size: 11px !important;
+}
+
+/* ─── CARDS ──────────────────────────────────────────────── */
+.card, .why-card, .step-card, .college-card,
+.faq-item, .vid-row, .test-card, .life-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  color: var(--text-secondary) !important;
+}
+.card h3, .card h4, .step-card h4,
+.faq-q, .why-card h4 {
+  color: var(--text-primary) !important;
+}
+.card p, .step-body p, .faq-a {
+  color: var(--text-secondary) !important;
+}
+
+/* ─── STEP PROCESS CARDS ─────────────────────────────────── */
+.step-num { color: var(--gold) !important; font-weight: 800 !important; }
+.step-title { color: var(--text-primary) !important; font-weight: 700 !important; }
+.step-body { color: var(--text-secondary) !important; }
+.step-link a { color: var(--blue-light) !important; }
+
+/* ─── COMPARISON TABLE ───────────────────────────────────── */
+.comp-table { border-collapse: collapse !important; width: 100% !important; }
+.comp-table th {
+  background: var(--bg-raised) !important;
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+  padding: 14px !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+.comp-table td {
+  color: var(--text-secondary) !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+.comp-table tr:nth-child(even) td {
+  background: rgba(255,255,255,0.03) !important;
+}
+
+/* ─── FORMS ──────────────────────────────────────────────── */
+.form-label, label, .c-label, .cfield label, .h-label {
+  color: var(--text-tertiary) !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+}
+input, select, textarea, .a-inp {
+  background: var(--bg-raised) !important;
+  border: 1.5px solid rgba(255,255,255,0.15) !important;
+  color: var(--text-primary) !important;
+  border-radius: 10px !important;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--gold-border) !important;
+  box-shadow: 0 0 0 3px var(--gold-dim) !important;
+  outline: none !important;
+}
+input::placeholder, select option:first-child {
+  color: var(--text-muted) !important;
+}
+select option {
+  background: var(--bg-raised) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ─── NAVBAR ─────────────────────────────────────────────── */
+.nav {
+  background: rgba(15,23,36,0.82) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.10) !important;
+}
+.nav-logo { color: var(--text-primary) !important; }
+
+/* ─── TICKER ──────────────────────────────────────────────── */
+.ticker-wrap {
+  background: var(--gold-dim) !important;
+  border-top: 1px solid var(--gold-border) !important;
+  border-bottom: 1px solid var(--gold-border) !important;
+}
+.ticker-text { color: var(--gold-light) !important; font-weight: 600 !important; }
+
+/* ─── TRUST SECTION ──────────────────────────────────────── */
+.trust-section {
+  background: var(--bg-surface) !important;
+  border-top: 1px solid rgba(255,255,255,0.08) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+.trust-title {
+  color: var(--text-tertiary) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.15em !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+}
+
+/* ─── TABS SECTION ───────────────────────────────────────── */
+.tabs-section {
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+/* ─── TAB CARDS (keep glass, fix text) ──────────────────── */
+.tab-card { color: var(--text-primary) !important; }
+.tab-label { color: var(--text-primary) !important; font-weight: 700 !important; }
+.tab-card.on .tab-label { color: var(--gold-light) !important; }
+
+/* ─── COLLEGE CARDS ──────────────────────────────────────── */
+.college-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+.college-name { color: var(--text-primary) !important; font-weight: 700 !important; }
+.college-loc  { color: var(--text-tertiary) !important; }
+.cs-label     { color: var(--text-tertiary) !important; font-size: 10px !important; text-transform: uppercase !important; letter-spacing: 0.08em !important; }
+.cs-val       { color: var(--text-primary) !important; font-weight: 700 !important; font-size: 16px !important; }
+.college-type-badge { background: var(--bg-raised) !important; color: var(--text-tertiary) !important; }
+
+/* ─── FAQs ───────────────────────────────────────────────── */
+.faq-item {
+  background: var(--bg-surface) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+.faq-q {
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+}
+.faq-a {
+  color: var(--text-secondary) !important;
+  line-height: 1.7 !important;
+}
+
+/* ─── VIDEOS SECTION ─────────────────────────────────────── */
+.vid-row { background: var(--bg-surface) !important; }
+.vid-row-title { color: var(--text-primary) !important; font-weight: 600 !important; }
+.vid-row-url   { color: var(--text-muted) !important; }
+
+/* ─── TESTIMONIALS ───────────────────────────────────────── */
+.test-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+.test-name   { color: var(--text-primary) !important; font-weight: 700 !important; }
+.test-city   { color: var(--text-muted) !important; }
+.test-quote  { color: var(--text-secondary) !important; }
+.test-stars  { color: var(--gold) !important; }
+
+/* ─── LIFE IN NEPAL SECTION ──────────────────────────────── */
+.life-card, .life-section {
+  background: var(--bg-surface) !important;
+}
+.life-card h4 { color: var(--text-primary) !important; }
+.life-card p  { color: var(--text-secondary) !important; }
+
+/* ─── WHY NEPAL CARDS ────────────────────────────────────── */
+.why-card {
+  background: var(--bg-raised) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+.why-img-badge {
+  background: rgba(15,23,36,0.85) !important;
+  color: var(--text-primary) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+}
+
+/* ─── CONTACT BAR ────────────────────────────────────────── */
+.cbar {
+  background: var(--bg-raised) !important;
+  border-top: 1px solid rgba(255,255,255,0.10) !important;
+}
+.cbar-country-label { color: var(--text-muted) !important; }
+.cbar-num-txt { color: var(--text-primary) !important; font-weight: 700 !important; }
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+.footer, footer {
+  background: #0a1120 !important;
+  border-top: 1px solid rgba(255,255,255,0.08) !important;
+}
+.footer p, .footer a, .footer span {
+  color: var(--text-muted) !important;
+}
+.footer a:hover { color: var(--text-secondary) !important; }
+
+/* ─── ADMIN PANEL ────────────────────────────────────────── */
+.admin-box {
+  background: var(--bg-raised) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+}
+.admin-top {
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.10) !important;
+}
+.a-sect { background: var(--bg-surface) !important; }
+.a-label { color: var(--text-tertiary) !important; font-weight: 600 !important; }
+.a-tab { color: var(--text-secondary) !important; }
+.a-tab.on { color: var(--gold) !important; background: var(--gold-dim) !important; }
+
+/* ─── MOBILE MENU ────────────────────────────────────────── */
+#mob-menu {
+  background: rgba(15,23,36,0.70) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.12) !important;
+}
+.mob-lang button { color: var(--text-secondary) !important; }
+.mob-lang button.on { color: #fff !important; }
+#mob-menu a { color: var(--text-primary) !important; font-weight: 600 !important; }
+
+/* ─── HERO CARD (form) ───────────────────────────────────── */
+.hero-card {
+  background: rgba(22,32,50,0.72) !important;
+  backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+}
+.hero-card h2, .hero-card h3 {
+  color: var(--text-primary) !important;
+}
+.hero-badge {
+  background: var(--gold-dim) !important;
+  color: var(--gold-light) !important;
+  border: 1px solid var(--gold-border) !important;
+}
+
+/* ─── HERO STATS ─────────────────────────────────────────── */
+.hero-stat { background: rgba(255,255,255,0.06) !important; border: 1px solid rgba(255,255,255,0.10) !important; }
+.hero-stat-val { color: var(--gold-light) !important; font-weight: 800 !important; }
+.hero-stat-label { color: var(--text-tertiary) !important; font-size: 10px !important; }
+
+/* ─── HERO BUTTONS ───────────────────────────────────────── */
+.hbtns .wa-btn, .h-wa-btn {
+  background: rgba(37,211,102,0.18) !important;
+  border: 1.5px solid rgba(37,211,102,0.35) !important;
+  color: #4ade80 !important;
+  font-weight: 700 !important;
+}
+.hbtns .wa-btn:hover {
+  background: rgba(37,211,102,0.28) !important;
+}
+
+/* ─── COLLEGES SUMMARY BAR ───────────────────────────────── */
+.colleges-summary {
+  background: var(--bg-raised) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+}
+.cs-sum strong { color: var(--gold-light) !important; font-weight: 800 !important; }
+.cs-sum span   { color: var(--text-muted) !important; }
+
+/* ─── CALCULATOR SECTION ─────────────────────────────────── */
+.calc-result { background: var(--bg-raised) !important; border: 1px solid rgba(255,255,255,0.12) !important; }
+.calc-result h3 { color: var(--text-primary) !important; }
+.calc-result p  { color: var(--text-secondary) !important; }
+.elig-badge { font-weight: 700 !important; }
+
+/* ─── GUIDELINES SECTION ─────────────────────────────────── */
+.guide-card { background: var(--bg-surface) !important; }
+.guide-card h4 { color: var(--text-primary) !important; }
+.guide-card p  { color: var(--text-secondary) !important; }
+.guide-link { color: var(--blue-light) !important; }
+
+/* ─── NEET CALCULATOR INPUTS ─────────────────────────────── */
+.calc-label { color: var(--text-tertiary) !important; }
+.calc-score-display { color: var(--text-primary) !important; font-weight: 800 !important; }
+
+/* ─── FLOAT BUTTONS ──────────────────────────────────────── */
+.wa-chat-btn { background: #25d366 !important; }
+.wa-call-btn-f { background: #25d366 !important; }
+.phone-call-btn-f { background: var(--gold) !important; }
+
+/* ─── SCROLLBAR ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
+/* ─── SELECTION ──────────────────────────────────────────── */
+::selection { background: var(--gold-dim); color: var(--text-primary); }
+
