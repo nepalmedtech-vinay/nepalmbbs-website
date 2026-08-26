@@ -13,8 +13,12 @@
 <meta property="og:description" content="NMC India recognised colleges. Official MEC Nepal process. Free counseling for NEET qualified Indian students.">
 <meta property="og:image" content="https://images.unsplash.com/photo-1605640840605-14ac1855827b?fm=webp&w=1920&q=95&fit=crop&auto=format&ixlib=rb-4.1.0">
 <meta name="theme-color" content="#0e2347">
-<!-- Google Analytics Slot -->
-<div id="ga-slot"></div>
+<link rel="canonical" href="https://nepalmbbs.in/">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/assets/brand/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
+<!-- Analytics is loaded by loadGA() from a validated GA4 Measurement ID.
+     A <div> is not valid inside <head>; the old "ga-slot" element was removed. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -3168,7 +3172,7 @@ section.hero {
     <div class="a-pane" id="ap-settings">
       <div class="a-sect"><div class="a-label">Change Admin Password</div><div class="a-row"><input type="password" class="a-inp" id="a-new-pass" placeholder="New password (min 8 characters)"><input type="password" class="a-inp" id="a-conf-pass" placeholder="Confirm new password"></div><div class="a-btns"><button class="a-btn a-btn-primary" onclick="changePass()">🔐 Change Password</button></div><p style="font-size:11px;color:var(--muted);margin-top:6px">Password stored in Supabase — works on all devices. Use a strong unique password.</p></div>
       <div class="a-sect"><div class="a-label">Calendly Booking URL</div><input type="text" class="a-inp" id="a-calendly" placeholder="https://calendly.com/..."><div class="a-btns"><button class="a-btn a-btn-primary" onclick="saveCalendly()">💾 Save</button></div></div>
-      <div class="a-sect"><div class="a-label">Google Analytics Code (Optional)</div><textarea class="a-inp" id="a-ga-code" placeholder="Paste Google Analytics gtag code here" style="font-size:11px;font-family:monospace"></textarea><div class="a-btns"><button class="a-btn a-btn-primary" onclick="saveGA()">💾 Save & Apply</button></div></div>
+      <div class="a-sect"><div class="a-label">Google Analytics 4 — Measurement ID (Optional)</div><input class="a-inp" id="a-ga-code" type="text" placeholder="G-XXXXXXXXXX" autocomplete="off" spellcheck="false" style="font-family:monospace"><div style="font-size:11px;opacity:.7;margin-top:6px">Paste only the Measurement ID from GA4 → Admin → Data streams. Do not paste the full gtag script.</div><div class="a-btns"><button class="a-btn a-btn-primary" onclick="saveGA()">💾 Save & Apply</button></div></div>
       <div class="a-sect"><div class="a-label">Developer Info</div><div style="background:var(--off);border-radius:9px;padding:14px;font-size:12px;color:var(--muted);line-height:2"><div>Supabase Project: <strong>fpzgcijbryvddtpegcmm</strong></div><div>Tables: leads, admin_settings, site_videos, site_testimonials, site_faqs</div></div></div>
       <div class="a-sect"><div class="a-label">Session</div><div class="a-btns"><button class="a-btn a-btn-danger" onclick="closeAdmin()">🚪 Logout Admin</button></div></div>
     </div>
@@ -3190,10 +3194,51 @@ async function sbR(path){try{const r=await fetch(SB+path,{headers:{'apikey':AK,'
 async function sbW(path,data,method='POST'){try{const r=await fetch(SB+path,{method,headers:{'Content-Type':'application/json','apikey':AK,'Authorization':'Bearer '+AK,'Prefer':'return=minimal'},body:JSON.stringify(data)});return r.ok||r.status===201||r.status===204;}catch(e){return false;}}
 
 // =====================================================
+// ANALYTICS (GA4)
+// =====================================================
+// Only a GA4 Measurement ID is accepted — never arbitrary HTML from the database.
+// The previous implementation innerHTML-ed a stored snippet, which (a) silently
+// never ran, because innerHTML does not execute <script>, and (b) was an
+// injection sink for anything that could write to admin_settings.
+const GA_ID_RE = /^G-[A-Z0-9]{4,20}$/;
+let gaLoaded = false;
+function loadGA(id){
+  if(gaLoaded) return true;
+  id = String(id||'').trim().toUpperCase();
+  if(!GA_ID_RE.test(id)) return false;
+  gaLoaded = true;
+  const s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){ window.dataLayer.push(arguments); };
+  window.gtag('js', new Date());
+  window.gtag('config', id);
+  return true;
+}
+
+// =====================================================
 // INIT
 // =====================================================
-window.addEventListener('load',async()=>{
-  setTimeout(()=>{const l=document.getElementById('loader');if(l)l.classList.add('hide');},1600);
+// The splash used to be dismissed only 1.6s after window 'load'. That event waits
+// on every subresource, including 60+ hotlinked Unsplash images — so a single slow
+// or blocked image left the loader up forever and the visitor saw a blank screen.
+// Hiding it is now driven by its own timer from DOMContentLoaded and is idempotent.
+function hideLoader(){const l=document.getElementById('loader');if(l)l.classList.add('hide');}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(hideLoader,1600));
+}else{
+  setTimeout(hideLoader,1600);
+}
+window.addEventListener('load',()=>hideLoader());
+
+// Boot the data-driven parts as soon as the DOM is ready rather than waiting on
+// 'load', for the same reason.
+(async()=>{
+  if(document.readyState==='loading'){
+    await new Promise(r=>document.addEventListener('DOMContentLoaded',r,{once:true}));
+  }
   await initSiteSettings();
   await loadDynamicContent();
   // Init hero slideshow
@@ -3209,7 +3254,7 @@ window.addEventListener('load',async()=>{
   }, 30000); // refresh every 30s
   convertCurr('inr');
   initChatSwipe();
-});
+})();
 window.addEventListener('scroll',()=>{document.getElementById('navbar').classList.toggle('scrolled',scrollY>60);},{passive:true});
 
 async function initSiteSettings(){
@@ -3239,7 +3284,7 @@ async function initSiteSettings(){
     if(m.show_wa_float==='false'){const e=document.getElementById('wa-float-wrap');if(e)e.style.display='none';if(document.getElementById('sw-wa'))document.getElementById('sw-wa').classList.remove('on');}
     if(m.show_chat==='false'){const e=document.getElementById('chat-wrap');if(e)e.style.display='none';if(document.getElementById('sw-chat'))document.getElementById('sw-chat').classList.remove('on');}
     if(m.show_lead_form==='false'){const e=document.getElementById('hform-area');if(e)e.style.display='none';if(document.getElementById('sw-form'))document.getElementById('sw-form').classList.remove('on');}
-    if(m.ga_code&&m.ga_code.trim()){try{const el=document.createElement('div');el.innerHTML=m.ga_code;document.getElementById('ga-slot').appendChild(el);}catch(e){}}
+    if(m.ga_code) loadGA(m.ga_code);
   }catch(e){console.log('Settings:',e.message);}
 }
 
@@ -3962,7 +4007,16 @@ function enquireCollege(collegeName) {
 // =====================================================
 // ADMIN PANEL — FULL SUPABASE CONTROL
 // =====================================================
-const ADMIN_DEFAULT = 'NepalMBBS@2025';
+// SECURITY: no default/bootstrap password is shipped in this file any more.
+// The admin password lives only in Supabase (admin_settings.key='admin_password')
+// and is stored/compared as a SHA-256 hash. To set or reset it, see
+// docs/SECURITY-PHASE0.md. Plaintext values still stored from before are accepted
+// once so existing logins keep working, then upgraded to a hash on next change.
+async function sha256Hex(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+const isSha256 = v => typeof v === 'string' && /^[0-9a-f]{64}$/.test(v.trim());
 
 function openAdmin(){
   document.getElementById('admin-overlay').classList.add('open');
@@ -3982,36 +4036,35 @@ async function doAdminLogin(){
   if(!pass){document.getElementById('admin-err').textContent='Enter password';return;}
   document.getElementById('admin-err').textContent='';
   
-  // MASTER DEFAULT — always works on first setup
-  const DEFAULT_PASS = 'NepalMBBS@2025';
-  
-  // Check local override first (set after first login)
-  const localPass = localStorage.getItem('nmb_admin_pass');
-  
-  // Determine correct password: local > Supabase > default
-  let correctPass = DEFAULT_PASS;
-  
+  // The stored password is the ONLY source of truth. There is no hardcoded
+  // fallback and nothing is cached in localStorage — a device that is not
+  // supposed to have access must never be able to read the secret locally.
+  let stored = null;
   try {
     const res = await sbR('/rest/v1/admin_settings?key=eq.admin_password&select=value');
-    if(res && res.length && res[0].value && res[0].value.length >= 6) {
-      correctPass = res[0].value;
-    } else if(localPass && localPass.length >= 6) {
-      correctPass = localPass;
-    }
-    // else keep DEFAULT_PASS
+    if(res && res.length && res[0].value) stored = String(res[0].value).trim();
   } catch(e) {
-    // Supabase down — use local or default
-    correctPass = (localPass && localPass.length >= 6) ? localPass : DEFAULT_PASS;
+    document.getElementById('admin-err').textContent='Cannot reach the server. Check your connection and try again.';
+    return;
   }
-  
-  if(pass === correctPass || pass === DEFAULT_PASS) {
+
+  if(!stored){
+    document.getElementById('admin-err').textContent='No admin password is configured. Set one in Supabase before logging in (see docs/SECURITY-PHASE0.md).';
+    return;
+  }
+
+  // Hashed value = compare hashes. Legacy plaintext value = compare directly,
+  // so an existing password keeps working until it is rotated.
+  const ok = isSha256(stored)
+    ? (await sha256Hex(pass)) === stored.toLowerCase()
+    : pass === stored;
+
+  if(ok) {
     adminLoggedIn = true;
-    // Cache locally for offline use
-    localStorage.setItem('nmb_admin_pass', correctPass);
     document.getElementById('admin-login-view').style.display='none';
     document.getElementById('admin-main').style.display='block';
-    if(pass === DEFAULT_PASS && correctPass === DEFAULT_PASS) {
-      setTimeout(()=>toast('⚠️ Default password active — change it in Settings tab now!','err'), 800);
+    if(!isSha256(stored)) {
+      setTimeout(()=>toast('⚠️ Your password is stored in plain text. Change it in Settings to store it hashed.','err'), 800);
     }
     await loadDashboard();
     await loadAdminSettings();
@@ -4124,14 +4177,15 @@ async function saveCalendly(){
   else toast('❌ Error saving','err');
 }
 
-// SAVE GA CODE
+// SAVE GA4 MEASUREMENT ID
 async function saveGA(){
-  const val=document.getElementById('a-ga-code').value.trim();
-  if(!val){toast('Enter analytics code','err');return;}
+  const val=document.getElementById('a-ga-code').value.trim().toUpperCase();
+  if(!val){toast('Enter your GA4 Measurement ID','err');return;}
+  if(!GA_ID_RE.test(val)){toast('Enter a GA4 Measurement ID like G-XXXXXXXXXX (not the full script).','err');return;}
   const ok=await sbW('/rest/v1/admin_settings?key=eq.ga_code',{value:val,updated_at:new Date().toISOString()},'PATCH');
   if(ok){
-    try{const el=document.createElement('div');el.innerHTML=val;document.getElementById('ga-slot').appendChild(el);}catch(e){}
-    toast('✅ Analytics code saved & applied!','ok');
+    loadGA(val);
+    toast('✅ Measurement ID saved & applied!','ok');
   } else toast('❌ Error saving','err');
 }
 
@@ -4141,14 +4195,14 @@ async function changePass(){
   const cp=document.getElementById('a-conf-pass').value;
   if(!np||np.length<8){toast('Password must be at least 8 characters','err');return;}
   if(np!==cp){toast('Passwords do not match','err');return;}
-  if(np===ADMIN_DEFAULT){toast('Do not use the default password. Choose a unique one.','err');return;}
-  const ok=await sbW('/rest/v1/admin_settings?key=eq.admin_password',{value:np,updated_at:new Date().toISOString()},'PATCH');
+  // Never store the password itself — only its SHA-256 hash.
+  const hashed = await sha256Hex(np);
+  const ok=await sbW('/rest/v1/admin_settings?key=eq.admin_password',{value:hashed,updated_at:new Date().toISOString()},'PATCH');
   if(!ok){
-    const ins=await sbW('/rest/v1/admin_settings',{key:'admin_password',value:np});
+    const ins=await sbW('/rest/v1/admin_settings',{key:'admin_password',value:hashed});
     if(ins){toast('✅ Password changed! Works on all devices.','ok');document.getElementById('a-new-pass').value='';document.getElementById('a-conf-pass').value='';}
     else toast('❌ Error saving password. Check Supabase write policies.','err');
   } else {
-    localStorage.setItem('nmb_admin_pass', np);
     toast('✅ Password changed! Works on all devices.','ok');
     document.getElementById('a-new-pass').value='';document.getElementById('a-conf-pass').value='';
   }
