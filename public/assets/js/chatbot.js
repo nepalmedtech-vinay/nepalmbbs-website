@@ -71,8 +71,10 @@ function initChatSwipe(){
   document.addEventListener('mouseup',()=>{dr=false;});
 }
 
-const COLLEGE_PHOTOS = {'kmc': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1571825304178-9e06ae61735c', 'photo-1571825304178-9e06ae61735c', 'photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef'], 'kist': ['photo-1580139557401-58ed2b1d3d87', 'photo-1576091160550-2173dba999ef', 'photo-1551601651-2a8555f1a136', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1581091226825-a6a2a5aee158'], 'gandaki': ['photo-1506905925346-21bda4d32df4', 'photo-1544735716-392fe2489ffa', 'photo-1458442310124-dde6edb43d10', 'photo-1576091160399-112ba8d25d1d', 'photo-1517048676732-d65bc937f952', 'photo-1530026186672-2cd00ffc50fe'], 'manipal': ['photo-1544735716-392fe2489ffa', 'photo-1506905925346-21bda4d32df4', 'photo-1581091226825-a6a2a5aee158', 'photo-1576091160550-2173dba999ef', 'photo-1523050854058-8df90110c9f1', 'photo-1576091160399-112ba8d25d1d'], 'cms': ['photo-1605640840605-14ac1855827b', 'photo-1469521669194-babb45599def', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1529156069898-49953e39b3ac', 'photo-1580139557401-58ed2b1d3d87']};
-const DEFAULT_COLLEGE_PHOTOS = ['photo-1576091160550-2173dba999ef', 'photo-1580139557401-58ed2b1d3d87', 'photo-1523050854058-8df90110c9f1', 'photo-1529156069898-49953e39b3ac', 'photo-1551601651-2a8555f1a136', 'photo-1517048676732-d65bc937f952'];
+// COLLEGE_PHOTOS / DEFAULT_COLLEGE_PHOTOS were declared here — a split-point
+// accident from the Phase 1 extraction; they belonged to the college photo
+// slideshow, not the chatbot. That slideshow was removed in Phase 3C for
+// serving stock images as named campuses, leaving these maps as dead data.
 
 // =====================================================
 // HERO SLIDESHOW SYSTEM

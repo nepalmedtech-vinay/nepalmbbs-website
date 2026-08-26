@@ -1,0 +1,33 @@
+---
+// Renders only the evidence the data actually carries.
+//
+// colleges.json has ownership, affiliation, location, seats and a website. It
+// does NOT carry a per-college NMC recognition record, so this component will
+// not render a "recognised" tick against a college — that would manufacture
+// exactly the authority this register exists to make checkable. The site's
+// recognition claim is made once, at page level, with its source named.
+const { college } = Astro.props;
+const isGovt = college.type === 'govt';
+
+const badges = [];
+
+// Ownership is a fact of the institution, and it is the thing a family most
+// often gets wrong when comparing options.
+badges.push({
+  state: isGovt ? 'verified' : 'neutral',
+  label: isGovt ? 'Government' : 'Private',
+});
+
+if (college.affiliation) {
+  badges.push({ state: 'neutral', label: college.affiliation });
+}
+
+// A college we cannot link to an official site is worth flagging as such,
+// rather than quietly leaving the row out.
+if (!college.website) {
+  badges.push({ state: 'provisional', label: 'No official site on record' });
+}
+---
+<div class="ev-set">
+  {badges.map((b) => <span class={`ev ev--${b.state}`}>{b.label}</span>)}
+</div>

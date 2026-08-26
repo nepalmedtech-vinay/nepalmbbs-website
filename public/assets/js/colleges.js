@@ -1,6 +1,7 @@
 // NepalMBBS.in — colleges.js
-// College cards, photo and video system
-// Extracted from index.html in Phase 1; content is byte-identical.
+// College cards and video system.
+// Extracted from index.html in Phase 1; the stock-photo slideshow was removed
+// in Phase 3C, so this file is no longer byte-identical to the original.
 // Classic script (not a module): these functions must stay global because the
 // markup still calls them from inline on* handlers. Load order matters.
 
@@ -29,10 +30,35 @@ function renderCollegeContent(college) {
     if (photoShow) photoShow.style.display = 'none';
     renderVideoGrid(filtered, vidContainer);
   } else {
-    // No videos — show photo slideshow
-    if (vidContainer) vidContainer.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">📸 No videos yet for this college — showing official campus photos</div>';
-    showCollegePhotos(college);
+    // No videos for this college.
+    //
+    // This branch used to fill the gap with stock Unsplash photographs,
+    // labelled "official campus photos" and given the alt text
+    // "<college> campus". They were never that college's campus, and on a site
+    // whose value is being checkable, one reverse image search would have cost
+    // the credibility of every other page — including the pages that are
+    // accurate. An empty slot that says what is missing costs nothing.
+    if (photoShow) photoShow.style.display = 'none';
+    renderNoVideoState(college, vidContainer);
   }
+}
+
+function renderNoVideoState(college, container) {
+  if (!container) return;
+  const label = document.querySelector('.college-tab[onclick*="\'' + college + '\'"]');
+  const name = (label && label.textContent.trim()) || 'this college';
+  const el = document.createElement('div');
+  el.className = 'doc-empty';
+  const title = document.createElement('p');
+  title.className = 'doc-empty-title';
+  title.textContent = 'No video for ' + name + ' yet';
+  const body = document.createElement('p');
+  body.className = 'doc-empty-body';
+  body.textContent = 'We publish footage only when we have filmed it ourselves or the '
+    + 'college has supplied it. Ask us and we will tell you what we have on '
+    + name + ' — including what we do not.';
+  el.append(title, body);
+  container.replaceChildren(el);
 }
 
 function renderVideoGrid(videos, container) {
@@ -63,51 +89,11 @@ function playVid(el, url) {
   el.style.pointerEvents = 'none';
 }
 
-function showCollegePhotos(college) {
-  const photoShow = document.getElementById('college-photo-show');
-  const inner = document.getElementById('photo-slide-inner');
-  const dotsEl = document.getElementById('photo-dots');
-  const label = document.getElementById('photo-slide-label');
-
-  const photos = COLLEGE_PHOTOS[college] || DEFAULT_COLLEGE_PHOTOS;
-  const collegeName = document.querySelector(`.college-tab[onclick*="'${college}'"]`)?.textContent || college;
-
-  if (label) label.textContent = `${collegeName} — Official campus photos (video coming soon)`;
-  if (inner) {
-    inner.style.transform = 'translateX(0)';
-    inner.innerHTML = photos.map(pid =>
-      `<div class="photo-slide-item"><img src="https://images.unsplash.com/${pid}?w=800&q=80&auto=format&fit=crop" alt="${collegeName} campus" loading="lazy"><div class="photo-slide-item-overlay"></div></div>`
-    ).join('');
-  }
-  if (dotsEl) {
-    dotsEl.innerHTML = photos.map((_, i) =>
-      `<div class="photo-dot ${i===0?'active':''}" onclick="goToPhotoSlide(${i})"></div>`
-    ).join('');
-  }
-
-  photoSlideIndex = 0;
-  if (photoShow) photoShow.style.display = 'block';
-
-  // Auto-advance photos
-  clearInterval(window._photoTimer);
-  window._photoTimer = setInterval(() => slidePhoto(1), 3500);
-}
-
-function slidePhoto(dir) {
-  const inner = document.getElementById('photo-slide-inner');
-  if (!inner) return;
-  const total = inner.children.length;
-  photoSlideIndex = (photoSlideIndex + dir + total) % total;
-  goToPhotoSlide(photoSlideIndex);
-}
-
-function goToPhotoSlide(idx) {
-  const inner = document.getElementById('photo-slide-inner');
-  const dots = document.querySelectorAll('.photo-dot');
-  if (inner) inner.style.transform = `translateX(-${idx * 100}%)`;
-  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-  photoSlideIndex = idx;
-}
+// The stock-photo slideshow that lived here (showCollegePhotos, slidePhoto,
+// goToPhotoSlide, and the COLLEGE_PHOTOS / DEFAULT_COLLEGE_PHOTOS maps) has
+// been removed. It served Unsplash stock images as a named college's campus,
+// under the label "official campus photos". Nothing calls it now — the
+// no-video case renders renderNoVideoState() instead.
 
 // Override loadDynamicContent to also populate college videos
 const _origLoadDynamic = loadDynamicContent;

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import EvidenceBadges from '../../components/EvidenceBadges.astro';
 import { getColleges } from '../../lib/colleges.js';
 import { SITE } from '../../lib/routes.js';
 
@@ -14,20 +15,21 @@ export async function getStaticPaths() {
 const { college: c } = Astro.props;
 const isGovt = c.type === 'govt';
 const path = `/colleges/${c.slug}`;
+const shortName = c.name.split('(')[0].trim();
 
-// Every field below comes from the site's own existing data. Nothing here is
-// inferred, rounded or filled in: an admissions page that invents a fee or a
-// ranking is worse than one that says "contact us", because a family will act
-// on it. Where a value is missing it is shown as missing.
-const facts = [
-  ['Ownership',        c.badge || (isGovt ? 'Government' : 'Private')],
-  ['Location',         c.location],
-  ['Affiliation',      c.affiliation],
-  ['Established',      c.established],
+// Every row comes from the site's own data. Nothing is inferred, rounded or
+// filled in — an admissions page that invents a fee or a ranking is worse than
+// one that says it does not know, because a family will act on it. Where a
+// value is missing, the row stays and says so, so it can be asked about.
+const record = [
+  ['Ownership',           c.badge || (isGovt ? 'Government' : 'Private')],
+  ['Location',            c.location],
+  ['University affiliation', c.affiliation],
+  ['Established',         c.established],
   ['Foreign-quota seats', c.seats],
-  ['Course duration',  c.duration || '5.5 Years (including internship)'],
-  ['Admission route',  c.admission || 'NEET qualified, via MEC Nepal'],
-].filter(([, v]) => v);
+  ['Course duration',     c.duration || '5.5 years, including internship'],
+  ['Admission route',     c.admission || 'NEET qualified, through MEC Nepal'],
+];
 
 const schema = {
   '@context': 'https://schema.org',
@@ -48,50 +50,66 @@ const schema = {
 <div class="tab-pane on">
 <div class="container">
 
-  <div class="rev" style="margin-bottom:8px">
+  <div class="rev">
     <a href="/colleges" class="college-link" style="display:inline-block;margin-bottom:18px">← All Nepal medical colleges</a>
     <div class="eyebrow">{isGovt ? 'Government college' : 'Private college'} · MEC Nepal 2025-26</div>
-    <h1 class="sec-title" style="margin-bottom:10px">{c.name}</h1>
-    <div class="sec-sub">
-      {[c.location, c.affiliation].filter(Boolean).join(' · ')}
-    </div>
+    <h1 class="sec-title" style="margin-bottom:14px">{c.name}</h1>
+    <EvidenceBadges college={c} />
   </div>
 
-  <div class="college-card rev" style="margin-top:28px">
-    <div class="college-details" style="grid-template-columns:1fr">
-      {facts.map(([label, value]) => (
-        <div class="college-stat">
-          <span class="cs-label">{label}</span>
-          <span class="cs-val">{value}</span>
+  <div class="doc rev" style="margin-top:28px">
+    <div class="doc-head">
+      <h2 class="doc-title">Record</h2>
+      <span class="doc-kicker">{shortName}</span>
+    </div>
+    <div class="doc-body">
+      <div class="doc-rows">
+        {record.map(([label, value]) => (
+          <div class="doc-row">
+            <span class="doc-label">{label}</span>
+            {value
+              ? <span class="doc-value">{value}</span>
+              : <span class="doc-value doc-value--unknown">Not on record — ask us</span>}
+          </div>
+        ))}
+        <div class="doc-row">
+          <span class="doc-label">Tuition fee</span>
+          <span class="doc-value doc-value--unknown">
+            Set per intake — <a href="/counseling">ask us for the current structure</a>
+          </span>
         </div>
-      ))}
-      <div class="college-stat">
-        <span class="cs-label">Tuition fee</span>
-        <span class="cs-val" style="color:var(--accent);font-weight:700">
-          <a href="/counseling" style="color:inherit;text-decoration:none">Ask us for the current structure →</a>
-        </span>
+        {c.website && (
+          <div class="doc-row">
+            <span class="doc-label">Official website</span>
+            <span class="doc-value">
+              <a href={c.website} target="_blank" rel="noopener">{c.website.replace(/^https?:\/\//, '')} ↗</a>
+            </span>
+          </div>
+        )}
       </div>
     </div>
-    <div class="college-footer">
-      {c.website && (
-        <a href={c.website} target="_blank" rel="noopener" class="college-link">Official website ↗</a>
-      )}
-      <button class="college-enquire" onclick={`enquireCollege('${(c.enquiryName || c.name).replace(/'/g, "\\'")}')`}>
-        Enquire about {c.name.split('(')[0].trim()}
-      </button>
-    </div>
+    <p class="doc-source">
+      Compiled from the Medical Education Commission (MEC) Nepal 2025-26 intake
+      and the college's own published information. Verify seat numbers against
+      {c.website
+        ? <> the <a href={c.website} target="_blank" rel="noopener">college's site</a> and </>
+        : <> </>}
+      the MEC notice for your intake year before you act on them.
+    </p>
   </div>
 
-  <div class="rev" style="margin-top:32px">
-    <div class="sec-sub" style="max-width:66ch">
-      Fees and seat allocation for {c.name} are set each intake by MEC Nepal and the
-      college, so we do not publish a figure that may be out of date by the time you
-      read it. We will give you the current structure, in writing, on a call.
-    </div>
-    <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
-      <a href="/counseling" class="btn-primary">Book free counseling →</a>
-      <a href="/admission-process" class="college-link" style="align-self:center">How the MEC process works</a>
-    </div>
+  <div class="doc-note rev" style="margin-top:24px">
+    <strong>We do not publish a fee figure for {shortName}.</strong> Fees and
+    seat allocation are set each intake by MEC Nepal and the college, and a
+    number that is stale by the time you read it is worse than no number. We
+    will give you the current structure in writing on a call.
+  </div>
+
+  <div class="rev" style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+    <button class="college-enquire" onclick={`enquireCollege('${(c.enquiryName || c.name).replace(/'/g, "\\'")}')`}>
+      Enquire about {shortName}
+    </button>
+    <a href="/admission-process" class="college-link">How the MEC process works →</a>
   </div>
 
 </div>

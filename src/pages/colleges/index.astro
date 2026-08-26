@@ -5,14 +5,13 @@ import { SITE } from '../../lib/routes.js';
 
 const colleges = await getColleges();
 const govt = colleges.filter((c) => c.type === 'govt');
+const priv = colleges.filter((c) => c.type !== 'govt');
 const totalSeats = colleges.reduce((n, c) => n + (parseInt(c.seats, 10) || 0), 0);
 
-// ItemList rather than a bare page: this is a directory, and telling search
-// engines that is what earns the list treatment for "medical colleges in Nepal".
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  name: 'NMC-approved medical colleges in Nepal',
+  name: 'Medical colleges in Nepal open to Indian students',
   numberOfItems: colleges.length,
   itemListElement: colleges.map((c, i) => ({
     '@type': 'ListItem',
@@ -21,58 +20,116 @@ const schema = {
     url: `${SITE}/colleges/${c.slug}`,
   })),
 };
+
+const groups = [
+  { key: 'govt', title: 'Government colleges', rows: govt,
+    note: 'Government and autonomous institutions. Fewer foreign-quota seats, and the most competitive.' },
+  { key: 'priv', title: 'Private colleges', rows: priv,
+    note: 'Privately run, affiliated to Tribhuvan, Kathmandu or Purbanchal University.' },
+];
 ---
 <BaseLayout
   title="NMC Approved Medical Colleges in Nepal 2025 — Full List | NepalMBBS.in"
-  description={`All ${colleges.length} medical colleges in Nepal open to Indian students, with foreign-quota seats, affiliation and location. Admission via MEC Nepal.`}
+  description={`All ${colleges.length} medical colleges in Nepal open to Indian students, with foreign-quota seats, affiliation and location. Admission through MEC Nepal.`}
   path="/colleges"
   schema={schema}
 >
-<div class="tab-pane on" id="pane-colleges">
+<div class="tab-pane on">
 <div class="container">
 
   <div class="rev">
     <div class="eyebrow">MEC Nepal 2025-26</div>
-    <div class="sec-title">Nepal Medical Colleges — Official Guide</div>
-    <div class="sec-sub">
-      {colleges.length} colleges recognised for Indian students. {totalSeats} foreign-quota seats.
-      Admission runs through MEC Nepal. Contact us for the current fee structure.
+    <h1 class="sec-title" style="margin-bottom:12px">Medical colleges in Nepal</h1>
+    <p class="sec-sub" style="max-width:66ch">
+      {colleges.length} colleges admitting Indian students, {totalSeats} foreign-quota
+      seats between them. Admission runs through the Medical Education Commission,
+      not through the colleges directly.
+    </p>
+  </div>
+
+  <!-- The recognition claim is made once, here, with its source named — rather
+       than as a tick against each of 27 colleges. The underlying data carries
+       ownership and affiliation per college; it does not carry a per-college
+       recognition record, and a badge implying otherwise would be the site
+       manufacturing its own authority. -->
+  <div class="doc rev" style="margin-top:28px">
+    <div class="doc-head">
+      <h2 class="doc-title">Before you compare this list</h2>
+      <span class="doc-kicker">Read first</span>
     </div>
-  </div>
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 20px">
-    <button class="g-tab on" onclick="filterColleges(this,'all')">All {colleges.length}</button>
-    <button class="g-tab" onclick="filterColleges(this,'govt')">Government ({govt.length})</button>
-    <button class="g-tab" onclick="filterColleges(this,'ku')">KU Affiliated</button>
-    <button class="g-tab" onclick="filterColleges(this,'tu')">TU Affiliated</button>
-  </div>
-
-  <div id="colleges-grid">
-    {colleges.map((c) => (
-      <div class="college-card rev" data-type={c.type}>
-        <div class={`college-badge ${c.type === 'govt' ? 'govt-badge' : 'pvt-badge'}`}>
-          {c.badge || (c.type === 'govt' ? 'Government' : 'Private')}
+    <div class="doc-body">
+      <div class="doc-rows">
+        <div class="doc-row">
+          <span class="doc-label">Who admits you</span>
+          <span class="doc-value">The Medical Education Commission (MEC), Nepal — not the college.</span>
         </div>
-        <div class="college-header">
-          <div class="college-name">
-            <a href={`/colleges/${c.slug}`} style="color:inherit;text-decoration:none">{c.name}</a>
-          </div>
-          <div class="college-meta">
-            {[c.location, c.affiliation, c.established].filter(Boolean).join(' | ')}
-          </div>
+        <div class="doc-row">
+          <span class="doc-label">What you need</span>
+          <span class="doc-value">A qualified NEET score, then the MEC entrance and counseling process.</span>
         </div>
-        <div class="college-details">
-          <div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">{c.seats || '—'}</span></div>
-          <div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);font-weight:700"><a href="/counseling" style="color:inherit;text-decoration:none">Contact Us →</a></span></div>
-          <div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">{c.duration || '5.5 Years'}</span></div>
-          <div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">{c.admission || 'NEET via MEC'}</span></div>
+        <div class="doc-row">
+          <span class="doc-label">Practising in India</span>
+          <span class="doc-value">Requires the NMC screening examination (FMGE / NExT) after your degree.</span>
         </div>
-        <div class="college-footer">
-          <a href={`/colleges/${c.slug}`} class="college-link">Full details →</a>
-          <button class="college-enquire" onclick={`enquireCollege('${(c.enquiryName || c.name).replace(/'/g, "\\'")}')`}>Enquire Now</button>
+        <div class="doc-row">
+          <span class="doc-label">Fees</span>
+          <span class="doc-value doc-value--unknown">
+            Set per intake. We do not publish figures that go stale — <a href="/counseling">ask us</a>.
+          </span>
         </div>
       </div>
-    ))}
+    </div>
+    <p class="doc-source">
+      Medical Education Commission (MEC) Nepal, 2025-26 intake, and National
+      Medical Commission (India) rules on foreign medical qualifications. Check
+      the notice for your own intake year — these change.
+    </p>
+  </div>
+
+  <div class="doc-note rev" style="margin-top:20px">
+    <strong>Recognition is per intake year, not permanent.</strong> A college
+    recognised for one year is not automatically recognised for the next. Before
+    you pay anyone anything, confirm the current status on the MEC and NMC
+    notices for your intake year — including anything you read here.
+  </div>
+
+  {groups.map((g) => (
+    <div class="doc rev" style="margin-top:24px">
+      <div class="doc-head">
+        <h2 class="doc-title">{g.title}</h2>
+        <span class="doc-kicker">{g.rows.length} colleges</span>
+      </div>
+      <div class="doc-body">
+        <p class="doc-empty-body" style="margin:0 0 var(--s-3);text-align:left;max-width:66ch">{g.note}</p>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>College</th>
+              <th>Location</th>
+              <th>Affiliation</th>
+              <th class="num">Seats</th>
+            </tr>
+          </thead>
+          <tbody>
+            {g.rows.map((c) => (
+              <tr>
+                <td data-label="College"><a href={`/colleges/${c.slug}`}>{c.name}</a></td>
+                <td data-label="Location">{c.location || '—'}</td>
+                <td data-label="Affiliation">{c.affiliation || '—'}</td>
+                <td data-label="Seats" class="num">{c.seats || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  ))}
+
+  <div class="rev" style="margin-top:32px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+    <a href="/counseling" class="college-enquire" style="text-decoration:none;display:inline-block">
+      Get the current fee structure
+    </a>
+    <a href="/admission-process" class="college-link">How the MEC process works →</a>
   </div>
 
 </div>
