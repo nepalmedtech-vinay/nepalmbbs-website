@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getColleges } from '../../lib/colleges.js';
+import { SITE } from '../../lib/routes.js';
+
+const colleges = await getColleges();
+const govt = colleges.filter((c) => c.type === 'govt');
+const totalSeats = colleges.reduce((n, c) => n + (parseInt(c.seats, 10) || 0), 0);
+
+// ItemList rather than a bare page: this is a directory, and telling search
+// engines that is what earns the list treatment for "medical colleges in Nepal".
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'NMC-approved medical colleges in Nepal',
+  numberOfItems: colleges.length,
+  itemListElement: colleges.map((c, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: c.name,
+    url: `${SITE}/colleges/${c.slug}`,
+  })),
+};
+---
+<BaseLayout
+  title="NMC Approved Medical Colleges in Nepal 2025 — Full List | NepalMBBS.in"
+  description={`All ${colleges.length} medical colleges in Nepal open to Indian students, with foreign-quota seats, affiliation and location. Admission via MEC Nepal.`}
+  path="/colleges"
+  schema={schema}
+>
+<div class="tab-pane on" id="pane-colleges">
+<div class="container">
+
+  <div class="rev">
+    <div class="eyebrow">MEC Nepal 2025-26</div>
+    <div class="sec-title">Nepal Medical Colleges — Official Guide</div>
+    <div class="sec-sub">
+      {colleges.length} colleges recognised for Indian students. {totalSeats} foreign-quota seats.
+      Admission runs through MEC Nepal. Contact us for the current fee structure.
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 20px">
+    <button class="g-tab on" onclick="filterColleges(this,'all')">All {colleges.length}</button>
+    <button class="g-tab" onclick="filterColleges(this,'govt')">Government ({govt.length})</button>
+    <button class="g-tab" onclick="filterColleges(this,'ku')">KU Affiliated</button>
+    <button class="g-tab" onclick="filterColleges(this,'tu')">TU Affiliated</button>
+  </div>
+
+  <div id="colleges-grid">
+    {colleges.map((c) => (
+      <div class="college-card rev" data-type={c.type}>
+        <div class={`college-badge ${c.type === 'govt' ? 'govt-badge' : 'pvt-badge'}`}>
+          {c.badge || (c.type === 'govt' ? 'Government' : 'Private')}
+        </div>
+        <div class="college-header">
+          <div class="college-name">
+            <a href={`/colleges/${c.slug}`} style="color:inherit;text-decoration:none">{c.name}</a>
+          </div>
+          <div class="college-meta">
+            {[c.location, c.affiliation, c.established].filter(Boolean).join(' | ')}
+          </div>
+        </div>
+        <div class="college-details">
+          <div class="college-stat"><span class="cs-label">Foreign Seats</span><span class="cs-val">{c.seats || '—'}</span></div>
+          <div class="college-stat"><span class="cs-label">Tuition Fee</span><span class="cs-val" style="color:var(--accent);font-weight:700"><a href="/counseling" style="color:inherit;text-decoration:none">Contact Us →</a></span></div>
+          <div class="college-stat"><span class="cs-label">Est. Duration</span><span class="cs-val">{c.duration || '5.5 Years'}</span></div>
+          <div class="college-stat"><span class="cs-label">Admission</span><span class="cs-val">{c.admission || 'NEET via MEC'}</span></div>
+        </div>
+        <div class="college-footer">
+          <a href={`/colleges/${c.slug}`} class="college-link">Full details →</a>
+          <button class="college-enquire" onclick={`enquireCollege('${(c.enquiryName || c.name).replace(/'/g, "\\'")}')`}>Enquire Now</button>
+        </div>
+      </div>
+    ))}
+  </div>
+
+</div>
+</div>
+</BaseLayout>

@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Official NMC & MEC Nepal Guidelines for MBBS Admission | NepalMBBS.in"
+  description="The official NMC India and MEC Nepal rules governing MBBS admission in Nepal — eligibility, screening test, and what Indian students must comply with."
+  path="/guidelines"
+>
+<div class="tab-pane on" id="pane-guidelines">
+<div class="container">
+  <div class="rev"><div class="eyebrow">Official Documentation</div><div class="sec-title">Official Guidelines — NMC India & Nepal NMC</div><div class="sec-sub">Key regulations from official government sources only. For full documents, use the official links provided.</div></div>
+  <div style="margin-top:28px">
+    <div class="guide-tabs">
+      <button class="g-tab on" onclick="switchGuide(this,'gp-india')">🇮🇳 NMC India Guidelines</button>
+      <button class="g-tab" onclick="switchGuide(this,'gp-nepal')">🇳🇵 Nepal NMC Guidelines</button>
+      <button class="g-tab" onclick="switchGuide(this,'gp-resources')">🔗 All Official Resources</button>
+    </div>
+    <div class="g-pane on" id="gp-india">
+      <div class="guide-warn">⚠️ <div>Regulations may be updated. Always verify at <a href="https://nmc.org.in" target="_blank" rel="noopener" style="color:#92400e;font-weight:700">nmc.org.in</a> before making any decision. Source: NMC FMGL Regulations, 2021 (Gazette Notification, 18 Nov 2021).</div></div>
+      <div class="guide-card rev">
+        <div class="guide-card-title">NMC India — FMGL Regulations, 2021 <span class="official-badge">✓ Official</span></div>
+        <div class="guide-item"><div class="g-icon">📋</div><div><h5>NEET Mandatory for All</h5><p>Per NMC Act 2019 and FMGL Regulations 2021, NEET qualification is mandatory for Indian students wishing to practice medicine in India after completing MBBS abroad. No exceptions.</p></div></div>
+        <div class="guide-item"><div class="g-icon">⏱️</div><div><h5>Course Duration — Minimum 54 Months</h5><p>Minimum 54 months (4.5 years) of academic study + 12 months compulsory internship at the same foreign institution. Total minimum: 5.5 years. Must complete within 10 years of joining.</p></div></div>
+        <div class="guide-item"><div class="g-icon">🌐</div><div><h5>English Medium — Mandatory</h5><p>The medium of instruction must be English. This is a mandatory requirement for foreign medical graduates applying for Indian permanent registration.</p></div></div>
+        <div class="guide-item"><div class="g-icon">🏥</div><div><h5>12 Months India Supervised Internship</h5><p>After completing foreign MBBS + 12-month foreign internship, graduates must additionally complete a minimum 12-month supervised internship in India before applying for permanent registration with NMC.</p></div></div>
+        <div class="guide-item"><div class="g-icon">📝</div><div><h5>NExT Exam — Replacing FMGE</h5><p>Graduates must clear the National Exit Test (NExT) conducted by NBE to obtain permanent registration. NExT is replacing FMGE for all graduates — Indian and foreign. Check NBE for current status.</p></div></div>
+        <div class="guide-item"><div class="g-icon">⚡</div><div><h5>Existing Students — Grandfathering</h5><p>Students who acquired their foreign degree OR were pursuing education before November 2021 are governed by earlier FMGE regulations, not the 2021 NExT regulations.</p></div></div>
+        <div class="guide-item"><div class="g-icon">📚</div><div><h5>Mandatory Subjects — Schedule I</h5><p>Must include: Community Medicine, General Medicine, Psychiatry, Paediatrics, General Surgery, Anaesthesia, OBG, Orthopaedics, ENT, Ophthalmology, Dermatology, Emergency services.</p></div></div>
+        <div class="guide-links">
+          <a href="https://nmc.org.in" target="_blank" rel="noopener" class="guide-link-btn">NMC India ↗</a>
+          <a href="https://natboard.edu.in" target="_blank" rel="noopener" class="guide-link-btn">NBE — NExT Info ↗</a>
+          <a href="https://nmc.org.in/information-desk/college-and-course-search/" target="_blank" rel="noopener" class="guide-link-btn">NMC College Search ↗</a>
+        </div>
+      </div>
+      <div class="guide-card rev" id="nmc-video-section" style="display:none">
+        <div class="guide-card-title">📹 Official Video — NMC India Guidelines</div>
+        <div style="position:relative;padding-bottom:56.25%;border-radius:10px;overflow:hidden;background:var(--navy)"><iframe id="nmc-video-frame" src="" style="position:absolute;inset:0;width:100%;height:100%;border:none" allowfullscreen loading="lazy"></iframe></div>
+      </div>
+    </div>
+    <div class="g-pane" id="gp-nepal">
+      <div class="guide-warn">⚠️ <div>Source: Official Nepal Medical Council notice dated <strong>10th November 2024</strong>, signed by Registrar Dr. Satish Kumar Deo. Verify at <a href="https://nmc.org.np" target="_blank" rel="noopener" style="color:#92400e;font-weight:700">nmc.org.np</a>.</div></div>
+      <div class="guide-card rev">
+        <div class="guide-card-title">Nepal Medical Council — Official Notice, November 2024 <span class="official-badge">✓ Official</span></div>
+        <div class="guide-item"><div class="g-icon">⏱️</div><div><h5>5.5 Years Minimum MBBS Duration</h5><p>Nepal Medical Council recognises MBBS/BDS undergraduate degrees with a minimum academic duration of 5.5 years, which includes a compulsory 1-year internship.</p></div></div>
+        <div class="guide-item"><div class="g-icon">🌐</div><div><h5>English as Primary Medium of Instruction</h5><p>All medical colleges in Nepal conduct all academic programs in English as the primary medium of instruction — officially confirmed by Nepal NMC notice dated 10 November 2024.</p></div></div>
+        <div class="guide-item"><div class="g-icon">📋</div><div><h5>Provisional Registration During Internship</h5><p>Nepal NMC provides provisional registration to all MBBS/BDS students in Nepal during their internship at teaching hospitals affiliated to their respective medical colleges.</p></div></div>
+        <div class="guide-item"><div class="g-icon">🌍</div><div><h5>Foreign Students — Licensing After Graduation</h5><p>After graduation, foreign nationals are eligible to take the licensing examinations as per NMC Nepal regulations. Upon passing, they obtain a licence equivalent to Nepalese citizens.</p></div></div>
+        <div class="guide-item"><div class="g-icon">✅</div><div><h5>No Good Standing Certificate Required</h5><p>The Nepal NMC licensing procedure does NOT require a good standing certificate from the candidate's home country medical council — simplifying the process for Indian graduates.</p></div></div>
+        <div class="guide-links">
+          <a href="https://nmc.org.np" target="_blank" rel="noopener" class="guide-link-btn">Nepal Medical Council ↗</a>
+          <a href="https://mec.gov.np" target="_blank" rel="noopener" class="guide-link-btn">MEC Nepal ↗</a>
+        </div>
+      </div>
+    </div>
+    <div class="g-pane" id="gp-resources">
+      <div class="guide-warn">💡 <div>These are the ONLY official sources to trust for fees, college lists, and regulations. Beware of unofficial information from agents or college websites.</div></div>
+      <div class="off-grid">
+        <a href="https://nmc.org.in" target="_blank" rel="noopener" class="off-card"><div class="off-flag">🇮🇳</div><h4>NMC India</h4><p>National Medical Commission — college recognition, NExT/FMGE rules, foreign graduate regulations</p><div class="off-url">↗ nmc.org.in</div></a>
+        <a href="https://mec.gov.np" target="_blank" rel="noopener" class="off-card"><div class="off-flag">🇳🇵</div><h4>MEC Nepal</h4><p>Medical Education Commission — official admission authority, fee ceiling, seat matrix</p><div class="off-url">↗ mec.gov.np</div></a>
+        <a href="https://nmc.org.np" target="_blank" rel="noopener" class="off-card"><div class="off-flag">🏥</div><h4>Nepal Medical Council</h4><p>Licensing, provisional registration, internship guidelines for Nepal MBBS students</p><div class="off-url">↗ nmc.org.np</div></a>
+        <a href="https://entrance.mec.gov.np" target="_blank" rel="noopener" class="off-card"><div class="off-flag">📝</div><h4>MECEE Portal</h4><p>MEC entrance exam applications, admit cards, results, seat matrix</p><div class="off-url">↗ entrance.mec.gov.np</div></a>
+        <a href="https://natboard.edu.in" target="_blank" rel="noopener" class="off-card"><div class="off-flag">📊</div><h4>NBE India</h4><p>National Board of Examinations — conducts FMGE and NExT for all foreign medical graduates</p><div class="off-url">↗ natboard.edu.in</div></a>
+        <a href="https://mec.gov.np/en/feeStructure" target="_blank" rel="noopener" class="off-card"><div class="off-flag">💰</div><h4>MEC Fee Structure</h4><p>Official government fee ceiling — always verify before any payment to any college</p><div class="off-url">↗ mec.gov.np/fees</div></a>
+        <a href="https://wdoms.org" target="_blank" rel="noopener" class="off-card"><div class="off-flag">🌍</div><h4>WDOMS</h4><p>World Directory of Medical Schools — verify any college's global recognition status</p><div class="off-url">↗ wdoms.org</div></a>
+        <a href="https://nmc.org.in/information-desk/college-and-course-search/" target="_blank" rel="noopener" class="off-card"><div class="off-flag">🔍</div><h4>NMC College Search</h4><p>Search and verify any Nepal college's NMC India recognition status before applying</p><div class="off-url">↗ NMC College Verification ↗</div></a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</BaseLayout>

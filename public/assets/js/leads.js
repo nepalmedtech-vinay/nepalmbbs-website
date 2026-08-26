@@ -57,8 +57,17 @@ function checkEligibility(){
 // =====================================================
 function convertCurr(from){
   const r=1.6;
-  if(from==='inr'){const v=parseFloat(document.getElementById('inr-val').value)||0;const n=Math.round(v*r);document.getElementById('npr-val').value=n;document.getElementById('curr-result').textContent='₹'+v.toLocaleString('en-IN')+' = रू '+n.toLocaleString('en-IN');}
-  else{const v=parseFloat(document.getElementById('npr-val').value)||0;const i=Math.round(v/r);document.getElementById('inr-val').value=i;document.getElementById('curr-result').textContent='₹'+i.toLocaleString('en-IN')+' = रू '+v.toLocaleString('en-IN');}
+  // The converter lives on one page, but boot.js primes it on every page. In
+  // the single-page build those elements were always present; now they usually
+  // are not, and an unguarded .value here threw before initChatSwipe() could
+  // run — so chat swipe-to-close was dead on nine pages out of ten.
+  const inr=document.getElementById('inr-val');
+  const npr=document.getElementById('npr-val');
+  const out=document.getElementById('curr-result');
+  if(!inr||!npr||!out) return;
+  const fmt=(i,n)=>'₹'+i.toLocaleString('en-IN')+' = रू '+n.toLocaleString('en-IN');
+  if(from==='inr'){const v=parseFloat(inr.value)||0;const n=Math.round(v*r);npr.value=n;out.textContent=fmt(v,n);}
+  else{const v=parseFloat(npr.value)||0;const i=Math.round(v/r);inr.value=i;out.textContent=fmt(i,v);}
 }
 
 // =====================================================

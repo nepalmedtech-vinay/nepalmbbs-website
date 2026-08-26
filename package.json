@@ -1,0 +1,31 @@
+{
+  "name": "nepalmbbs-website",
+  "version": "1.0.0",
+  "description": "NepalMBBS.in \u2014 MBBS in Nepal admissions platform",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "node tests/build-verify.mjs",
+    "test:regression": "node tests/regression.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nepalmedtech-vinay/nepalmbbs-website.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nepalmedtech-vinay/nepalmbbs-website/issues"
+  },
+  "homepage": "https://github.com/nepalmedtech-vinay/nepalmbbs-website#readme",
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.2.7"
+  },
+  "private": true,
+  "type": "module"
+}

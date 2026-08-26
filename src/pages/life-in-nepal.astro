@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Life in Nepal for Indian MBBS Students — Hostel, Food, Safety | NepalMBBS.in"
+  description="What day-to-day life is actually like for Indian MBBS students in Nepal: hostels, food, cost of living, language, safety and travel home."
+  path="/life-in-nepal"
+>
+<div class="tab-pane on" id="pane-lifestyle">
+<div class="container">
+  <div class="lifestyle-hero rev">
+    <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1605640840605-14ac1855827b?fm=webp&w=1920&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Kathmandu Nepal" loading="lazy">
+    <div class="lifestyle-hero-overlay"></div>
+    <div class="lifestyle-hero-text">
+      <h3>Life in Nepal — Honest Picture</h3>
+      <p>Realistic information to help students and parents make informed decisions.</p>
+    </div>
+  </div>
+  <div class="life-grid">
+    <div class="life-card rev"><div class="life-icon">🌡️</div><h4>Weather</h4><p>Kathmandu: 5–30°C. Pleasant spring/autumn. Cold winters (5–10°C). Monsoon June–August. Similar to North India.</p></div>
+    <div class="life-card rev"><div class="life-icon">🍛</div><h4>Food</h4><p>Indian food widely available in most college hostels. Dal, roti, sabzi available. Indian restaurants in all major cities.</p></div>
+    <div class="life-card rev"><div class="life-icon">🏠</div><h4>Hostel</h4><p>On-campus hostels with separate blocks for male/female students. 24/7 security, Wi-Fi, dining halls at most colleges.</p></div>
+    <div class="life-card rev"><div class="life-icon">💰</div><h4>Monthly Cost</h4><p>Approx ₹15,000–25,000/month covering hostel, food, transport, and personal expenses. Varies by lifestyle.</p></div>
+    <div class="life-card rev"><div class="life-icon">📱</div><h4>Connectivity</h4><p>Indian SIM cards work in Nepal with roaming. Affordable local SIMs available. Good internet in colleges and cities.</p></div>
+    <div class="life-card rev"><div class="life-icon">👥</div><h4>Community</h4><p>Large Indian student community at all major Nepal medical colleges. Cultural events, student associations, peer support.</p></div>
+    <div class="life-card rev"><div class="life-icon">🚌</div><h4>Transport</h4><p>Direct buses from Gorakhpur/Delhi (Sonauli border). Flights Delhi→Kathmandu available. No visa for Indian citizens.</p></div>
+    <div class="life-card rev"><div class="life-icon">🏥</div><h4>Healthcare</h4><p>Good hospitals in Kathmandu and Pokhara. Indian students have access to college hospital facilities during studies.</p></div>
+  </div>
+  <div class="curr-wrap rev">
+    <div class="curr-title">💱 INR ↔ NPR Currency Converter</div>
+    <div class="curr-row"><span class="curr-lbl">INR ₹</span><input class="curr-in" type="number" id="inr-val" value="10000" oninput="convertCurr('inr')" inputmode="numeric"></div>
+    <div class="curr-row"><span class="curr-lbl">NPR रू</span><input class="curr-in" type="number" id="npr-val" value="16000" oninput="convertCurr('npr')" inputmode="numeric"></div>
+    <div class="curr-result" id="curr-result">₹10,000 = रू 16,000</div>
+    <div class="curr-note">*Approx rate: 1 INR ≈ 1.6 NPR. Verify current rate at xe.com before any transaction.</div>
+  </div>
+</div>
+</div>
+
+
+</BaseLayout>

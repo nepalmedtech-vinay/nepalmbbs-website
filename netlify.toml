@@ -1,0 +1,73 @@
+# NOT ACTIVE UNTIL DEPLOYED.
+#
+# This file only takes effect once the repository is connected to a Netlify
+# site. The live nepalmbbs.in deploy has not been switched to it — see
+# docs/DEPLOYMENT.md for the preview-first sequence.
+#
+# A netlify.toml overrides settings configured in the Netlify UI. Check the
+# existing site's build settings before connecting this repository, so nothing
+# configured there is silently replaced.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# ── Caching ──────────────────────────────────────────────────────────────
+# Two different policies, because there are two kinds of asset here.
+#
+# /_assets/* is emitted by Astro with a content hash in the filename, so a
+# changed file gets a new URL and can safely be cached forever.
+#
+# /assets/* is the hand-maintained CSS and JS carried over from the static
+# build. Those filenames are stable, so a long max-age would strand visitors
+# on an old stylesheet after every deploy — the same class of bug as the stray
+# root service worker fixed in Phase 0. They must revalidate.
+
+[[headers]]
+  for = "/_assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/assets/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/assets/brand/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# sw.js must never be cached: it is the self-unregistering worker that flushes
+# visitors stranded by the old root-scope registration. A cached copy of the
+# previous worker would keep serving them stale content.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# ── Security headers ─────────────────────────────────────────────────────
+# Deliberately conservative. No Content-Security-Policy yet: the markup still
+# carries 86 inline on* handlers and 211 inline style attributes, so any useful
+# CSP would need 'unsafe-inline' for both and would buy nothing. Revisit once
+# Phase 3 has converted handlers to listeners.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), interest-cohort=()"

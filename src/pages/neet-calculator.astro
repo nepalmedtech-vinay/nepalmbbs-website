@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="NEET Score Eligibility Calculator for MBBS in Nepal | NepalMBBS.in"
+  description="Check whether your NEET score qualifies you for MBBS admission in Nepal. Instant eligibility result based on official MEC Nepal and NMC India criteria."
+  path="/neet-calculator"
+>
+<div class="tab-pane on" id="pane-calculator">
+<div class="container">
+  <div class="tc rev"><div class="eyebrow">Free Tool</div><div class="sec-title">NEET Eligibility Checker</div><div class="sec-sub" style="margin:0 auto">General indicative guidance only. Always verify with official NMC India and MEC Nepal sources before any decision.</div></div>
+  <div class="calc-wrap rev">
+    <h3>Check Your General Eligibility</h3>
+    <p>Enter your details for an indicative overview — not official admission advice.</p>
+    <div class="calc-grid">
+      <div class="cfield"><label>NEET Score (out of 720)</label><input type="number" id="calc-score" placeholder="e.g. 380" min="0" max="720" inputmode="numeric"></div>
+      <div class="cfield"><label>Category</label><select id="calc-cat"><option value="gen">General</option><option value="obc">OBC</option><option value="sc">SC/ST</option></select></div>
+      <div class="cfield"><label>State (for context)</label><select id="calc-state"><option value="">Any State</option><option>Maharashtra</option><option>Delhi</option><option>UP</option><option>MP</option><option>Other</option></select></div>
+    </div>
+    <button class="calc-btn" onclick="checkEligibility()">Check My Eligibility →</button>
+    <div class="calc-result" id="calc-result"></div>
+    <div class="calc-dis">⚠️ This tool provides general indicative guidance based on typical thresholds. It is NOT official admission advice. Always verify at <a href="https://nmc.org.in" target="_blank">nmc.org.in</a> and <a href="https://mec.gov.np" target="_blank">mec.gov.np</a> before making any decision.</div>
+  </div>
+</div>
+</div>
+</BaseLayout>

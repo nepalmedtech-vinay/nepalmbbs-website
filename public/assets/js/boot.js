@@ -23,21 +23,32 @@ window.addEventListener('load',()=>hideLoader());
   if(document.readyState==='loading'){
     await new Promise(r=>document.addEventListener('DOMContentLoaded',r,{once:true}));
   }
-  await initSiteSettings();
-  await loadDynamicContent();
-  // Init hero slideshow
-  wrapHeroContent();
-  initHeroSlideshow();
+  // Each step is isolated. This was a straight-line sequence, which was fine
+  // when one page contained every element on the site. Across ten pages, a step
+  // that trips over markup absent from the current page aborts every step after
+  // it — silently, because none of this is visible until something is missing.
+  // Losing one step must not cost the rest.
+  const step = async (name, fn) => {
+    try { await fn(); }
+    catch (e) { console.error('[boot] ' + name + ' failed:', e); }
+  };
+
+  await step('initSiteSettings', initSiteSettings);
+  await step('loadDynamicContent', loadDynamicContent);
+  await step('hero', () => { wrapHeroContent(); initHeroSlideshow(); });
+
   // Supabase realtime polling for live updates
   setInterval(async()=>{
     try{
       const cnt=await sbR('/rest/v1/leads?select=id&limit=1');
       // silently refresh if admin panel open
-      if(adminLoggedIn && document.getElementById('ap-dash').classList.contains('on')) loadDashboard();
+      const dash=document.getElementById('ap-dash');
+      if(adminLoggedIn && dash && dash.classList.contains('on')) loadDashboard();
     }catch(e){}
   }, 30000); // refresh every 30s
-  convertCurr('inr');
-  initChatSwipe();
+
+  await step('convertCurr', () => convertCurr('inr'));
+  await step('initChatSwipe', initChatSwipe);
 })();
 window.addEventListener('scroll',()=>{document.getElementById('navbar').classList.toggle('scrolled',scrollY>60);},{passive:true});
 
