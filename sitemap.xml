@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Phase 0 foundation sitemap.
+
+  The site is currently a single-URL application: all nine sections
+  (admission process, colleges, why Nepal, NEET calculator, guidelines,
+  videos, FAQ, life in Nepal, counseling) are rendered client-side on "/".
+  So there is exactly one indexable URL today, and listing anything else
+  would be listing URLs that do not resolve.
+
+  Phase 2 introduces real per-topic URLs; this file is regenerated then.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://nepalmbbs.in/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
