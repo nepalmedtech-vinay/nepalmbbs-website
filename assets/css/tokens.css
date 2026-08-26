@@ -397,3 +397,216 @@ select option {
 /* ─── SELECTION ──────────────────────────────────────────── */
 ::selection { background: var(--gold-dim); color: var(--text-primary); }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN SYSTEM — Phase 1 foundation
+   ═══════════════════════════════════════════════════════════════
+
+   Everything below is ADDITIVE. Nothing here is consumed by an existing
+   rule yet, so adding it changes no pixel. Phase 3 migrates rules onto
+   these tokens; until then the values above remain the live source.
+
+   The brief this system answers is not "a modern website". A family is
+   deciding on a 5.5-year, multi-lakh commitment, usually days after a NEET
+   result, in a market crowded with consultancies that overpromise. So the
+   system is organised around one question: does this page look like an
+   institution you can verify, or like a funnel?
+
+   The current site answers that badly, and it is worth naming here because
+   the tokens exist to fix it: every surface is the same frosted glass, so
+   an NMC recognition status and a marketing headline carry identical
+   visual authority. Trust content needs its own register.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+
+  /* ── Type ─────────────────────────────────────────────────────
+     Fluid, mobile-first. Each step interpolates between a small-screen
+     and large-screen size, so no step needs a breakpoint override.
+     Display steps are tight and confident; body steps stay large enough
+     to read comfortably on a phone in a stressful moment.            */
+
+  --font-display: 'Sora', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body:    'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:    ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, monospace;
+
+  --t-display: clamp(2.25rem, 1.30rem + 4.2vw, 4.00rem);  /* hero only        */
+  --t-h1:      clamp(1.85rem, 1.25rem + 2.6vw, 3.00rem);
+  --t-h2:      clamp(1.50rem, 1.15rem + 1.6vw, 2.25rem);
+  --t-h3:      clamp(1.20rem, 1.05rem + 0.7vw, 1.50rem);
+  --t-lead:    clamp(1.05rem, 0.98rem + 0.4vw, 1.25rem);  /* section intros   */
+  --t-body:    1rem;
+  --t-sm:      0.875rem;
+  --t-xs:      0.75rem;
+  --t-label:   0.6875rem;                                  /* uppercase eyebrow */
+
+  --lh-tight:  1.08;   /* display   */
+  --lh-snug:   1.25;   /* headings  */
+  --lh-normal: 1.55;   /* UI text   */
+  --lh-prose:  1.72;   /* long-form guidance — deliberately loose */
+
+  --ls-display: -0.03em;
+  --ls-heading: -0.015em;
+  --ls-body:     0;
+  --ls-label:    0.09em;
+
+  --w-regular: 400;
+  --w-medium:  500;
+  --w-semi:    600;
+  --w-bold:    700;
+  --w-black:   800;
+
+  /* Reading measure. Admission-process and guideline copy runs long; an
+     unconstrained line on a 1440px screen is unreadable and reads as
+     unedited. Applies to prose containers, not to UI. */
+  --measure:        66ch;
+  --measure-narrow: 52ch;
+
+  /* ── Space ────────────────────────────────────────────────────
+     4px base. Steps 1-8 are component-internal; the section scale is
+     the vertical rhythm between page sections and is fluid so mobile
+     does not inherit desktop's generosity.                          */
+
+  --s-1:  0.25rem;   /* 4  */
+  --s-2:  0.5rem;    /* 8  */
+  --s-3:  0.75rem;   /* 12 */
+  --s-4:  1rem;      /* 16 */
+  --s-5:  1.5rem;    /* 24 */
+  --s-6:  2rem;      /* 32 */
+  --s-7:  3rem;      /* 48 */
+  --s-8:  4rem;      /* 64 */
+
+  --s-section:    clamp(3.5rem, 2.2rem + 5.5vw, 7rem);
+  --s-section-lg: clamp(5rem,   3.0rem + 8.0vw, 10rem);
+
+  --gutter:        clamp(1rem, 0.6rem + 1.8vw, 2rem);
+  --container:     1200px;
+  --container-prose: 760px;
+  --container-wide:  1440px;
+
+  /* ── Radius ───────────────────────────────────────────────────
+     --r / --r-lg / --r-xl already exist above and stay authoritative.
+     These fill the gaps rather than restating them.                 */
+
+  --r-xs:   6px;
+  --r-sm:   9px;
+  --r-2xl: 36px;
+  --r-pill: 999px;
+
+  /* ── Elevation ────────────────────────────────────────────────
+     Shadows on a dark ground read as depth only if they are darker than
+     the surface, never as a grey haze. Ambient + directional pairs.   */
+
+  --e-1: 0 1px 2px rgba(4, 10, 22, 0.40);
+  --e-2: 0 2px 4px rgba(4, 10, 22, 0.36), 0 4px 10px rgba(4, 10, 22, 0.28);
+  --e-3: 0 4px 8px rgba(4, 10, 22, 0.34), 0 12px 28px rgba(4, 10, 22, 0.32);
+  --e-4: 0 8px 16px rgba(4, 10, 22, 0.36), 0 24px 56px rgba(4, 10, 22, 0.40);
+  --e-gold: 0 6px 24px rgba(240, 165, 0, 0.22);   /* primary CTA only */
+
+  /* ── Trust register ───────────────────────────────────────────
+     The second surface language. Where glass says "campaign", this says
+     "record": flatter, denser, higher contrast, closer to a printed
+     document. Recognition status, fee tables, official MEC/NMC quotes
+     and eligibility rules belong here — not on marketing glass.      */
+
+  --doc-bg:        #131c2c;
+  --doc-bg-alt:    #182334;
+  --doc-border:    rgba(200, 212, 232, 0.16);
+  --doc-rule:      rgba(200, 212, 232, 0.10);   /* table/list separators */
+  --doc-text:      #e6edfa;
+  --doc-text-mute: #9fb2cd;
+
+  /* Evidence states. A college is recognised, provisional, or it is not —
+     and the page must never blur those. Deliberately not the marketing
+     gold: authority is not a highlight colour. */
+  --ev-verified:     #22c48a;
+  --ev-verified-bg:  rgba(34, 196, 138, 0.12);
+  --ev-provisional:  #e0a92b;
+  --ev-provisional-bg: rgba(224, 169, 43, 0.12);
+  --ev-caution:      #ef4444;
+  --ev-caution-bg:   rgba(239, 68, 68, 0.12);
+  --ev-neutral:      #7f93b3;
+  --ev-neutral-bg:   rgba(127, 147, 179, 0.12);
+
+  /* ── Conversion ───────────────────────────────────────────────
+     Three CTAs compete on this site: the lead form, WhatsApp and the
+     Calendly booking. Today they are all gold and all glowing, so none
+     of them leads. These tokens fix the ranking in one place.        */
+
+  --cta-1-bg:     var(--gold);          /* the single primary action per view */
+  --cta-1-text:   #14213d;
+  --cta-1-shadow: var(--e-gold);
+
+  --cta-2-bg:     rgba(255, 255, 255, 0.06);   /* supporting, quiet */
+  --cta-2-text:   var(--text-primary);
+  --cta-2-border: rgba(255, 255, 255, 0.18);
+
+  --cta-wa-bg:    #25d366;              /* WhatsApp keeps its own equity */
+  --cta-wa-text:  #04231a;
+
+  --cta-min-h:    48px;                 /* thumb target, mobile-first */
+  --cta-min-w:    44px;
+
+  /* ── Layers ───────────────────────────────────────────────────
+     Replaces the ad-hoc 1/2/3/4/5/10/900/989/990/991/999/1000/9500/9999
+     currently scattered across the stylesheets.                      */
+
+  --z-base:     0;
+  --z-raised:   10;
+  --z-sticky:   100;
+  --z-nav:      200;
+  --z-dropdown: 300;
+  --z-overlay:  400;
+  --z-modal:    500;
+  --z-float:    600;   /* WhatsApp / chat launcher */
+  --z-toast:    700;
+  --z-loader:   800;
+
+  /* ── Motion ───────────────────────────────────────────────────
+     Durations short enough to feel like response, not performance.   */
+
+  --d-instant: 80ms;
+  --d-fast:    140ms;
+  --d-base:    220ms;
+  --d-slow:    360ms;
+
+  --ease-out:  cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Focus ────────────────────────────────────────────────────
+     Visible against both the glass and document registers.           */
+
+  --focus-ring:   0 0 0 3px rgba(96, 165, 250, 0.55);
+  --focus-offset: 2px;
+}
+
+/* Honour the OS setting. The hero slideshow, reveal animations and glass
+   transitions are decorative; nobody should be made unwell by a fee table. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --d-instant: 0ms;
+    --d-fast:    0ms;
+    --d-base:    0ms;
+    --d-slow:    0ms;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCESSIBILITY FIX — visible keyboard focus
+
+   Six form controls set `outline: none` with no :focus-visible
+   replacement anywhere in the stylesheets, so a keyboard user filling in
+   the lead form cannot see which field they are in. That is a WCAG 2.4.7
+   failure sitting on the most business-critical component on the site.
+
+   :focus-visible only matches keyboard focus, so this restores the
+   indicator for keyboard users and changes nothing for pointer users.
+   ═══════════════════════════════════════════════════════════════ */
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--blue-light);
+  outline-offset: var(--focus-offset);
+  box-shadow: var(--focus-ring);
+  border-radius: var(--r-xs);
+}

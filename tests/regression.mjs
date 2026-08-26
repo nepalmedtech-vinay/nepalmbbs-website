@@ -139,7 +139,79 @@ const swCount = await page.evaluate(async () =>
   (await navigator.serviceWorker.getRegistrations()).length);
 check('Site registers no service worker', swCount === 0, 'registrations=' + swCount);
 
-console.log('\n══════ PHASE 0 QA ══════');
+
+// ═══ Phase 1: extraction and design-system checks ═══
+
+// --- T13: every extracted asset actually resolves (a 404 here = silent breakage)
+for (const f of ['tokens','base','components','sections']) {
+  const r = await page.request.get(`http://localhost:8099/assets/css/${f}.css`);
+  check(`assets/css/${f}.css → 200`, r.status() === 200, 'status ' + r.status());
+}
+for (const f of ['config','boot','i18n','navigation','leads','reveal','chatbot','hero','colleges','admin','effects']) {
+  const r = await page.request.get(`http://localhost:8099/assets/js/${f}.js`);
+  check(`assets/js/${f}.js → 200`, r.status() === 200, 'status ' + r.status());
+}
+
+// --- T14: inline on* handlers still resolve. The markup calls these by name,
+//          so if extraction had scoped them the site would look fine and every
+//          button would be dead — exactly the failure a pixel diff cannot see.
+const globals = await page.evaluate(() => {
+  const names = ['switchTab','setLang','toggleMenu','closeMenu','submitLead','checkEligibility',
+                 'convertCurr','toggleFaq','toggleChat','closeChat','sendMsg','askBot','restartChat',
+                 'openAdmin','closeAdmin','doAdminLogin','changePass','saveGA','switchGuide','toast'];
+  return names.filter(n => typeof window[n] !== 'function');
+});
+check('All inline-handler functions are global', globals.length === 0, 'missing: ' + globals.join(', '));
+
+// --- T15: inline handlers in the markup have a matching global
+const orphans = await page.evaluate(() => {
+  const out = new Set();
+  for (const el of document.querySelectorAll('[onclick],[oninput],[onchange],[onsubmit]')) {
+    for (const a of ['onclick','oninput','onchange','onsubmit']) {
+      let v = el.getAttribute(a);
+      if (!v) continue;
+      // Strip string literals first: a call like enquireCollege('Institute of
+      // Medicine (IOM)') otherwise looks like a call to a function "Medicine".
+      v = v.replace(/'(?:[^'\\]|\\.)*'/g, "''").replace(/"(?:[^"\\]|\\.)*"/g, '""');
+      for (const m of v.matchAll(/([A-Za-z_$][\w$]*)\s*\(/g)) {
+        const fn = m[1];
+        if (['if','for','while','return','typeof','new','function','catch'].includes(fn)) continue;
+        if (typeof window[fn] !== 'function') out.add(fn);
+      }
+    }
+  }
+  return [...out];
+});
+check('No orphaned inline handler references', orphans.length === 0, 'orphans: ' + orphans.join(', '));
+
+// --- T16: design tokens are present and resolvable
+const tok = await page.evaluate(() => {
+  const cs = getComputedStyle(document.documentElement);
+  const want = ['--t-display','--s-section','--measure','--doc-bg','--ev-verified',
+                '--cta-1-bg','--z-modal','--d-base','--focus-ring','--container'];
+  return want.filter(v => !cs.getPropertyValue(v).trim());
+});
+check('Design tokens defined', tok.length === 0, 'missing: ' + tok.join(', '));
+
+// --- T17: keyboard focus is visible on the lead form (WCAG 2.4.7)
+const focus = await page.evaluate(() => {
+  const el = document.getElementById('h-name');
+  if (!el) return 'no field';
+  el.focus();
+  // focus-visible does not match programmatic focus, so assert the rule exists
+  let found = false;
+  for (const sheet of document.styleSheets) {
+    let rules; try { rules = sheet.cssRules; } catch { continue; }
+    for (const r of rules) {
+      if (r.selectorText && r.selectorText.includes('focus-visible') &&
+          /outline|box-shadow/.test(r.style.cssText)) found = true;
+    }
+  }
+  return found ? 'ok' : 'no focus-visible rule';
+});
+check('Keyboard focus indicator defined', focus === 'ok', focus);
+
+console.log('\n══════ REGRESSION SUITE ══════');
 let fail = 0;
 for (const r of results) {
   console.log(`${r.pass ? '✅' : '❌'}  ${r.name}${r.pass || !r.detail ? '' : '\n      → ' + r.detail}`);
