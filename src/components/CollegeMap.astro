@@ -1,0 +1,196 @@
+---
+import { getColleges } from '../lib/colleges.js';
+import places from '../data/places.json';
+
+// Twenty-seven colleges plotted where they actually are.
+//
+// This is the site's one signature graphic, and it is built from the real
+// records rather than bought in: positions come from the towns in
+// colleges.json, sized by the seats each college actually offers. It is
+// deliberately not a survey map — no borders are drawn and none are claimed.
+// It is a relative-position field, which is honest about its precision while
+// still telling a family, at a glance, that the east has clusters and the
+// far west has almost nothing.
+const colleges = (await getColleges()).filter((c) => places[c.location]);
+
+// Nepal's extent, padded. Latitude is inverted because SVG y grows downward.
+const LON = [80.0, 88.35];
+const LAT = [26.15, 29.75];
+const W = 1000;
+const H = 420;
+const PAD = 46;
+
+const x = (lon) => PAD + ((lon - LON[0]) / (LON[1] - LON[0])) * (W - PAD * 2);
+const y = (lat) => PAD + (1 - (lat - LAT[0]) / (LAT[1] - LAT[0])) * (H - PAD * 2);
+
+const maxSeats = Math.max(...colleges.map((c) => parseInt(c.seats, 10) || 1));
+
+const points = colleges
+  .map((c) => {
+    const p = places[c.location];
+    const seats = parseInt(c.seats, 10) || 0;
+    return {
+      ...c,
+      seats,
+      cx: x(p.lon),
+      cy: y(p.lat),
+      // Area-proportional, not radius-proportional: sizing by radius would
+      // make a 65-seat college look seven times a 9-seat one.
+      r: 4 + Math.sqrt(seats / maxSeats) * 11,
+      govt: c.type === 'govt',
+    };
+  })
+  .sort((a, b) => b.r - a.r);
+
+// Sum over `points`, not `colleges`: seats arrive from JSON as strings, so
+// reducing the raw records concatenates them into a 45-digit number instead of
+// adding them. `points` has already been through parseInt.
+const totalSeats = points.reduce((n, p) => n + p.seats, 0);
+---
+
+<section class="map-section">
+  <div class="container">
+
+    <div class="map-head pm-in">
+      <span class="pm-eyebrow">Where they are</span>
+      <h2 class="map-title">
+        One admission process,<br />
+        <span class="pm-accent">{colleges.length} places it can take you</span>
+      </h2>
+      <p class="pm-lead">
+        Every college is plotted where it actually sits, sized by the
+        {' '}{totalSeats} foreign-quota seats between them. The clustering is not
+        an accident of the drawing — it is where Nepal's medical education
+        actually is, and it is worth knowing before you pick a city.
+      </p>
+    </div>
+
+    <figure class="map-figure pm-in" style="--pm-delay:120ms">
+      <svg
+        class="map-svg"
+        viewBox={`0 0 ${W} ${H}`}
+        role="img"
+        aria-label={`Relative positions of ${colleges.length} medical colleges across Nepal`}
+      >
+        <defs>
+          <radialGradient id="mapHalo">
+            <stop offset="0" stop-color="#f0a500" stop-opacity="0.30" />
+            <stop offset="1" stop-color="#f0a500" stop-opacity="0" />
+          </radialGradient>
+          <filter id="mapGlow" x="-70%" y="-70%" width="240%" height="240%">
+            <feGaussianBlur stdDeviation="5" />
+          </filter>
+        </defs>
+
+        <!-- Graticule. Real degree lines, labelled — the element that keeps
+             this readable as a coordinate plot rather than a decorative blob. -->
+        <g class="map-grid">
+          {[82, 84, 86, 88].map((lon) => (
+            <>
+              <line x1={x(lon)} y1={PAD - 14} x2={x(lon)} y2={H - PAD + 14} />
+              <text x={x(lon)} y={H - PAD + 30} text-anchor="middle">{lon}°E</text>
+            </>
+          ))}
+          {[27, 28, 29].map((lat) => (
+            <>
+              <line x1={PAD - 14} y1={y(lat)} x2={W - PAD + 14} y2={y(lat)} />
+              <text x={PAD - 20} y={y(lat) + 4} text-anchor="end">{lat}°N</text>
+            </>
+          ))}
+        </g>
+
+        <g class="map-points">
+          {points.map((p, i) => (
+            <g
+              class:list={['map-pt', { 'is-govt': p.govt }]}
+              style={`--i:${i}`}
+              data-name={p.name}
+              data-loc={p.location}
+              data-seats={p.seats}
+              data-href={`/colleges/${p.slug}`}
+              tabindex="0"
+              role="link"
+              aria-label={`${p.name}, ${p.location}, ${p.seats} seats`}
+            >
+              <circle class="map-halo" cx={p.cx} cy={p.cy} r={p.r * 2.6} fill="url(#mapHalo)" filter="url(#mapGlow)" />
+              <circle class="map-ring" cx={p.cx} cy={p.cy} r={p.r} />
+              <circle class="map-dot"  cx={p.cx} cy={p.cy} r={Math.max(2, p.r * 0.34)} />
+              <circle class="map-hit"  cx={p.cx} cy={p.cy} r={Math.max(p.r + 12, 18)} />
+            </g>
+          ))}
+        </g>
+      </svg>
+
+      <div class="map-card" id="map-card" aria-live="polite" hidden>
+        <p class="map-card-name"></p>
+        <p class="map-card-meta"></p>
+        <span class="map-card-cta">View record →</span>
+      </div>
+
+      <figcaption class="map-legend">
+        <span class="map-key is-govt"><i></i>Government</span>
+        <span class="map-key"><i></i>Private</span>
+        <span class="map-key map-key--scale"><i></i>Circle area = foreign-quota seats</span>
+      </figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    var fig = document.querySelector('.map-figure');
+    if (!fig) return;
+    var card = document.getElementById('map-card');
+    var name = card.querySelector('.map-card-name');
+    var meta = card.querySelector('.map-card-meta');
+    var active = null;
+
+    function show(g) {
+      if (active) active.classList.remove('is-active');
+      active = g;
+      g.classList.add('is-active');
+      name.textContent = g.dataset.name;
+      meta.textContent = g.dataset.loc + ' · ' + g.dataset.seats + ' seats';
+      card.hidden = false;
+      // Position against the figure, clamped so a point near an edge does not
+      // push the card outside it.
+      var c = g.querySelector('.map-ring').getBoundingClientRect();
+      var f = fig.getBoundingClientRect();
+      var left = c.left - f.left + c.width / 2;
+      card.style.left = Math.min(Math.max(left, 90), f.width - 90) + 'px';
+      card.style.top = c.top - f.top - 14 + 'px';
+    }
+
+    function hide() {
+      if (active) active.classList.remove('is-active');
+      active = null;
+      card.hidden = true;
+    }
+
+    fig.querySelectorAll('.map-pt').forEach(function (g) {
+      g.addEventListener('pointerenter', function () { show(g); });
+      g.addEventListener('focus', function () { show(g); });
+      g.addEventListener('click', function () { location.href = g.dataset.href; });
+      g.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); location.href = g.dataset.href; }
+      });
+    });
+    fig.addEventListener('pointerleave', hide);
+    fig.addEventListener('focusout', function (e) {
+      if (!fig.contains(e.relatedTarget)) hide();
+    });
+
+    // Draw the points in only once the figure is actually on screen.
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (e.isIntersecting) { fig.classList.add('is-drawn'); io.disconnect(); }
+        });
+      }, { threshold: 0.18 });
+      io.observe(fig);
+    } else {
+      fig.classList.add('is-drawn');
+    }
+  })();
+</script>

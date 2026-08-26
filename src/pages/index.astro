@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
+import HeroPremium from '../components/HeroPremium.astro';
+import CollegeMap from '../components/CollegeMap.astro';
 import TrustSection from '../components/TrustSection.astro';
 import SectionNav from '../components/SectionNav.astro';
 ---
@@ -10,7 +11,8 @@ import SectionNav from '../components/SectionNav.astro';
   path="/"
   isHome={true}
 >
-  <Hero />
+  <HeroPremium />
+  <CollegeMap />
   <TrustSection />
   <SectionNav />
 </BaseLayout>

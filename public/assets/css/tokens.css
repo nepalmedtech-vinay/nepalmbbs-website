@@ -77,16 +77,35 @@ body {
   -webkit-font-smoothing: antialiased !important;
 }
 
-/* ─── TYPOGRAPHY — Full Visibility ──────────────────────── */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--text-primary) !important;
-  font-weight: 700 !important;
+/* ─── TYPOGRAPHY — baseline colours ──────────────────────────
+   These were blanket `!important` rules on h1-h6, on p/li/td/th/span/label/div,
+   and on every `a`. They were presumably added to force contrast onto text
+   that was inheriting something too dark. What they actually did was make text
+   colour unstylable anywhere on the site: `!important` on a bare `div` or
+   `span` selector beats every component rule, so no component could set a
+   colour without adding `!important` of its own — which is how a stylesheet
+   ends up with a hundred of them.
+
+   It was not a theoretical problem. It silently repainted the design system
+   built in Phase 1 and 3C: the primary CTA's dark navy label was rendering as
+   link blue, and every muted label in the document register was being pushed
+   back to the same grey as body text, flattening the label/value distinction
+   that register exists to draw.
+
+   Wrapped in :where() they keep exactly the same job — a sensible default for
+   unstyled text — at zero specificity, so any component rule now wins normally
+   and none of them needs `!important` to do it. Elements that carry their own
+   colour are unaffected either way. */
+
+:where(h1, h2, h3, h4, h5, h6) {
+  color: var(--text-primary);
+  font-weight: 700;
 }
-p, li, td, th, span, label, div {
-  color: var(--text-secondary) !important;
+:where(p, li, td, th, span, label, div) {
+  color: var(--text-secondary);
 }
-a { color: var(--text-accent) !important; }
-a:hover { color: var(--gold-light) !important; }
+:where(a) { color: var(--text-accent); }
+:where(a:hover) { color: var(--gold-light); }
 
 /* ─── SECTIONS ───────────────────────────────────────────── */
 section, .tab-pane, .sec, .pane {

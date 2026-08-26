@@ -1,0 +1,545 @@
+/* NepalMBBS.in — premium.css
+   The premium visual layer.
+
+   What makes an expensive site look expensive is almost never the number of
+   effects. It is that a small number of them are executed exactly, tied to
+   real content, and never repeated where they do not earn their place. So the
+   rules here are narrow on purpose:
+
+     - Motion is transform and opacity only. Anything animating layout is a
+       bug, not a flourish.
+     - Every entrance is driven by the element's own position, so nothing
+       animates that a visitor never scrolled to.
+     - Depth comes from layered light, not from stacking blurs. One light
+       source, consistently placed, top-left.
+     - Every effect collapses under prefers-reduced-motion. A family reading a
+       fee table should never be made unwell by the decoration around it.
+
+   Load order: after trust.css. Consumes the Phase 1 tokens. */
+
+
+/* ══ Motion primitives ═══════════════════════════════════════════════════ */
+
+@keyframes rise {
+  from { opacity: 0; transform: translate3d(0, 22px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes sheen {
+  from { transform: translate3d(-120%, 0, 0) skewX(-18deg); }
+  to   { transform: translate3d(320%, 0, 0) skewX(-18deg); }
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -14px, 0); }
+}
+
+/* Staggered entrance. The delay is set inline per element from its index, so
+   a row of cards cascades instead of arriving as one block. */
+.pm-in {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.pm-in.is-visible {
+  animation: rise var(--d-slow) var(--ease-entrance) forwards;
+  animation-delay: var(--pm-delay, 0ms);
+}
+
+
+/* ══ Display typography ══════════════════════════════════════════════════ */
+
+.pm-display {
+  font-family: var(--font-display);
+  font-size: var(--t-display);
+  font-weight: var(--w-black);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-display);
+  color: var(--text-primary);
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* Per-line reveal. Each line sits in a clipping box and slides up from under
+   its own mask — the type arrives rather than fades, which is the difference
+   between a headline that feels typeset and one that feels dropped in. */
+.pm-line { display: block; overflow: hidden; }
+
+.pm-line > span {
+  display: block;
+  animation: pm-line-up 0.9s var(--ease-entrance) backwards;
+  animation-delay: calc(var(--pm-line-i, 0) * 110ms + 200ms);
+}
+
+/* The hidden state lives in the keyframe's `from`, not on the element, and the
+   fill is `backwards` rather than `forwards`. The difference matters: with the
+   offset sitting on the element itself, anything that stops the animation from
+   running — a blocked stylesheet, a screenshot tool disabling animation, a
+   browser that never fires it — leaves the headline parked off-screen and the
+   page looks empty. This way the element's resting state is visible and the
+   animation only borrows it. Same failure mode as the splash screen fixed in
+   Phase 0: never let the readable state depend on something running. */
+@keyframes pm-line-up {
+  from { transform: translate3d(0, 105%, 0); }
+  to   { transform: none; }
+}
+
+/* The one place gold is allowed to be a gradient: a single word in the
+   headline, carrying the brand without turning the page into a light show. */
+.pm-accent {
+  background: linear-gradient(96deg, var(--gold) 12%, var(--gold-light) 52%, var(--gold) 88%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pm-lead {
+  font-size: var(--t-lead);
+  line-height: var(--lh-prose);
+  color: var(--text-secondary);
+  max-width: var(--measure);
+  margin: var(--s-5) 0 0;
+  text-wrap: pretty;
+}
+
+.pm-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: var(--t-label);
+  font-weight: var(--w-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.pm-eyebrow::before {
+  content: '';
+  width: var(--s-6);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+
+
+/* ══ Surfaces ════════════════════════════════════════════════════════════
+   One light source, top-left. A surface is defined by a hairline that is
+   brighter where the light hits and dimmer where it does not — the same trick
+   a physical bevel uses — plus a tinted shadow that carries the page hue
+   rather than generic black. */
+
+.pm-surface {
+  position: relative;
+  border-radius: var(--r-lg);
+  background:
+    linear-gradient(158deg,
+      color-mix(in oklab, var(--bg-raised) 92%, white 8%) 0%,
+      var(--bg-surface) 46%,
+      color-mix(in oklab, var(--bg-surface) 94%, black 6%) 100%);
+  box-shadow: var(--e-3);
+  isolation: isolate;
+}
+
+/* The lit edge. A single inset hairline, strongest at the top-left corner. */
+.pm-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(158deg,
+    rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.05) 38%, rgba(255, 255, 255, 0) 68%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Cursor spotlight. --mx/--my are set from pointermove; with no pointer the
+   fallback centre keeps it inert rather than parked in a corner. */
+.pm-surface::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    22rem circle at var(--mx, 50%) var(--my, 0%),
+    rgba(240, 165, 0, 0.10), transparent 62%);
+  opacity: 0;
+  transition: opacity var(--d-base) var(--ease-out);
+  pointer-events: none;
+  z-index: 1;
+}
+.pm-surface:hover::after { opacity: 1; }
+
+.pm-surface > * { position: relative; z-index: 3; }
+
+
+/* ══ Buttons ═════════════════════════════════════════════════════════════
+   The CTA hierarchy the tokens declared, finally rendered. One primary per
+   view; everything else recedes. */
+
+.pm-btn {
+  --pm-btn-y: 0px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  min-height: var(--cta-min-h);
+  padding: 0 var(--s-6);
+  border: 0;
+  border-radius: var(--r-pill);
+  font-family: var(--font-body);
+  font-size: var(--t-sm);
+  font-weight: var(--w-semi);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  transform: translate3d(0, var(--pm-btn-y), 0);
+  transition: transform var(--d-fast) var(--ease-out),
+              box-shadow var(--d-base) var(--ease-out),
+              background var(--d-base) var(--ease-out);
+}
+
+.pm-btn:hover  { --pm-btn-y: -2px; }
+.pm-btn:active { --pm-btn-y: 1px; }
+
+.pm-btn--primary {
+  background: linear-gradient(140deg, var(--gold-light), var(--gold));
+  color: var(--cta-1-text);
+  box-shadow: var(--e-gold), var(--e-2);
+}
+.pm-btn--primary:hover { box-shadow: 0 10px 34px rgba(240, 165, 0, 0.32), var(--e-3); }
+
+/* A single sheen pass on hover. Once, quickly, then gone — a loop would make
+   the button look like an advert. */
+.pm-btn--primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 34%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+  transform: translate3d(-120%, 0, 0) skewX(-18deg);
+}
+.pm-btn--primary:hover::after { animation: sheen 0.7s var(--ease-out); }
+
+.pm-btn--ghost {
+  background: var(--cta-2-bg);
+  color: var(--cta-2-text);
+  box-shadow: inset 0 0 0 1px var(--cta-2-border);
+  backdrop-filter: blur(8px);
+}
+.pm-btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+
+/* ══ Stat readout ════════════════════════════════════════════════════════
+   Real numbers from real data, counted up once on entry. Tabular figures so
+   the digits do not jitter while the count runs. */
+
+.pm-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--s-5);
+  margin-top: var(--s-7);
+}
+
+.pm-stat-n {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.1rem);
+  font-weight: var(--w-black);
+  line-height: 1;
+  letter-spacing: var(--ls-display);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.pm-stat-l {
+  display: block;
+  margin-top: var(--s-2);
+  font-size: var(--t-xs);
+  font-weight: var(--w-medium);
+  line-height: var(--lh-normal);
+  color: var(--text-tertiary);
+  max-width: 18ch;
+}
+
+
+/* ══ Atmosphere ══════════════════════════════════════════════════════════ */
+
+/* Fixed grain. Breaks the flatness of large dark fields, which is what makes
+   a dark page read as printed rather than as an empty div. */
+.pm-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.032;
+  background-image: var(--pm-grain-src);
+  background-size: 180px 180px;
+  mix-blend-mode: overlay;
+}
+
+/* Ambient glow behind the hero. Radial, off-centre, so it reads as light in a
+   room rather than as a gradient someone applied to a rectangle. */
+.pm-ambient {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 78%;
+  pointer-events: none;
+  background:
+    radial-gradient(46% 60% at 22% 8%, rgba(59, 130, 246, 0.16), transparent 68%),
+    radial-gradient(38% 52% at 82% 22%, rgba(240, 165, 0, 0.13), transparent 66%);
+  filter: blur(18px);
+}
+
+
+/* ══ Reduced motion ══════════════════════════════════════════════════════
+   Everything above becomes static. Not slower — off. */
+
+@media (prefers-reduced-motion: reduce) {
+  .pm-in,
+  .pm-in.is-visible,
+  .pm-line > span {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .pm-btn--primary:hover::after { animation: none; }
+  .pm-surface::after { display: none; }
+  .pm-ambient { filter: none; }
+}
+
+
+/* ══ College map ═════════════════════════════════════════════════════════ */
+
+.map-section {
+  position: relative;
+  padding: var(--s-section) 0;
+  background: linear-gradient(180deg, var(--bg-base), var(--bg-surface) 50%, var(--bg-base));
+}
+
+.map-head { max-width: 62ch; }
+
+.map-title {
+  font-family: var(--font-display);
+  font-size: var(--t-h2);
+  font-weight: var(--w-black);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-heading);
+  color: var(--text-primary);
+  margin: var(--s-4) 0 0;
+  max-width: 20ch;
+  text-wrap: balance;
+  font-variant-numeric: tabular-nums;
+}
+
+.map-figure {
+  position: relative;
+  margin: var(--s-7) 0 0;
+}
+
+.map-svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* Graticule sits far back — present enough to read as a coordinate plane,
+   quiet enough that it never competes with the points. */
+.map-grid line { stroke: rgba(200, 212, 232, 0.07); stroke-width: 1; }
+.map-grid text {
+  fill: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+/* Points draw in on entry, staggered by index. The delay is capped so the
+   last of 27 does not arrive a second and a half after the first. */
+.map-pt { cursor: pointer; opacity: 0; }
+.map-figure.is-drawn .map-pt {
+  animation: fade var(--d-base) var(--ease-out) forwards;
+  animation-delay: calc(var(--i) * 26ms);
+}
+
+.map-ring {
+  fill: rgba(96, 165, 250, 0.10);
+  stroke: var(--blue-light);
+  stroke-width: 1.4;
+  transition: fill var(--d-fast) var(--ease-out),
+              stroke var(--d-fast) var(--ease-out);
+}
+.map-dot { fill: var(--blue-light); transition: fill var(--d-fast) var(--ease-out); }
+
+.map-pt.is-govt .map-ring { fill: rgba(240, 165, 0, 0.12); stroke: var(--gold); }
+.map-pt.is-govt .map-dot  { fill: var(--gold); }
+
+.map-halo { opacity: 0; transition: opacity var(--d-base) var(--ease-out); }
+.map-hit  { fill: transparent; }
+
+.map-pt.is-active .map-halo { opacity: 1; }
+.map-pt.is-active .map-ring { fill: rgba(240, 165, 0, 0.22); stroke: var(--gold-light); stroke-width: 2; }
+.map-pt.is-active .map-dot  { fill: var(--gold-light); }
+.map-pt:focus-visible { outline: none; }
+.map-pt:focus-visible .map-ring { stroke: var(--text-primary); stroke-width: 2.5; }
+
+/* Readout card. Absolutely placed against the figure and translated onto the
+   point, so it reads as attached to the mark rather than floating near it. */
+.map-card {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  min-width: 11rem;
+  max-width: 17rem;
+  padding: var(--s-3) var(--s-4);
+  background: var(--doc-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--r-sm);
+  box-shadow: var(--e-4);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.map-card-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--t-sm);
+  font-weight: var(--w-semi);
+  line-height: var(--lh-snug);
+  color: var(--doc-text);
+}
+.map-card-meta {
+  margin: var(--s-1) 0 0;
+  font-size: var(--t-xs);
+  color: var(--doc-text-mute);
+  font-variant-numeric: tabular-nums;
+}
+.map-card-cta {
+  display: block;
+  margin-top: var(--s-2);
+  font-size: var(--t-label);
+  font-weight: var(--w-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-5);
+  margin-top: var(--s-5);
+  font-size: var(--t-xs);
+  color: var(--text-tertiary);
+}
+.map-key { display: inline-flex; align-items: center; gap: var(--s-2); }
+.map-key i {
+  width: 0.65rem; height: 0.65rem; border-radius: 50%;
+  background: rgba(96, 165, 250, 0.14);
+  border: 1.4px solid var(--blue-light);
+}
+.map-key.is-govt i { background: rgba(240, 165, 0, 0.16); border-color: var(--gold); }
+.map-key--scale i { border-style: dashed; border-color: var(--text-muted); background: none; }
+
+/* Below the point-density threshold the graticule labels collide and the
+   marks overlap, so the plot scrolls horizontally at a readable width rather
+   than being squeezed into something unreadable. */
+@media (max-width: 40rem) {
+  .map-figure { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+  .map-svg { min-width: 34rem; }
+  .map-legend { padding-bottom: var(--s-2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-pt { opacity: 1; animation: none !important; }
+}
+
+
+/* ══ Hero ════════════════════════════════════════════════════════════════ */
+
+.hero-pm {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 100svh;          /* svh, not vh: iOS Safari's toolbar makes vh jump */
+  padding: calc(var(--s-8) + 3rem) 0 var(--s-8);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero-pm-bg { position: absolute; inset: 0; z-index: -2; }
+
+.hero-pm-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 100%;
+  display: block;
+}
+
+/* The type sits over the ridges, so the ridges have to give way. A vertical
+   veil, heaviest where the first line lands. */
+.hero-pm-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    104deg,
+    rgba(15, 23, 36, 0.90) 0%,
+    rgba(15, 23, 36, 0.66) 34%,
+    rgba(15, 23, 36, 0.20) 66%,
+    rgba(15, 23, 36, 0.34) 100%);
+}
+
+.hero-pm-in { position: relative; z-index: 1; max-width: 62rem; }
+
+.hero-pm-h1 { margin: var(--s-5) 0 0; }
+.hero-pm-h1 em { font-style: normal; }
+
+.hero-pm-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-top: var(--s-6);
+}
+
+/* Scroll cue. One slow travel down a hairline — no bouncing chevron. */
+.hero-pm-scroll {
+  position: absolute;
+  left: 50%;
+  bottom: var(--s-5);
+  width: 1px;
+  height: var(--s-7);
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+.hero-pm-scroll span {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, var(--gold));
+  animation: pm-scroll-cue 2.4s var(--ease-in-out) infinite;
+}
+@keyframes pm-scroll-cue {
+  0%       { transform: translateY(-100%); }
+  60%, 100% { transform: translateY(100%); }
+}
+
+@media (max-width: 48rem) {
+  .hero-pm { min-height: auto; padding: calc(var(--s-8) + 2rem) 0 var(--s-7); }
+  .hero-pm-veil {
+    background: linear-gradient(180deg,
+      rgba(15, 23, 36, 0.88) 0%, rgba(15, 23, 36, 0.66) 52%, rgba(15, 23, 36, 0.24) 100%);
+  }
+  .hero-pm-scroll { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-pm-scroll span { animation: none; opacity: 0.4; }
+}

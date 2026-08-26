@@ -62,12 +62,15 @@ const canonical = new URL(path, SITE).href;
 <link rel="stylesheet" href="/assets/css/components.css">
 <link rel="stylesheet" href="/assets/css/sections.css">
 <link rel="stylesheet" href="/assets/css/trust.css">
+<link rel="stylesheet" href="/assets/gfx/grain.css">
+<link rel="stylesheet" href="/assets/css/premium.css">
 
 {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
 </head>
 <body>
 
 <Loader />
+<div class="pm-grain" aria-hidden="true"></div>
 <Navbar />
 <MobileMenu />
 
@@ -94,5 +97,6 @@ const canonical = new URL(path, SITE).href;
 <script is:inline src="/assets/js/colleges.js"></script>
 <script is:inline src="/assets/js/admin.js"></script>
 <script is:inline src="/assets/js/effects.js"></script>
+<script is:inline src="/assets/js/premium.js"></script>
 </body>
 </html>
