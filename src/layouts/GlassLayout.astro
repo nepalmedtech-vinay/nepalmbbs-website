@@ -21,6 +21,7 @@ const canonical = new URL(path, SITE).href;
 <link rel="stylesheet" href="/assets/theme/engine.css">
 <link rel="stylesheet" href="/assets/gfx/grain.css">
 <link rel="stylesheet" href="/assets/theme/glass.css">
+<link rel="stylesheet" href="/assets/theme/motion.css">
 <link rel="stylesheet" href="/assets/theme/panel.css">
 
 <!-- Paint the saved theme before first paint. Without this a returning
@@ -58,11 +59,15 @@ const canonical = new URL(path, SITE).href;
 <div class="au" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <div class="grain" aria-hidden="true"></div>
 
+<div class="m-progress-rail" aria-hidden="true"><i class="m-progress"></i></div>
+
 <slot />
 
 <script is:inline src="/assets/js/config.js"></script>
 <script is:inline src="/assets/theme/engine.js"></script>
 <script is:inline src="/assets/theme/panel.js"></script>
+<script is:inline src="/assets/theme/aurora-gl.js"></script>
 <script is:inline src="/assets/theme/runtime.js"></script>
+<script is:inline src="/assets/theme/motion.js"></script>
 </body>
 </html>

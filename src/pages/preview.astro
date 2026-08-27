@@ -15,7 +15,7 @@ const featured = colleges.filter((c) => c.type === 'govt').slice(0, 3);
 
 <header class="gl-nav">
   <div class="wrap nav-in">
-    <a href="/" class="brand">Nepal<span class="gl-grad">MBBS</span></a>
+    <a href="/" class="brand vt-brand">Nepal<span class="gl-grad">MBBS</span></a>
     <nav class="nav-links">
       <a href="/admission-process">Process</a>
       <a href="/colleges">Colleges</a>
@@ -36,31 +36,31 @@ const featured = colleges.filter((c) => c.type === 'govt').slice(0, 3);
   <!-- HERO -->
   <section class="hero">
     <div class="wrap hero-in">
-      <span class="gl-eyebrow reveal">NMC India recognised · MEC Nepal process</span>
+      <span class="gl-eyebrow m-focus">NMC India recognised · MEC Nepal process</span>
 
       <h1 class="gl-display hero-h1">
         <span class="gl-line" style="--i:0"><span>Your MBBS in Nepal,</span></span>
         <span class="gl-line" style="--i:1"><span>decided on <em class="gl-grad">evidence</em>.</span></span>
       </h1>
 
-      <p class="gl-lead reveal" style="--delay:120ms">
+      <p class="gl-lead m-rise">
         We publish what we can source and say so when we cannot. No fee figures
         that go stale, no stock photographs standing in for a campus, no promise
         the Medical Education Commission has not made.
       </p>
 
-      <div class="hero-cta reveal" style="--delay:200ms">
-        <a href="/counseling" class="gl-btn gl-btn--primary">Book free counseling</a>
+      <div class="hero-cta m-rise">
+        <a href="/counseling" class="gl-btn gl-btn--primary m-magnet" data-pull="0.22">Book free counseling</a>
         <a href="/colleges" class="gl-btn gl-btn--ghost">See all {colleges.length} colleges</a>
       </div>
 
-      <div class="stats">
+      <div class="stats m-stagger">
         {[
           { n: colleges.length, l: 'colleges admitting Indian students' },
           { n: seats, l: 'foreign-quota seats' },
           { n: govt, l: 'government institutions' },
         ].map((s, i) => (
-          <div class="stat gl gl--soft reveal" style={`--delay:${240 + i * 70}ms`}>
+          <div class="stat gl gl--soft">
             <b data-count={s.n}>0</b>
             <span>{s.l}</span>
           </div>
@@ -72,7 +72,7 @@ const featured = colleges.filter((c) => c.type === 'govt').slice(0, 3);
   <!-- RECORD CARDS -->
   <section class="gl-section">
     <div class="wrap">
-      <div class="sec-head reveal">
+      <div class="sec-head m-rise">
         <span class="gl-eyebrow">Government colleges</span>
         <h2 class="gl-h2">The record, not the pitch.</h2>
         <p class="gl-lead">
@@ -81,9 +81,9 @@ const featured = colleges.filter((c) => c.type === 'govt').slice(0, 3);
         </p>
       </div>
 
-      <div class="cards">
+      <div class="cards m-stagger">
         {featured.map((c, i) => (
-          <article class="gl gl--live card reveal" style={`--delay:${i * 80}ms`}>
+          <article class="gl gl--live card">
             <span class="gl-spec"></span>
             <span class="pill">{c.affiliation || 'Government'}</span>
             <h3>{c.name}</h3>
@@ -104,7 +104,7 @@ const featured = colleges.filter((c) => c.type === 'govt').slice(0, 3);
   <!-- CTA -->
   <section class="gl-section">
     <div class="wrap">
-      <div class="gl gl--lift cta reveal">
+      <div class="gl gl--lift cta m-scale">
         <div>
           <h2 class="gl-h2">Fees change every intake.</h2>
           <p class="gl-lead">
