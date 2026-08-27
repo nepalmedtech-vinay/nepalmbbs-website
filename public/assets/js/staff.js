@@ -35,7 +35,7 @@
     affidavit: 'Affidavit', other: 'Other'
   };
 
-  var apps = [], tasks = [], me = null, openId = null;
+  var apps = [], tasks = [], leads = [], me = null, openId = null;
 
   function $(id) { return document.getElementById(id); }
   function el(tag, cls, text) {
@@ -194,6 +194,54 @@
       });
       row.appendChild(mark); row.appendChild(name); row.appendChild(done);
       body.appendChild(row);
+    });
+  }
+
+  /* ── enquiry queue ──────────────────────────────────────────────────── */
+  /* Raw form submissions that nobody has picked up. Converting one creates the
+     application, carries the free-text across as the first note, and — because
+     the application arrives at stage 'enquiry' — starts the follow-up sequence
+     on its own. All of that happens in convert_lead_to_application(); this
+     button's only job is to call it once and show what came back. */
+  function renderLeads() {
+    var box = $('s-leads');
+    clear(box);
+    $('s-lead-count').textContent = String(leads.length);
+
+    if (!leads.length) {
+      box.appendChild(el('div', 'cx-empty', 'Every enquiry has been picked up.'));
+      return;
+    }
+
+    leads.slice(0, 15).forEach(function (l) {
+      var row = el('div', 'cx-doc');
+      row.appendChild(el('span', 'cx-doc-mark d-pending', '•'));
+      var n = el('div', 'cx-doc-name', l.student_name || 'Unnamed enquiry');
+      n.appendChild(el('span', 'cx-doc-note',
+        [l.contact_number, l.city, l.neet_score != null ? 'NEET ' + l.neet_score : null,
+         when(l.created_at)].filter(Boolean).join(' · ')));
+      row.appendChild(n);
+
+      var go = el('button', 'gl-btn gl-btn--primary', 'Start application');
+      go.type = 'button';
+      go.addEventListener('click', function () {
+        go.disabled = true;
+        go.textContent = 'Starting…';
+        guard(async function () {
+          var id = await api('rpc/convert_lead_to_application', {
+            method: 'POST', body: { p_lead_id: l.id }
+          });
+          leads = leads.filter(function (x) { return x.id !== l.id; });
+          // Re-read rather than patching the board by hand: conversion creates
+          // an application AND a set of tasks, and guessing at what the
+          // database did is how a console drifts from the truth.
+          await refresh();
+          toast('Application started for ' + (l.student_name || 'this enquiry') + '.');
+          if (id) openDrawer(typeof id === 'string' ? id : String(id));
+        });
+      });
+      row.appendChild(go);
+      box.appendChild(row);
     });
   }
 
@@ -379,6 +427,25 @@
     body.appendChild(hsec);
   }
 
+  /* ── refresh ────────────────────────────────────────────────────────── */
+  async function refresh() {
+    var results = await Promise.all([
+      api('applications?select=id,student_name,contact_number,email,city,state,' +
+          'neet_score,stage,allotted_college,assigned_to,next_action_at,updated_at' +
+          '&order=updated_at.desc&limit=500'),
+      api('tasks?select=id,title,channel,due_at,state,application_id,' +
+          'applications(student_name)&state=eq.open&order=due_at.asc&limit=50'),
+      // Only the ones nobody has started yet. A converted enquiry is an
+      // application now and belongs on the board, not in this queue.
+      api('leads?select=id,student_name,contact_number,city,neet_score,created_at' +
+          '&converted_application_id=is.null&order=created_at.desc&limit=50')
+    ]);
+    apps = results[0] || [];
+    tasks = results[1] || [];
+    leads = results[2] || [];
+    renderStats(); renderBoard(); renderTasks(); renderLeads();
+  }
+
   /* ── auth ───────────────────────────────────────────────────────────── */
   function showGate() {
     $('s-gate').hidden = false;
@@ -399,18 +466,7 @@
     $('s-console').hidden = false;
     $('s-who').textContent = me.full_name || me.email;
 
-    await guard(async function () {
-      var results = await Promise.all([
-        api('applications?select=id,student_name,contact_number,email,city,state,' +
-            'neet_score,stage,allotted_college,assigned_to,next_action_at,updated_at' +
-            '&order=updated_at.desc&limit=500'),
-        api('tasks?select=id,title,channel,due_at,state,application_id,' +
-            'applications(student_name)&state=eq.open&order=due_at.asc&limit=50')
-      ]);
-      apps = results[0] || [];
-      tasks = results[1] || [];
-      renderStats(); renderBoard(); renderTasks();
-    });
+    await guard(refresh);
   }
 
   document.addEventListener('DOMContentLoaded', function () {

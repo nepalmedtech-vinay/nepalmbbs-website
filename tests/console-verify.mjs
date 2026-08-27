@@ -50,7 +50,7 @@ const APP = {
 };
 
 /* ── a fresh context with the PostgREST surface mocked ─────────────────── */
-async function makeCtx({ portalRows = null, staffRow = null, apps = [], tasks = [] } = {}) {
+async function makeCtx({ portalRows = null, staffRow = null, apps = [], tasks = [], leads = [] } = {}) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const seen = [];
   const json = (route, body, status = 200) =>
@@ -70,6 +70,17 @@ async function makeCtx({ portalRows = null, staffRow = null, apps = [], tasks = 
     return json(route, apps);
   });
   await ctx.route('**/rest/v1/tasks**', r => json(r, tasks));
+  await ctx.route('**/rest/v1/leads**', async route => {
+    // The console asks only for unconverted enquiries; once one is converted
+    // the server stops returning it, which is what this models.
+    seen.push(['leads', route.request().url()]);
+    return json(route, leads);
+  });
+  await ctx.route('**/rest/v1/rpc/convert_lead_to_application', async route => {
+    seen.push(['convert', route.request().postData()]);
+    leads = [];                       // converted: it leaves the queue
+    return json(route, 'app-new');
+  });
   await ctx.route('**/auth/v1/token**', r =>
     json(r, { access_token: 'JWT', refresh_token: 'R', expires_in: 3600,
               user: { id: 'staff-1', email: 'c@nepalmbbs.in' } }));
@@ -186,7 +197,13 @@ const APPS = [
     apps: APPS,
     tasks: [{ id: 't-1', title: 'Call about passport', channel: 'call',
               due_at: '2020-01-01T00:00:00Z', state: 'open', application_id: 'app-1',
-              applications: { student_name: 'Riya Sharma' } }]
+              applications: { student_name: 'Riya Sharma' } }],
+    leads: [
+      { id: 11, student_name: 'Deepak Yadav', contact_number: '9222222222',
+        city: 'Varanasi', neet_score: 405, created_at: '2026-08-26T09:00:00Z' },
+      { id: 12, student_name: 'Anita Roy', contact_number: '9333344444',
+        city: 'Ranchi', neet_score: null, created_at: '2026-08-25T09:00:00Z' }
+    ]
   });
   const page = await ctx.newPage();
   await page.goto(`http://localhost:${PORT}/staff`, { waitUntil: 'load' });
@@ -244,6 +261,31 @@ const APPS = [
   check('changing the stage issues a PATCH with the new stage',
     !!patch && JSON.parse(patch[2]).stage === 'allotted',
     patch ? patch[2] : 'no PATCH seen');
+
+  /* ── enquiry intake ─────────────────────────────────────────────────── */
+  // The drawer from the previous block is modal and swallows clicks.
+  await page.evaluate(() => document.getElementById('s-drawer').close());
+  await page.waitForTimeout(200);
+
+  check('unworked enquiries are counted',
+    (await page.locator('#s-lead-count').textContent()) === '2',
+    await page.locator('#s-lead-count').textContent());
+  check('the console asks only for unconverted enquiries',
+    seen.some(s => s[0] === 'leads' && s[1].includes('converted_application_id=is.null')),
+    (seen.find(s => s[0] === 'leads') || [])[1]);
+  const leadRow = await page.locator('#s-leads .cx-doc').first().innerText();
+  check('an enquiry shows what the student typed',
+    /Deepak Yadav/.test(leadRow) && /9222/.test(leadRow) && /NEET 405/.test(leadRow),
+    leadRow.replace(/\n/g, ' · '));
+
+  await page.locator('#s-leads button').first().click();
+  await page.waitForTimeout(900);
+  const conv = seen.find(s => s[0] === 'convert');
+  check('starting an application calls the conversion function with the lead id',
+    !!conv && JSON.parse(conv[1]).p_lead_id === 11, conv ? conv[1] : 'no call seen');
+  check('a converted enquiry leaves the queue',
+    (await page.locator('#s-leads .cx-empty').count()) === 1 &&
+    (await page.locator('#s-lead-count').textContent()) === '0');
 
   await ctx.close();
 }
