@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path';
-const DIST='/home/user/nepalmedtech-vinay/nepalmbbs-website/dist';
+const DIST=path.join(path.resolve(import.meta.dirname, '..'), 'dist');
 const M={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.svg':'image/svg+xml','.xml':'application/xml','.txt':'text/plain'};
 const s=http.createServer((q,r)=>{let p=q.url.split('?')[0];let f=path.join(DIST,p);
  if(fs.existsSync(f)&&fs.statSync(f).isDirectory())f=path.join(f,'index.html');

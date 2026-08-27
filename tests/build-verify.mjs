@@ -11,7 +11,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execSync } from 'node:child_process';
 
-const REPO = '/home/user/nepalmedtech-vinay/nepalmbbs-website';
+const REPO = path.resolve(import.meta.dirname, '..');
 const DIST = path.join(REPO, 'dist');
 const MIME = { '.html':'text/html','.js':'text/javascript','.json':'application/json',
                '.css':'text/css','.png':'image/png','.xml':'application/xml','.txt':'text/plain' };
