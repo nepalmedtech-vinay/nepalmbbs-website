@@ -7,5 +7,10 @@ User-agent: *
 Allow: /
 Disallow: /wrc-tracker/
 Disallow: /cmc-tracker/
+# The counselor console and a student's own application. Neither is
+# public content, and /portal is reachable only with a token a crawler
+# does not have.
+Disallow: /staff
+Disallow: /portal
 
 Sitemap: https://nepalmbbs.in/sitemap.xml

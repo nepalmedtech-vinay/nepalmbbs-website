@@ -8,10 +8,14 @@ export default defineConfig({
 
   integrations: [
     sitemap({
-      // The two tracker apps live in public/ and are copied verbatim. They are
-      // internal staff tools, not public content, and robots.txt already
-      // excludes them — keep them out of the sitemap too so the two agree.
-      filter: (page) => !page.includes('/wrc-tracker') && !page.includes('/cmc-tracker'),
+      // Four routes are deliberately not public content, and robots.txt plus a
+      // noindex header already say so — keep them out of the sitemap too, so
+      // all three agree. The tracker apps are internal staff tools copied
+      // verbatim from public/; /staff is the counselor console; /portal is a
+      // student's own application, reachable only with their token and
+      // pointless to a crawler that does not have one.
+      filter: (page) => !['/wrc-tracker', '/cmc-tracker', '/staff', '/portal']
+        .some((p) => page.includes(p)),
       changefreq: 'weekly',
       lastmod: new Date(),
       serialize(item) {

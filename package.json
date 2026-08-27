@@ -13,7 +13,7 @@
     "test": "node tests/build-verify.mjs",
     "test:regression": "node tests/regression.mjs",
     "csp": "node tools/gen-csp.mjs",
-    "verify": "npm run build && node tools/gen-csp.mjs --check && node tests/build-verify.mjs && node tests/csp-verify.mjs && node tests/auth-verify.mjs"
+    "verify": "npm run build && node tools/gen-csp.mjs --check && node tests/build-verify.mjs && node tests/csp-verify.mjs && node tests/console-verify.mjs && node tests/auth-verify.mjs"
   },
   "repository": {
     "type": "git",

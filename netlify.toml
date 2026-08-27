@@ -102,4 +102,11 @@
   [headers.values]
     Referrer-Policy = "no-referrer"
     X-Robots-Tag = "noindex, nofollow"
+
+# The console has no token in its URL, so the default Referrer-Policy is fine.
+# It is still not public content.
+[[headers]]
+  for = "/staff/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
 # <<< end generated

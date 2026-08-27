@@ -1,0 +1,90 @@
+---
+import GlassLayout from '../layouts/GlassLayout.astro';
+---
+<GlassLayout
+  title="Counselor Console — NepalMBBS.in"
+  description="Internal console."
+  path="/staff"
+  bare={true}
+>
+<link rel="stylesheet" href="/assets/css/console.css">
+<meta name="robots" content="noindex, nofollow">
+
+<main class="cx">
+  <!-- Sign in. Not a gate in the security sense: every table below refuses a
+       non-staff request regardless of what this screen shows. -->
+  <section id="s-gate" class="gl cx-card" hidden style="max-width:420px;margin:8vh auto 0">
+    <h3>Counselor console</h3>
+    <p class="cx-sub">Sign in with your NepalMBBS staff account.</p>
+    <div id="s-gate-err" class="cx-error" hidden style="margin-bottom:14px"></div>
+    <form id="s-gate-form">
+      <div class="cx-field">
+        <label for="s-email">Email</label>
+        <input id="s-email" class="cx-input" type="email" autocomplete="username" required>
+      </div>
+      <div class="cx-field">
+        <label for="s-pass">Password</label>
+        <input id="s-pass" class="cx-input" type="password" autocomplete="current-password" required>
+      </div>
+      <button id="s-gate-btn" type="submit" class="gl-btn gl-btn--primary" style="width:100%">Sign in</button>
+    </form>
+  </section>
+
+  <div id="s-console" hidden>
+    <div class="cx-head">
+      <div class="cx-title">
+        <span class="gl-eyebrow">NepalMBBS.in</span>
+        <h1>Counselor console</h1>
+        <p>Signed in as <span id="s-who"></span></p>
+      </div>
+      <div class="cx-actions">
+        <input id="s-search" class="cx-input" type="search" placeholder="Name, phone or city"
+               style="width:min(260px,60vw)" autocomplete="off">
+        <label class="cx-row" style="gap:6px;font-size:var(--t-xs);color:var(--g-ink-3)">
+          <input id="s-mine" type="checkbox"> Only mine
+        </label>
+        <button id="s-signout" type="button" class="gl-btn gl-btn--quiet">Sign out</button>
+      </div>
+    </div>
+
+    <div id="s-toast" hidden style="margin-bottom:16px"></div>
+
+    <div class="cx-grid cx-grid--stats" style="margin-bottom:20px">
+      <div class="gl cx-card">
+        <div class="cx-stat" id="s-stat-live">—</div>
+        <div class="cx-stat-label">Live applications</div>
+      </div>
+      <div class="gl cx-card">
+        <div class="cx-stat" id="s-stat-due">—</div>
+        <div class="cx-stat-label">Needing action now</div>
+      </div>
+      <div class="gl cx-card">
+        <div class="cx-stat" id="s-stat-admitted">—</div>
+        <div class="cx-stat-label">Admitted</div>
+      </div>
+      <div class="gl cx-card">
+        <div class="cx-stat" id="s-task-count">—</div>
+        <div class="cx-stat-label">Open tasks</div>
+      </div>
+    </div>
+
+    <section class="gl cx-card" style="margin-bottom:20px">
+      <h3>Task queue</h3>
+      <p class="cx-sub">Overdue first. Closing one here records who closed it and when.</p>
+      <div id="s-tasks" class="cx-docs"></div>
+    </section>
+
+    <section class="gl cx-card">
+      <h3>Pipeline <span id="s-count" class="cx-col-count" style="margin-left:8px"></span></h3>
+      <p class="cx-sub">Scroll sideways. A dot next to a name means the next action is due.</p>
+      <div id="s-board" class="cx-board"></div>
+    </section>
+  </div>
+
+  <dialog id="s-drawer" class="cx-drawer">
+    <div id="s-drawer-body" class="cx-drawer-inner"></div>
+  </dialog>
+</main>
+
+<script is:inline src="/assets/js/staff.js"></script>
+</GlassLayout>
