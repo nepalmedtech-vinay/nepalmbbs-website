@@ -14,8 +14,58 @@ let curLang='en',chatOpen=false,chatHistory=[],adminLoggedIn=false,siteWANum='91
 // =====================================================
 // SUPABASE HELPERS
 // =====================================================
-async function sbR(path){try{const r=await fetch(SB+path,{headers:{'apikey':AK,'Authorization':'Bearer '+AK}});return r.ok?await r.json():[];}catch(e){return[];}}
-async function sbW(path,data,method='POST'){try{const r=await fetch(SB+path,{method,headers:{'Content-Type':'application/json','apikey':AK,'Authorization':'Bearer '+AK,'Prefer':'return=minimal'},body:JSON.stringify(data)});return r.ok||r.status===201||r.status===204;}catch(e){return false;}}
+// Every request carries the signed-in user's JWT when there is one, and the
+// anon key otherwise. That single line is what makes the staff policies apply:
+// PostgREST derives the Postgres role from Authorization, so a signed-in
+// counselor runs as `authenticated` and sees leads, while the same code path
+// on a public page runs as `anon` and sees none.
+function sbHeaders(extra){
+  if (window.Auth && Auth.isSignedIn) return Auth.headers(extra);
+  return Object.assign({ apikey: AK, Authorization: 'Bearer ' + AK }, extra || {});
+}
+
+async function sbR(path){
+  try{
+    const r = await fetch(SB+path, { headers: sbHeaders() });
+    return r.ok ? await r.json() : [];
+  }catch(e){ return []; }
+}
+
+async function sbW(path, data, method='POST'){
+  try{
+    const r = await fetch(SB+path, {
+      method,
+      // return=minimal on purpose: a representation is a READ, and anon has no
+      // select policy on these tables, so asking for the row back would fail
+      // the very inserts the public form depends on.
+      headers: sbHeaders({ 'Content-Type':'application/json', 'Prefer':'return=minimal' }),
+      body: JSON.stringify(data)
+    });
+    return r.ok || r.status===201 || r.status===204;
+  }catch(e){ return false; }
+}
+
+// Surfaces why a write failed. The old helper returned a bare false, so a
+// rate-limited submit and a network drop looked identical to the person
+// filling in the form.
+async function sbWDetail(path, data, method='POST'){
+  try{
+    const r = await fetch(SB+path, {
+      method,
+      headers: sbHeaders({ 'Content-Type':'application/json', 'Prefer':'return=minimal' }),
+      body: JSON.stringify(data)
+    });
+    if (r.ok || r.status===201 || r.status===204) return { ok:true };
+    const body = await r.json().catch(()=>({}));
+    if (r.status === 429 || /rate limit/i.test(body.message||'')) {
+      return { ok:false, reason:'rate', message:'Too many submissions just now. Please wait a few minutes.' };
+    }
+    if (r.status === 401 || r.status === 403) {
+      return { ok:false, reason:'auth', message:'Not permitted. Please sign in again.' };
+    }
+    return { ok:false, reason:'other', message: body.message || 'Could not save. Please try again.' };
+  }catch(e){ return { ok:false, reason:'network', message:'Network problem. Please try again.' }; }
+}
 
 // =====================================================
 // ANALYTICS (GA4)

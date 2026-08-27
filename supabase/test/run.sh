@@ -37,9 +37,11 @@ psql() { command psql -h /tmp -p "$PORT" -d postgres -v ON_ERROR_STOP=1 "$@"; }
 psql -q -f "$DIR/00_supabase_harness.sql" >/dev/null 2>&1
 psql -q -f "$DIR/../migrations/0001_security_baseline.sql" >/dev/null 2>&1
 psql -q -f "$DIR/../migrations/0002_admission_platform.sql" >/dev/null 2>&1
+psql -q -f "$DIR/../migrations/0003_abuse_and_storage.sql" >/dev/null 2>&1
 echo "migrations applied"
 
 open=$(psql -At -c "select count(*) from pg_tables where schemaname='public' and not rowsecurity")
 [ "$open" = "0" ] && echo "✅ every public table has RLS enabled" || { echo "❌ $open table(s) without RLS"; exit 1; }
 
 psql -q -f "$DIR/01_assert_security.sql"
+psql -q -f "$DIR/02_assert_abuse.sql"

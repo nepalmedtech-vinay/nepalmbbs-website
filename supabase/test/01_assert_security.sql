@@ -30,7 +30,7 @@ begin
   if n <> 0 then raise exception 'EXPOSED: anon can read internal notes'; end if;
 
   begin
-    insert into public.leads (student_name, contact_number) values ('Form','1');
+    insert into public.leads (student_name, contact_number) values ('Form','9876543210');
   exception when others then raise exception 'BROKEN: the public lead form cannot submit'; end;
 
   ok := false;

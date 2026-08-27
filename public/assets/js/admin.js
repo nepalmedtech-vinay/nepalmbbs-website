@@ -5,16 +5,12 @@
 // markup still calls them from inline on* handlers. Load order matters.
 
 // =====================================================
-// SECURITY: no default/bootstrap password is shipped in this file any more.
-// The admin password lives only in Supabase (admin_settings.key='admin_password')
-// and is stored/compared as a SHA-256 hash. To set or reset it, see
-// docs/SECURITY-PHASE0.md. Plaintext values still stored from before are accepted
-// once so existing logins keep working, then upgraded to a hash on next change.
-async function sha256Hex(str){
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-const isSha256 = v => typeof v === 'string' && /^[0-9a-f]{64}$/.test(v.trim());
+// Authentication is Supabase Auth (see auth.js). There is no password in this
+// file, no comparison in the browser, and no admin_settings row holding a
+// hash: the panel obtains a real session and every request carries its JWT, so
+// the database — not this code — decides what comes back.
+//
+// The sha256 helpers below are kept because the theme panel still uses them.
 
 function openAdmin(){
   document.getElementById('admin-overlay').classList.add('open');
@@ -30,51 +26,89 @@ function closeAdmin(){
 }
 
 async function doAdminLogin(){
-  const pass = document.getElementById('admin-pass').value.trim();
-  if(!pass){document.getElementById('admin-err').textContent='Enter password';return;}
-  document.getElementById('admin-err').textContent='';
-  
-  // The stored password is the ONLY source of truth. There is no hardcoded
-  // fallback and nothing is cached in localStorage — a device that is not
-  // supposed to have access must never be able to read the secret locally.
-  let stored = null;
+  var errEl  = document.getElementById('admin-err');
+  var emailEl = document.getElementById('admin-email');
+  var passEl  = document.getElementById('admin-pass');
+  var email = emailEl ? emailEl.value.trim() : '';
+  var pass  = passEl ? passEl.value : '';
+
+  errEl.textContent = '';
+  if(!email || !pass){ errEl.textContent = 'Enter your email and password.'; return; }
+
+  var btn = document.querySelector('#admin-login-view .a-btn-primary');
+  if(btn){ btn.disabled = true; btn.textContent = 'Signing in…'; }
+
   try {
-    const res = await sbR('/rest/v1/admin_settings?key=eq.admin_password&select=value');
-    if(res && res.length && res[0].value) stored = String(res[0].value).trim();
-  } catch(e) {
-    document.getElementById('admin-err').textContent='Cannot reach the server. Check your connection and try again.';
+    await Auth.signIn(email, pass);
+  } catch (e) {
+    // Deliberately one message for a wrong email and a wrong password. Telling
+    // the two apart confirms which addresses exist, which is a free list of
+    // valid targets for anyone probing.
+    errEl.textContent = e.status === 400
+      ? 'Those details do not match an account.'
+      : (e.message || 'Sign-in failed. Please try again.');
+    if(btn){ btn.disabled = false; btn.textContent = 'Sign in →'; }
+    passEl.value = '';
+    passEl.focus();
     return;
   }
 
-  if(!stored){
-    document.getElementById('admin-err').textContent='No admin password is configured. Set one in Supabase before logging in (see docs/SECURITY-PHASE0.md).';
+  // Signed in is not the same as being on the team. This decides what the
+  // panel shows; the database decides what it can actually fetch, and would
+  // return nothing to a non-staff account regardless of what happens here.
+  var me = await Auth.whoAmI();
+  if(!me){
+    await Auth.signOut();
+    errEl.textContent = 'This account is not on the staff list. Ask an administrator to add you.';
+    if(btn){ btn.disabled = false; btn.textContent = 'Sign in →'; }
     return;
   }
 
-  // Hashed value = compare hashes. Legacy plaintext value = compare directly,
-  // so an existing password keeps working until it is rotated.
-  const ok = isSha256(stored)
-    ? (await sha256Hex(pass)) === stored.toLowerCase()
-    : pass === stored;
+  adminLoggedIn = true;
+  window.currentStaff = me;
+  if(btn){ btn.disabled = false; btn.textContent = 'Sign in →'; }
+  document.getElementById('admin-login-view').style.display = 'none';
+  document.getElementById('admin-main').style.display = 'block';
 
-  if(ok) {
-    adminLoggedIn = true;
-    document.getElementById('admin-login-view').style.display='none';
-    document.getElementById('admin-main').style.display='block';
-    if(!isSha256(stored)) {
-      setTimeout(()=>toast('⚠️ Your password is stored in plain text. Change it in Settings to store it hashed.','err'), 800);
-    }
-    await loadDashboard();
-    await loadAdminSettings();
-    await loadAdminVids();
-    await loadAdminTests();
-    await loadAdminFAQs();
-  } else {
-    document.getElementById('admin-err').textContent='❌ Incorrect password. Please try again or contact your administrator.';
-    document.getElementById('admin-pass').value='';
-    document.getElementById('admin-pass').focus();
-  }
+  var who = document.getElementById('admin-who');
+  if(who) who.textContent = (me.full_name || me.email) + ' · ' + me.role;
+
+  await loadDashboard();
+  await loadAdminSettings();
+  await loadAdminVids();
+  await loadAdminTests();
+  await loadAdminFAQs();
 }
+
+async function doAdminLogout(){
+  await Auth.signOut();
+  adminLoggedIn = false;
+  window.currentStaff = null;
+  document.getElementById('admin-main').style.display = 'none';
+  document.getElementById('admin-login-view').style.display = 'block';
+  var p = document.getElementById('admin-pass'); if(p) p.value = '';
+}
+
+async function doAdminReset(){
+  var emailEl = document.getElementById('admin-email');
+  var errEl = document.getElementById('admin-err');
+  var email = emailEl ? emailEl.value.trim() : '';
+  if(!email){ errEl.textContent = 'Enter your email first, then choose Forgot password.'; return; }
+  try { await Auth.sendReset(email); } catch (e) {}
+  // Always the same message, sent or not — otherwise this endpoint becomes a
+  // way to test which addresses are registered.
+  errEl.textContent = 'If that address has an account, a reset link is on its way.';
+}
+
+// A session can outlive the page. If one is already valid, restore the panel
+// rather than asking for a password that is no longer the credential.
+(async function restoreAdminSession(){
+  if(!window.Auth || !Auth.isSignedIn) return;
+  var me = await Auth.whoAmI();
+  if(!me) { await Auth.signOut(); return; }
+  adminLoggedIn = true;
+  window.currentStaff = me;
+})();
 
 function switchATab(btn,id){
   document.querySelectorAll('.a-tab').forEach(b=>b.classList.remove('on'));
@@ -189,21 +223,29 @@ async function saveGA(){
 
 // CHANGE PASSWORD
 async function changePass(){
-  const np=document.getElementById('a-new-pass').value;
-  const cp=document.getElementById('a-conf-pass').value;
-  if(!np||np.length<8){toast('Password must be at least 8 characters','err');return;}
-  if(np!==cp){toast('Passwords do not match','err');return;}
-  // Never store the password itself — only its SHA-256 hash.
-  const hashed = await sha256Hex(np);
-  const ok=await sbW('/rest/v1/admin_settings?key=eq.admin_password',{value:hashed,updated_at:new Date().toISOString()},'PATCH');
-  if(!ok){
-    const ins=await sbW('/rest/v1/admin_settings',{key:'admin_password',value:hashed});
-    if(ins){toast('✅ Password changed! Works on all devices.','ok');document.getElementById('a-new-pass').value='';document.getElementById('a-conf-pass').value='';}
-    else toast('❌ Error saving password. Check Supabase write policies.','err');
-  } else {
-    toast('✅ Password changed! Works on all devices.','ok');
-    document.getElementById('a-new-pass').value='';document.getElementById('a-conf-pass').value='';
-  }
+  // Passwords are Supabase Auth's job now. The old flow wrote a SHA-256 hash
+  // into admin_settings — a row the anon key could read until 0001 closed it,
+  // and one that never had rate limiting, lockout, reset links or rotation.
+  var np = document.getElementById('a-new-pass').value;
+  var cp = document.getElementById('a-conf-pass').value;
+  if(!np || np.length < 10){ toast('Use at least 10 characters.','err'); return; }
+  if(np !== cp){ toast('Passwords do not match','err'); return; }
+  if(!Auth.isSignedIn){ toast('Sign in again before changing your password.','err'); return; }
+
+  try{
+    var r = await fetch(SB + '/auth/v1/user', {
+      method: 'PUT',
+      headers: Auth.headers({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ password: np })
+    });
+    if(!r.ok){
+      var j = await r.json().catch(function(){ return {}; });
+      throw new Error(j.msg || j.message || 'Could not change password');
+    }
+    toast('✅ Password changed.','ok');
+    document.getElementById('a-new-pass').value = '';
+    document.getElementById('a-conf-pass').value = '';
+  }catch(e){ toast('❌ ' + e.message, 'err'); }
 }
 
 // FEATURE TOGGLES
