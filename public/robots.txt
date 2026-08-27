@@ -1,0 +1,16 @@
+# NepalMBBS.in
+# The public site is the root document. The staff tracker apps under
+# /wrc-tracker/ and /cmc-tracker/ are internal tools, not public content —
+# they are excluded so they never surface in search results.
+
+User-agent: *
+Allow: /
+Disallow: /wrc-tracker/
+Disallow: /cmc-tracker/
+# The counselor console and a student's own application. Neither is
+# public content, and /portal is reachable only with a token a crawler
+# does not have.
+Disallow: /staff
+Disallow: /portal
+
+Sitemap: https://nepalmbbs.in/sitemap.xml

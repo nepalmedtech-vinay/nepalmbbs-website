@@ -1,0 +1,266 @@
+/* NepalMBBS.in — console.css
+   Shared surface for the two application-facing screens: the student portal
+   and the counselor console.
+
+   Everything here is built from the theme tokens rather than fixed colours, so
+   both screens follow whatever preset the admin has chosen -- including the
+   generated ones -- without a second set of decisions to keep in sync. If a
+   value is hard-coded below it is because it is structural (a grid gap, a
+   stroke width), not because it is a colour.
+
+   Stage colour is the one exception worth naming: an application's stage is
+   the single most scanned thing on both screens, so it gets its own hue ramp
+   derived from --brand rather than the flat fill everything else uses. */
+
+/* ── shell ────────────────────────────────────────────────────────────── */
+.cx {
+  min-height: 100svh;
+  padding: clamp(20px, 4vw, 48px) var(--gutter) 64px;
+  max-width: var(--container);
+  margin-inline: auto;
+}
+.cx-head {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  align-items: flex-end; justify-content: space-between;
+  margin-bottom: clamp(20px, 3vw, 34px);
+}
+.cx-title { display: flex; flex-direction: column; gap: 6px; }
+.cx-title h1 {
+  font: var(--ty-weight-d) var(--t-h2)/var(--lh-tight) var(--ty-display);
+  letter-spacing: var(--ty-track); color: var(--g-ink); margin: 0;
+}
+.cx-title p { margin: 0; color: var(--g-ink-3); font-size: var(--t-sm); }
+.cx-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ── cards ────────────────────────────────────────────────────────────── */
+.cx-grid {
+  display: grid; gap: clamp(14px, 1.6vw, 20px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+/* Four stats want one row, not three-then-one-orphan. A smaller minimum is
+   enough because the content is a number and a short label. */
+.cx-grid--stats { grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); }
+.cx-card { padding: clamp(16px, 2vw, 24px); }
+.cx-card h3, .cx-card h2 {
+  margin: 0 0 4px; color: var(--g-ink);
+  font: 600 var(--t-h3)/var(--lh-snug) var(--ty-display);
+}
+.cx-card .cx-sub { margin: 0 0 16px; color: var(--g-ink-3); font-size: var(--t-xs); }
+
+.cx-stat { font: var(--ty-weight-d) clamp(28px, 3.4vw, 42px)/1 var(--ty-display);
+           color: var(--g-ink); font-variant-numeric: tabular-nums; }
+.cx-stat-label { color: var(--g-ink-3); font-size: var(--t-xs);
+                 text-transform: uppercase; letter-spacing: .08em; }
+
+/* ── stage pills ──────────────────────────────────────────────────────── */
+/* Eleven stages is too many to give eleven memorised colours, so they run
+   along one ramp: cool and low-chroma while the application is early, warmer
+   and stronger as it advances, and desaturated once it has left the pipeline.
+   Position on the ramp carries the meaning; the label carries the detail. */
+.st {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 11px; border-radius: var(--r-pill);
+  font-size: var(--t-xs); font-weight: 650; white-space: nowrap;
+  border: 1px solid transparent;
+}
+.st::before { content: ''; width: 6px; height: 6px; border-radius: 50%;
+              background: currentColor; flex: none; }
+
+.st-enquiry     { --h: 0.06; }
+.st-qualifying  { --h: 0.18; }
+.st-eligible    { --h: 0.30; }
+.st-applied     { --h: 0.42; }
+.st-entrance    { --h: 0.54; }
+.st-counselling { --h: 0.66; }
+.st-allotted    { --h: 0.82; }
+.st-admitted    { --h: 1.00; }
+.st-deferred, .st-withdrawn, .st-ineligible { --h: 0; }
+
+.st {
+  color: color-mix(in oklab, var(--brand) calc(var(--h) * 100%), var(--g-ink-2));
+  background: color-mix(in oklab, var(--brand) calc(6% + var(--h) * 10%), transparent);
+  border-color: color-mix(in oklab, var(--brand) calc(10% + var(--h) * 22%), transparent);
+}
+.st-deferred, .st-withdrawn, .st-ineligible {
+  color: var(--g-ink-3);
+  background: color-mix(in oklab, var(--g-ink) 5%, transparent);
+  border-color: var(--m-hairline);
+}
+
+/* ── pipeline board ───────────────────────────────────────────────────── */
+.cx-board {
+  display: grid; gap: 12px; overflow-x: auto; padding-bottom: 8px;
+  grid-auto-flow: column; grid-auto-columns: minmax(268px, 1fr);
+  scroll-snap-type: x proximity;
+}
+.cx-col { scroll-snap-align: start; display: flex; flex-direction: column;
+          gap: 10px; min-height: 120px; }
+.cx-col-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; padding: 0 4px 2px;
+}
+.cx-col-count {
+  font-size: var(--t-xs); color: var(--g-ink-3); font-variant-numeric: tabular-nums;
+  background: color-mix(in oklab, var(--g-ink) 6%, transparent);
+  padding: 2px 8px; border-radius: var(--r-pill);
+}
+.cx-item {
+  padding: 12px 14px; border-radius: var(--r-md); cursor: pointer;
+  text-align: left; width: 100%; display: block;
+  border: 1px solid var(--m-hairline);
+  background: var(--m-fill-soft);
+  transition: transform var(--mo) var(--ea-io), border-color var(--mo) var(--ea-io);
+}
+.cx-item:hover { transform: translateY(-1px);
+                 border-color: color-mix(in oklab, var(--brand) 34%, transparent); }
+.cx-item-name { font-weight: 650; color: var(--g-ink); font-size: var(--t-body); }
+.cx-item-meta { color: var(--g-ink-3); font-size: var(--t-xs); margin-top: 3px;
+                display: flex; gap: 10px; flex-wrap: wrap; }
+.cx-item.is-due .cx-item-name::after {
+  content: '•'; color: var(--brand); margin-left: 6px;
+}
+
+/* ── timeline ─────────────────────────────────────────────────────────── */
+.cx-tl { list-style: none; margin: 0; padding: 0 0 0 22px; position: relative; }
+.cx-tl::before {
+  content: ''; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 2px;
+  background: linear-gradient(to bottom,
+    color-mix(in oklab, var(--brand) 55%, transparent), var(--m-hairline));
+  border-radius: 2px;
+}
+.cx-tl li { position: relative; padding: 0 0 18px; }
+.cx-tl li::before {
+  content: ''; position: absolute; left: -21px; top: 5px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--g-base); border: 2px solid var(--m-hairline);
+}
+.cx-tl li.on::before {
+  border-color: var(--brand);
+  background: var(--brand);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand) 18%, transparent);
+}
+.cx-tl-title { font-weight: 600; color: var(--g-ink); font-size: var(--t-body); }
+.cx-tl-when  { color: var(--g-ink-4); font-size: var(--t-xs); margin-top: 2px; }
+.cx-tl-body  { color: var(--g-ink-2); font-size: var(--t-sm); margin-top: 5px;
+               line-height: var(--lh-body); }
+
+/* ── document checklist ───────────────────────────────────────────────── */
+.cx-docs { display: grid; gap: 8px; }
+.cx-doc {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-radius: var(--r-md);
+  border: 1px solid var(--m-hairline); background: var(--m-fill-soft);
+}
+.cx-doc-name { flex: 1; min-width: 0; color: var(--g-ink); font-size: var(--t-sm);
+               font-weight: 600; }
+.cx-doc-note { color: var(--g-ink-3); font-size: var(--t-xs); font-weight: 400;
+               display: block; margin-top: 2px; }
+.cx-doc-mark { flex: none; width: 22px; height: 22px; border-radius: 50%;
+               display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+.d-verified { background: color-mix(in oklab, var(--brand) 22%, transparent);
+              color: var(--brand-ink); }
+.d-received { background: color-mix(in oklab, var(--brand) 12%, transparent);
+              color: var(--g-ink-2); }
+.d-pending  { background: color-mix(in oklab, var(--g-ink) 7%, transparent);
+              color: var(--g-ink-3); }
+.d-rejected, .d-expired {
+  background: color-mix(in oklab, oklch(62% .19 27) 20%, transparent);
+  color: color-mix(in oklab, oklch(62% .19 27) 76%, var(--g-ink));
+}
+
+/* ── table ────────────────────────────────────────────────────────────── */
+.cx-scroll { overflow-x: auto; }
+.cx-table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); }
+.cx-table th {
+  text-align: left; padding: 9px 12px; color: var(--g-ink-3);
+  font-size: var(--t-xs); font-weight: 650; text-transform: uppercase;
+  letter-spacing: .06em; border-bottom: 1px solid var(--m-hairline);
+  white-space: nowrap;
+}
+.cx-table td { padding: 11px 12px; color: var(--g-ink-2);
+               border-bottom: 1px solid var(--m-hairline); }
+.cx-table tr:last-child td { border-bottom: 0; }
+.cx-table tbody tr:hover { background: color-mix(in oklab, var(--brand) 4%, transparent); }
+
+/* ── states ───────────────────────────────────────────────────────────── */
+.cx-empty { padding: 34px 20px; text-align: center; color: var(--g-ink-3);
+            font-size: var(--t-sm); }
+/* An empty state inside a timeline should not sit indented against the rail,
+   and the rail itself has nothing to draw. */
+.cx-tl:has(> .cx-empty) { padding-left: 0; }
+.cx-tl:has(> .cx-empty)::before { display: none; }
+.cx-error { padding: 14px 16px; border-radius: var(--r-md); font-size: var(--t-sm);
+            color: color-mix(in oklab, oklch(62% .19 27) 80%, var(--g-ink));
+            background: color-mix(in oklab, oklch(62% .19 27) 10%, transparent);
+            border: 1px solid color-mix(in oklab, oklch(62% .19 27) 26%, transparent); }
+.cx-note  { padding: 14px 16px; border-radius: var(--r-md); font-size: var(--t-sm);
+            color: var(--g-ink-2); background: var(--m-fill-soft);
+            border: 1px solid var(--m-hairline); }
+
+.cx-skel { border-radius: var(--r-md); height: 54px;
+           background: linear-gradient(90deg,
+             var(--m-fill-soft) 0%, color-mix(in oklab, var(--g-ink) 7%, transparent) 50%,
+             var(--m-fill-soft) 100%);
+           background-size: 220% 100%; animation: cx-sweep 1.3s var(--ea-io) infinite; }
+@keyframes cx-sweep { to { background-position: -220% 0; } }
+@media (prefers-reduced-motion: reduce) { .cx-skel { animation: none; } }
+
+/* ── forms ────────────────────────────────────────────────────────────── */
+.cx-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.cx-field label { font-size: var(--t-xs); font-weight: 650; color: var(--g-ink-2); }
+.cx-input, .cx-select {
+  width: 100%; padding: 11px 13px; border-radius: var(--r-sm);
+  border: 1px solid var(--m-hairline); background: var(--m-fill-soft);
+  color: var(--g-ink); font: inherit; font-size: var(--t-sm);
+}
+.cx-input:focus-visible, .cx-select:focus-visible {
+  outline: var(--focus-ring); outline-offset: var(--focus-off);
+  border-color: color-mix(in oklab, var(--brand) 46%, transparent);
+}
+.cx-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+/* ── detail drawer ────────────────────────────────────────────────────── */
+.cx-drawer {
+  position: fixed; inset: 0 0 0 auto; width: min(560px, 100vw);
+  z-index: var(--z-modal); padding: 0; border: 0;
+  background: transparent; overflow: visible;
+}
+.cx-drawer::backdrop { background: color-mix(in oklab, var(--g-ink) 42%, transparent); }
+.cx-drawer-inner {
+  height: 100svh; overflow-y: auto; padding: clamp(18px, 3vw, 30px);
+  border-left: 1px solid var(--m-hairline);
+  background: var(--m-fill-solid);
+  animation: cx-slide .28s var(--ea-enter) both;
+}
+@keyframes cx-slide { from { transform: translateX(28px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cx-drawer-inner { animation: none; } }
+
+/* ── drawer sections ──────────────────────────────────────────────────── */
+.cx-drawer-inner section + section,
+.cx-drawer-inner section { margin-top: 26px; }
+.cx-drawer-inner section > h3 {
+  margin: 0 0 4px; color: var(--g-ink);
+  font: 600 var(--t-h3)/var(--lh-snug) var(--ty-display);
+  padding-top: 18px; border-top: 1px solid var(--m-hairline);
+}
+.cx-drawer-inner section > p { margin: 0 0 14px; color: var(--g-ink-3);
+                               font-size: var(--t-xs); }
+.cx-drawer-inner textarea.cx-input { resize: vertical; min-height: 62px; }
+
+/* ── links inside console prose ───────────────────────────────────────── */
+/* Default browser blue is the one colour on these screens that belongs to no
+   theme and follows no preset. */
+.cx-note a, .cx-card a:not(.gl-btn) {
+  color: color-mix(in oklab, var(--brand) 82%, var(--g-ink));
+  text-underline-offset: 3px; text-decoration-thickness: 1px;
+}
+.cx-note a:hover, .cx-card a:not(.gl-btn):hover { color: var(--brand); }
+
+/* ── portal: updates are not steps ────────────────────────────────────── */
+.cx-tl--updates { margin-bottom: 6px; }
+.cx-divider {
+  display: flex; align-items: center; gap: 12px; margin: 4px 0 16px;
+  color: var(--g-ink-3); font-size: var(--t-xs); font-weight: 650;
+  text-transform: uppercase; letter-spacing: .08em;
+}
+.cx-divider::after { content: ''; flex: 1; height: 1px; background: var(--m-hairline); }

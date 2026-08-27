@@ -1,0 +1,560 @@
+/* NepalMBBS.in — components.css
+   Navigation, tab cards, buttons, glass surfaces
+   Extracted from index.html in Phase 1; content is byte-identical.
+   Load order matters: see index.html. */
+
+
+/* ═══ NAVY BLUE BACKGROUND (hospital theme) ═══ */
+
+/* END GLASSMORPHISM */
+
+/* ─── HERO FULLSCREEN FIX — ALL DEVICES ───────────────── */
+section.hero {
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  width: 100% !important;
+}
+.hero-slides {
+  position: absolute !important;
+  top: 0 !important; left: 0 !important;
+  width: 100% !important; height: 100% !important;
+  overflow: hidden !important;
+}
+.hero-slide {
+  position: absolute !important;
+  top: 0 !important; left: 0 !important;
+  width: 100% !important; height: 100% !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+/* Ensure overlay doesn't reduce visible area */
+.hero-slide-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+}
+/* Nature slides: NO overlay at all */
+.hero-slide.nature-slide .hero-slide-overlay,
+.hero.sliding .hero-slide-overlay {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+/* Why Nepal images — crisp sharp rendering */
+.why-img img {
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: crisp-edges !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+/* ─────────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPLETE GLASSMORPHISM SYSTEM — NepalMBBS.in
+   Based on: frosted glass pill buttons + transparent backdrop
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── ROOT COLORS ── */
+/* [merged into master :root] */
+
+/* ── BODY & BACKGROUND ── */
+body { background: var(--navy-1) !important; }
+
+/* ── NAVBAR — transparent glass over slide ── */
+.nav {
+  background: rgba(11,30,61,0.55) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.12) !important;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.15) !important;
+}
+
+/* ── MOBILE MENU — Image 5 exact style ── */
+#mob-menu {
+  background: rgba(11,30,61,0.45) !important;
+  backdrop-filter: blur(28px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+  border-right: 1px solid rgba(255,255,255,0.15) !important;
+  box-shadow: 4px 0 40px rgba(0,0,0,0.3) !important;
+}
+#mob-menu a {
+  color: rgba(255,255,255,0.92) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  background: transparent !important;
+  transition: all 0.2s !important;
+}
+#mob-menu a:hover {
+  background: rgba(255,255,255,0.10) !important;
+  padding-left: 8px !important;
+}
+
+/* ── LANGUAGE BUTTONS (mob menu) ── */
+.mob-lang button {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid rgba(255,255,255,0.25) !important;
+  backdrop-filter: blur(12px) !important;
+  color: rgba(255,255,255,0.85) !important;
+  border-radius: 50px !important;
+  padding: 8px 20px !important;
+  transition: all 0.2s !important;
+}
+.mob-lang button.on {
+  background: linear-gradient(135deg,rgba(232,160,32,0.6),rgba(200,130,20,0.5)) !important;
+  border-color: rgba(232,160,32,0.7) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 20px rgba(232,160,32,0.4), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+}
+
+/* ══ TAB CARDS — Image 1 exact glass pill style ══ */
+.tab-card {
+  background: rgba(255,255,255,0.10) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255,255,255,0.25) !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.20),
+    inset 0 1px 0 rgba(255,255,255,0.30),
+    inset 0 -1px 0 rgba(0,0,0,0.10) !important;
+  color: rgba(255,255,255,0.90) !important;
+  transition: all 0.28s cubic-bezier(0.4,0,0.2,1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+/* Glass shine effect (top highlight) */
+.tab-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.18), transparent);
+  border-radius: 18px 18px 0 0;
+  pointer-events: none;
+}
+.tab-card:hover {
+  background: rgba(255,255,255,0.18) !important;
+  border-color: rgba(255,255,255,0.45) !important;
+  box-shadow:
+    0 8px 40px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    0 0 0 1px rgba(255,255,255,0.15) !important;
+  transform: translateY(-4px) scale(1.02) !important;
+  color: #fff !important;
+}
+.tab-card.on {
+  background: linear-gradient(135deg,
+    rgba(232,160,32,0.40) 0%,
+    rgba(245,200,66,0.25) 50%,
+    rgba(232,160,32,0.30) 100%) !important;
+  border-color: rgba(232,160,32,0.65) !important;
+  box-shadow:
+    0 0 0 1.5px rgba(232,160,32,0.5),
+    0 8px 32px rgba(232,160,32,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.30) !important;
+  color: #fcd34d !important;
+  transform: translateY(-2px) !important;
+}
+/* TAP GLOW PULSE */
+.tab-card:active {
+  transform: scale(0.95) translateY(0) !important;
+  box-shadow:
+    0 0 0 6px rgba(255,255,255,0.20),
+    0 0 30px rgba(255,255,255,0.25) !important;
+  transition: all 0.1s !important;
+}
+
+/* ── SVG ICONS inside tabs ── */
+.tab-svg {
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+  opacity: 0.85;
+}
+.tab-card.on .tab-svg { opacity: 1; filter: drop-shadow(0 0 8px rgba(252,211,77,0.6)); }
+.tab-card:hover .tab-svg { opacity: 1; }
+
+/* ── TABS SECTION BACKGROUND ── */
+.tabs-section {
+  background: linear-gradient(135deg,
+    rgba(11,30,61,0.85) 0%,
+    rgba(14,35,71,0.90) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+}
+.tabs-label {
+  color:var(--g-ink-3) !important;
+  letter-spacing: 0.15em !important;
+}
+
+/* ══ ALL BUTTONS — glass pill style like Image 1 ══ */
+
+/* Primary gold CTA buttons */
+.h-cta-btn, .hero-cta-btn, .counsel-cta,
+[onclick*="counsel"], .submit-btn, .h-submit {
+  background: linear-gradient(135deg,
+    rgba(232,160,32,0.80) 0%,
+    rgba(200,130,20,0.85) 100%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255,200,60,0.5) !important;
+  box-shadow:
+    0 4px 24px rgba(232,160,32,0.40),
+    inset 0 1px 0 rgba(255,255,255,0.30),
+    inset 0 -1px 0 rgba(0,0,0,0.15) !important;
+  color: #fff !important;
+  border-radius: 50px !important;
+  transition: all 0.25s !important;
+  position: relative;
+  overflow: hidden;
+}
+.h-cta-btn::before, .submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent);
+  border-radius: 50px 50px 0 0;
+}
+.h-cta-btn:hover {
+  box-shadow:
+    0 8px 32px rgba(232,160,32,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.35) !important;
+  transform: translateY(-2px) !important;
+}
+.h-cta-btn:active {
+  box-shadow: 0 0 0 6px rgba(232,160,32,0.35) !important;
+  transform: scale(0.97) !important;
+}
+
+/* College enquire buttons */
+.college-enquire {
+  background: linear-gradient(135deg,
+    rgba(232,160,32,0.85),rgba(200,130,20,0.90)) !important;
+  border: 1px solid rgba(255,200,60,0.4) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow:
+    0 4px 20px rgba(232,160,32,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.25) !important;
+  border-radius: 50px !important;
+  position: relative; overflow: hidden;
+}
+.college-enquire::before {
+  content: ''; position: absolute;
+  top:0;left:0;right:0;height:50%;
+  background: linear-gradient(to bottom,rgba(255,255,255,0.2),transparent);
+}
+.college-enquire:active {
+  box-shadow: 0 0 0 5px rgba(232,160,32,0.4) !important;
+  transform: scale(0.96) !important;
+}
+
+/* Official link buttons */
+.college-link {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 50px !important;
+  position: relative; overflow: hidden;
+}
+.college-link::before {
+  content: ''; position: absolute;
+  top:0;left:0;right:0;height:50%;
+  background: linear-gradient(to bottom,rgba(255,255,255,0.12),transparent);
+}
+.college-link:hover {
+  background: rgba(255,255,255,0.18) !important;
+  border-color: rgba(255,255,255,0.4) !important;
+}
+
+/* Filter buttons */
+[onclick*="filterColleges"], .college-filter-btn {
+  background: rgba(255,255,255,0.09) !important;
+  border: 1px solid rgba(255,255,255,0.20) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 50px !important;
+  position: relative; overflow: hidden;
+  transition: all 0.2s !important;
+}
+[onclick*="filterColleges"].on {
+  background: rgba(232,160,32,0.35) !important;
+  border-color: rgba(232,160,32,0.6) !important;
+  box-shadow: 0 4px 16px rgba(232,160,32,0.3) !important;
+}
+[onclick*="filterColleges"]:active {
+  box-shadow: 0 0 0 5px rgba(255,255,255,0.2) !important;
+}
+
+/* Trust badges */
+.trust-badge {
+  background: rgba(255,255,255,0.07) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  backdrop-filter: blur(16px) !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.18) !important;
+  transition: all 0.25s !important;
+}
+.trust-badge:hover {
+  background: rgba(255,255,255,0.14) !important;
+  border-color: rgba(255,255,255,0.35) !important;
+  transform: translateY(-3px) !important;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+.trust-badge:active {
+  box-shadow: 0 0 0 5px rgba(255,255,255,0.2) !important;
+  transform: scale(0.94) !important;
+}
+
+/* Float buttons */
+.wa-chat-btn, .wa-call-btn-f, .phone-call-btn-f {
+  backdrop-filter: blur(16px) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+}
+.wa-chat-btn:active, .wa-call-btn-f:active, .phone-call-btn-f:active {
+  box-shadow: 0 0 0 6px rgba(255,255,255,0.3), 0 4px 20px rgba(0,0,0,0.3) !important;
+  transform: scale(0.90) !important;
+}
+
+/* Contact bar */
+.cbar {
+  background: rgba(11,30,61,0.60) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-top: 1px solid rgba(255,255,255,0.12) !important;
+}
+
+/* ── HERO CARD (form) — Image 5 transparent glass ── */
+.hero-card, .hero-form-wrap {
+  background: rgba(11,30,61,0.40) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  box-shadow:
+    0 16px 64px rgba(0,0,0,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.20) !important;
+}
+
+/* College cards */
+.college-card {
+  background: rgba(255,255,255,0.07) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.12) !important;
+  transition: all 0.28s !important;
+}
+.college-card:hover {
+  background: rgba(255,255,255,0.12) !important;
+  border-color: rgba(255,255,255,0.28) !important;
+  box-shadow:
+    0 16px 48px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.20) !important;
+  transform: translateY(-6px) !important;
+}
+
+/* Admin panel */
+.admin-box {
+  background: rgba(11,30,61,0.70) !important;
+  backdrop-filter: blur(32px) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+}
+.admin-top {
+  background: rgba(11,30,61,0.80) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.10) !important;
+}
+
+/* ── TAP GLOW ANIMATION ── */
+@keyframes glassGlow {
+  0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.5); }
+  40%  { box-shadow: 0 0 0 8px rgba(255,255,255,0.15); }
+  100% { box-shadow: 0 0 0 16px rgba(255,255,255,0); }
+}
+.glass-glow-tap { animation: glassGlow 0.45s ease-out forwards !important; }
+
+/* ── BACKGROUND SECTIONS ── */
+.tabs-section, .trust-section, .ticker-wrap {
+  background: transparent !important;
+}
+section, .sec { background: var(--navy-2) !important; }
+section:nth-child(even), .sec-alt { background: var(--navy-1) !important; }
+
+/* ══ END GLASSMORPHISM ══ */
+
+
+/* ── MOBILE SLIDE FULLSCREEN FIX ── */
+section.hero { min-height:100vh; min-height:100dvh; width:100%; }
+.hero-slides { position:absolute!important; inset:0!important; width:100%!important; height:100%!important; overflow:hidden!important; }
+.hero-slide {
+  position:absolute!important; inset:0!important;
+  width:100%!important; height:100%!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+}
+@media(max-width:640px){
+  .hero-slide { background-position:center top!important; }
+  .hero-content { padding:20px 16px!important; }
+}
+/* Slide caption */
+.slide-caption-text { font-size:11px!important; padding:5px 14px!important; }
+
+
+/* ── 3D GLASS TEXT on Tab Labels ── */
+.tab-label {
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.35),
+    0 -1px 0 rgba(0,0,0,0.25),
+    0 2px 8px rgba(0,0,0,0.20) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+}
+.tab-card.on .tab-label {
+  text-shadow:
+    0 1px 0 rgba(255,220,100,0.5),
+    0 -1px 0 rgba(0,0,0,0.3),
+    0 0 12px rgba(252,211,77,0.4) !important;
+  color: #fcd34d !important;
+}
+/* Mobile menu item text — glass 3D */
+#mob-menu a span {
+  text-shadow: 0 1px 0 rgba(255,255,255,0.2), 0 -1px 0 rgba(0,0,0,0.3) !important;
+}
+/* Hero stat numbers glass effect */
+.hero-stat-val {
+  text-shadow: 0 2px 12px rgba(232,160,32,0.5), 0 1px 0 rgba(255,255,255,0.2) !important;
+}
+/* Slide caption 3D glass text */
+.slide-caption-text {
+  text-shadow: 0 1px 0 rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.4) !important;
+  background: rgba(11,30,61,0.45) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  font-weight: 600 !important;
+}
+
+
+/* ══ PREMIUM GLASS — DARK BOLD TEXT STYLE ══ */
+/* Tab labels — dark bold on glass */
+.tab-label {
+  color:var(--g-ink) !important;
+  font-weight: 700 !important;
+  font-size: 10px !important;
+  letter-spacing: 0.02em !important;
+  text-shadow:
+    0 1px 3px rgba(0,0,0,0.5),
+    0 0 20px rgba(255,255,255,0.1) !important;
+  line-height: 1.3 !important;
+}
+.tab-card.on .tab-label {
+  color: #fcd34d !important;
+  font-weight: 800 !important;
+  text-shadow:
+    0 1px 0 rgba(255,180,0,0.4),
+    0 0 16px rgba(252,211,77,0.5) !important;
+}
+
+/* Trust badge names */
+.trust-badge-name {
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  color:var(--g-ink) !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+  letter-spacing: 0.01em !important;
+  text-align: center;
+}
+
+/* Tab SVGs — brighter, crisper */
+.tab-svg {
+  width: 22px !important;
+  height: 22px !important;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)) brightness(1.1) !important;
+  opacity: 0.88 !important;
+}
+.tab-card.on .tab-svg {
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 8px rgba(252,211,77,0.7)) brightness(1.2) !important;
+}
+
+/* Nav label */
+.tabs-label {
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.14em !important;
+  color:var(--g-ink-3) !important;
+}
+
+/* College enquire button text */
+.college-enquire {
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.02em !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+/* Hero text */
+.hero-title {
+  font-weight: 800 !important;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.1) !important;
+}
+
+/* Slide dots — premium */
+.slide-dot {
+  width: 8px !important; height: 8px !important;
+  border-radius: 50% !important;
+  background: rgba(255,255,255,0.35) !important;
+  border: 1px solid rgba(255,255,255,0.5) !important;
+  cursor: pointer !important;
+  transition: all 0.3s !important;
+  backdrop-filter: blur(4px) !important;
+}
+.slide-dot.active {
+  background: #e8a020 !important;
+  border-color: #fcd34d !important;
+  width: 24px !important;
+  border-radius: 4px !important;
+  box-shadow: 0 0 10px rgba(232,160,32,0.6) !important;
+}
+
+/* Caption pill — glass */
+.slide-caption-text {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6) !important;
+}
+
+/* ── TRUST BADGE ICON — no background box overlap ── */
+.trust-badge-icon {
+  width: 46px !important;
+  height: 46px !important;
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.18) !important;
+}
+
+/* ── MOBILE MENU ITEMS — premium glass row ── */
+#mob-menu a {
+  border-radius: 14px !important;
+  margin: 0 0 4px 0 !important;
+  padding: 13px 16px !important;
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  backdrop-filter: blur(12px) !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  transition: all 0.2s !important;
+}
+#mob-menu a:hover {
+  background: rgba(255,255,255,0.12) !important;
+  border-color: rgba(255,255,255,0.25) !important;
+  padding-left: 20px !important;
+  box-shadow: inset 3px 0 0 rgba(232,160,32,0.6) !important;
+}
+#mob-menu a:last-child {
+  background: rgba(232,160,32,0.20) !important;
+  border-color: rgba(232,160,32,0.4) !important;
+}

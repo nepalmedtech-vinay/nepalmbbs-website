@@ -1,0 +1,298 @@
+/* NepalMBBS.in — sections.css
+   Page sections, admin panel, chat, responsive rules
+   Extracted from index.html in Phase 1; content is byte-identical.
+   Load order matters: see index.html. */
+
+/* ══ END PREMIUM GLASS TEXT ══ */
+
+
+.hero-content,.hero-form-wrap,.hero-card{z-index:10!important;position:relative!important;}
+
+/* ── HERO FALLBACK — Premium gradient when images loading ── */
+section.hero {
+  background: linear-gradient(
+    135deg,
+    #0f1724 0%,
+    #0d2144 25%,
+    #0a3060 50%,
+    #0d2144 75%,
+    #0f1724 100%
+  ) !important;
+  background-size: 400% 400% !important;
+  animation: heroGradientShift 8s ease infinite !important;
+}
+@keyframes heroGradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.hero-slides { background: transparent !important; }
+
+/* Each slide has its own gradient fallback color */
+.hero-slide { background-color: #0a2040 !important; }
+.hero-slide:nth-child(1)  { background-color: #0f1f3d !important; }
+.hero-slide:nth-child(2)  { background-color: #0d2540 !important; }
+.hero-slide:nth-child(3)  { background-color: #0a1e38 !important; }
+.hero-slide:nth-child(4)  { background-color: #102030 !important; }
+.hero-slide:nth-child(5)  { background-color: #0e1f35 !important; }
+
+/* Hero content always visible — premium look even without images */
+.hero-content {
+  position: relative !important;
+  z-index: 5 !important;
+}
+.hero-title, .hero h1 {
+  color: #f0f4ff !important;
+  text-shadow: 0 2px 40px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1) !important;
+  font-weight: 800 !important;
+}
+.hero-sub, .hero p {
+  color: rgba(200,212,232,0.92) !important;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.6) !important;
+}
+
+/* ── CONTACT BAR — PREMIUM (Apple/Stripe reference) ── */
+.cbar {
+  background: linear-gradient(180deg, #101828 0%, #0d1f38 100%) !important;
+  border-top: 1px solid rgba(255,255,255,0.08) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  padding: 0 !important;
+}
+.cbar-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.cbar-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 32px;
+  flex: 1;
+  min-width: 180px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.cbar-block:hover { background: rgba(255,255,255,0.04) !important; }
+.cbar-email-block { cursor: pointer; }
+.cbar-country {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+.cbar-flag { font-size: 14px; }
+.cbar-country-name {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color:var(--g-ink-3) !important;
+}
+.cbar-number {
+  font-family: 'Sora', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #f0f4ff !important;
+  text-decoration: none !important;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+.cbar-number:hover { color: #f0a500 !important; }
+.cbar-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.cbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none !important;
+  transition: all 0.2s;
+  letter-spacing: 0.01em;
+}
+.cbar-btn-call {
+  background: rgba(59,130,246,0.18);
+  border: 1px solid rgba(59,130,246,0.35);
+  color: #93c5fd !important;
+}
+.cbar-btn-call:hover {
+  background: rgba(59,130,246,0.30);
+  box-shadow: 0 0 16px rgba(59,130,246,0.3);
+}
+.cbar-btn-wa {
+  background: rgba(37,211,102,0.16);
+  border: 1px solid rgba(37,211,102,0.32);
+  color: #4ade80 !important;
+}
+.cbar-btn-wa:hover {
+  background: rgba(37,211,102,0.28);
+  box-shadow: 0 0 16px rgba(37,211,102,0.3);
+}
+.cbar-divider {
+  width: 1px;
+  align-self: stretch;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.12), transparent);
+  margin: 8px 0;
+  flex-shrink: 0;
+}
+@media(max-width:600px) {
+  .cbar-inner { flex-direction: column; align-items: stretch; }
+  .cbar-block { padding: 12px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .cbar-divider { display: none; }
+}
+/* ── END CONTACT BAR ── */
+
+
+/* ── STEP CARDS — Dark readable text ── */
+.step-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  color: #1e293b !important;
+}
+.step-title {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  font-size: 17px !important;
+}
+.step-body, .step-body p, .step-body li {
+  color: #334155 !important;
+  font-size: 14px !important;
+  line-height: 1.75 !important;
+  font-weight: 450 !important;
+}
+.step-body strong { color: #0f172a !important; font-weight: 700 !important; }
+.step-num {
+  background: #1a3a8f !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+.step-icon { font-size: 28px !important; }
+.step-link a {
+  color: #1d4ed8 !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+}
+.step-link a:hover { color: var(--brand-deep) !important; }
+
+/* Why Nepal cards — dark text on white bg */
+.why-card {
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+.why-card h4 { color: #0f172a !important; font-weight: 700 !important; }
+.why-card p, .why-card li { color: #475569 !important; font-size: 14px !important; }
+
+/* Comparison table — dark text */
+.comp-table th { background: #1a3a8f !important; color: #ffffff !important; font-weight: 700 !important; }
+.comp-table td { color: #1e293b !important; background: #ffffff !important; }
+.comp-table tr:nth-child(even) td { background: #f8fafc !important; }
+
+/* FAQ — dark text */
+.faq-item { background: #ffffff !important; }
+.faq-q { color: #0f172a !important; font-weight: 600 !important; }
+.faq-a { color: #334155 !important; line-height: 1.7 !important; }
+
+/* Calculator results */
+.calc-result { background: #ffffff !important; }
+.calc-result h3, .calc-result p { color: #0f172a !important; }
+
+/* ── TRUST BADGES — Visible text ── */
+.trust-section {
+  background: #f0f4ff !important;
+  border-top: 2px solid #1a3a8f !important;
+  border-bottom: 2px solid #1a3a8f !important;
+}
+.trust-title {
+  color: #1a3a8f !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.12em !important;
+}
+.trust-badge {
+  background: #ffffff !important;
+  border: 1.5px solid #dbeafe !important;
+  box-shadow: 0 2px 12px rgba(26,58,143,0.10) !important;
+  border-radius: 16px !important;
+  padding: 14px 10px 12px !important;
+}
+.trust-badge:hover {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 4px 20px rgba(59,130,246,0.20) !important;
+  transform: translateY(-3px) !important;
+}
+.trust-badge-name {
+  color: #1e3a5f !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+}
+.trust-badge-icon {
+  background: #eff6ff !important;
+  border: 1px solid #bfdbfe !important;
+  border-radius: 12px !important;
+}
+
+/* ── ALL LINK/BUTTON TEXT — Teal/blue for visibility ── */
+/* Tab section background */
+.tabs-section {
+  background: #111827 !important;
+}
+
+/* Tab cards on dark bg */
+.tab-card {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1.5px solid rgba(255,255,255,0.20) !important;
+}
+.tab-label {
+  color: #e2e8f0 !important;
+  font-weight: 700 !important;
+  font-size: 10.5px !important;
+}
+.tab-card.on { background: rgba(240,165,0,0.25) !important; }
+.tab-card.on .tab-label { color: #fde68a !important; font-weight: 800 !important; }
+.tab-svg { opacity: 0.85 !important; }
+.tab-card.on .tab-svg { opacity: 1 !important; }
+
+/* College card action links */
+.college-link {
+  /* Sky-blue on a dark page. The page is light now and #38bdf8 measures
+     1.99:1 on it -- the link was present and effectively unreadable. */
+  color: var(--brand-text) !important;
+  border-color: color-mix(in oklab, var(--brand) 34%, transparent) !important;
+  font-weight: 600 !important;
+}
+.college-link:hover { color: var(--brand-text) !important; }
+
+/* Step links */
+.step-link a, .guide-link, .faq-a a {
+  color: var(--brand-text) !important;
+  font-weight: 600 !important;
+}
+.step-link a:hover { color: var(--brand-deep) !important; }
+
+/* Ticker */
+.ticker-wrap {
+  background: #1a3a8f !important;
+  border: none !important;
+}
+.ticker-text { color: #e0f2fe !important; font-weight: 600 !important; }
+
+/* Admin button */
+.admin-access-btn {
+  /* White at 50% on a 10%-white pill reads as a discreet control on a dark
+     page and as 1.04:1 on a light one -- a button nobody can see. It stays
+     discreet by being small and cornered, not by being invisible. */
+  background: rgba(15,20,32,0.86) !important;
+  color: rgba(255,255,255,0.92) !important;
+  border: 1px solid rgba(255,255,255,0.16) !important;
+}
+

@@ -1,0 +1,221 @@
+/* NepalMBBS.in — theme/motion.css
+   Scroll-driven motion.
+
+   The reveals in runtime.js use IntersectionObserver: JS observes, JS adds a
+   class, CSS animates. That is fine for a one-shot entrance and wrong for
+   anything tied to scroll POSITION, because the callback fires on the main
+   thread and the animation lags the finger on exactly the devices that matter.
+
+   Everything here uses animation-timeline instead, so the compositor drives it
+   from the scroll offset directly and it stays glued to the scroll at any
+   frame rate. Chrome and Edge support it; Safari and Firefox get the static
+   end state, which is the designed layout — the fallback is "no motion", never
+   "no content".
+
+   Every rule is gated on --mo, so the panel's Motion slider and
+   prefers-reduced-motion both switch it off at the root. */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+
+    /* ── Section entrances ────────────────────────────────────────────
+       Range ends at `entry 100%` — the instant the element is fully inside
+       the viewport — and NOT at some percentage of cover. The difference
+       matters on load: with a cover-based range, anything already on screen
+       when the page opens sits partway along its own timeline and renders
+       permanently half-faded until the visitor scrolls. Ending at entry 100%
+       means "fully in view" always resolves to the finished state. */
+
+    .m-rise {
+      animation: m-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+    @keyframes m-rise {
+      from { opacity: 0; transform: translate3d(0, calc(34px * var(--mo)), 0); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .m-scale {
+      animation: m-scale linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+      transform-origin: 50% 100%;
+    }
+    @keyframes m-scale {
+      from { opacity: 0; transform: scale(calc(1 - 0.05 * var(--mo))) translate3d(0, calc(18px * var(--mo)), 0); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* Blur-in. Reads as focus pulling rather than as a fade, which is the
+       difference between "arriving" and "appearing". */
+    .m-focus {
+      animation: m-focus linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+    @keyframes m-focus {
+      from { opacity: 0; filter: blur(calc(10px * var(--mo))); transform: translate3d(0, calc(16px * var(--mo)), 0); }
+      to   { opacity: 1; filter: blur(0); transform: none; }
+    }
+
+    /* ── Parallax ─────────────────────────────────────────────────────
+       Driven across the whole time the element is in view, so the offset is
+       proportional to scroll rather than to elapsed time. --m-depth sets how
+       far it lags: negative moves against the scroll. */
+
+    .m-para {
+      animation: m-para linear both;
+      animation-timeline: view();
+      animation-range: cover;
+      will-change: transform;
+    }
+    @keyframes m-para {
+      from { transform: translate3d(0, calc(var(--m-depth, 40px) * var(--mo-parallax)), 0); }
+      to   { transform: translate3d(0, calc(var(--m-depth, 40px) * -1 * var(--mo-parallax)), 0); }
+    }
+
+    /* ── Sticky headline scrub ────────────────────────────────────────
+       A pinned panel whose contents progress with scroll. Used once, on the
+       admission sequence — a process that must be read in order is the one
+       place scrubbing earns its keep. */
+
+    .m-scrub-track { animation: m-scrub linear both; animation-timeline: scroll(nearest); }
+    @keyframes m-scrub { to { transform: translate3d(0, 0, 0); } }
+
+    /* ── Reading progress ─────────────────────────────────────────────
+       The rail under the nav. Scaled by the document's own scroll — no
+       listener, no layout read, no jank. */
+
+    .m-progress {
+      transform-origin: 0 50%;
+      animation: m-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+    @keyframes m-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    /* ── Nav compression ──────────────────────────────────────────────
+       The bar tightens over the first 140px instead of snapping on a class
+       toggle at a threshold. */
+
+    .m-nav {
+      animation: m-nav linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 140px;
+    }
+    @keyframes m-nav {
+      from { --nav-pad: var(--s-5); backdrop-filter: blur(0px) saturate(100%); }
+      to   { --nav-pad: var(--s-3); backdrop-filter: var(--m-filter); }
+    }
+
+    /* ── Stagger ──────────────────────────────────────────────────────
+       Each child's range is offset by its index, so a row arrives as a
+       cascade without a single JS timer. */
+
+    .m-stagger > * {
+      animation: m-rise linear both;
+      animation-timeline: view();
+      animation-range: entry calc(0% + var(--n, 0) * 7%) entry 100%;
+    }
+  }
+}
+
+/* ── Magnetic ───────────────────────────────────────────────────────
+   --mgx/--mgy are written by motion.js from the pointer, once per frame. The
+   transform lives here so the element still has a resting state if JS never
+   runs. */
+
+.m-magnet {
+  transform: translate3d(calc(var(--mgx, 0) * 1px), calc(var(--mgy, 0) * 1px), 0);
+  transition: transform var(--d-4) var(--ea-spring);
+}
+.m-magnet:hover { transition-duration: var(--d-1); }
+
+/* ── Skeletons ──────────────────────────────────────────────────────
+   A shimmering block the shape of the content that is coming, not a spinner.
+   The point is that the layout does not move when the data lands. */
+
+.sk {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-sm);
+  background: color-mix(in oklab, var(--g-ink) 7%, transparent);
+}
+.sk::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255 255 255 / 0.55), transparent);
+  transform: translateX(-100%);
+  animation: sk-sweep calc(1.4s * max(var(--mo), 0.001)) var(--ea-io) infinite;
+}
+@keyframes sk-sweep { to { transform: translateX(100%); } }
+.sk--text { height: 0.85em; margin-block: 0.25em; }
+.sk--title { height: 1.6em; width: 62%; }
+.sk--line { width: 100%; }
+.sk--short { width: 44%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sk::after { animation: none; opacity: 0; }
+}
+
+/* ── View transitions ───────────────────────────────────────────────
+   Cross-document transitions turn a multi-page site into something that feels
+   like an app without becoming an SPA — no router, no hydration, no bundle.
+   The shared name on the brand mark makes it persist across the navigation
+   instead of cross-fading with everything else. */
+
+@view-transition { navigation: auto; }
+
+::view-transition-old(root) {
+  animation: vt-out calc(0.22s * max(var(--mo), 0.001)) var(--ea-io) both;
+}
+::view-transition-new(root) {
+  animation: vt-in calc(0.34s * max(var(--mo), 0.001)) var(--ea-enter) both;
+}
+@keyframes vt-out { to { opacity: 0; transform: translate3d(0, calc(-8px * var(--mo)), 0); } }
+@keyframes vt-in  { from { opacity: 0; transform: translate3d(0, calc(12px * var(--mo)), 0); } }
+
+.vt-brand { view-transition-name: brand; }
+.vt-nav   { view-transition-name: nav; }
+
+/* The aurora must NOT be captured by the transition — it is a fixed field, and
+   cross-fading it against itself produces a visible flash on every navigation. */
+.au, .grain { view-transition-name: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+
+/* ── WebGL aurora ───────────────────────────────────────────────────
+   When the shader mounts it adds .au--gl, which hides the CSS blobs. If it
+   ever tears down — context loss, sustained low frame rate — the class comes
+   off and the blobs are simply there again. */
+
+.au-gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.au--gl { opacity: 1; }
+.au--gl > i { display: none; }
+
+/* The rail itself. Sits directly under the sticky nav and is the only
+   always-on motion on the page — a thin, honest indicator of position. */
+.m-progress-rail {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  z-index: calc(var(--z-nav) + 1);
+  pointer-events: none;
+}
+.m-progress-rail i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}

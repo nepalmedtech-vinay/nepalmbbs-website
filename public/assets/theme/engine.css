@@ -1,0 +1,240 @@
+/* NepalMBBS.in — theme/engine.css
+   The token contract.
+
+   Every visual decision on the site reads from a variable declared here, and
+   nothing reads a literal. That is the whole point: the admin panel changes
+   these values at runtime and the entire site re-skins, with no rebuild and no
+   deploy — the same way the LeadFlow app's Customize screen works, extended
+   with the material controls a glass system needs.
+
+   The values below are the DEFAULT theme ("Dawn"). theme/engine.js overwrites
+   any of them from the saved settings, so treat this file as the fallback that
+   must always look finished on its own — if the network is down and no saved
+   theme arrives, this is what a visitor sees.
+
+   Rules for anything added here:
+     1. If a designer would want to change it, it is a token.
+     2. Tokens are primitives (a number, a colour, a length) — never a whole
+        shorthand like `box-shadow: ...`, because the panel cannot offer a
+        meaningful control for a string it does not understand.
+     3. Derived values use color-mix / calc so that changing ONE input moves
+        everything downstream. Changing --brand should move the buttons, the
+        focus ring, the aurora and the glass tint together. */
+
+:root {
+  /* ══ 1. GROUND ═════════════════════════════════════════════════════════
+     The page's base. Deliberately light — a glass system needs light and
+     colour behind it to refract; on near-black there is nothing to frost. */
+
+  --g-base:        #F4F6FB;   /* page ground                    */
+  --g-base-2:      #EBEFF8;   /* secondary bands                */
+  --g-ink:         #0F1420;   /* primary text                   */
+  /* The ramp is solved, not chosen. engine.js recomputes these per theme by
+     fading ink toward the ground until it hits a contrast target against the
+     ground; these three are that solve for the default light pair, so the
+     paint before JS runs matches the paint after it.
+     Do not hand-pick a value here that "looks about right" — the previous set
+     did, and roughly 890 pieces of text on the site sat below WCAG AA. */
+  --brand-text:    #0B6154;   /* brand as TEXT — 4.5:1 on the deepest glass */
+  --g-ink-2:       #4F5460;   /* secondary text        — 7.0:1 on base */
+  --g-ink-3:       #6D717C;   /* tertiary / captions   — 4.5:1 on base */
+  --g-ink-4:       #8A8F98;   /* placeholder, disabled — 3.0:1, never body copy */
+
+  /* ══ 2. BRAND ══════════════════════════════════════════════════════════
+     One brand hue and one counter-hue. Everything tinted downstream derives
+     from these two, so the admin panel needs only two colour pickers to
+     re-skin the entire site coherently. */
+
+  --brand:         #0E7C6B;   /* primary action, links, focus   */
+  --brand-2:       #E2703A;   /* counter accent, highlights     */
+  --brand-ink:     #FFFFFF;   /* text on a brand fill           */
+
+  /* Derived — do not set these directly from the panel. */
+  --brand-soft:    color-mix(in oklab, var(--brand) 12%, transparent);
+  --brand-line:    color-mix(in oklab, var(--brand) 34%, transparent);
+  --brand-deep:    color-mix(in oklab, var(--brand) 82%, black 18%);
+  --brand-lift:    color-mix(in oklab, var(--brand) 84%, white 16%);
+
+  /* ══ 3. AURORA ═════════════════════════════════════════════════════════
+     The colour field behind the glass. Four blobs, each its own hue, size
+     and position, drifting slowly. This is what the glass has to refract —
+     without it, frosted panels sit on flat grey and the whole material
+     reads as a cheap overlay rather than as glass. */
+
+  /* Desaturated on purpose. At full chroma the field stops being a ground
+     and becomes the subject — the glass then reads as a filter over a
+     rainbow rather than as a material. These are the same hues at roughly
+     half the saturation, which is where the panes start to look like glass. */
+  --au-1:          #BCE4DA;   /* jade      */
+  --au-2:          #C9D3F2;   /* periwinkle*/
+  --au-3:          #F3DCC8;   /* apricot   */
+  --au-4:          #E7D2E0;   /* blush     */
+  --au-opacity:    0.5;       /* 0 disables the field entirely  */
+  --au-scale:      1;         /* blob size multiplier           */
+  --au-blur:       84px;      /* softness                       */
+  --au-speed:      34s;       /* one full drift cycle           */
+
+  /* ══ 4. MATERIAL ═══════════════════════════════════════════════════════
+     The glass itself. These five are the controls that actually decide
+     whether a surface reads as glass, as plastic, or as a flat card — the
+     panel exposes all of them because the right value is a taste call, not
+     a constant. */
+
+  --m-tint:        255 255 255;  /* glass body, as an RGB triple */
+  --m-opacity:     0.62;         /* how much body it has         */
+  --m-blur:        26px;         /* backdrop blur radius         */
+  --m-saturate:    172%;         /* colour boost behind the pane */
+  --m-border:      0.62;         /* top-edge highlight strength  */
+  --m-inner:       0.42;         /* inner sheen strength         */
+
+  /* Derived material surfaces. */
+  --m-fill:        rgba(var(--m-tint) / var(--m-opacity));
+  --m-fill-soft:   rgba(var(--m-tint) / calc(var(--m-opacity) * 0.66));
+  --m-fill-solid:  rgba(var(--m-tint) / 0.94);
+  --m-filter:      blur(var(--m-blur)) saturate(var(--m-saturate));
+  --m-edge-top:    rgba(255 255 255 / var(--m-border));
+  --m-edge-bottom: rgba(255 255 255 / calc(var(--m-border) * 0.28));
+  --m-hairline:    rgba(15 20 32 / 0.07);
+
+  /* ══ 5. SHAPE ══════════════════════════════════════════════════════════ */
+
+  --sh-radius:     22px;      /* base corner; components scale off it */
+  --sh-border:     1px;
+  --sh-scale:      1;         /* component padding multiplier          */
+
+  --r-xs:          calc(var(--sh-radius) * 0.32);
+  --r-sm:          calc(var(--sh-radius) * 0.55);
+  --r-md:          var(--sh-radius);
+  --r-lg:          calc(var(--sh-radius) * 1.45);
+  --r-xl:          calc(var(--sh-radius) * 2.1);
+  --r-pill:        999px;
+
+  /* ══ 6. DEPTH ══════════════════════════════════════════════════════════
+     Shadows carry the page's hue rather than neutral black, which is most
+     of the difference between a card that floats and one that looks stuck
+     on with tape. --dp scales them all at once. */
+
+  --dp:            1;
+  --dp-hue:        18 26 44;
+
+  --sd-1: 0 1px 2px rgba(var(--dp-hue) / calc(0.05 * var(--dp)));
+  --sd-2: 0 2px 6px rgba(var(--dp-hue) / calc(0.06 * var(--dp))),
+          0 8px 18px rgba(var(--dp-hue) / calc(0.05 * var(--dp)));
+  --sd-3: 0 4px 12px rgba(var(--dp-hue) / calc(0.07 * var(--dp))),
+          0 18px 40px rgba(var(--dp-hue) / calc(0.08 * var(--dp)));
+  --sd-4: 0 8px 22px rgba(var(--dp-hue) / calc(0.09 * var(--dp))),
+          0 36px 80px rgba(var(--dp-hue) / calc(0.12 * var(--dp)));
+  --sd-brand: 0 10px 30px color-mix(in oklab, var(--brand) 26%, transparent);
+
+  /* ══ 7. TYPE ═══════════════════════════════════════════════════════════
+     --ty-scale multiplies the whole ramp, so "Text size" in the panel is one
+     control rather than nine. --ty-tight tunes display tracking separately,
+     because a scale that reads well at 16px is too loose at 72px. */
+
+  --ty-display:    'Fraunces', 'Newsreader', Georgia, serif;
+  --ty-body:       'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+  --ty-mono:       ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --ty-scale:      1;
+  --ty-weight:     400;       /* body weight                    */
+  --ty-weight-d:   600;       /* display weight                 */
+  --ty-track:      0em;       /* body tracking                  */
+  --ty-tight:      -0.03em;   /* display tracking               */
+  --ty-a11y:       1;         /* accessibility multiplier       */
+
+  --t-display: calc(clamp(2.4rem, 1.3rem + 4.6vw, 4.6rem) * var(--ty-scale) * var(--ty-a11y));
+  --t-h1:      calc(clamp(1.9rem, 1.3rem + 2.7vw, 3.1rem)  * var(--ty-scale) * var(--ty-a11y));
+  --t-h2:      calc(clamp(1.5rem, 1.2rem + 1.6vw, 2.3rem)  * var(--ty-scale) * var(--ty-a11y));
+  --t-h3:      calc(clamp(1.2rem, 1.1rem + 0.7vw, 1.5rem)  * var(--ty-scale) * var(--ty-a11y));
+  --t-lead:    calc(clamp(1.05rem, 1rem + 0.4vw, 1.28rem)  * var(--ty-scale) * var(--ty-a11y));
+  --t-body:    calc(1rem      * var(--ty-scale) * var(--ty-a11y));
+  --t-sm:      calc(0.875rem  * var(--ty-scale) * var(--ty-a11y));
+  --t-xs:      calc(0.78rem   * var(--ty-scale) * var(--ty-a11y));
+  --t-label:   calc(0.7rem    * var(--ty-scale) * var(--ty-a11y));
+
+  --lh-tight: 1.04;
+  --lh-snug:  1.22;
+  --lh-body:  1.6;
+  --lh-prose: 1.75;
+  --measure:  66ch;
+
+  /* ══ 8. SPACE ══════════════════════════════════════════════════════════ */
+
+  --sp:            1;         /* Compact 0.85 / Standard 1 / Comfortable 1.2 */
+
+  --s-1: calc(0.25rem * var(--sp));
+  --s-2: calc(0.5rem  * var(--sp));
+  --s-3: calc(0.75rem * var(--sp));
+  --s-4: calc(1rem    * var(--sp));
+  --s-5: calc(1.5rem  * var(--sp));
+  --s-6: calc(2rem    * var(--sp));
+  --s-7: calc(3rem    * var(--sp));
+  --s-8: calc(4rem    * var(--sp));
+  --s-section: calc(clamp(3.5rem, 2rem + 6vw, 7.5rem) * var(--sp));
+  --gutter:    calc(clamp(1rem, 0.6rem + 1.8vw, 2rem) * var(--sp));
+  --container: 1220px;
+
+  /* ══ 9. MOTION ═════════════════════════════════════════════════════════
+     --mo is the master intensity: 0 stops everything, 1 is the tuned
+     default, 1.5 exaggerates. Durations scale with it so lowering intensity
+     makes motion quicker and smaller rather than just smaller. */
+
+  --mo:            1;
+  --mo-parallax:   1;         /* hero / aurora parallax depth   */
+  --mo-tilt:       1;         /* card tilt on pointer           */
+
+  --d-1: calc(90ms  * var(--mo));
+  --d-2: calc(160ms * var(--mo));
+  --d-3: calc(260ms * var(--mo));
+  --d-4: calc(420ms * var(--mo));
+  --d-5: calc(720ms * var(--mo));
+
+  --ea-out:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ea-io:    cubic-bezier(0.65, 0, 0.35, 1);
+  --ea-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  /* A real spring, sampled. Overshoots to 1.04 and settles — used only on
+     press/release, where the small bounce reads as physical weight. */
+  --ea-spring: linear(
+    0, 0.006 1.1%, 0.025 2.2%, 0.101 4.8%, 0.539 12.6%, 0.72 16.1%, 0.849 19.6%,
+    0.937 23.4%, 0.991 27.8%, 1.021 33.4%, 1.03 39.3%, 1.014 51.4%, 1
+  );
+
+  /* ══ 10. EFFECTS ═══════════════════════════════════════════════════════
+     Toggles, expressed as 0/1 multipliers rather than booleans so CSS can
+     use them in calc() without a class switch. */
+
+  --fx-glow:       1;         /* brand light around focal elements */
+  --fx-float:      1;         /* extra lift on cards               */
+  --fx-grain:      0.03;      /* texture opacity, 0 = off          */
+  --fx-sheen:      1;         /* one-pass highlight on primary CTA */
+  --fx-noise-size: 180px;
+
+  /* ══ 11. LAYERS ════════════════════════════════════════════════════════ */
+
+  --z-aurora:   0;
+  --z-grain:    1;
+  --z-base:     2;
+  --z-raised:   10;
+  --z-nav:      200;
+  --z-overlay:  400;
+  --z-modal:    500;
+  --z-float:    600;
+  --z-toast:    700;
+
+  /* ══ 12. FOCUS ═════════════════════════════════════════════════════════ */
+
+  --focus-ring: 0 0 0 3px color-mix(in oklab, var(--brand) 42%, transparent);
+  --focus-off:  2px;
+}
+
+/* Motion is a preference before it is a setting. When the OS asks for less,
+   the master multiplier goes to zero and every duration derived from it
+   collapses — one line, and the entire motion system stands still. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --mo: 0;
+    --mo-parallax: 0;
+    --mo-tilt: 0;
+    --au-speed: 0s;
+  }
+}

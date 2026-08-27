@@ -1,0 +1,436 @@
+/* NepalMBBS.in — trust.css
+   The document register.
+
+   The site has one visual language: frosted glass with a gold glow. It is
+   applied to marketing headlines and to NMC recognition status alike, so both
+   carry the same authority — which is backwards for a business whose entire
+   value is being checkable.
+
+   This is the second register. Where glass says "campaign", this says
+   "record": flat, dense, hairline-ruled, closer to a printed document than to
+   a landing page. It carries the content a family will act on — recognition
+   status, seats, affiliation, official rules, the admission sequence.
+
+   Three rules hold everything here together:
+
+     1. No blur, no glow, no gradient. Depth comes from a hairline and a
+        background step, nothing else. An effect on a fact makes it look sold.
+     2. Numbers are tabular. Seat counts in a column must line up, or the
+        column stops reading as data.
+     3. Every panel can cite where its content came from. A record that names
+        its source is verifiable; one that does not is just a nicer-looking
+        claim. That is the whole point of this file.
+
+   Consumes the tokens added in Phase 1. Load order: after components.css. */
+
+
+/* ── Panel ──────────────────────────────────────────────────────────────── */
+
+.doc {
+  background: var(--doc-bg);
+  border: 1px solid var(--doc-border);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+
+.doc + .doc { margin-top: var(--s-4); }
+
+.doc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  padding: var(--s-4) var(--s-5);
+  background: var(--doc-bg-alt);
+  border-bottom: 1px solid var(--doc-border);
+}
+
+.doc-title {
+  font-family: var(--font-display);
+  font-size: var(--t-h3);
+  font-weight: var(--w-semi);
+  letter-spacing: var(--ls-heading);
+  line-height: var(--lh-snug);
+  color: var(--doc-text);
+  margin: 0;
+}
+
+.doc-kicker {
+  font-size: var(--t-label);
+  font-weight: var(--w-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--doc-text-mute);
+}
+
+.doc-body { padding: var(--s-2) var(--s-5) var(--s-4); }
+
+
+/* ── Rows: label / value, hairline-ruled ────────────────────────────────── */
+
+.doc-rows { display: grid; gap: 0; }
+
+.doc-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 34%) 1fr;
+  gap: var(--s-4);
+  align-items: baseline;
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--doc-rule);
+}
+.doc-row:last-child { border-bottom: 0; }
+
+.doc-label {
+  font-size: var(--t-xs);
+  font-weight: var(--w-semi);
+  letter-spacing: 0.04em;
+  color: var(--doc-text-mute);
+}
+
+.doc-value {
+  font-size: var(--t-sm);
+  font-weight: var(--w-medium);
+  line-height: var(--lh-normal);
+  color: var(--doc-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.doc-value a { color: var(--text-accent); text-decoration: none; }
+.doc-value a:hover { text-decoration: underline; }
+
+/* A value the site does not have. Saying so is better than omitting the row:
+   a family can then ask for it, instead of assuming it was answered. */
+.doc-value--unknown {
+  color: var(--text-muted);
+  font-style: italic;
+  font-weight: var(--w-regular);
+}
+
+/* Single column below the row-grid's comfortable minimum. */
+@media (max-width: 30rem) {
+  .doc-row { grid-template-columns: 1fr; gap: var(--s-1); }
+}
+
+
+/* ── Evidence badges ────────────────────────────────────────────────────────
+   Status, not decoration. Deliberately not the marketing gold — authority is
+   not a highlight colour — and deliberately not an emoji: a green tick is a
+   claim, and this site should only make claims it can source.
+
+   Only ever apply a state the underlying data actually supports. Rendering
+   `.ev--verified` on a record that carries no verification is the precise
+   failure this register exists to prevent. */
+
+.ev {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.3rem var(--s-3);
+  border-radius: var(--r-xs);
+  border: 1px solid currentColor;
+  font-size: var(--t-label);
+  font-weight: var(--w-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ev::before {
+  content: '';
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.ev--verified    { color: var(--ev-verified);    background: var(--ev-verified-bg); }
+.ev--provisional { color: var(--ev-provisional); background: var(--ev-provisional-bg); }
+.ev--caution     { color: var(--ev-caution);     background: var(--ev-caution-bg); }
+.ev--neutral     { color: var(--ev-neutral);     background: var(--ev-neutral-bg); }
+
+.ev-set { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+
+
+/* ── Source line ────────────────────────────────────────────────────────────
+   The element that makes this a record rather than a claim. Every doc panel
+   holding a fact a family might act on should end with one. */
+
+.doc-source {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-5);
+  border-top: 1px solid var(--doc-rule);
+  background: var(--doc-bg-alt);
+  font-size: var(--t-xs);
+  line-height: var(--lh-normal);
+  color: var(--doc-text-mute);
+}
+
+.doc-source::before {
+  content: 'Source';
+  flex: none;
+  font-size: var(--t-label);
+  font-weight: var(--w-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding-top: 0.1em;
+}
+
+.doc-source a { color: var(--text-accent); text-decoration: underline; text-underline-offset: 2px; }
+
+
+/* ── Numbered sequence (admission process) ──────────────────────────────────
+   A process is an ordered record, so it gets the document register too. The
+   rule down the left is the spine; each step hangs off it. */
+
+.doc-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: docstep;
+}
+
+.doc-step {
+  position: relative;
+  counter-increment: docstep;
+  padding: var(--s-4) 0 var(--s-4) calc(var(--s-7) + var(--s-2));
+  border-bottom: 1px solid var(--doc-rule);
+}
+.doc-step:last-child { border-bottom: 0; }
+
+.doc-step::before {
+  content: counter(docstep, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: var(--s-4);
+  width: var(--s-7);
+  font-family: var(--font-display);
+  font-size: var(--t-sm);
+  font-weight: var(--w-bold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--gold);
+}
+
+/* The spine, drawn between the numbers rather than through them. */
+.doc-step::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--s-4) - 1px);
+  top: calc(var(--s-4) + 1.9em);
+  bottom: 0;
+  width: 1px;
+  background: var(--doc-rule);
+}
+.doc-step:last-child::after { display: none; }
+
+.doc-step-title {
+  font-family: var(--font-display);
+  font-size: var(--t-body);
+  font-weight: var(--w-semi);
+  line-height: var(--lh-snug);
+  color: var(--doc-text);
+  margin: 0 0 var(--s-2);
+}
+
+.doc-step-body {
+  font-size: var(--t-sm);
+  line-height: var(--lh-prose);
+  color: var(--doc-text-mute);
+  max-width: var(--measure);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+
+/* ── Notice ─────────────────────────────────────────────────────────────────
+   For a rule a family must not miss. Weight comes from the left rule and the
+   label, not from a fill — a shouting box gets skipped. */
+
+.doc-note {
+  border-left: 3px solid var(--ev-provisional);
+  background: var(--ev-provisional-bg);
+  padding: var(--s-3) var(--s-4);
+  border-radius: 0 var(--r-xs) var(--r-xs) 0;
+  font-size: var(--t-sm);
+  line-height: var(--lh-normal);
+  color: var(--doc-text);
+  max-width: var(--measure);
+}
+
+.doc-note--caution {
+  border-left-color: var(--ev-caution);
+  background: var(--ev-caution-bg);
+}
+
+.doc-note strong { font-weight: var(--w-semi); }
+
+
+/* ── Honest empty state ─────────────────────────────────────────────────────
+   Used where the site previously filled a gap with stock photography. An
+   empty slot that says what is missing costs nothing; a stock campus labelled
+   "official" costs the credibility of every other page. */
+
+.doc-empty {
+  border: 1px dashed var(--doc-border);
+  border-radius: var(--r-sm);
+  padding: var(--s-6) var(--s-5);
+  text-align: center;
+  background: var(--doc-bg);
+}
+
+.doc-empty-title {
+  font-family: var(--font-display);
+  font-size: var(--t-body);
+  font-weight: var(--w-semi);
+  color: var(--doc-text);
+  margin: 0 0 var(--s-2);
+}
+
+.doc-empty-body {
+  font-size: var(--t-sm);
+  line-height: var(--lh-normal);
+  color: var(--doc-text-mute);
+  max-width: 46ch;
+  margin: 0 auto;
+}
+
+
+/* ── Index table (colleges list) ────────────────────────────────────────────
+   Below the breakpoint each row becomes its own labelled block, because a
+   horizontally scrolling table of 27 colleges on a phone is unusable and this
+   site is read on phones. */
+
+.doc-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+
+.doc-table th {
+  text-align: left;
+  padding: var(--s-3) var(--s-3) var(--s-3) 0;
+  border-bottom: 1px solid var(--doc-border);
+  font-size: var(--t-label);
+  font-weight: var(--w-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--doc-text-mute);
+  white-space: nowrap;
+}
+
+.doc-table td {
+  padding: var(--s-3) var(--s-3) var(--s-3) 0;
+  border-bottom: 1px solid var(--doc-rule);
+  font-size: var(--t-sm);
+  color: var(--doc-text);
+  vertical-align: baseline;
+}
+
+.doc-table tr:last-child td { border-bottom: 0; }
+
+.doc-table a { color: var(--doc-text); text-decoration: none; font-weight: var(--w-medium); }
+.doc-table a:hover { color: var(--text-accent); text-decoration: underline; }
+
+.doc-table .num { text-align: right; padding-right: var(--s-4); }
+
+@media (max-width: 48rem) {
+  .doc-table, .doc-table tbody, .doc-table tr, .doc-table td { display: block; width: 100%; }
+  .doc-table thead { display: none; }
+  .doc-table tr {
+    padding: var(--s-4) 0;
+    border-bottom: 1px solid var(--doc-rule);
+  }
+  .doc-table tr:last-child { border-bottom: 0; }
+  .doc-table td { border: 0; padding: var(--s-1) 0; }
+  .doc-table td[data-label]::before {
+    content: attr(data-label) '  ';
+    font-size: var(--t-label);
+    font-weight: var(--w-bold);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--doc-text-mute);
+    margin-right: var(--s-2);
+  }
+  .doc-table .num { text-align: left; padding-right: 0; }
+}
+
+
+/* ── Stacked row: a named rule and its explanation ──────────────────────────
+   The label/value grid works for short facts. A regulation is a title plus a
+   paragraph, so it stacks — and the paragraph gets a reading measure, because
+   this is the content people actually have to read rather than scan. */
+
+.doc-row--stack {
+  display: block;
+  padding: var(--s-4) 0;
+}
+
+.doc-row--stack .doc-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--t-body);
+  font-weight: var(--w-semi);
+  letter-spacing: var(--ls-heading);
+  line-height: var(--lh-snug);
+  color: var(--doc-text);
+  margin-bottom: var(--s-2);
+  text-transform: none;
+}
+
+.doc-row--stack .doc-value {
+  display: block;
+  font-weight: var(--w-regular);
+  line-height: var(--lh-prose);
+  color: var(--doc-text-mute);
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+.doc-row--stack .doc-value p { margin: 0 0 var(--s-2); }
+.doc-row--stack .doc-value p:last-child { margin-bottom: 0; }
+
+/* Official-source links attached to a panel. */
+.doc-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  padding-top: var(--s-4);
+  margin-top: var(--s-2);
+  border-top: 1px solid var(--doc-rule);
+}
+
+.doc-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--doc-border);
+  border-radius: var(--r-xs);
+  font-size: var(--t-xs);
+  font-weight: var(--w-medium);
+  color: var(--doc-text);
+  text-decoration: none;
+  transition: border-color var(--d-fast) var(--ease-out),
+              background var(--d-fast) var(--ease-out);
+}
+
+.doc-links a:hover {
+  border-color: var(--text-accent);
+  background: var(--doc-bg-alt);
+}
+
+
+/* ── Flow panel ─────────────────────────────────────────────────────────────
+   A .doc whose content sits directly inside it rather than in a .doc-body
+   wrapper — used where the register is applied to existing markup and adding
+   a wrapper would mean rebalancing tags for no visual gain. The header keeps
+   its full-bleed treatment; everything after it gets the body inset. */
+
+.doc--flow > *:not(.doc-head):not(.doc-source) {
+  margin-left: var(--s-5);
+  margin-right: var(--s-5);
+}
+.doc--flow > .doc-head { margin: 0; }
+.doc--flow > *:not(.doc-head):first-child { margin-top: var(--s-4); }
+.doc--flow > *:not(.doc-source):last-child { margin-bottom: var(--s-4); }

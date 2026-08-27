@@ -1,0 +1,50 @@
+---
+import GlassLayout from '../layouts/GlassLayout.astro';
+---
+<GlassLayout
+  title="MBBS in Nepal — Campus Tours, Student Reviews & Process Videos | NepalMBBS.in"
+  description="Video guides on MBBS in Nepal: campus tours, current student experiences and walkthroughs of the MEC Nepal admission process."
+  path="/videos"
+>
+<div class="tab-pane on" id="pane-videos">
+<div class="container">
+  <div class="rev"><div class="eyebrow">College Video Library</div><div class="sec-title">Explore Nepal Medical Colleges</div><div class="sec-sub">Select a college to watch campus tours and student reviews. Official photos shown when video unavailable.</div></div>
+  <div class="college-selector rev" style="margin-top:28px">
+    <div class="college-sel-label">Select a College to Explore</div>
+    <div class="college-tabs-wrap" id="college-tabs">
+      <button class="college-tab on" data-act="click" data-do='[["selectCollege","@el","all"]]'>🏛️ All Videos</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","mcoms"]]'>Manipal MCOMS</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","cms"]]'>CMS Bharatpur</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","kusms"]]'>KUSMS Dhulikhel</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","kmc"]]'>KMC Kathmandu</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nobel"]]'>Nobel MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","kist"]]'>KIST MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","cmc"]]'>CMC Chitwan</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","gandaki"]]'>Gandaki MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","lmc"]]'>Lumbini MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","devdaha"]]'>Devdaha MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","birat"]]'>Birat MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","bpkihs"]]'>BPKIHS</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","iom"]]'>IOM</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nmcb"]]'>National MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","ucms"]]'>Universal MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nepalgunj"]]'>Nepalgunj MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","janaki"]]'>Janaki MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nmc"]]'>Nepal MC Jorpati</button>
+    </div>
+  </div>
+  <div id="videos-container" style="margin-top:20px">
+    <div class="vid-grid" id="all-videos-grid"></div>
+  </div>
+  <div class="vid-drive-card rev" style="margin-top:24px">
+    <h4>📹 Videos Added & Updated by Admin</h4>
+    <p>Campus tours, student reviews, MEC process guides — all managed from Admin Panel. Request your college video below!</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+      <a href="https://drive.google.com/drive/folders/1W-q-NqJwrkJ1K8EirJvphAwW-xsMF4cQ" target="_blank" rel="noopener" class="btn-primary" style="font-size:13px;padding:10px 20px">📂 Full Video Library →</a>
+      <a id="vid-wa-req" href="https://wa.me/917080800888?text=Hi!%20I%20want%20to%20request%20a%20campus%20video%20for%20Nepal%20MBBS" target="_blank" rel="noopener" class="btn-glass" style="font-size:13px;padding:10px 20px;background:rgba(37,211,102,.15);border-color:rgba(37,211,102,.4);color:#86efac">💬 Request on WhatsApp</a>
+      <a href="mailto:info@nepalmbbs.in?subject=Video Request - Nepal MBBS" class="btn-glass" style="font-size:13px;padding:10px 20px;color:rgba(255,255,255,.8)">✉️ Request via Email</a>
+    </div>
+  </div>
+</div>
+</div>
+</GlassLayout>

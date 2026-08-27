@@ -1,0 +1,118 @@
+---
+import GlassLayout from '../../layouts/GlassLayout.astro';
+import EvidenceBadges from '../../components/EvidenceBadges.astro';
+import { getColleges } from '../../lib/colleges.js';
+import { SITE } from '../../lib/routes.js';
+
+export async function getStaticPaths() {
+  const colleges = await getColleges();
+  return colleges.map((college) => ({
+    params: { slug: college.slug },
+    props: { college },
+  }));
+}
+
+const { college: c } = Astro.props;
+const isGovt = c.type === 'govt';
+const path = `/colleges/${c.slug}`;
+const shortName = c.name.split('(')[0].trim();
+
+// Every row comes from the site's own data. Nothing is inferred, rounded or
+// filled in — an admissions page that invents a fee or a ranking is worse than
+// one that says it does not know, because a family will act on it. Where a
+// value is missing, the row stays and says so, so it can be asked about.
+const record = [
+  ['Ownership',           c.badge || (isGovt ? 'Government' : 'Private')],
+  ['Location',            c.location],
+  ['University affiliation', c.affiliation],
+  ['Established',         c.established],
+  ['Foreign-quota seats', c.seats],
+  ['Course duration',     c.duration || '5.5 years, including internship'],
+  ['Admission route',     c.admission || 'NEET qualified, through MEC Nepal'],
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollegeOrUniversity',
+  name: c.name,
+  url: `${SITE}${path}`,
+  ...(c.website ? { sameAs: [c.website] } : {}),
+  ...(c.location ? { address: { '@type': 'PostalAddress', addressLocality: c.location, addressCountry: 'NP' } } : {}),
+  ...(c.affiliation ? { parentOrganization: { '@type': 'EducationalOrganization', name: c.affiliation } } : {}),
+};
+---
+<GlassLayout
+  title={`${c.name} — MBBS Admission, Seats & Fees 2025 | NepalMBBS.in`}
+  description={`${c.name}${c.location ? `, ${c.location}` : ''}: MBBS admission for Indian students${c.seats ? `, ${c.seats} foreign-quota seats` : ''}${c.affiliation ? `, affiliated to ${c.affiliation}` : ''}. Admission through MEC Nepal.`}
+  path={path}
+  schema={schema}
+>
+<div class="tab-pane on">
+<div class="container">
+
+  <div class="rev">
+    <a href="/colleges" class="college-link" style="display:inline-block;margin-bottom:18px">← All Nepal medical colleges</a>
+    <div class="eyebrow">{isGovt ? 'Government college' : 'Private college'} · MEC Nepal 2025-26</div>
+    <h1 class="sec-title" style="margin-bottom:14px">{c.name}</h1>
+    <EvidenceBadges college={c} />
+  </div>
+
+  <div class="doc rev" style="margin-top:28px">
+    <div class="doc-head">
+      <h2 class="doc-title">Record</h2>
+      <span class="doc-kicker">{shortName}</span>
+    </div>
+    <div class="doc-body">
+      <div class="doc-rows">
+        {record.map(([label, value]) => (
+          <div class="doc-row">
+            <span class="doc-label">{label}</span>
+            {value
+              ? <span class="doc-value">{value}</span>
+              : <span class="doc-value doc-value--unknown">Not on record — ask us</span>}
+          </div>
+        ))}
+        <div class="doc-row">
+          <span class="doc-label">Tuition fee</span>
+          <span class="doc-value doc-value--unknown">
+            Set per intake — <a href="/counseling">ask us for the current structure</a>
+          </span>
+        </div>
+        {c.website && (
+          <div class="doc-row">
+            <span class="doc-label">Official website</span>
+            <span class="doc-value">
+              <a href={c.website} target="_blank" rel="noopener">{c.website.replace(/^https?:\/\//, '')} ↗</a>
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+    <p class="doc-source">
+      Compiled from the Medical Education Commission (MEC) Nepal 2025-26 intake
+      and the college's own published information. Verify seat numbers against
+      {c.website
+        ? <> the <a href={c.website} target="_blank" rel="noopener">college's site</a> and </>
+        : <> </>}
+      the MEC notice for your intake year before you act on them.
+    </p>
+  </div>
+
+  <div class="doc-note rev" style="margin-top:24px">
+    <strong>We do not publish a fee figure for {shortName}.</strong> Fees and
+    seat allocation are set each intake by MEC Nepal and the college, and a
+    number that is stale by the time you read it is worse than no number. We
+    will give you the current structure in writing on a call.
+  </div>
+
+  <div class="rev" style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+    <button class="college-enquire" data-act="click"
+            data-do={JSON.stringify([["enquireCollege", c.enquiryName || c.name]])}>
+      Enquire about {shortName}
+    </button>
+    <a href="/admission-process" class="college-link">How the MEC process works →</a>
+  </div>
+
+</div>
+</div>
+</GlassLayout>
