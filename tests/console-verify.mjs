@@ -16,7 +16,9 @@ import path from 'node:path';
 
 const REPO = path.resolve(import.meta.dirname, '..');
 const DIST = path.join(REPO, 'dist');
-const PORT = 8111;
+let PORT = 0;   // 0 = let the OS pick: a stray server from an
+                // earlier run should not fail a suite it has
+                // nothing to do with.
 const MIME = { '.html':'text/html', '.js':'text/javascript', '.css':'text/css',
                '.json':'application/json', '.svg':'image/svg+xml', '.png':'image/png',
                '.webp':'image/webp', '.woff2':'font/woff2', '.xml':'application/xml' };
@@ -30,7 +32,8 @@ const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': MIME[path.extname(f)] || 'application/octet-stream' });
   res.end(fs.readFileSync(f));
 });
-await new Promise(r => server.listen(PORT, r));
+await new Promise(r => server.listen(0, r));
+PORT = server.address().port;
 
 const results = [];
 const check = (name, pass, detail = '') => results.push({ name, pass, detail });

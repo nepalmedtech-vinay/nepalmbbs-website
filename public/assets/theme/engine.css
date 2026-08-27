@@ -29,9 +29,16 @@
   --g-base:        #F4F6FB;   /* page ground                    */
   --g-base-2:      #EBEFF8;   /* secondary bands                */
   --g-ink:         #0F1420;   /* primary text                   */
-  --g-ink-2:       #495468;   /* secondary text                 */
-  --g-ink-3:       #5B6880;   /* tertiary / captions — 4.6:1 on glass */
-  --g-ink-4:       #8A94A8;   /* disabled / placeholder         */
+  /* The ramp is solved, not chosen. engine.js recomputes these per theme by
+     fading ink toward the ground until it hits a contrast target against the
+     ground; these three are that solve for the default light pair, so the
+     paint before JS runs matches the paint after it.
+     Do not hand-pick a value here that "looks about right" — the previous set
+     did, and roughly 890 pieces of text on the site sat below WCAG AA. */
+  --brand-text:    #0B6154;   /* brand as TEXT — 4.5:1 on the deepest glass */
+  --g-ink-2:       #4F5460;   /* secondary text        — 7.0:1 on base */
+  --g-ink-3:       #6D717C;   /* tertiary / captions   — 4.5:1 on base */
+  --g-ink-4:       #8A8F98;   /* placeholder, disabled — 3.0:1, never body copy */
 
   /* ══ 2. BRAND ══════════════════════════════════════════════════════════
      One brand hue and one counter-hue. Everything tinted downstream derives

@@ -183,7 +183,7 @@ section.hero {
   font-weight: 600 !important;
   text-decoration: none !important;
 }
-.step-link a:hover { color: #f0a500 !important; }
+.step-link a:hover { color: var(--brand-deep) !important; }
 
 /* Why Nepal cards — dark text on white bg */
 .why-card {
@@ -264,18 +264,20 @@ section.hero {
 
 /* College card action links */
 .college-link {
-  color: #38bdf8 !important;
-  border-color: rgba(56,189,248,0.40) !important;
+  /* Sky-blue on a dark page. The page is light now and #38bdf8 measures
+     1.99:1 on it -- the link was present and effectively unreadable. */
+  color: var(--brand-text) !important;
+  border-color: color-mix(in oklab, var(--brand) 34%, transparent) !important;
   font-weight: 600 !important;
 }
-.college-link:hover { color: #0ea5e9 !important; }
+.college-link:hover { color: var(--brand-text) !important; }
 
 /* Step links */
 .step-link a, .guide-link, .faq-a a {
-  color: #0ea5e9 !important;
+  color: var(--brand-text) !important;
   font-weight: 600 !important;
 }
-.step-link a:hover { color: #f0a500 !important; }
+.step-link a:hover { color: var(--brand-deep) !important; }
 
 /* Ticker */
 .ticker-wrap {
@@ -286,8 +288,11 @@ section.hero {
 
 /* Admin button */
 .admin-access-btn {
-  background: rgba(255,255,255,0.10) !important;
-  color: rgba(255,255,255,0.50) !important;
-  border: 1px solid rgba(255,255,255,0.12) !important;
+  /* White at 50% on a 10%-white pill reads as a discreet control on a dark
+     page and as 1.04:1 on a light one -- a button nobody can see. It stays
+     discreet by being small and cornered, not by being invisible. */
+  background: rgba(15,20,32,0.86) !important;
+  color: rgba(255,255,255,0.92) !important;
+  border: 1px solid rgba(255,255,255,0.16) !important;
 }
 

@@ -66,6 +66,15 @@ body {
   animation: au-drift var(--au-dur, var(--au-speed)) var(--ea-io) infinite;
 }
 
+/* The aurora is the loudest thing on the page and it never stops. Someone who
+   asked their operating system for less motion is asking about exactly this.
+   The field stays -- it is the ground the glass refracts -- it just holds
+   still. */
+@media (prefers-reduced-motion: reduce) {
+  .au i { animation: none; }
+  .m-progress, .grain { animation: none; }
+}
+
 .au i:nth-child(1) {
   --au-dur: var(--au-speed);
   width: calc(52vw * var(--au-scale)); height: calc(52vw * var(--au-scale));
@@ -441,3 +450,22 @@ html[data-vp] body {
 }
 html[data-vp] .au, html[data-vp] .grain { width: var(--vp-w, 390px); left: 50%; transform: translateX(-50%); }
 html[data-vp] .gl-nav, html[data-vp] #navbar { max-width: var(--vp-w, 390px); margin-inline: auto; }
+
+
+/* ── skip link ────────────────────────────────────────────────────────── */
+/* Every page opens with the same nav. Without this, reaching the actual
+   content by keyboard means tabbing through it on every single page. It is
+   off-screen until focused rather than hidden, because display:none removes
+   it from the tab order and defeats the point. */
+.skip-to-main {
+  position: fixed; top: 0; left: 50%; transform: translate(-50%, -120%);
+  z-index: calc(var(--z-modal) + 1);
+  padding: 12px 22px; border-radius: 0 0 var(--r-md) var(--r-md);
+  background: var(--brand); color: var(--brand-ink);
+  font-weight: 650; font-size: var(--t-sm); text-decoration: none;
+  transition: transform .18s var(--ea-enter);
+}
+.skip-to-main:focus-visible {
+  transform: translate(-50%, 0);
+  outline: var(--focus-ring); outline-offset: var(--focus-off);
+}

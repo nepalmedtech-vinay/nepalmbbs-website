@@ -10,7 +10,7 @@ import GlassLayout from '../layouts/GlassLayout.astro';
 <link rel="stylesheet" href="/assets/css/console.css">
 <meta name="robots" content="noindex, nofollow">
 
-<main class="cx">
+<main class="cx" id="main">
   <div class="cx-head">
     <div class="cx-title">
       <a href="/" class="gl-eyebrow" style="text-decoration:none">NepalMBBS.in</a>
@@ -25,7 +25,7 @@ import GlassLayout from '../layouts/GlassLayout.astro';
 
   <!-- No token yet, or a bad one. -->
   <section id="p-gate" class="gl cx-card" hidden style="max-width:520px;margin-inline:auto">
-    <h3>Open your application</h3>
+    <h2 class="cx-card-h">Open your application</h2>
     <p class="cx-sub">Paste the private link your counselor sent you. It works without a password, so please do not forward it to anyone.</p>
     <div id="p-gate-err" class="cx-error" hidden style="margin-bottom:14px"></div>
     <form id="p-gate-form">
@@ -54,7 +54,7 @@ import GlassLayout from '../layouts/GlassLayout.astro';
 
     <div class="cx-grid" style="grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)">
       <section class="gl cx-card">
-        <h3>Where your application stands</h3>
+        <h2 class="cx-card-h">Where your application stands</h2>
         <p class="cx-sub">Each step is updated by your counselor as it happens.</p>
         <div id="p-updates-head" class="cx-divider" hidden>Latest updates</div>
         <ul id="p-updates" class="cx-tl cx-tl--updates" hidden></ul>
@@ -63,7 +63,7 @@ import GlassLayout from '../layouts/GlassLayout.astro';
       </section>
 
       <section class="gl cx-card">
-        <h3>Documents</h3>
+        <h2 class="cx-card-h">Documents</h2>
         <p class="cx-sub" id="p-doc-summary"></p>
         <div id="p-docs" class="cx-docs"></div>
         <div class="cx-note" style="margin-top:16px">

@@ -60,7 +60,7 @@
   --text-muted:     var(--g-ink-4);
   --muted:          var(--g-ink-3);
   --white:          var(--g-ink);      /* it meant "the brightest text" */
-  --text-accent:    var(--brand);
+  --text-accent:    var(--brand-text);
 
   /* ── Brand ────────────────────────────────────────────────────────
      Gold was the old accent. Everything that referenced it now follows
@@ -73,7 +73,7 @@
   --gold-dim:    var(--brand-soft);
   --gold-border: var(--brand-line);
 
-  --blue:        var(--brand);
+  --blue:        var(--brand-text);
   --blue-light:  var(--brand-lift);
   --blue-dark:   var(--brand-deep);
   --blue-dim:    var(--brand-soft);
@@ -111,7 +111,7 @@
 
   /* Evidence states, restated for a light ground — the dark-mode versions
      were too pale to read here. */
-  --ev-verified:       #0B7A55;
+  --ev-verified:       #086244;
   --ev-verified-bg:    color-mix(in oklab, #0B7A55 12%, transparent);
   --ev-provisional:    #8A5A08;
   --ev-provisional-bg: color-mix(in oklab, #8A5A08 12%, transparent);

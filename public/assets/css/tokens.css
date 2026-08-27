@@ -284,7 +284,7 @@ select option {
 .test-name   { color: var(--text-primary) !important; font-weight: 700 !important; }
 .test-city   { color: var(--text-muted) !important; }
 .test-quote  { color: var(--text-secondary) !important; }
-.test-stars  { color: var(--gold) !important; }
+.test-stars  { color: #9a6400 !important; }
 
 /* ─── LIFE IN NEPAL SECTION ──────────────────────────────── */
 .life-card, .life-section {

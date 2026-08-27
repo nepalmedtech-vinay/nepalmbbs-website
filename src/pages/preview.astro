@@ -136,7 +136,12 @@ const featured = colleges.filter((c) => c.type === 'govt').slice(0, 3);
     transition: color var(--d-2) var(--ea-out);
   }
   .nav-links a:hover { color: var(--brand); }
-  .nav-right { display: flex; gap: var(--s-2); align-items: center; }
+  /* The preview's own header nav pushed 90px past the viewport at 390px.
+     It is a development surface, but a layout tool that cannot be opened on a
+     phone is not much of a tool. */
+  .nav-right { display: flex; gap: var(--s-2); align-items: center;
+               flex-wrap: wrap; justify-content: flex-end;
+               max-width: 100%; flex-shrink: 1; min-width: 0; }
 
   .hero { padding-block: clamp(3.5rem, 2rem + 7vw, 8rem) var(--s-section); }
   .hero-in { max-width: 62rem; }
@@ -169,7 +174,7 @@ const featured = colleges.filter((c) => c.type === 'govt').slice(0, 3);
   .card-loc { margin: var(--s-1) 0 var(--s-4); font-size: var(--t-sm); color: var(--g-ink-3); }
   .pill {
     align-self: flex-start; font-size: var(--t-label); font-weight: 700;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--brand);
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--brand-text);
     background: var(--brand-soft); border: 1px solid var(--brand-line);
     padding: 0.3rem var(--s-3); border-radius: var(--r-pill);
   }

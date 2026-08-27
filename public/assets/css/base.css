@@ -44,7 +44,7 @@ body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;overflow-x
 .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .lang-sw{display:flex;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:24px;overflow:hidden}
 .lbtn{padding:5px 12px;font-size:12px;font-weight:700;color:var(--g-ink-2);cursor:pointer;border:none;background:transparent;transition:all .2s}
-.lbtn.on{background:var(--accent);color:var(--navy)}
+.lbtn.on{background:var(--accent);color:var(--brand-ink)}
 .nav-cta{background:linear-gradient(135deg,var(--accent),#d4891a);color:#fff;padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .2s;box-shadow:0 2px 12px rgba(232,160,32,.35);cursor:pointer;border:none}
 .nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,160,32,.5)}
 .hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px}
@@ -293,7 +293,7 @@ section.hero.sliding .hero-content{
 .test-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;transition:all .3s;position:relative}
 .test-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px);border-color:transparent}
 .test-quote-icon{font-size:36px;color:var(--blue);opacity:.2;font-family:Georgia,serif;line-height:1;margin-bottom:8px}
-.test-stars{color:#f59e0b;font-size:14px;margin-bottom:12px;letter-spacing:2px}
+.test-stars{color:#9a6400;font-size:14px;margin-bottom:12px;letter-spacing:2px}
 .test-text{font-size:13.5px;color:var(--text);line-height:1.78;margin-bottom:18px;font-style:italic}
 .test-author{display:flex;align-items:center;gap:12px}
 .test-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--m-fill),var(--blue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;font-family:'Sora',sans-serif;flex-shrink:0}
@@ -461,7 +461,7 @@ section.hero.sliding .hero-content{
 
 /* COLLEGE COMPARISON */
 .compare-table{width:100%;border-collapse:collapse;margin-top:24px;background:#fff;border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
-.compare-table th{background:var(--m-fill);color:#fff;padding:14px 16px;text-align:left;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.compare-table th{background:var(--m-fill);color:var(--g-ink);padding:14px 16px;text-align:left;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 .compare-table th:first-child{width:35%}
 .compare-table td{padding:13px 16px;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--text);vertical-align:top}
 .compare-table tr:last-child td{border-bottom:none}
@@ -552,7 +552,7 @@ footer{background:var(--m-fill);padding:56px 24px 24px;border-top:1px solid rgba
 .foot-top{display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
 .foot-logo{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:var(--g-ink);text-decoration:none;letter-spacing:-1px;margin-bottom:12px;display:block}
 .foot-logo span{color:var(--accent)}
-.foot-desc{font-size:13px;color:var(--g-ink-3);line-height:1.78;max-width:280px;margin-bottom:20px}
+.foot-desc{font-size:13px;color:var(--g-ink-2);line-height:1.78;max-width:280px;margin-bottom:20px}
 .foot-contacts a{display:flex;align-items:center;gap:6px;color:var(--g-ink-3);font-size:13px;text-decoration:none;margin-bottom:9px;transition:color .2s}
 .foot-contacts a:hover{color:var(--accent)}
 .foot-col h5{font-size:11px;font-weight:700;color:var(--g-ink-4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
@@ -568,7 +568,7 @@ footer{background:var(--m-fill);padding:56px 24px 24px;border-top:1px solid rgba
 .college-card:hover{border-color:rgba(26,86,219,.25);box-shadow:0 16px 48px rgba(26,86,219,.12),0 4px 16px rgba(0,0,0,.06);transform:translateY(-6px)}
 .college-enquire{background:linear-gradient(135deg,#e8a020,#d4891a)!important;color:#fff!important;border:none!important;box-shadow:0 4px 16px rgba(232,160,32,.35)!important}
 .college-enquire:hover{transform:translateY(-2px)!important;box-shadow:0 8px 24px rgba(232,160,32,.5)!important}
-.college-link{background:transparent;border:1.5px solid rgba(26,86,219,.3)!important;color:var(--blue)!important}
+.college-link{background:transparent;border:1.5px solid rgba(26,86,219,.3)!important;color:var(--brand-text)!important}
 .college-link:hover{background:var(--blue)!important;color:#fff!important}
 .hero-card{box-shadow:0 32px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2)}
 .cbar{background:linear-gradient(135deg,#0b1e3d 0%,#0e2347 50%,#162f5e 100%);border-top:1px solid rgba(255,255,255,.06);box-shadow:0 -4px 24px rgba(0,0,0,.2)}
@@ -631,8 +631,8 @@ textarea.a-inp{min-height:80px;resize:vertical}
 #admin-login-view p{color:var(--muted);font-size:13px;margin-bottom:24px}
 .admin-login-form{max-width:320px;margin:0 auto}
 .admin-err{color:#dc2626;font-size:13px;margin-top:8px;min-height:20px;font-weight:500}
-.admin-access-btn{position:fixed;bottom:8px;left:8px;z-index:989;background:rgba(10,22,40,.75);color:rgba(255,255,255,.4);font-size:10px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(8px);transition:all .2s;display:flex;align-items:center;gap:4px;line-height:1}
-.admin-access-btn:hover{background:var(--m-fill);color:#fff;border-color:rgba(255,255,255,.25)}
+.admin-access-btn{position:fixed;bottom:8px;left:8px;z-index:989;background:rgba(10,22,40,.88);color:rgba(255,255,255,.92);font-size:10px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(8px);transition:all .2s;display:flex;align-items:center;gap:4px;line-height:1}
+.admin-access-btn:hover{background:var(--m-fill);color:var(--g-ink);border-color:rgba(255,255,255,.25)}
 
 /* RESPONSIVE */
 @media(max-width:1024px){
@@ -716,8 +716,8 @@ textarea.a-inp{min-height:80px;resize:vertical}
 .cs-label{display:block;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
 .cs-val{display:block;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--navy)}
 .college-footer{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.college-link{font-size:12px;font-weight:700;color:var(--blue);text-decoration:none;padding:6px 12px;border:1px solid var(--border);border-radius:7px;transition:all .2s}
-.college-link:hover{background:var(--m-fill);color:#fff;border-color:var(--navy)}
+.college-link{font-size:12px;font-weight:700;color:var(--brand-text);text-decoration:none;padding:6px 12px;border:1px solid var(--border);border-radius:7px;transition:all .2s}
+.college-link:hover{background:var(--m-fill);color:var(--g-ink);border-color:var(--navy)}
 .college-enquire{padding:7px 16px;background:linear-gradient(135deg,var(--accent),var(--gold));color:var(--navy);border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Sora',sans-serif}
 .college-enquire:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,160,32,.35)}
 .college-card.hidden{display:none}
@@ -857,3 +857,8 @@ button:active, a[class*="btn"]:active {
   50%  { box-shadow: 0 0 0 12px rgba(255,255,255,0.2); }
   100% { box-shadow: 0 0 0 20px rgba(255,255,255,0); }
 }
+
+/* Footer column headings were <h5> for their size. They are <h2> now,
+   because a document outline that jumps h2 -> h5 is not an outline; the
+   size comes from here instead. */
+.foot-h{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--g-ink);margin:0 0 14px}

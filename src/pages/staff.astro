@@ -10,7 +10,7 @@ import GlassLayout from '../layouts/GlassLayout.astro';
 <link rel="stylesheet" href="/assets/css/console.css">
 <meta name="robots" content="noindex, nofollow">
 
-<main class="cx">
+<main class="cx" id="main">
   <!-- Sign in. Not a gate in the security sense: every table below refuses a
        non-staff request regardless of what this screen shows. -->
   <section id="s-gate" class="gl cx-card" hidden style="max-width:420px;margin:8vh auto 0">
@@ -47,7 +47,9 @@ import GlassLayout from '../layouts/GlassLayout.astro';
       </div>
     </div>
 
-    <div id="s-toast" hidden style="margin-bottom:16px"></div>
+    <!-- polite, not assertive: these confirm an action the counselor just
+     took; they should not interrupt what is being read. -->
+    <div id="s-toast" role="status" aria-live="polite" hidden style="margin-bottom:16px"></div>
 
     <div class="cx-grid cx-grid--stats" style="margin-bottom:20px">
       <div class="gl cx-card">

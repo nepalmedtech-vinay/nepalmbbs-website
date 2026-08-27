@@ -191,8 +191,90 @@
   function contrast(a, b) {
     var ra = hexToRgb(a), rb = hexToRgb(b);
     if (!ra || !rb) return 21;
+    return contrastRgb(ra, rb);
+  }
+
+  function contrastRgb(ra, rb) {
     var la = luminance(ra), lb = luminance(rb);
     return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+  }
+
+  /* Mixing in oklab rather than sRGB, because that is what the stylesheets do
+     and a ramp that disagrees with its own fallbacks is worse than no ramp.
+     Doing it here rather than leaving color-mix() to the browser is what makes
+     the result predictable enough to solve against a contrast target. */
+  function srgbToOklab(c) {
+    var lin = c.map(function (v) {
+      v /= 255;
+      return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    var l = Math.cbrt(0.4122214708 * lin[0] + 0.5363325363 * lin[1] + 0.0514459929 * lin[2]);
+    var m = Math.cbrt(0.2119034982 * lin[0] + 0.6806995451 * lin[1] + 0.1073969566 * lin[2]);
+    var s = Math.cbrt(0.0883024619 * lin[0] + 0.2817188376 * lin[1] + 0.6299787005 * lin[2]);
+    return [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+            1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+            0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s];
+  }
+
+  function oklabToSrgb(o) {
+    var l_ = o[0] + 0.3963377774 * o[1] + 0.2158037573 * o[2];
+    var m_ = o[0] - 0.1055613458 * o[1] - 0.0638541728 * o[2];
+    var s_ = o[0] - 0.0894841775 * o[1] - 1.2914855480 * o[2];
+    var l = l_ * l_ * l_, m = m_ * m_ * m_, s = s_ * s_ * s_;
+    return [ 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+            -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+            -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s]
+      .map(function (v) {
+        v = v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(Math.min(1, Math.max(0, v)), 1 / 2.4) - 0.055;
+        return Math.round(Math.min(255, Math.max(0, v * 255)));
+      });
+  }
+
+  function mixOklab(a, b, t) {
+    var A = srgbToOklab(a), B = srgbToOklab(b);
+    return oklabToSrgb([A[0] + (B[0] - A[0]) * t,
+                        A[1] + (B[1] - A[1]) * t,
+                        A[2] + (B[2] - A[2]) * t]);
+  }
+
+  function hex(rgb) {
+    return '#' + rgb.map(function (v) { return ('0' + v.toString(16)).slice(-2); }).join('');
+  }
+
+  /* Brand text that misses the target is darkened along its own hue rather
+     than greyed toward the ink, so a teal link stays teal instead of turning
+     into another shade of slate. */
+  function darkenToContrast(rgb, against, target) {
+    // Which way is "more readable" depends on the ground. Mixing toward black
+    // on a dark page makes the link LESS legible, and a binary search that
+    // never reaches the target happily runs all the way to #000 -- which is
+    // exactly what dark mode shipped as before this check existed.
+    var toward = luminance(against) < 0.18 ? [255, 255, 255] : [0, 0, 0];
+    var lo = 0, hi = 1;
+    for (var i = 0; i < 20; i++) {
+      var mid = (lo + hi) / 2;
+      if (contrastRgb(mixOklab(rgb, toward, mid), against) >= target) hi = mid;
+      else lo = mid;
+    }
+    var out = mixOklab(rgb, toward, hi);
+    // If even the extreme misses the target, take the extreme rather than a
+    // value that is both off-brand and still unreadable.
+    return contrastRgb(out, against) >= target ? out : toward.slice();
+  }
+
+  /* How far can this ink fade toward the ground before it stops being legible?
+     Answering that per theme is the whole point: a fixed 45% mix is 4.6:1 on
+     one ground and 3.3:1 on the next, and the second one ships looking fine
+     and failing AA on most of the page. */
+  function fadeToContrast(inkRgb, baseRgb, target) {
+    if (contrastRgb(inkRgb, baseRgb) < target) return inkRgb.slice();   // already as dark as it gets
+    var lo = 0, hi = 1;
+    for (var i = 0; i < 20; i++) {
+      var mid = (lo + hi) / 2;
+      if (contrastRgb(mixOklab(inkRgb, baseRgb, mid), baseRgb) >= target) lo = mid;
+      else hi = mid;
+    }
+    return mixOklab(inkRgb, baseRgb, lo);
   }
 
   /* A theme that looks lovely and cannot be read is a broken theme. Anything
@@ -288,13 +370,35 @@
     set('--dp-hue', dark ? '0 0 0' : inkRgb.join(' '));
     set('--dp', dark ? String((parseFloat(t.depth) || 1) * 1.6) : String(t.depth));
 
-    // The secondary ink steps are mixed from ink toward the ground rather than
-    // stored, so a preset only has to name two colours and the ramp stays
-    // correct in either direction.
-    [['--g-ink-2', 0.32], ['--g-ink-3', 0.55], ['--g-ink-4', 0.72]].forEach(function (pair) {
-      set(pair[0], 'color-mix(in oklab, ' + t.ink + ' ' +
-          Math.round((1 - pair[1]) * 100) + '%, ' + t.base + ')');
+    // The secondary ink steps fade from ink toward the ground, so a preset only
+    // names two colours and the ramp follows in either direction.
+    //
+    // They used to fade by fixed fractions — 32%, 55%, 72% — which is how the
+    // site shipped with roughly 890 pieces of text below WCAG AA without anyone
+    // seeing it: the same 55% that measures 4.6:1 on one ground measures 3.3:1
+    // on another, and the second one still looks like a considered grey. So the
+    // fraction is solved per theme against a contrast target instead of chosen.
+    //
+    // ink-4 targets 3:1 because it is for placeholders and disabled states, not
+    // body copy. Anything that must be READ uses ink-3 or darker.
+    // Solved against the darkest surface text actually sits on, not the page
+    // ground. Glass panes are a shade deeper than the page, so a ramp solved
+    // against the page alone is correct in the margins and fails inside every
+    // card -- which is where nearly all the text is.
+    var deepest = mixOklab(baseRgb, inkRgb, 0.16);
+    // Targets sit a hair above the line: mixOklab rounds to whole channels,
+    // and a solve that lands exactly on 4.50 can round down to 4.45.
+    [['--g-ink-2', 7.15], ['--g-ink-3', 4.65], ['--g-ink-4', 3.1]].forEach(function (pair) {
+      set(pair[0], hex(fadeToContrast(inkRgb, deepest, pair[1])));
     });
+
+    // Brand-as-text is a separate question from brand-as-fill: #0E7C6B clears
+    // 4.5:1 on the page and misses it on a glass pane. Links get their own
+    // token rather than borrowing the fill colour and hoping.
+    var brandRgb = hexToRgb(t.brand) || [14, 124, 107];
+    set('--brand-text', contrastRgb(brandRgb, deepest) >= 4.5
+      ? t.brand
+      : hex(darkenToContrast(brandRgb, deepest, 4.5)));
 
     // Text on the brand fill flips to dark when the brand is light.
     set('--brand-ink', contrast(t.brand, '#FFFFFF') >= 4.5 ? '#FFFFFF' : t.ink);

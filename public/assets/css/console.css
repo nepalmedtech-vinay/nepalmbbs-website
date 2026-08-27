@@ -41,7 +41,7 @@
    enough because the content is a number and a short label. */
 .cx-grid--stats { grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); }
 .cx-card { padding: clamp(16px, 2vw, 24px); }
-.cx-card h3 {
+.cx-card h3, .cx-card h2 {
   margin: 0 0 4px; color: var(--g-ink);
   font: 600 var(--t-h3)/var(--lh-snug) var(--ty-display);
 }
