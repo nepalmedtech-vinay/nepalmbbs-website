@@ -110,7 +110,7 @@ async function loadDynamicContent(){
           thumbUrl=`https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
         }
         d.innerHTML=thumbUrl?
-          `<div class="vid-thumb"><div class="vid-placeholder" onclick="this.innerHTML='<iframe src=\'${embedUrl}?autoplay=1\' style=\'position:absolute;inset:0;width:100%;height:100%;border:none\' allowfullscreen></iframe>';this.style.pointerEvents='none'"><img src="${thumbUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy"><div style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div><div class="play-btn" style="position:relative;z-index:1">▶</div></div></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`
+          `<div class="vid-thumb"><div class="vid-placeholder" ${actAttr('click',[['playVid','@el',embedUrl]])}><img src="${thumbUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy"><div style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div><div class="play-btn" style="position:relative;z-index:1">▶</div></div></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`
           :`<div class="vid-thumb"><iframe src="${embedUrl}" loading="lazy" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`;
         c.appendChild(d);revObs.observe(d);
       });
@@ -135,7 +135,7 @@ async function loadDynamicContent(){
       const c=document.getElementById('faq-container');
       if(c)faqs.forEach(f=>{
         const d=document.createElement('div');d.className='faq-item rev';
-        d.innerHTML=`<div class="faq-q" onclick="toggleFaq(this)"><span>${f.question}</span><div class="faq-icon">+</div></div><div class="faq-body"><p>${f.answer}</p></div>`;
+        d.innerHTML=`<div class="faq-q" data-act="click" data-do='[["toggleFaq","@el"]]'><span>${f.question}</span><div class="faq-icon">+</div></div><div class="faq-body"><p>${f.answer}</p></div>`;
         c.appendChild(d);revObs.observe(d);
       });
     }

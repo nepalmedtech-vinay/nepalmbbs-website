@@ -76,7 +76,7 @@ function renderVideoGrid(videos, container) {
     const card = document.createElement('div');
     card.className = 'vid-card';
     card.innerHTML = thumbUrl
-      ? `<div class="vid-thumb"><div class="vid-placeholder" onclick="playVid(this,'${embedUrl}')"><img src="${thumbUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy"><div style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div><div class="play-btn" style="position:relative;z-index:1">▶</div></div></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`
+      ? `<div class="vid-thumb"><div class="vid-placeholder" ${actAttr('click',[['playVid','@el',embedUrl]])}><img src="${thumbUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy"><div style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div><div class="play-btn" style="position:relative;z-index:1">▶</div></div></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`
       : `<div class="vid-thumb"><iframe src="${embedUrl}" loading="lazy" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`;
     grid.appendChild(card);
   });
@@ -127,7 +127,7 @@ async function loadDynamicContent() {
       if (c) faqs.forEach(f => {
         const d = document.createElement('div');
         d.className = 'faq-item rev';
-        d.innerHTML = `<div class="faq-q" onclick="toggleFaq(this)"><span>${f.question}</span><div class="faq-icon">+</div></div><div class="faq-body"><p>${f.answer}</p></div>`;
+        d.innerHTML = `<div class="faq-q" data-act="click" data-do='[["toggleFaq","@el"]]'><span>${f.question}</span><div class="faq-icon">+</div></div><div class="faq-body"><p>${f.answer}</p></div>`;
         c.appendChild(d); revObs.observe(d);
       });
     }
@@ -219,10 +219,20 @@ function enquireCollege(collegeName) {
     <a href="https://wa.me/9779802769950?text=${msg}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#0d9488;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;margin-bottom:16px">
       <span style="font-size:20px">📞</span><div style="text-align:left"><div>+977-9802769950</div><div style="font-size:11px;opacity:.8;font-weight:500">Nepal • WhatsApp</div></div>
     </a>
-    <button onclick="this.closest('[style*=fixed]').remove()" style="background:transparent;border:none;color:#64748b;font-size:13px;cursor:pointer;text-decoration:underline">Close</button>
+    <button data-act="click" data-do='[["closeModal","@el"]]' style="background:transparent;border:none;color:#64748b;font-size:13px;cursor:pointer;text-decoration:underline">Close</button>
   </div>`;
   modal.addEventListener('click', (e) => { if(e.target === modal) modal.remove(); });
   document.body.appendChild(modal);
 }
 // =====================================================
 // ADMIN PANEL — FULL SUPABASE CONTROL
+
+
+/* The toast's Close button used to carry
+     onclick="this.closest('[style*=fixed]').remove()"
+   which a Content-Security-Policy without 'unsafe-inline' refuses to run.
+   Same behaviour, reachable by name. */
+function closeModal(el) {
+  var m = el && el.closest('[style*=fixed]');
+  if (m) m.remove();
+}

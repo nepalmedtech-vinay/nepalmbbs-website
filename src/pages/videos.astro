@@ -12,25 +12,25 @@ import GlassLayout from '../layouts/GlassLayout.astro';
   <div class="college-selector rev" style="margin-top:28px">
     <div class="college-sel-label">Select a College to Explore</div>
     <div class="college-tabs-wrap" id="college-tabs">
-      <button class="college-tab on" onclick="selectCollege(this,'all')">🏛️ All Videos</button>
-      <button class="college-tab" onclick="selectCollege(this,'mcoms')">Manipal MCOMS</button>
-      <button class="college-tab" onclick="selectCollege(this,'cms')">CMS Bharatpur</button>
-      <button class="college-tab" onclick="selectCollege(this,'kusms')">KUSMS Dhulikhel</button>
-      <button class="college-tab" onclick="selectCollege(this,'kmc')">KMC Kathmandu</button>
-      <button class="college-tab" onclick="selectCollege(this,'nobel')">Nobel MC</button>
-      <button class="college-tab" onclick="selectCollege(this,'kist')">KIST MC</button>
-      <button class="college-tab" onclick="selectCollege(this,'cmc')">CMC Chitwan</button>
-      <button class="college-tab" onclick="selectCollege(this,'gandaki')">Gandaki MC</button>
-      <button class="college-tab" onclick="selectCollege(this,'lmc')">Lumbini MC</button>
-      <button class="college-tab" onclick="selectCollege(this,'devdaha')">Devdaha MC</button>
-      <button class="college-tab" onclick="selectCollege(this,'birat')">Birat MC</button>
-      <button class="college-tab" onclick="selectCollege(this,'bpkihs')">BPKIHS</button>
-      <button class="college-tab" onclick="selectCollege(this,'iom')">IOM</button>
-      <button class="college-tab" onclick="selectCollege(this,'nmcb')">National MC</button>
-      <button class="college-tab" onclick="selectCollege(this,'ucms')">Universal MC</button>
-      <button class="college-tab" onclick="selectCollege(this,'nepalgunj')">Nepalgunj MC</button>
-      <button class="college-tab" onclick="selectCollege(this,'janaki')">Janaki MC</button>
-      <button class="college-tab" onclick="selectCollege(this,'nmc')">Nepal MC Jorpati</button>
+      <button class="college-tab on" data-act="click" data-do='[["selectCollege","@el","all"]]'>🏛️ All Videos</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","mcoms"]]'>Manipal MCOMS</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","cms"]]'>CMS Bharatpur</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","kusms"]]'>KUSMS Dhulikhel</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","kmc"]]'>KMC Kathmandu</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nobel"]]'>Nobel MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","kist"]]'>KIST MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","cmc"]]'>CMC Chitwan</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","gandaki"]]'>Gandaki MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","lmc"]]'>Lumbini MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","devdaha"]]'>Devdaha MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","birat"]]'>Birat MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","bpkihs"]]'>BPKIHS</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","iom"]]'>IOM</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nmcb"]]'>National MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","ucms"]]'>Universal MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nepalgunj"]]'>Nepalgunj MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","janaki"]]'>Janaki MC</button>
+      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nmc"]]'>Nepal MC Jorpati</button>
     </div>
   </div>
   <div id="videos-container" style="margin-top:20px">

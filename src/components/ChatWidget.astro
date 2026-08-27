@@ -10,27 +10,27 @@
       </div>
       <div class="chat-header-right">
         <span class="swipe-label">↑ swipe to close</span>
-        <button class="chat-close-btn" onclick="closeChat()" aria-label="Close chat">×</button>
+        <button class="chat-close-btn" data-act="click" data-do='[["closeChat"]]' aria-label="Close chat">×</button>
       </div>
     </div>
     <div class="chat-msgs" id="chat-msgs">
       <div class="chat-msg bot">👋 Hello! I'm your Nepal MBBS guide. Ask me anything about eligibility, fees, process, or life in Nepal. All answers based on official sources.</div>
     </div>
     <div class="chat-suggestions" id="chat-sugs">
-      <span class="chat-sug" onclick="askBot('Am I eligible for Nepal MBBS?')">Eligible?</span>
-      <span class="chat-sug" onclick="askBot('What are the fees for Nepal MBBS?')">Fees?</span>
-      <span class="chat-sug" onclick="askBot('Is NEET required?')">NEET?</span>
-      <span class="chat-sug" onclick="askBot('How to apply via MEC Nepal?')">How to apply?</span>
-      <span class="chat-sug" onclick="askBot('Is Nepal safe for Indian students?')">Safety?</span>
-      <span class="chat-sug" onclick="askBot('WhatsApp call or chat?')">Contact?</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","Am I eligible for Nepal MBBS?"]]'>Eligible?</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","What are the fees for Nepal MBBS?"]]'>Fees?</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","Is NEET required?"]]'>NEET?</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","How to apply via MEC Nepal?"]]'>How to apply?</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","Is Nepal safe for Indian students?"]]'>Safety?</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","WhatsApp call or chat?"]]'>Contact?</span>
     </div>
-    <div class="chat-restart-btn" onclick="restartChat()">🔄 Start New Chat</div>
+    <div class="chat-restart-btn" data-act="click" data-do='[["restartChat"]]'>🔄 Start New Chat</div>
     <div class="chat-input-area">
-      <input class="chat-input" id="chat-input" placeholder="Ask anything..." onkeypress="if(event.key==='Enter')sendMsg()">
-      <button class="chat-send" onclick="sendMsg()" aria-label="Send"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg></button>
+      <input class="chat-input" id="chat-input" placeholder="Ask anything..." data-act="enter" data-do='[["sendMsg"]]'>
+      <button class="chat-send" data-act="click" data-do='[["sendMsg"]]' aria-label="Send"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg></button>
     </div>
   </div>
-  <div class="chat-toggle" onclick="toggleChat()" aria-label="Open chat">
+  <div class="chat-toggle" data-act="click" data-do='[["toggleChat"]]' aria-label="Open chat">
     <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
   </div>
 </div>

@@ -106,7 +106,8 @@ const schema = {
   </div>
 
   <div class="rev" style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
-    <button class="college-enquire" onclick={`enquireCollege('${(c.enquiryName || c.name).replace(/'/g, "\\'")}')`}>
+    <button class="college-enquire" data-act="click"
+            data-do={JSON.stringify([["enquireCollege", c.enquiryName || c.name]])}>
       Enquire about {shortName}
     </button>
     <a href="/admission-process" class="college-link">How the MEC process works →</a>

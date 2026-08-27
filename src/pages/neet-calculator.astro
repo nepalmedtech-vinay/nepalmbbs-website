@@ -17,7 +17,7 @@ import GlassLayout from '../layouts/GlassLayout.astro';
       <div class="cfield"><label>Category</label><select id="calc-cat"><option value="gen">General</option><option value="obc">OBC</option><option value="sc">SC/ST</option></select></div>
       <div class="cfield"><label>State (for context)</label><select id="calc-state"><option value="">Any State</option><option>Maharashtra</option><option>Delhi</option><option>UP</option><option>MP</option><option>Other</option></select></div>
     </div>
-    <button class="calc-btn" onclick="checkEligibility()">Check My Eligibility →</button>
+    <button class="calc-btn" data-act="click" data-do='[["checkEligibility"]]'>Check My Eligibility →</button>
     <div class="calc-result" id="calc-result"></div>
     <div class="calc-dis">⚠️ This tool provides general indicative guidance based on typical thresholds. It is NOT official admission advice. Always verify at <a href="https://nmc.org.in" target="_blank">nmc.org.in</a> and <a href="https://mec.gov.np" target="_blank">mec.gov.np</a> before making any decision.</div>
   </div>

@@ -28,8 +28,8 @@ import GlassLayout from '../layouts/GlassLayout.astro';
   </div>
   <div class="curr-wrap rev">
     <div class="curr-title">💱 INR ↔ NPR Currency Converter</div>
-    <div class="curr-row"><span class="curr-lbl">INR ₹</span><input class="curr-in" type="number" id="inr-val" value="10000" oninput="convertCurr('inr')" inputmode="numeric"></div>
-    <div class="curr-row"><span class="curr-lbl">NPR रू</span><input class="curr-in" type="number" id="npr-val" value="16000" oninput="convertCurr('npr')" inputmode="numeric"></div>
+    <div class="curr-row"><span class="curr-lbl">INR ₹</span><input class="curr-in" type="number" id="inr-val" value="10000" data-act="input" data-do='[["convertCurr","inr"]]' inputmode="numeric"></div>
+    <div class="curr-row"><span class="curr-lbl">NPR रू</span><input class="curr-in" type="number" id="npr-val" value="16000" data-act="input" data-do='[["convertCurr","npr"]]' inputmode="numeric"></div>
     <div class="curr-result" id="curr-result">₹10,000 = रू 16,000</div>
     <div class="curr-note">*Approx rate: 1 INR ≈ 1.6 NPR. Verify current rate at xe.com before any transaction.</div>
   </div>

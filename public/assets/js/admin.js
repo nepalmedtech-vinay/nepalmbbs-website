@@ -320,7 +320,7 @@ async function loadAdminVids(){
   const list=document.getElementById('admin-vid-list');if(!list)return;
   const vids=await sbR('/rest/v1/site_videos?select=*&order=created_at.desc');
   if(!vids.length){list.innerHTML='<p style="color:var(--muted);font-size:13px">No videos added yet.</p>';return;}
-  list.innerHTML=vids.map(v=>`<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${v.title}</div><div class="vid-row-url">${v.url}</div></div><button class="a-btn a-btn-danger" onclick="deleteVideo('${v.id}')" style="padding:5px 10px;font-size:12px">✕ Delete</button></div>`).join('');
+  list.innerHTML=vids.map(v=>`<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${v.title}</div><div class="vid-row-url">${v.url}</div></div><button class="a-btn a-btn-danger" ${actAttr('click',[['deleteVideo',v.id]])} style="padding:5px 10px;font-size:12px">✕ Delete</button></div>`).join('');
 }
 async function deleteVideo(id){
   if(!confirm('Delete this video permanently?'))return;
@@ -351,7 +351,7 @@ async function loadAdminTests(){
   const list=document.getElementById('admin-test-list');if(!list)return;
   const tests=await sbR('/rest/v1/site_testimonials?select=*&order=created_at.desc');
   if(!tests.length){list.innerHTML='<p style="color:var(--muted);font-size:13px">No testimonials added via admin yet.</p>';return;}
-  list.innerHTML=tests.map(t=>`<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${t.name} — ${t.city||''} (${t.year||''})</div><div class="vid-row-url">${(t.quote||'').substring(0,80)}...</div></div><button class="a-btn a-btn-danger" onclick="deleteTest('${t.id}')" style="padding:5px 10px;font-size:12px">✕ Delete</button></div>`).join('');
+  list.innerHTML=tests.map(t=>`<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${t.name} — ${t.city||''} (${t.year||''})</div><div class="vid-row-url">${(t.quote||'').substring(0,80)}...</div></div><button class="a-btn a-btn-danger" ${actAttr('click',[['deleteTest',t.id]])} style="padding:5px 10px;font-size:12px">✕ Delete</button></div>`).join('');
 }
 async function deleteTest(id){
   if(!confirm('Delete this testimonial permanently?'))return;
@@ -373,14 +373,14 @@ async function addFAQ(){
     await loadAdminFAQs();
     // Show immediately in FAQ tab
     const c=document.getElementById('faq-container');
-    if(c){const d=document.createElement('div');d.className='faq-item rev';d.innerHTML=`<div class="faq-q" onclick="toggleFaq(this)"><span>${q}</span><div class="faq-icon">+</div></div><div class="faq-body"><p>${a}</p></div>`;c.appendChild(d);revObs.observe(d);}
+    if(c){const d=document.createElement('div');d.className='faq-item rev';d.innerHTML=`<div class="faq-q" data-act="click" data-do='[["toggleFaq","@el"]]'><span>${q}</span><div class="faq-icon">+</div></div><div class="faq-body"><p>${a}</p></div>`;c.appendChild(d);revObs.observe(d);}
   } else toast('❌ Error. Check Supabase (site_faqs table may need creation).','err');
 }
 async function loadAdminFAQs(){
   const list=document.getElementById('admin-faq-list');if(!list)return;
   const faqs=await sbR('/rest/v1/site_faqs?select=*&order=sort_order.asc,created_at.desc');
   if(!faqs.length){list.innerHTML='<p style="color:var(--muted);font-size:13px">No custom FAQs added yet.</p>';return;}
-  list.innerHTML=faqs.map(f=>`<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${f.question}</div><div class="vid-row-url">Category: ${f.category||'General'}</div></div><button class="a-btn a-btn-danger" onclick="deleteFAQ('${f.id}')" style="padding:5px 10px;font-size:12px">✕ Delete</button></div>`).join('');
+  list.innerHTML=faqs.map(f=>`<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${f.question}</div><div class="vid-row-url">Category: ${f.category||'General'}</div></div><button class="a-btn a-btn-danger" ${actAttr('click',[['deleteFAQ',f.id]])} style="padding:5px 10px;font-size:12px">✕ Delete</button></div>`).join('');
 }
 async function deleteFAQ(id){
   if(!confirm('Delete this FAQ permanently?'))return;
@@ -404,7 +404,7 @@ async function loadLeadsTable(){
       <td>${l.city||'—'}</td>
       <td>${l.neet_score||'—'}</td>
       <td>${cat}</td>
-      <td><select class="stage-pill s-${l.stage||'new'}" onchange="updateLeadStage('${l.id}',this)" style="border:none;cursor:pointer;font-weight:700;font-family:inherit">
+      <td><select class="stage-pill s-${l.stage||'new'}" ${actAttr('change',[['updateLeadStage',l.id,'@el']])} style="border:none;cursor:pointer;font-weight:700;font-family:inherit">
         <option value="new" ${l.stage==='new'?'selected':''}>🆕 New</option>
         <option value="contacted" ${l.stage==='contacted'?'selected':''}>📞 Contacted</option>
         <option value="interested" ${l.stage==='interested'?'selected':''}>🔥 Interested</option>
@@ -454,7 +454,7 @@ async function loadAdminColleges(){
   try {
     const cols = await sbR('/rest/v1/site_colleges?select=*&order=sort_order.asc,created_at.desc');
     if(!cols || !cols.length){list.innerHTML='<p style="color:var(--muted);font-size:13px">No colleges in Supabase yet. Colleges are currently hardcoded in HTML.</p>';return;}
-    list.innerHTML = cols.map(c=>`<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${c.name}</div><div class="vid-row-url">${c.location||''} | Seats: ${c.foreign_seats||'—'} | Type: ${c.college_type||'—'}</div></div><button class="a-btn a-btn-danger" onclick="deleteCollege('${c.id}')" style="padding:5px 10px;font-size:12px">✕ Delete</button></div>`).join('');
+    list.innerHTML = cols.map(c=>`<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${c.name}</div><div class="vid-row-url">${c.location||''} | Seats: ${c.foreign_seats||'—'} | Type: ${c.college_type||'—'}</div></div><button class="a-btn a-btn-danger" ${actAttr('click',[['deleteCollege',c.id]])} style="padding:5px 10px;font-size:12px">✕ Delete</button></div>`).join('');
   } catch(e){list.innerHTML='<p style="color:var(--muted);font-size:13px">Error loading — ensure site_colleges table exists in Supabase.</p>';}
 }
 async function deleteCollege(id){
