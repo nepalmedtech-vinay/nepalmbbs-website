@@ -60,8 +60,14 @@ const canonical = new URL(path, SITE).href;
      Loading bridge last settles that without escalating specificity anywhere.
      Its :root aliases are unaffected by the move, because var() resolves at
      computed-value time rather than at parse time. -->
+{/* Nine separate sheets, deliberately. Bundling them into one 169 kB file
+    was tried and measured WORSE — LCP 1632ms → 1916ms — because nothing can
+    apply until a single file finishes, while nine stream in parallel. The
+    round-trip argument for bundling assumes HTTP/1.1 head-of-line blocking;
+    Netlify serves HTTP/2, where the requests multiplex and the only thing
+    left is the serialisation penalty. tools/bundle-css.mjs is kept for the
+    record; it is not wired in. */}
 <link rel="stylesheet" href="/assets/theme/engine.css">
-<link rel="stylesheet" href="/assets/gfx/grain.css">
 <link rel="stylesheet" href="/assets/css/base.css">
 <link rel="stylesheet" href="/assets/css/components.css">
 <link rel="stylesheet" href="/assets/css/sections.css">
@@ -70,6 +76,12 @@ const canonical = new URL(path, SITE).href;
 <link rel="stylesheet" href="/assets/theme/glass.css">
 <link rel="stylesheet" href="/assets/theme/motion.css">
 <link rel="stylesheet" href="/assets/theme/panel.css">
+{/* 36 kB of base64 PNG for a decorative noise overlay, and it was
+    render-blocking: nothing could paint until it arrived. media="print"
+    keeps the browser from blocking on it; runtime.js flips it to "all"
+    once the page is up. Flipping it from a script rather than an inline
+    onload handler is deliberate -- the CSP allows no inline handlers. */}
+<link rel="stylesheet" href="/assets/gfx/grain.css" media="print" data-late-style>
 
 {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
 
@@ -122,28 +134,32 @@ const canonical = new URL(path, SITE).href;
      preview mounts its own toggle. -->
 <aside id="theme-panel" class="tp-sheet" hidden aria-label="Appearance settings"></aside>
 
-<script is:inline src="/assets/js/config.js"></script>
-<script is:inline src="/assets/js/auth.js"></script>
-<script is:inline src="/assets/theme/engine.js"></script>
-<script is:inline src="/assets/theme/panel.js"></script>
-<script is:inline src="/assets/theme/aurora-gl.js"></script>
+{/* defer, not async: these files depend on each other in source order
+    (config.js defines SB/AK before leads.js reads them) and async would
+    race them. Deferred scripts still run before DOMContentLoaded, so
+    every listener they attach is attached in time. */}
+<script is:inline defer src="/assets/js/config.js"></script>
+<script is:inline defer src="/assets/js/auth.js"></script>
+<script is:inline defer src="/assets/theme/engine.js"></script>
+<script is:inline defer src="/assets/theme/panel.js"></script>
+<script is:inline defer src="/assets/theme/aurora-gl.js"></script>
 
 {!bare && (
   <>
-    <script is:inline src="/assets/js/boot.js"></script>
-    <script is:inline src="/assets/js/i18n.js"></script>
-    <script is:inline src="/assets/js/navigation.js"></script>
-    <script is:inline src="/assets/js/leads.js"></script>
-    <script is:inline src="/assets/js/reveal.js"></script>
-    <script is:inline src="/assets/js/chatbot.js"></script>
-    <script is:inline src="/assets/js/colleges.js"></script>
-    <script is:inline src="/assets/js/admin.js"></script>
-    <script is:inline src="/assets/js/effects.js"></script>
-    <script is:inline src="/assets/js/actions.js"></script>
+    <script is:inline defer src="/assets/js/boot.js"></script>
+    <script is:inline defer src="/assets/js/i18n.js"></script>
+    <script is:inline defer src="/assets/js/navigation.js"></script>
+    <script is:inline defer src="/assets/js/leads.js"></script>
+    <script is:inline defer src="/assets/js/reveal.js"></script>
+    <script is:inline defer src="/assets/js/chatbot.js"></script>
+    <script is:inline defer src="/assets/js/colleges.js"></script>
+    <script is:inline defer src="/assets/js/admin.js"></script>
+    <script is:inline defer src="/assets/js/effects.js"></script>
+    <script is:inline defer src="/assets/js/actions.js"></script>
   </>
 )}
 
-<script is:inline src="/assets/theme/runtime.js"></script>
-<script is:inline src="/assets/theme/motion.js"></script>
+<script is:inline defer src="/assets/theme/runtime.js"></script>
+<script is:inline defer src="/assets/theme/motion.js"></script>
 </body>
 </html>

@@ -15,7 +15,9 @@
     "csp": "node tools/gen-csp.mjs",
     "verify": "npm run build && node tools/gen-csp.mjs --check && node tests/build-verify.mjs && node tests/csp-verify.mjs && node tests/console-verify.mjs && node tests/auth-verify.mjs && node tests/a11y-verify.mjs && node tests/audit.mjs",
     "audit": "node tests/audit.mjs",
-    "a11y": "node tests/a11y-verify.mjs"
+    "a11y": "node tests/a11y-verify.mjs",
+    "perf": "node tests/perf-verify.mjs",
+    "css": "node tools/bundle-css.mjs"
   },
   "repository": {
     "type": "git",

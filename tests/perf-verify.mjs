@@ -51,6 +51,17 @@ for (const route of ROUTES) {
   });
   await ctx.route('**/rest/v1/**', r =>
     r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
+
+  // Google Fonts is not reachable from this sandbox, and a render-blocking
+  // stylesheet that never answers pins first paint to the socket timeout --
+  // ~13s on every route, identical whether the page is 51kB or 190kB. Serving
+  // an empty stylesheet keeps the request in the waterfall (so the cost of
+  // asking is still measured) without measuring this network's failure mode.
+  // Whether that request SHOULD be render-blocking is a separate question, and
+  // the assertion below answers it.
+  await ctx.route('https://fonts.googleapis.com/**', r =>
+    r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
+  await ctx.route('https://fonts.gstatic.com/**', r => r.abort());
   const page = await ctx.newPage();
 
   const cdp = await ctx.newCDPSession(page);
@@ -99,6 +110,30 @@ for (const r of rows) {
     (Math.round(r.lcp) + 'ms').padStart(7) + bad('lcp', r.lcp) +
     r.cls.toFixed(3).padStart(7) + bad('cls', r.cls) +
     (Math.round(r.long) + 'ms').padStart(7) + bad('tbt', r.long));
+}
+
+/* A stylesheet parked at media="print" that never gets promoted is invisible
+   rather than slow, which is the failure mode nobody notices. */
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  await ctx.route('**/rest/v1/**', r =>
+    r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
+  const page = await ctx.newPage();
+  await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'load' });
+  await page.waitForTimeout(1200);
+  const late = await page.evaluate(() => {
+    const l = document.querySelector('link[data-late-style]');
+    const g = document.querySelector('.grain');
+    return { media: l ? l.media : null,
+             painted: g ? /url\(/.test(getComputedStyle(g).backgroundImage) : false };
+  });
+  if (late.media !== 'all' || !late.painted) {
+    console.log(`\n❌ deferred stylesheet was never promoted (media=${late.media}, painted=${late.painted})`);
+    await browser.close(); server.close();
+    process.exit(1);
+  }
+  console.log('\n✅ the deferred grain stylesheet is promoted after load and paints');
+  await ctx.close();
 }
 
 const fails = [];

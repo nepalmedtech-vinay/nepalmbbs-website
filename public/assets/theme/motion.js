@@ -71,7 +71,19 @@
      Mounted last and entirely optional: the CSS field underneath is already
      painted, so a failure here costs nothing. */
 
-  if (window.AuroraGL) window.AuroraGL.mount();
+  /* Compiling the fragment shader costs ~160ms of main thread on a throttled
+     mid-range phone -- measured, and it was most of the page's total blocking
+     time. The CSS field underneath is already painted, so nothing is waiting
+     to be looked at while that happens; it only delays everything else the
+     visitor might touch. So it waits for the thread to be free.
+
+     The timeout matters: on a page that never goes idle, requestIdleCallback
+     would never fire and the shader would simply never appear. */
+  (function mountAuroraWhenIdle() {
+    function mount() { if (window.AuroraGL) window.AuroraGL.mount(); }
+    if ('requestIdleCallback' in window) requestIdleCallback(mount, { timeout: 2500 });
+    else setTimeout(mount, 700);
+  })();
 
   /* ── Cross-document view transitions ──────────────────────────────
      Chrome drives these from CSS alone (@view-transition). This only guards

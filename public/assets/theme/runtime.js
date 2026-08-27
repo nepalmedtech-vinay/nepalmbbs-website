@@ -136,3 +136,16 @@
     });
   }
 })();
+
+/* Stylesheets parked at media="print" so they do not block first paint. They
+   are decoration -- the grain overlay -- and the page is complete without
+   them; they just arrive a moment later. */
+(function promoteLateStyles() {
+  function promote() {
+    document.querySelectorAll('link[data-late-style]').forEach(function (l) {
+      l.media = 'all';
+    });
+  }
+  if (document.readyState === 'complete') promote();
+  else window.addEventListener('load', promote);
+})();
