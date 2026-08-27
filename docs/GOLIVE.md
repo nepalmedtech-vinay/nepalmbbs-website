@@ -32,6 +32,28 @@ housekeeping. Either way run it — do not assume which.
 
 ## 1. Apply the migrations
 
+### The short way
+
+```bash
+./tools/setup-database.sh "<your connection URI>"
+```
+
+The URI is in Supabase under Project Settings → Database → Connection string
+→ URI. It applies all four migrations in order and then runs eight checks
+against the result — that the public cannot read leads, that the public can
+still submit one, that the documents bucket is private, that rate limiting is
+armed, that a new application starts its own follow-up. It prints what it
+found rather than telling you it worked.
+
+It is safe to run twice. It never prints the URI, and you should not paste
+that string anywhere you would not paste a password — including into a chat
+with me.
+
+Then skip to step 2. The rest of this section is the same thing by hand, if
+you would rather watch each file land.
+
+### By hand
+
 In the Supabase SQL editor for project `fpzgcijbryvddtpegcmm`, **in this order**,
 one file at a time, reading the result of each before starting the next:
 
