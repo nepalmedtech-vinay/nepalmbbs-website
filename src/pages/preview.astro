@@ -1,0 +1,215 @@
+---
+import GlassLayout from '../layouts/GlassLayout.astro';
+import { getColleges } from '../lib/colleges.js';
+
+const colleges = await getColleges();
+const seats = colleges.reduce((n, c) => n + (parseInt(c.seats, 10) || 0), 0);
+const govt = colleges.filter((c) => c.type === 'govt').length;
+const featured = colleges.filter((c) => c.type === 'govt').slice(0, 3);
+---
+<GlassLayout
+  title="NepalMBBS.in — Appearance preview"
+  description="Live preview of the glass theme system."
+  path="/preview"
+>
+
+<header class="gl-nav">
+  <div class="wrap nav-in">
+    <a href="/" class="brand">Nepal<span class="gl-grad">MBBS</span></a>
+    <nav class="nav-links">
+      <a href="/admission-process">Process</a>
+      <a href="/colleges">Colleges</a>
+      <a href="/guidelines">Guidelines</a>
+      <a href="/faq">FAQ</a>
+    </nav>
+    <div class="nav-right">
+      <button id="theme-toggle" class="gl-btn gl-btn--ghost" aria-expanded="false" aria-controls="theme-panel">
+        Customize
+      </button>
+      <a href="/counseling" class="gl-btn gl-btn--primary">Free counseling</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-in">
+      <span class="gl-eyebrow reveal">NMC India recognised · MEC Nepal process</span>
+
+      <h1 class="gl-display hero-h1">
+        <span class="gl-line" style="--i:0"><span>Your MBBS in Nepal,</span></span>
+        <span class="gl-line" style="--i:1"><span>decided on <em class="gl-grad">evidence</em>.</span></span>
+      </h1>
+
+      <p class="gl-lead reveal" style="--delay:120ms">
+        We publish what we can source and say so when we cannot. No fee figures
+        that go stale, no stock photographs standing in for a campus, no promise
+        the Medical Education Commission has not made.
+      </p>
+
+      <div class="hero-cta reveal" style="--delay:200ms">
+        <a href="/counseling" class="gl-btn gl-btn--primary">Book free counseling</a>
+        <a href="/colleges" class="gl-btn gl-btn--ghost">See all {colleges.length} colleges</a>
+      </div>
+
+      <div class="stats">
+        {[
+          { n: colleges.length, l: 'colleges admitting Indian students' },
+          { n: seats, l: 'foreign-quota seats' },
+          { n: govt, l: 'government institutions' },
+        ].map((s, i) => (
+          <div class="stat gl gl--soft reveal" style={`--delay:${240 + i * 70}ms`}>
+            <b data-count={s.n}>0</b>
+            <span>{s.l}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- RECORD CARDS -->
+  <section class="gl-section">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="gl-eyebrow">Government colleges</span>
+        <h2 class="gl-h2">The record, not the pitch.</h2>
+        <p class="gl-lead">
+          Every row comes from the MEC intake notice. Where we do not have a
+          figure, the row says so rather than quietly disappearing.
+        </p>
+      </div>
+
+      <div class="cards">
+        {featured.map((c, i) => (
+          <article class="gl gl--live card reveal" style={`--delay:${i * 80}ms`}>
+            <span class="gl-spec"></span>
+            <span class="pill">{c.affiliation || 'Government'}</span>
+            <h3>{c.name}</h3>
+            <p class="card-loc">{c.location}</p>
+            <dl>
+              <div><dt>Foreign seats</dt><dd>{c.seats || '—'}</dd></div>
+              <div><dt>Established</dt><dd>{c.established || '—'}</dd></div>
+              <div><dt>Duration</dt><dd>{c.duration || '5.5 Years'}</dd></div>
+              <div><dt>Tuition</dt><dd class="ask">Ask us →</dd></div>
+            </dl>
+            <a href={`/colleges/${c.slug}`} class="card-link">Full record →</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="gl-section">
+    <div class="wrap">
+      <div class="gl gl--lift cta reveal">
+        <div>
+          <h2 class="gl-h2">Fees change every intake.</h2>
+          <p class="gl-lead">
+            So we will not print a number that is already wrong. Tell us your
+            NEET score and we will give you the current structure, in writing.
+          </p>
+        </div>
+        <a href="/counseling" class="gl-btn gl-btn--primary">Book a call</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- The Customize panel. Sits in a sheet over the page so every change is
+     judged against the real material rather than a swatch. -->
+<aside id="theme-panel" class="tp-sheet" hidden aria-label="Appearance settings"></aside>
+
+<style is:global>
+  .nav-in { display: flex; align-items: center; gap: var(--s-5); min-height: 68px; }
+  .brand {
+    font-family: var(--ty-display); font-size: 1.15rem; font-weight: 700;
+    letter-spacing: -0.02em; color: var(--g-ink); text-decoration: none;
+  }
+  .nav-links { display: flex; gap: var(--s-5); margin-inline: auto; }
+  .nav-links a {
+    font-size: var(--t-sm); color: var(--g-ink-2); text-decoration: none;
+    transition: color var(--d-2) var(--ea-out);
+  }
+  .nav-links a:hover { color: var(--brand); }
+  .nav-right { display: flex; gap: var(--s-2); align-items: center; }
+
+  .hero { padding-block: clamp(3.5rem, 2rem + 7vw, 8rem) var(--s-section); }
+  .hero-in { max-width: 62rem; }
+  .hero-h1 { margin: var(--s-5) 0 var(--s-5); }
+  .hero-h1 em { font-style: italic; }
+  .hero-cta { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-6); }
+
+  .stats {
+    display: grid; gap: var(--s-4); margin-top: var(--s-8);
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  }
+  .stat { padding: var(--s-5); }
+  .stat b {
+    display: block; font-family: var(--ty-display);
+    font-size: clamp(2rem, 1.4rem + 2.2vw, 2.9rem); font-weight: var(--ty-weight-d);
+    line-height: 1; letter-spacing: var(--ty-tight); font-variant-numeric: tabular-nums;
+    color: var(--g-ink);
+  }
+  .stat span { display: block; margin-top: var(--s-2); font-size: var(--t-xs); color: var(--g-ink-3); }
+
+  .sec-head { max-width: 46rem; margin-bottom: var(--s-7); }
+  .sec-head .gl-h2 { margin: var(--s-3) 0 var(--s-4); }
+
+  .cards { display: grid; gap: var(--s-4); grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .card { padding: var(--s-5); display: flex; flex-direction: column; }
+  .card h3 {
+    font-family: var(--ty-display); font-size: var(--t-h3); font-weight: var(--ty-weight-d);
+    line-height: var(--lh-snug); letter-spacing: var(--ty-tight); margin: var(--s-3) 0 0; color: var(--g-ink);
+  }
+  .card-loc { margin: var(--s-1) 0 var(--s-4); font-size: var(--t-sm); color: var(--g-ink-3); }
+  .pill {
+    align-self: flex-start; font-size: var(--t-label); font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--brand);
+    background: var(--brand-soft); border: 1px solid var(--brand-line);
+    padding: 0.3rem var(--s-3); border-radius: var(--r-pill);
+  }
+  .card dl { margin: 0 0 var(--s-4); }
+  .card dl > div {
+    display: flex; justify-content: space-between; gap: var(--s-3);
+    padding: var(--s-3) 0; border-bottom: 1px solid var(--m-hairline);
+  }
+  .card dl > div:last-child { border-bottom: 0; }
+  .card dt { font-size: var(--t-xs); color: var(--g-ink-3); }
+  .card dd {
+    margin: 0; font-size: var(--t-sm); font-weight: 550; color: var(--g-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .card dd.ask { color: var(--brand); }
+  .card-link {
+    margin-top: auto; font-size: var(--t-sm); font-weight: 600;
+    color: var(--brand); text-decoration: none;
+  }
+  .card-link:hover { text-decoration: underline; }
+
+  .cta {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--s-6); flex-wrap: wrap; padding: var(--s-7);
+  }
+  .cta .gl-h2 { margin-bottom: var(--s-3); }
+
+  /* Panel sheet — fixed rail on desktop, bottom sheet on a phone. */
+  .tp-sheet {
+    position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100vw);
+    z-index: var(--z-modal); overflow-y: auto; overscroll-behavior: contain;
+    background: #fff; box-shadow: -20px 0 60px rgba(15, 20, 32, 0.16);
+    animation: tp-slide 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes tp-slide { from { transform: translateX(100%); } to { transform: none; } }
+  @media (max-width: 640px) {
+    .tp-sheet { top: auto; width: 100vw; max-height: 86vh; border-radius: 18px 18px 0 0; }
+    @keyframes tp-slide { from { transform: translateY(100%); } to { transform: none; } }
+    .nav-links { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .tp-sheet { animation: none; } }
+</style>
+
+</GlassLayout>

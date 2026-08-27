@@ -1,0 +1,68 @@
+---
+import { SITE } from '../lib/routes.js';
+const { title, description, path = '/' } = Astro.props;
+const canonical = new URL(path, SITE).href;
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>{title}</title>
+<meta name="description" content={description}>
+<link rel="canonical" href={canonical}>
+<meta name="theme-color" content="#F4F6FB">
+<link rel="icon" href="/assets/brand/icon-192.png" sizes="192x192" type="image/png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Geist:wght@300..800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/assets/theme/engine.css">
+<link rel="stylesheet" href="/assets/gfx/grain.css">
+<link rel="stylesheet" href="/assets/theme/glass.css">
+<link rel="stylesheet" href="/assets/theme/panel.css">
+
+<!-- Paint the saved theme before first paint. Without this a returning
+     visitor sees the default palette for a frame and then a flash as the
+     saved one lands — the one thing that makes a themeable site feel cheap.
+     Wrapped in try/catch because a private window throws on localStorage
+     access, and a theme is never worth a blank page. -->
+<script is:inline>
+  (function () {
+    try {
+      var t = JSON.parse(localStorage.getItem('nmb_theme_v1') || 'null');
+      if (!t) return;
+      var s = document.documentElement.style;
+      var map = {
+        brand: '--brand', brand2: '--brand-2', ink: '--g-ink', base: '--g-base',
+        au1: '--au-1', au2: '--au-2', au3: '--au-3', au4: '--au-4',
+        auOpacity: '--au-opacity', auScale: '--au-scale',
+        mOpacity: '--m-opacity', mBorder: '--m-border', mInner: '--m-inner',
+        radius: '--sh-radius', depth: '--dp', tyScale: '--ty-scale', sp: '--sp',
+        mo: '--mo', fxGrain: '--fx-grain'
+      };
+      for (var k in map) if (t[k] !== undefined) s.setProperty(map[k], t[k]);
+      if (t.mBlur !== undefined) s.setProperty('--m-blur', t.mBlur + 'px');
+      if (t.mSaturate !== undefined) s.setProperty('--m-saturate', t.mSaturate + '%');
+      if (t.auBlur !== undefined) s.setProperty('--au-blur', t.auBlur + 'px');
+      if (t.auSpeed !== undefined) s.setProperty('--au-speed', t.auSpeed + 's');
+      if (t.border !== undefined) s.setProperty('--sh-border', t.border + 'px');
+    } catch (e) {}
+  })();
+</script>
+<style is:inline>:root{--grain-src:var(--pm-grain-src)}</style>
+</head>
+<body>
+
+<div class="au" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="grain" aria-hidden="true"></div>
+
+<slot />
+
+<script is:inline src="/assets/js/config.js"></script>
+<script is:inline src="/assets/theme/engine.js"></script>
+<script is:inline src="/assets/theme/panel.js"></script>
+<script is:inline src="/assets/theme/runtime.js"></script>
+</body>
+</html>

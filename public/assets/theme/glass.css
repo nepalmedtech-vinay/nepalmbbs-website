@@ -1,0 +1,415 @@
+/* NepalMBBS.in — theme/glass.css
+   The luminous glass material.
+
+   Most "glassmorphism" is one rule: a translucent fill plus backdrop-filter.
+   That reads as a plastic overlay, and it is why the effect got a reputation
+   for looking cheap. Real glass does four things at once, and all four are
+   here:
+
+     1. It REFRACTS something. A frosted pane over flat grey is just grey. The
+        aurora field exists so the panes have colour and light to bend.
+     2. It has a LIT EDGE. Light catches the top rim and skips the bottom, so
+        the border is a gradient, not a uniform 1px line.
+     3. It has THICKNESS. An inner top highlight and a faint inner bottom
+        shadow give the pane a body rather than a surface.
+     4. It BOOSTS what is behind it. saturate() on the backdrop is what makes
+        colour appear to concentrate through the material.
+
+   Every value is a token from engine.css, so the admin panel can turn this
+   from clear glass to frosted to nearly solid without touching a rule here. */
+
+
+/* ══ Ground + aurora ═════════════════════════════════════════════════════ */
+
+html { background: var(--g-base); }
+
+body {
+  position: relative;
+  min-height: 100%;
+  background: transparent;
+  color: var(--g-ink);
+  font-family: var(--ty-body);
+  font-size: var(--t-body);
+  font-weight: var(--ty-weight);
+  line-height: var(--lh-body);
+  letter-spacing: var(--ty-track);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* The colour field. Fixed, so it stays put while content scrolls over it —
+   the panes then reveal different parts of it as you move, which is what
+   makes the material feel like a physical layer rather than a texture. */
+.au {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-aurora);
+  pointer-events: none;
+  overflow: hidden;
+  opacity: var(--au-opacity);
+  contain: strict;
+}
+
+.au i {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(var(--au-blur));
+  will-change: transform;
+  /* Each blob gets its own duration and phase from the shared --au-speed, so
+     they never sync up into a single pulsing mass. */
+  animation: au-drift var(--au-dur, var(--au-speed)) var(--ea-io) infinite;
+}
+
+.au i:nth-child(1) {
+  --au-dur: var(--au-speed);
+  width: calc(52vw * var(--au-scale)); height: calc(52vw * var(--au-scale));
+  left: -8vw; top: -12vh;
+  background: var(--au-1);
+  animation-delay: 0s;
+}
+.au i:nth-child(2) {
+  --au-dur: calc(var(--au-speed) * 1.34);
+  width: calc(44vw * var(--au-scale)); height: calc(44vw * var(--au-scale));
+  right: -6vw; top: -6vh;
+  background: var(--au-2);
+  animation-delay: calc(var(--au-speed) * -0.3);
+}
+.au i:nth-child(3) {
+  --au-dur: calc(var(--au-speed) * 1.12);
+  width: calc(46vw * var(--au-scale)); height: calc(46vw * var(--au-scale));
+  left: 12vw; bottom: -18vh;
+  background: var(--au-3);
+  animation-delay: calc(var(--au-speed) * -0.62);
+}
+.au i:nth-child(4) {
+  --au-dur: calc(var(--au-speed) * 1.5);
+  width: calc(38vw * var(--au-scale)); height: calc(38vw * var(--au-scale));
+  right: 6vw; bottom: -10vh;
+  background: var(--au-4);
+  animation-delay: calc(var(--au-speed) * -0.18);
+}
+
+@keyframes au-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  33%  { transform: translate3d(6vw, 4vh, 0) scale(1.12); }
+  66%  { transform: translate3d(-4vw, 7vh, 0) scale(0.94); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* Grain. Breaks the banding that large blurred gradients always produce on
+   8-bit displays — without it the aurora shows visible steps. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: var(--fx-grain);
+  background-image: var(--grain-src);
+  background-size: var(--fx-noise-size) var(--fx-noise-size);
+  mix-blend-mode: overlay;
+  contain: strict;
+}
+
+/* Everything else sits above both. */
+main, header, footer, section, .gl-nav { position: relative; z-index: var(--z-base); }
+
+
+/* ══ The pane ════════════════════════════════════════════════════════════ */
+
+.gl {
+  position: relative;
+  border-radius: var(--r-md);
+  background: var(--m-fill);
+  -webkit-backdrop-filter: var(--m-filter);
+          backdrop-filter: var(--m-filter);
+  box-shadow: var(--sd-3);
+  isolation: isolate;
+}
+
+/* The lit rim. A gradient border drawn with a masked pseudo-element, because
+   a plain border cannot fade from lit to unlit around a corner. */
+.gl::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: var(--sh-border);
+  background: linear-gradient(
+    160deg,
+    var(--m-edge-top) 0%,
+    rgba(255 255 255 / calc(var(--m-border) * 0.15)) 42%,
+    var(--m-edge-bottom) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Thickness. A bright inner top edge and a faint inner bottom shade — this is
+   the pair that stops the pane reading as a flat sticker. */
+.gl::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / var(--m-inner)),
+    inset 0 -1px 0 rgba(15 20 32 / calc(var(--m-inner) * 0.10));
+}
+
+.gl > * { position: relative; z-index: 3; }
+
+/* Variants. Same material, different amounts of it. */
+.gl--soft  { background: var(--m-fill-soft); box-shadow: var(--sd-2); }
+.gl--solid { background: var(--m-fill-solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.gl--flat  { box-shadow: var(--sd-1); }
+
+/* Lifted panes get more shadow AND more distance from the ground, which is
+   what --fx-float buys — cards that hover rather than cards with a bigger
+   blur under them. */
+.gl--lift {
+  box-shadow: var(--sd-4);
+  transform: translate3d(0, calc(-4px * var(--fx-float)), 0);
+}
+
+/* Interactive panes: tilt toward the pointer, and carry a moving specular
+   highlight. --gx/--gy are written by theme/engine.js, once per frame. */
+.gl--live {
+  transition: transform var(--d-3) var(--ea-out), box-shadow var(--d-3) var(--ea-out);
+  transform:
+    perspective(900px)
+    rotateX(calc(var(--gy, 0) * -3deg * var(--mo-tilt)))
+    rotateY(calc(var(--gx, 0) * 3deg * var(--mo-tilt)))
+    translate3d(0, 0, 0);
+}
+.gl--live:hover { box-shadow: var(--sd-4); }
+
+/* The specular. A soft radial that follows the pointer across the pane. It is
+   the single strongest cue that a surface is glass rather than paper. */
+.gl--live > .gl-spec {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--d-3) var(--ea-out);
+  background: radial-gradient(
+    18rem circle at var(--px, 50%) var(--py, 50%),
+    rgba(255 255 255 / 0.34), transparent 58%);
+}
+.gl--live:hover > .gl-spec { opacity: calc(1 * var(--fx-glow)); }
+
+
+/* ══ Navigation ══════════════════════════════════════════════════════════ */
+
+.gl-nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+  background: rgba(var(--m-tint) / calc(var(--m-opacity) * 0.82));
+  -webkit-backdrop-filter: blur(calc(var(--m-blur) * 0.7)) saturate(var(--m-saturate));
+          backdrop-filter: blur(calc(var(--m-blur) * 0.7)) saturate(var(--m-saturate));
+  border-bottom: var(--sh-border) solid var(--m-hairline);
+  transition: background var(--d-3) var(--ea-out), box-shadow var(--d-3) var(--ea-out);
+}
+.gl-nav.is-stuck { box-shadow: var(--sd-2); }
+
+
+/* ══ Buttons ═════════════════════════════════════════════════════════════ */
+
+.gl-btn {
+  --y: 0px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: calc(2.9rem * var(--sh-scale));
+  padding: 0 calc(var(--s-6) * var(--sh-scale));
+  border: 0;
+  border-radius: var(--r-pill);
+  font: inherit;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  overflow: hidden;
+  transform: translate3d(0, var(--y), 0);
+  transition: transform var(--d-2) var(--ea-spring),
+              box-shadow var(--d-3) var(--ea-out),
+              background var(--d-3) var(--ea-out);
+}
+.gl-btn:hover  { --y: -2px; }
+.gl-btn:active { --y: 1px; }
+
+.gl-btn--primary {
+  background: linear-gradient(148deg, var(--brand-lift), var(--brand));
+  color: var(--brand-ink);
+  box-shadow:
+    var(--sd-2),
+    0 0 calc(24px * var(--fx-glow)) color-mix(in oklab, var(--brand) calc(28% * var(--fx-glow)), transparent);
+}
+.gl-btn--primary:hover {
+  box-shadow:
+    var(--sd-3),
+    0 0 calc(34px * var(--fx-glow)) color-mix(in oklab, var(--brand) calc(38% * var(--fx-glow)), transparent);
+}
+
+/* One sheen pass on hover — never a loop. A looping shine is an advert. */
+.gl-btn--primary::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 38%;
+  background: linear-gradient(90deg, transparent, rgba(255 255 255 / 0.45), transparent);
+  transform: translate3d(-140%, 0, 0) skewX(-16deg);
+  opacity: var(--fx-sheen);
+}
+.gl-btn--primary:hover::after { animation: gl-sheen calc(0.72s * max(var(--mo), 0.001)) var(--ea-out); }
+
+@keyframes gl-sheen { to { transform: translate3d(320%, 0, 0) skewX(-16deg); } }
+
+.gl-btn--ghost {
+  background: var(--m-fill);
+  -webkit-backdrop-filter: var(--m-filter);
+          backdrop-filter: var(--m-filter);
+  color: var(--g-ink);
+  box-shadow: inset 0 0 0 var(--sh-border) rgba(255 255 255 / var(--m-border)), var(--sd-1);
+}
+.gl-btn--ghost:hover {
+  background: rgba(var(--m-tint) / calc(var(--m-opacity) + 0.16));
+  box-shadow: inset 0 0 0 var(--sh-border) rgba(255 255 255 / 0.9), var(--sd-2);
+}
+
+.gl-btn--quiet {
+  background: transparent;
+  color: var(--g-ink-2);
+  padding: 0 var(--s-3);
+}
+.gl-btn--quiet:hover { color: var(--brand); }
+
+
+/* ══ Typography ══════════════════════════════════════════════════════════ */
+
+.gl-display {
+  font-family: var(--ty-display);
+  font-size: var(--t-display);
+  font-weight: var(--ty-weight-d);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ty-tight);
+  color: var(--g-ink);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.gl-h2 {
+  font-family: var(--ty-display);
+  font-size: var(--t-h2);
+  font-weight: var(--ty-weight-d);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ty-tight);
+  color: var(--g-ink);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.gl-lead {
+  font-size: var(--t-lead);
+  line-height: var(--lh-prose);
+  color: var(--g-ink-2);
+  max-width: var(--measure);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.gl-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+.gl-eyebrow::before {
+  content: '';
+  width: var(--s-6);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brand));
+}
+
+/* Gradient word. Exactly one per headline. */
+.gl-grad {
+  /* Two stops, both brand. Running brand -> accent -> brand across a
+     coloured ground turned the word muddy in the middle, which is worse than
+     no gradient at all on the one word carrying the headline. */
+  background: linear-gradient(100deg, var(--brand-deep) 10%, var(--brand-lift) 90%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+
+/* Per-line mask reveal. The hidden state lives in the keyframe, never on the
+   element, so if the animation never runs the headline is still readable. */
+.gl-line { display: block; overflow: hidden; }
+.gl-line > span {
+  display: block;
+  animation: gl-rise calc(0.85s * max(var(--mo), 0.001)) var(--ea-enter) backwards;
+  animation-delay: calc(var(--i, 0) * 95ms * var(--mo) + 150ms * var(--mo));
+}
+@keyframes gl-rise { from { transform: translate3d(0, 108%, 0); } to { transform: none; } }
+
+
+/* ══ Scroll entrance ═════════════════════════════════════════════════════
+   Same discipline: `backwards` fill, hidden state in the keyframe. An element
+   that never receives .in stays visible rather than invisible. */
+
+.reveal.in {
+  animation: gl-in calc(0.7s * max(var(--mo), 0.001)) var(--ea-enter) backwards;
+  animation-delay: var(--delay, 0ms);
+}
+@keyframes gl-in {
+  from { opacity: 0; transform: translate3d(0, calc(24px * var(--mo)), 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+
+/* ══ Layout ══════════════════════════════════════════════════════════════ */
+
+.wrap {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.gl-section { padding-block: var(--s-section); }
+
+
+/* ══ Focus ═══════════════════════════════════════════════════════════════ */
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: var(--focus-off);
+  box-shadow: var(--focus-ring);
+  border-radius: var(--r-xs);
+}
+
+
+/* ══ Degradation ═════════════════════════════════════════════════════════
+   Where backdrop-filter is unavailable the panes would be near-transparent
+   and the text on them unreadable, so they become solid instead. This is a
+   legibility fix, not a nicety. */
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .gl, .gl-nav, .gl-btn--ghost { background: var(--m-fill-solid); }
+}
