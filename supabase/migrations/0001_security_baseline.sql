@@ -99,6 +99,28 @@ create policy staff_admin_write on public.staff
 -- The public form must be able to INSERT. Nothing public may SELECT.
 -- This is the single most important statement in the file.
 
+-- Legacy policies found on the live database that this file did not know
+-- about. They must go in the SAME transaction as the replacements below: RLS
+-- is permissive-OR, so one policy saying `true` grants access no matter what
+-- else is written, and dropping them separately would close the enquiry form
+-- for the gap between the two migrations.
+--
+--   leads.owner_all          ALL to authenticated using (true)
+--     -> every signed-up user could read all 11,077 student records
+--   leads.write_leads_stage  UPDATE to public using (true)
+--     -> anyone holding the anon key could rewrite any lead
+--   admin_settings.read/write_settings  ALL+SELECT to public using (true)
+--     -> the admin password row was readable AND writable by the public
+--   site_*.write_*           ALL to public using (true)
+--     -> anyone could rewrite the FAQs and testimonials the site renders
+drop policy if exists owner_all         on public.leads;
+drop policy if exists insert_only       on public.leads;
+drop policy if exists write_leads_stage on public.leads;
+drop policy if exists read_settings     on public.admin_settings;
+drop policy if exists write_settings    on public.admin_settings;
+drop policy if exists followup_owner    on public.followups;
+drop policy if exists followup_insert   on public.followups;
+
 alter table public.leads enable row level security;
 
 drop policy if exists leads_public_insert on public.leads;
