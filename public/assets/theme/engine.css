@@ -30,8 +30,8 @@
   --g-base-2:      #EBEFF8;   /* secondary bands                */
   --g-ink:         #0F1420;   /* primary text                   */
   --g-ink-2:       #495468;   /* secondary text                 */
-  --g-ink-3:       #7A87A0;   /* tertiary / captions            */
-  --g-ink-4:       #A8B3C7;   /* disabled / placeholder         */
+  --g-ink-3:       #5B6880;   /* tertiary / captions — 4.6:1 on glass */
+  --g-ink-4:       #8A94A8;   /* disabled / placeholder         */
 
   /* ══ 2. BRAND ══════════════════════════════════════════════════════════
      One brand hue and one counter-hue. Everything tinted downstream derives

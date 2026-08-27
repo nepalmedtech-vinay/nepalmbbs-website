@@ -1,6 +1,24 @@
 ---
 import { SITE } from '../lib/routes.js';
-const { title, description, path = '/' } = Astro.props;
+import Navbar from '../components/Navbar.astro';
+import MobileMenu from '../components/MobileMenu.astro';
+import Ticker from '../components/Ticker.astro';
+import ContactBar from '../components/ContactBar.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+import ChatWidget from '../components/ChatWidget.astro';
+import AdminPanel from '../components/AdminPanel.astro';
+
+const {
+  title,
+  description,
+  path,
+  isHome = false,
+  bare = false,          // pages that supply their own chrome
+  ogImage = 'https://nepalmbbs.in/assets/brand/icon-512.png',
+  schema = null,
+} = Astro.props;
+
 const canonical = new URL(path, SITE).href;
 ---
 <!DOCTYPE html>
@@ -8,27 +26,56 @@ const canonical = new URL(path, SITE).href;
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
 <title>{title}</title>
 <meta name="description" content={description}>
 <link rel="canonical" href={canonical}>
+
+<meta property="og:type" content={isHome ? 'website' : 'article'}>
+<meta property="og:site_name" content="NepalMBBS.in">
+<meta property="og:locale" content="en_IN">
+<meta property="og:title" content={title}>
+<meta property="og:description" content={description}>
+<meta property="og:url" content={canonical}>
+<meta property="og:image" content={ogImage}>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content={title}>
+<meta name="twitter:description" content={description}>
+<meta name="twitter:image" content={ogImage}>
+
 <meta name="theme-color" content="#F4F6FB">
+<link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/assets/brand/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Geist:wght@300..800&display=swap" rel="stylesheet">
 
+<!-- Order is load-bearing, and bridge.css goes LAST on purpose.
+     The obvious arrangement — aliases first, legacy after — does not work: the
+     legacy sheets carry their own !important on the very declarations that have
+     to be overridden (.tab-card sets an important white in two files), and
+     between two !important rules of equal specificity the later sheet wins.
+     Loading bridge last settles that without escalating specificity anywhere.
+     Its :root aliases are unaffected by the move, because var() resolves at
+     computed-value time rather than at parse time. -->
 <link rel="stylesheet" href="/assets/theme/engine.css">
 <link rel="stylesheet" href="/assets/gfx/grain.css">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/sections.css">
+<link rel="stylesheet" href="/assets/css/trust.css">
+<link rel="stylesheet" href="/assets/theme/bridge.css">
 <link rel="stylesheet" href="/assets/theme/glass.css">
 <link rel="stylesheet" href="/assets/theme/motion.css">
 <link rel="stylesheet" href="/assets/theme/panel.css">
 
-<!-- Paint the saved theme before first paint. Without this a returning
-     visitor sees the default palette for a frame and then a flash as the
-     saved one lands — the one thing that makes a themeable site feel cheap.
-     Wrapped in try/catch because a private window throws on localStorage
-     access, and a theme is never worth a blank page. -->
+{schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+
+<!-- Paint the saved theme before first paint, or a returning visitor sees the
+     default palette for a frame. try/catch because a private window throws on
+     localStorage, and a theme is never worth a blank page. -->
 <script is:inline>
   (function () {
     try {
@@ -41,14 +88,14 @@ const canonical = new URL(path, SITE).href;
         auOpacity: '--au-opacity', auScale: '--au-scale',
         mOpacity: '--m-opacity', mBorder: '--m-border', mInner: '--m-inner',
         radius: '--sh-radius', depth: '--dp', tyScale: '--ty-scale', sp: '--sp',
-        mo: '--mo', fxGrain: '--fx-grain'
+        mo: '--mo', fxGrain: '--fx-grain', tyWeight: '--ty-weight', tyWeightD: '--ty-weight-d'
       };
       for (var k in map) if (t[k] !== undefined) s.setProperty(map[k], t[k]);
-      if (t.mBlur !== undefined) s.setProperty('--m-blur', t.mBlur + 'px');
+      if (t.mBlur !== undefined)    s.setProperty('--m-blur', t.mBlur + 'px');
       if (t.mSaturate !== undefined) s.setProperty('--m-saturate', t.mSaturate + '%');
-      if (t.auBlur !== undefined) s.setProperty('--au-blur', t.auBlur + 'px');
-      if (t.auSpeed !== undefined) s.setProperty('--au-speed', t.auSpeed + 's');
-      if (t.border !== undefined) s.setProperty('--sh-border', t.border + 'px');
+      if (t.auBlur !== undefined)   s.setProperty('--au-blur', t.auBlur + 'px');
+      if (t.auSpeed !== undefined)  s.setProperty('--au-speed', t.auSpeed + 's');
+      if (t.border !== undefined)   s.setProperty('--sh-border', t.border + 'px');
     } catch (e) {}
   })();
 </script>
@@ -58,15 +105,37 @@ const canonical = new URL(path, SITE).href;
 
 <div class="au" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <div class="grain" aria-hidden="true"></div>
-
 <div class="m-progress-rail" aria-hidden="true"><i class="m-progress"></i></div>
 
+{!bare && <><Navbar /><MobileMenu /></>}
+
 <slot />
+
+{!bare && <><Ticker /><ContactBar /><Footer /><WhatsAppFloat /><ChatWidget /><AdminPanel /></>}
+
+<!-- Theme panel. Lives behind the admin gate on real pages; the standalone
+     preview mounts its own toggle. -->
+<aside id="theme-panel" class="tp-sheet" hidden aria-label="Appearance settings"></aside>
 
 <script is:inline src="/assets/js/config.js"></script>
 <script is:inline src="/assets/theme/engine.js"></script>
 <script is:inline src="/assets/theme/panel.js"></script>
 <script is:inline src="/assets/theme/aurora-gl.js"></script>
+
+{!bare && (
+  <>
+    <script is:inline src="/assets/js/boot.js"></script>
+    <script is:inline src="/assets/js/i18n.js"></script>
+    <script is:inline src="/assets/js/navigation.js"></script>
+    <script is:inline src="/assets/js/leads.js"></script>
+    <script is:inline src="/assets/js/reveal.js"></script>
+    <script is:inline src="/assets/js/chatbot.js"></script>
+    <script is:inline src="/assets/js/colleges.js"></script>
+    <script is:inline src="/assets/js/admin.js"></script>
+    <script is:inline src="/assets/js/effects.js"></script>
+  </>
+)}
+
 <script is:inline src="/assets/theme/runtime.js"></script>
 <script is:inline src="/assets/theme/motion.js"></script>
 </body>

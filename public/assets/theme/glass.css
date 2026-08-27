@@ -43,7 +43,12 @@ body {
 .au {
   position: fixed;
   inset: 0;
-  z-index: var(--z-aurora);
+  /* Behind everything, not at layer 0. A fixed element with z-index 0 is a
+     POSITIONED element, and positioned elements paint above static ones — so
+     at 0 this field covered any content that was not itself given a z-index.
+     Enumerating every content wrapper is a losing game across 37 legacy
+     pages; -1 puts the field behind the lot, permanently. */
+  z-index: -1;
   pointer-events: none;
   overflow: hidden;
   opacity: var(--au-opacity);
@@ -102,7 +107,7 @@ body {
 .grain {
   position: fixed;
   inset: 0;
-  z-index: var(--z-grain);
+  z-index: -1;   /* same reasoning as .au */
   pointer-events: none;
   opacity: var(--fx-grain);
   background-image: var(--grain-src);
@@ -111,8 +116,9 @@ body {
   contain: strict;
 }
 
-/* Everything else sits above both. */
-main, header, footer, section, .gl-nav { position: relative; z-index: var(--z-base); }
+/* Content no longer needs a z-index to clear the field — see .au. The nav
+   still gets one because it has to sit above scrolling content. */
+.gl-nav { position: sticky; z-index: var(--z-nav); }
 
 
 /* ══ The pane ════════════════════════════════════════════════════════════ */

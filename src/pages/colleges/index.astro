@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import GlassLayout from '../../layouts/GlassLayout.astro';
 import { getColleges } from '../../lib/colleges.js';
 import { SITE } from '../../lib/routes.js';
 
@@ -28,7 +28,7 @@ const groups = [
     note: 'Privately run, affiliated to Tribhuvan, Kathmandu or Purbanchal University.' },
 ];
 ---
-<BaseLayout
+<GlassLayout
   title="NMC Approved Medical Colleges in Nepal 2025 — Full List | NepalMBBS.in"
   description={`All ${colleges.length} medical colleges in Nepal open to Indian students, with foreign-quota seats, affiliation and location. Admission through MEC Nepal.`}
   path="/colleges"
@@ -134,4 +134,4 @@ const groups = [
 
 </div>
 </div>
-</BaseLayout>
+</GlassLayout>

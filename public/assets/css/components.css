@@ -180,7 +180,7 @@ body { background: var(--navy-1) !important; }
   backdrop-filter: blur(20px) !important;
 }
 .tabs-label {
-  color: rgba(255,255,255,0.5) !important;
+  color:var(--g-ink-3) !important;
   letter-spacing: 0.15em !important;
 }
 
@@ -439,7 +439,7 @@ section.hero { min-height:100vh; min-height:100dvh; width:100%; }
 /* ══ PREMIUM GLASS — DARK BOLD TEXT STYLE ══ */
 /* Tab labels — dark bold on glass */
 .tab-label {
-  color: rgba(255,255,255,0.95) !important;
+  color:var(--g-ink) !important;
   font-weight: 700 !important;
   font-size: 10px !important;
   letter-spacing: 0.02em !important;
@@ -460,7 +460,7 @@ section.hero { min-height:100vh; min-height:100dvh; width:100%; }
 .trust-badge-name {
   font-size: 10.5px !important;
   font-weight: 700 !important;
-  color: rgba(255,255,255,0.90) !important;
+  color:var(--g-ink) !important;
   text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
   letter-spacing: 0.01em !important;
   text-align: center;
@@ -483,7 +483,7 @@ section.hero { min-height:100vh; min-height:100dvh; width:100%; }
   font-weight: 800 !important;
   font-size: 11px !important;
   letter-spacing: 0.14em !important;
-  color: rgba(255,255,255,0.40) !important;
+  color:var(--g-ink-3) !important;
 }
 
 /* College enquire button text */

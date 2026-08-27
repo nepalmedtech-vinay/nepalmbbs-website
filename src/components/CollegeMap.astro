@@ -51,13 +51,13 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
 <section class="map-section">
   <div class="container">
 
-    <div class="map-head pm-in">
-      <span class="pm-eyebrow">Where they are</span>
+    <div class="map-head m-rise">
+      <span class="gl-eyebrow">Where they are</span>
       <h2 class="map-title">
         One admission process,<br />
-        <span class="pm-accent">{colleges.length} places it can take you</span>
+        <span class="gl-grad">{colleges.length} places it can take you</span>
       </h2>
-      <p class="pm-lead">
+      <p class="gl-lead">
         Every college is plotted where it actually sits, sized by the
         {' '}{totalSeats} foreign-quota seats between them. The clustering is not
         an accident of the drawing — it is where Nepal's medical education
@@ -65,17 +65,18 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
       </p>
     </div>
 
-    <figure class="map-figure pm-in" style="--pm-delay:120ms">
+    <figure class="map-figure m-rise">
       <svg
         class="map-svg"
+        style="color:var(--brand)"
         viewBox={`0 0 ${W} ${H}`}
         role="img"
         aria-label={`Relative positions of ${colleges.length} medical colleges across Nepal`}
       >
         <defs>
           <radialGradient id="mapHalo">
-            <stop offset="0" stop-color="#f0a500" stop-opacity="0.30" />
-            <stop offset="1" stop-color="#f0a500" stop-opacity="0" />
+            <stop offset="0" stop-color="currentColor" stop-opacity="0.34" />
+            <stop offset="1" stop-color="currentColor" stop-opacity="0" />
           </radialGradient>
           <filter id="mapGlow" x="-70%" y="-70%" width="240%" height="240%">
             <feGaussianBlur stdDeviation="5" />

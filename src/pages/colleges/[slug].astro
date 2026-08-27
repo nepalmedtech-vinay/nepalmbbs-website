@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import GlassLayout from '../../layouts/GlassLayout.astro';
 import EvidenceBadges from '../../components/EvidenceBadges.astro';
 import { getColleges } from '../../lib/colleges.js';
 import { SITE } from '../../lib/routes.js';
@@ -41,7 +41,7 @@ const schema = {
   ...(c.affiliation ? { parentOrganization: { '@type': 'EducationalOrganization', name: c.affiliation } } : {}),
 };
 ---
-<BaseLayout
+<GlassLayout
   title={`${c.name} — MBBS Admission, Seats & Fees 2025 | NepalMBBS.in`}
   description={`${c.name}${c.location ? `, ${c.location}` : ''}: MBBS admission for Indian students${c.seats ? `, ${c.seats} foreign-quota seats` : ''}${c.affiliation ? `, affiliated to ${c.affiliation}` : ''}. Admission through MEC Nepal.`}
   path={path}
@@ -114,4 +114,4 @@ const schema = {
 
 </div>
 </div>
-</BaseLayout>
+</GlassLayout>

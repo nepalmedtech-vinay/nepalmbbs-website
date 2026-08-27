@@ -1,0 +1,72 @@
+---
+import { getColleges } from '../lib/colleges.js';
+
+// Replaces HeroPremium, which was written against premium.css — a layer the
+// glass build no longer loads, so its .pm-* classes had no rules at all and
+// the home page was rendering unstyled text on unstyled panes.
+const colleges = await getColleges();
+const seats = colleges.reduce((n, c) => n + (parseInt(c.seats, 10) || 0), 0);
+const govt = colleges.filter((c) => c.type === 'govt').length;
+
+// Counted from the records, so the hero cannot drift out of step with the
+// pages behind it.
+const stats = [
+  { n: colleges.length, l: 'colleges admitting Indian students' },
+  { n: seats,           l: 'foreign-quota seats' },
+  { n: govt,            l: 'government institutions' },
+];
+---
+<section class="gh">
+  <div class="wrap gh-in">
+    <span class="gl-eyebrow m-focus">NMC India recognised · MEC Nepal process</span>
+
+    <h1 class="gl-display gh-h1">
+      <span class="gl-line" style="--i:0"><span>Your MBBS in Nepal,</span></span>
+      <span class="gl-line" style="--i:1"><span>decided on <em class="gl-grad">evidence</em>.</span></span>
+    </h1>
+
+    <p class="gl-lead m-rise">
+      We publish what we can source and say so when we cannot. No fee figures
+      that go stale, no stock photographs standing in for a campus, no promise
+      the Medical Education Commission has not made.
+    </p>
+
+    <div class="gh-cta m-rise">
+      <a href="/counseling" class="gl-btn gl-btn--primary m-magnet" data-pull="0.22">Book free counseling</a>
+      <a href="/colleges" class="gl-btn gl-btn--ghost">See all {colleges.length} colleges</a>
+    </div>
+
+    <div class="gh-stats m-stagger">
+      {stats.map((s) => (
+        <div class="gh-stat gl gl--soft">
+          <b data-count={s.n}>0</b>
+          <span>{s.l}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .gh { padding-block: clamp(3rem, 1.5rem + 7vw, 7rem) var(--s-section); }
+  .gh-in { max-width: 62rem; }
+  .gh-h1 { margin: var(--s-5) 0 var(--s-5); }
+  .gh-h1 em { font-style: italic; }
+  .gh-cta { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-6); }
+
+  .gh-stats {
+    display: grid; gap: var(--s-4); margin-top: var(--s-8);
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  }
+  .gh-stat { padding: var(--s-5); }
+  .gh-stat b {
+    display: block; font-family: var(--ty-display);
+    font-size: clamp(2rem, 1.4rem + 2.2vw, 2.9rem); font-weight: var(--ty-weight-d);
+    line-height: 1; letter-spacing: var(--ty-tight);
+    font-variant-numeric: tabular-nums; color: var(--g-ink);
+  }
+  .gh-stat span {
+    display: block; margin-top: var(--s-2);
+    font-size: var(--t-xs); color: var(--g-ink-3);
+  }
+</style>

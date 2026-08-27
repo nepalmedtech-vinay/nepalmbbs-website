@@ -1,0 +1,493 @@
+/* NepalMBBS.in — theme/bridge.css
+   The legacy token bridge.
+
+   Thirty-seven pages of markup were written against the old dark navy/gold
+   system. Rewriting all of it to glass classes in one pass would be a large,
+   risky diff across every page on the site, and most of that markup is fine —
+   it is the palette underneath it that changed.
+
+   So this maps the OLD token names onto the NEW engine. Every legacy rule in
+   base/components/sections/trust.css keeps working untouched and simply
+   re-skins to the glass palette.
+
+   The one thing that makes this work is that the mapping is SEMANTIC, not
+   literal. The old palette was dark: --navy was a dark surface, --text was
+   near-white, --border was a light hairline on dark. The new palette is light.
+   Aliasing by value would produce white text on white. Each token below is
+   therefore mapped by the ROLE it played, which flips light and dark where it
+   has to:
+
+       old role                     new role
+       --navy   dark surface   ->   translucent light glass
+       --text   near-white     ->   near-black ink
+       --muted  dim grey-blue  ->   mid grey on light
+       --border light hairline ->   dark hairline
+
+   Load order: after engine.css, before the legacy stylesheets. */
+
+:root {
+
+  /* ── Surfaces ─────────────────────────────────────────────────────
+     The old dark surfaces become glass. Deliberately translucent rather than
+     a flat light colour, so anything that used --navy as a card background
+     now refracts the aurora like the rest of the site. */
+
+  /* --navy keeps its original meaning: the dark brand colour. It was used as
+     dark text on light chips 32 times and as a dark panel fill 24 times, and a
+     single alias cannot be both — a translucent fill used as a text colour
+     renders the text nearly invisible, which is exactly what it did to the FAQ
+     questions. The background usages were rewritten in the legacy sheets
+     instead, so this can stay dark and every text usage is correct. */
+  --navy:        var(--g-ink);
+  /* -1 and -2 were only ever surfaces — never text — so unlike --navy they
+     stay light. Aliasing them to ink painted the hero's own ancestor dark. */
+  --navy-1:      var(--m-fill-soft);
+  --navy-2:      var(--m-fill);
+  --off:         color-mix(in oklab, var(--g-base) 92%, var(--g-ink) 8%);
+  --gray:        color-mix(in oklab, var(--g-base) 88%, var(--g-ink) 12%);
+  --bg-base:     var(--g-base);
+  --bg-surface:  var(--m-fill);
+  --bg-raised:   var(--m-fill-solid);
+  --bg-overlay:  color-mix(in oklab, var(--g-base) 84%, var(--g-ink) 16%);
+
+  /* ── Text ─────────────────────────────────────────────────────────
+     Inverted. This is the flip that keeps 37 pages readable. */
+
+  --text:           var(--g-ink);
+  --text-primary:   var(--g-ink);
+  --text-secondary: var(--g-ink-2);
+  --text-tertiary:  var(--g-ink-3);
+  --text-muted:     var(--g-ink-4);
+  --muted:          var(--g-ink-3);
+  --white:          var(--g-ink);      /* it meant "the brightest text" */
+  --text-accent:    var(--brand);
+
+  /* ── Brand ────────────────────────────────────────────────────────
+     Gold was the old accent. Everything that referenced it now follows
+     whatever the panel's Brand colour is, so a legacy page re-skins with
+     the rest of the site instead of staying gold forever. */
+
+  --accent:      var(--brand);
+  --gold:        var(--brand);
+  --gold-light:  var(--brand-lift);
+  --gold-dim:    var(--brand-soft);
+  --gold-border: var(--brand-line);
+
+  --blue:        var(--brand);
+  --blue-light:  var(--brand-lift);
+  --blue-dark:   var(--brand-deep);
+  --blue-dim:    var(--brand-soft);
+  --blue-border: var(--brand-line);
+
+  --green:       #0F8A5F;
+  --green-dim:   color-mix(in oklab, #0F8A5F 14%, transparent);
+  --teal:        var(--brand);
+  --red:         #C2321F;
+
+  /* ── Lines ────────────────────────────────────────────────────────
+     Was a light hairline drawn on dark; now a dark hairline drawn on light. */
+
+  --border:           var(--m-hairline);
+  --glass-bg:         var(--m-fill-soft);
+  --glass-bg-md:      var(--m-fill);
+  --glass-bg-hi:      var(--m-fill-solid);
+  --glass-border:     var(--m-hairline);
+  --glass-border-md:  color-mix(in oklab, var(--g-ink) 14%, transparent);
+  --glass-shine:      rgba(255 255 255 / var(--m-border));
+
+  /* ── Trust register ───────────────────────────────────────────────
+     trust.css is entirely token-driven, so re-pointing these re-skins the
+     whole document register with no edit to that file. It was a darker panel
+     on a dark page; it is now a denser, less translucent panel on a light one
+     — the contrast against its surroundings is what carried the meaning, and
+     that survives the inversion. */
+
+  --doc-bg:        color-mix(in oklab, var(--g-base) 96%, var(--g-ink) 4%);
+  --doc-bg-alt:    color-mix(in oklab, var(--g-base) 91%, var(--g-ink) 9%);
+  --doc-border:    color-mix(in oklab, var(--g-ink) 12%, transparent);
+  --doc-rule:      color-mix(in oklab, var(--g-ink) 8%, transparent);
+  --doc-text:      var(--g-ink);
+  --doc-text-mute: var(--g-ink-3);
+
+  /* Evidence states, restated for a light ground — the dark-mode versions
+     were too pale to read here. */
+  --ev-verified:       #0B7A55;
+  --ev-verified-bg:    color-mix(in oklab, #0B7A55 12%, transparent);
+  --ev-provisional:    #8A5A08;
+  --ev-provisional-bg: color-mix(in oklab, #8A5A08 12%, transparent);
+  --ev-caution:        #B3261E;
+  --ev-caution-bg:     color-mix(in oklab, #B3261E 12%, transparent);
+  --ev-neutral:        var(--g-ink-3);
+  --ev-neutral-bg:     color-mix(in oklab, var(--g-ink) 8%, transparent);
+
+  /* ── Type ─────────────────────────────────────────────────────────
+     Legacy names point at the live pairing, so the panel's Type control
+     changes old pages too. */
+
+  --font-display: var(--ty-display);
+  --font-body:    var(--ty-body);
+  --font-mono:    var(--ty-mono);
+
+  --w-regular: 400;
+  --w-medium:  500;
+  --w-semi:    600;
+  --w-bold:    700;
+  --w-black:   800;
+
+  --lh-normal: var(--lh-body);
+  --ls-heading: var(--ty-tight);
+  --ls-label:   0.16em;
+  --ls-display: var(--ty-tight);
+  --ls-body:    var(--ty-track);
+
+  --t-h1: var(--t-h1);   /* already defined by the engine */
+
+  /* ── Shape + depth ────────────────────────────────────────────────
+     Aliased to the engine's scale, so the panel's Corner and Depth sliders
+     reshape legacy components too. */
+
+  --r:          var(--r-md);
+  --shadow-sm:  var(--sd-1);
+  --shadow:     var(--sd-2);
+  --shadow-lg:  var(--sd-3);
+  --e-1: var(--sd-1);
+  --e-2: var(--sd-2);
+  --e-3: var(--sd-3);
+  --e-4: var(--sd-4);
+  --e-gold: var(--sd-brand);
+
+  /* ── Motion ───────────────────────────────────────────────────────── */
+
+  --d-instant: var(--d-1);
+  --d-fast:    var(--d-2);
+  --d-base:    var(--d-3);
+  --d-slow:    var(--d-4);
+  --ease-out:  var(--ea-out);
+  --ease-in-out: var(--ea-io);
+  --ease-entrance: var(--ea-enter);
+
+  --cta-1-bg:     var(--brand);
+  --cta-1-text:   var(--brand-ink);
+  --cta-2-bg:     var(--m-fill);
+  --cta-2-text:   var(--g-ink);
+  --cta-2-border: var(--m-hairline);
+  --cta-min-h:    2.9rem;
+
+  --focus-off: 2px;
+  --container: 1220px;
+  --gutter: calc(clamp(1rem, 0.6rem + 1.8vw, 2rem) * var(--sp));
+}
+
+
+/* ══ Structural corrections ══════════════════════════════════════════
+   The alias layer handles colour. These are the handful of places where the
+   legacy CSS hard-coded a value that cannot be aliased, and where a dark-page
+   assumption breaks on a light one. */
+
+/* The legacy sheets set a dark page background on these. The aurora has to
+   show through instead. */
+body, section, .tab-pane, .sec, .pane,
+.hero, .trust-section, .tabs-section, .map-section {
+  background: transparent !important;
+}
+
+/* Old panels were dark fills. Give them the glass material so they belong
+   with the rest of the site rather than sitting on it. */
+.college-card, .why-card, .life-card, .off-card, .test-card,
+.vid-card, .guide-card, .faq-item, .calc-wrap, .curr-wrap, .cbar {
+  background: var(--m-fill);
+  -webkit-backdrop-filter: var(--m-filter);
+          backdrop-filter: var(--m-filter);
+  border: var(--sh-border) solid var(--m-hairline);
+  border-radius: var(--r-md);
+  box-shadow: var(--sd-2);
+  color: var(--g-ink);
+}
+
+/* Form controls were white-on-dark. */
+.ff input, .ff select, .ff textarea,
+.cfield input, .cfield select,
+.curr-in, .a-inp {
+  background: rgba(var(--m-tint) / 0.82) !important;
+  border: var(--sh-border) solid var(--m-hairline) !important;
+  color: var(--g-ink) !important;
+  border-radius: var(--r-sm) !important;
+}
+.ff input::placeholder, .cfield input::placeholder, .a-inp::placeholder {
+  color: var(--g-ink-4);
+}
+.ff input:focus, .ff select:focus, .cfield input:focus, .a-inp:focus {
+  border-color: var(--brand) !important;
+  box-shadow: var(--focus-ring) !important;
+  outline: none;
+}
+.ff label, .cfield label { color: var(--g-ink-3) !important; }
+
+/* Primary actions follow the brand rather than staying gold. */
+.btn-primary, .college-enquire, .nav-cta, .a-btn-primary, .g-tab.on, .tab-card.on {
+  background: linear-gradient(148deg, var(--brand-lift), var(--brand)) !important;
+  color: var(--brand-ink) !important;
+  border-color: transparent !important;
+  box-shadow: var(--sd-2), 0 0 calc(20px * var(--fx-glow))
+              color-mix(in oklab, var(--brand) calc(26% * var(--fx-glow)), transparent);
+}
+
+/* Nav and footer sit on glass. */
+/* Both states. The scrolled state carried its own dark navy fill, which is
+   what the nav actually shows most of the time. */
+#navbar, #navbar.scrolled {
+  background: rgba(var(--m-tint) / calc(var(--m-opacity) * 0.86)) !important;
+  -webkit-backdrop-filter: blur(calc(var(--m-blur) * 0.7)) saturate(var(--m-saturate));
+          backdrop-filter: blur(calc(var(--m-blur) * 0.7)) saturate(var(--m-saturate));
+  border-bottom: var(--sh-border) solid var(--m-hairline);
+}
+#navbar .nl-btn, #navbar .logo { color: var(--g-ink) !important; }
+#navbar .nl-btn:hover { color: var(--brand) !important; }
+footer  { background: var(--m-fill-soft);
+          -webkit-backdrop-filter: var(--m-filter); backdrop-filter: var(--m-filter);
+          border-top: var(--sh-border) solid var(--m-hairline); }
+
+/* The 51-slide stock photo hero belongs to the old system. The glass hero
+   replaces it on the home page; anywhere else it is dead weight that would
+   pull in 55 image requests. */
+.hero-slide, .hero-slide-overlay, .hero-slides, .nature-slide { display: none !important; }
+
+/* .rev was the legacy reveal: opacity 0 until JS added .vis. With the old
+   observer gone it would leave content permanently invisible, so it is
+   neutralised here and the scroll-driven classes do the work instead. */
+.rev { opacity: 1 !important; transform: none !important; }
+
+
+/* ══ Components the alias layer cannot reach ═════════════════════════
+   Each of these hard-codes a light-on-dark pair inside a rule that also sets
+   its own background, so the automated inversion correctly left it alone —
+   and correctly left it broken on a light ground. Fixed by hand, and each one
+   was found by measuring rendered contrast, not by reading the CSS. */
+
+/* Section cards on the home page: white text on a 10%-white fill. Invisible. */
+.tab-card {
+  background: var(--m-fill) !important;
+  -webkit-backdrop-filter: var(--m-filter); backdrop-filter: var(--m-filter);
+  border: var(--sh-border) solid var(--m-hairline) !important;
+  color: var(--g-ink) !important;
+  box-shadow: var(--sd-2);
+}
+.tab-card .tab-label, .tab-card .tab-svg { color: var(--g-ink) !important; }
+.tab-card:hover { box-shadow: var(--sd-3); border-color: var(--brand-line) !important; }
+.tab-card.on, .tab-card.on .tab-label, .tab-card.on .tab-svg { color: var(--brand-ink) !important; }
+
+/* Contact bar — the phone/WhatsApp strip. Every value in it was tuned for a
+   dark page: near-white numbers, and pale blue/green glyphs on 16% tints. */
+.cbar { color: var(--g-ink); }
+.cbar-number, .cbar-num-txt, .cbar-num-link, .cbar-number a, .cbar-label { color: var(--g-ink) !important; }
+.cbar-country-label, .cbar-country { color: var(--g-ink-3) !important; }
+.cbar-btn-call {
+  background: color-mix(in oklab, var(--brand) 12%, transparent) !important;
+  border-color: var(--brand-line) !important;
+  color: var(--brand-deep) !important;
+}
+.cbar-btn-wa, .cbar-icon-wa {
+  background: color-mix(in oklab, #0B7A55 12%, transparent) !important;
+  border-color: color-mix(in oklab, #0B7A55 34%, transparent) !important;
+  color: #076046 !important;
+}
+.cbar-icon-phone, .cbar-icon-btn { color: var(--brand-deep) !important; }
+
+/* The nav CTA is an <a> now, and the legacy rule that painted it gold sits at
+   a specificity the alias could not beat from :root alone. */
+a.nav-cta, .nav-cta {
+  background: linear-gradient(148deg, var(--brand-lift), var(--brand)) !important;
+  color: var(--brand-ink) !important;
+}
+
+/* Footer kept a hard-coded navy fill, so the ink-coloured logo sat dark on
+   dark. The footer is glass like everything else. */
+footer, .foot-inner, .foot-col, .foot-bottom {
+  background: transparent !important;
+  color: var(--g-ink-2);
+}
+.foot-logo, .foot-col h4, .foot-title { color: var(--g-ink) !important; }
+.foot-col a, .foot-link { color: var(--g-ink-2) !important; }
+.foot-col a:hover, .foot-link:hover { color: var(--brand) !important; }
+
+/* Legacy gold literals used as text on light. */
+.ticker-item, .ticker-item span, .off-flag { color: var(--g-ink-2) !important; }
+
+/* Last of the light-on-dark literals, each confirmed by measuring the rendered
+   pixel rather than by reading the rule. */
+
+/* FAQ accordion markers: near-white glyphs on a white pane. */
+.faq-icon, .faq-q .faq-icon, .faq-q > span:last-child {
+  color: var(--g-ink-2) !important;
+  background: color-mix(in oklab, var(--g-ink) 6%, transparent) !important;
+}
+.faq-q { color: var(--g-ink) !important; }
+.faq-body, .faq-body p, .faq-a { color: var(--g-ink-2) !important; }
+
+/* --g-ink-4 is the disabled/placeholder step and measures 2.8:1 — correct for
+   a placeholder, wrong wherever body copy inherited it. */
+p, li, dd, .sec-sub, .card-sub, .curr-note, .calc-note {
+  color: var(--g-ink-2);
+}
+
+/* Anything still painting text at low-alpha white on the light ground. */
+.counsel-note, .cb-note, .wc-note, .counsel-sub, .cb-sub {
+  color: var(--g-ink-3) !important;
+}
+
+
+/* ══ College map ══════════════════════════════════════════════════
+   Ported from premium.css, which the glass build no longer loads. Tokens
+   re-pointed at the engine so the map follows the panel like everything
+   else — including the halo, which was a hard-coded gold. */
+/* ══ College map ═════════════════════════════════════════════════════════ */
+
+.map-section {
+  position: relative;
+  padding: var(--s-section) 0;
+  background: linear-gradient(180deg, var(--g-base), var(--m-fill) 50%, var(--g-base));
+}
+
+.map-head { max-width: 62ch; }
+
+.map-title {
+  font-family: var(--ty-display);
+  font-size: var(--t-h2);
+  font-weight: 800;
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ty-tight);
+  color: var(--g-ink);
+  margin: var(--s-4) 0 0;
+  max-width: 20ch;
+  text-wrap: balance;
+  font-variant-numeric: tabular-nums;
+}
+
+.map-figure {
+  position: relative;
+  margin: var(--s-7) 0 0;
+}
+
+.map-svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* Graticule sits far back — present enough to read as a coordinate plane,
+   quiet enough that it never competes with the points. */
+.map-grid line { stroke: color-mix(in oklab, var(--g-ink) 10%, transparent); stroke-width: 1; }
+.map-grid text {
+  fill: var(--g-ink-4);
+  font-family: var(--ty-body);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+/* Points draw in on entry, staggered by index. The delay is capped so the
+   last of 27 does not arrive a second and a half after the first. */
+.map-pt { cursor: pointer; opacity: 0; }
+.map-figure.is-drawn .map-pt {
+  animation: fade var(--d-3) var(--ea-out) forwards;
+  animation-delay: calc(var(--i) * 26ms);
+}
+
+.map-ring {
+  fill: color-mix(in oklab, var(--brand) 10%, transparent);
+  stroke: var(--brand);
+  stroke-width: 1.4;
+  transition: fill var(--d-2) var(--ea-out),
+              stroke var(--d-2) var(--ea-out);
+}
+.map-dot { fill: var(--brand); transition: fill var(--d-2) var(--ea-out); }
+
+.map-pt.is-govt .map-ring { fill: color-mix(in oklab, var(--brand) 12%, transparent); stroke: var(--brand); }
+.map-pt.is-govt .map-dot  { fill: var(--brand); }
+
+.map-halo { opacity: 0; transition: opacity var(--d-3) var(--ea-out); }
+.map-hit  { fill: transparent; }
+
+.map-pt.is-active .map-halo { opacity: 1; }
+.map-pt.is-active .map-ring { fill: color-mix(in oklab, var(--brand) 22%, transparent); stroke: var(--brand-lift); stroke-width: 2; }
+.map-pt.is-active .map-dot  { fill: var(--brand-lift); }
+.map-pt:focus-visible { outline: none; }
+.map-pt:focus-visible .map-ring { stroke: var(--g-ink); stroke-width: 2.5; }
+
+/* Readout card. Absolutely placed against the figure and translated onto the
+   point, so it reads as attached to the mark rather than floating near it. */
+.map-card {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  min-width: 11rem;
+  max-width: 17rem;
+  padding: var(--s-3) var(--s-4);
+  background: var(--m-fill-solid);
+  border: 1px solid var(--brand-line);
+  border-radius: var(--r-sm);
+  box-shadow: var(--sd-4);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.map-card-name {
+  margin: 0;
+  font-family: var(--ty-display);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  line-height: var(--lh-snug);
+  color: var(--g-ink);
+}
+.map-card-meta {
+  margin: var(--s-1) 0 0;
+  font-size: var(--t-xs);
+  color: var(--g-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.map-card-cta {
+  display: block;
+  margin-top: var(--s-2);
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-5);
+  margin-top: var(--s-5);
+  font-size: var(--t-xs);
+  color: var(--g-ink-3);
+}
+.map-key { display: inline-flex; align-items: center; gap: var(--s-2); }
+.map-key i {
+  width: 0.65rem; height: 0.65rem; border-radius: 50%;
+  background: color-mix(in oklab, var(--brand) 14%, transparent);
+  border: 1.4px solid var(--brand);
+}
+.map-key.is-govt i { background: rgba(240, 165, 0, 0.16); border-color: var(--brand); }
+.map-key--scale i { border-style: dashed; border-color: var(--g-ink-4); background: none; }
+
+/* Below the point-density threshold the graticule labels collide and the
+   marks overlap, so the plot scrolls horizontally at a readable width rather
+   than being squeezed into something unreadable. */
+@media (max-width: 40rem) {
+  .map-figure { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+  .map-svg { min-width: 34rem; }
+  .map-legend { padding-bottom: var(--s-2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-pt { opacity: 1; animation: none !important; }
+}
+
+
+
+
+/* The muted step is the placeholder ink and measures 2.6:1. A value the site
+   does not have still has to be readable — it is the row that invites the
+   question — so it uses the tertiary step, which measures. */
+.doc-value--unknown, .doc-empty-body { color: var(--g-ink-3) !important; }
+
+/* Body copy that inherited the placeholder step. */
+p, li, dd, td, .sec-sub, .card-sub { color: var(--g-ink-2); }
+p.muted, .note, small { color: var(--g-ink-3); }

@@ -92,7 +92,7 @@ section.hero {
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.38) !important;
+  color:var(--g-ink-3) !important;
 }
 .cbar-number {
   font-family: 'Sora', sans-serif;
