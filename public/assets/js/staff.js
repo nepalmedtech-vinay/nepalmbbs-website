@@ -90,13 +90,14 @@
   }
 
   async function guard(fn) {
-    try { await fn(); }
+    try { await fn(); return true; }
     catch (e) {
       // 401/403 means the session lapsed or this account is not staff. Both
       // are "sign in again", not "something went wrong".
       if (e.status === 401 || e.status === 403) { await Auth.signOut(); showGate(); }
       else toast(e.status === 429 ? 'Too many requests — wait a moment.'
                                  : 'Could not save that. Please try again.', true);
+      return false;
     }
   }
 
@@ -224,10 +225,12 @@
 
       var go = el('button', 'gl-btn gl-btn--primary', 'Start application');
       go.type = 'button';
-      go.addEventListener('click', function () {
+      go.addEventListener('click', async function () {
         go.disabled = true;
         go.textContent = 'Starting…';
-        guard(async function () {
+        // A failed conversion must give the button back. Without this the
+        // counselor's only way to retry a dropped request is a page reload.
+        var ok = await guard(async function () {
           var id = await api('rpc/convert_lead_to_application', {
             method: 'POST', body: { p_lead_id: l.id }
           });
@@ -239,6 +242,7 @@
           toast('Application started for ' + (l.student_name || 'this enquiry') + '.');
           if (id) openDrawer(typeof id === 'string' ? id : String(id));
         });
+        if (!ok) { go.disabled = false; go.textContent = 'Start application'; }
       });
       row.appendChild(go);
       box.appendChild(row);

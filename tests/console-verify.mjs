@@ -50,7 +50,8 @@ const APP = {
 };
 
 /* ── a fresh context with the PostgREST surface mocked ─────────────────── */
-async function makeCtx({ portalRows = null, staffRow = null, apps = [], tasks = [], leads = [] } = {}) {
+async function makeCtx({ portalRows = null, staffRow = null, apps = [], tasks = [], leads = [],
+                         convertFails = false } = {}) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const seen = [];
   const json = (route, body, status = 200) =>
@@ -78,6 +79,7 @@ async function makeCtx({ portalRows = null, staffRow = null, apps = [], tasks = 
   });
   await ctx.route('**/rest/v1/rpc/convert_lead_to_application', async route => {
     seen.push(['convert', route.request().postData()]);
+    if (convertFails) return json(route, { message: 'boom' }, 500);
     leads = [];                       // converted: it leaves the queue
     return json(route, 'app-new');
   });
@@ -287,6 +289,40 @@ const APPS = [
     (await page.locator('#s-leads .cx-empty').count()) === 1 &&
     (await page.locator('#s-lead-count').textContent()) === '0');
 
+  await ctx.close();
+}
+
+/* ── a conversion that fails must hand the button back ────────────────── */
+{
+  const { ctx } = await makeCtx({
+    staffRow: { id: 'staff-1', email: 'c@nepalmbbs.in', full_name: 'C', role: 'counselor' },
+    apps: APPS,
+    leads: [{ id: 11, student_name: 'Deepak Yadav', contact_number: '9222222222',
+              city: 'Varanasi', neet_score: 405, created_at: '2026-08-26T09:00:00Z' }],
+    convertFails: true
+  });
+  const page = await ctx.newPage();
+  await page.goto(`http://localhost:${PORT}/staff`, { waitUntil: 'load' });
+  await page.waitForTimeout(300);
+  await page.fill('#s-email', 'c@nepalmbbs.in');
+  await page.fill('#s-pass', 'x');
+  await page.click('#s-gate-btn');
+  await page.waitForTimeout(700);
+
+  const btn = page.locator('#s-leads button').first();
+  await btn.click();
+  await page.waitForTimeout(700);
+
+  check('a failed conversion says so rather than failing silently',
+    await page.locator('#s-toast').isVisible() &&
+    /try again|wait a moment/i.test(await page.locator('#s-toast').textContent()),
+    await page.locator('#s-toast').textContent());
+  // Without this the counselor's only way to retry is a page reload.
+  check('a failed conversion gives the button back',
+    !(await btn.isDisabled()) && /Start application/.test(await btn.textContent()),
+    (await btn.textContent()) + ' disabled=' + await btn.isDisabled());
+  check('and the enquiry stays in the queue',
+    (await page.locator('#s-leads .cx-doc').count()) === 1);
   await ctx.close();
 }
 
