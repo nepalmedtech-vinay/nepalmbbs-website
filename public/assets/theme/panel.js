@@ -175,7 +175,35 @@
           '</div>' +
         '</div>' +
         '<div class="tp-audit ok" id="tp-audit"></div>' +
+
+        // Describe-a-look. Labelled a generator, not AI, because that is what
+        // it is — and because the constraint is the feature: every result is
+        // solved against the ground for contrast before it is applied.
+        '<div class="tp-gen">' +
+          '<label class="tp-lbl" for="tp-gen-in">Describe a look</label>' +
+          '<div class="tp-gen-row">' +
+            '<input id="tp-gen-in" type="text" placeholder="calm premium medical, light" autocomplete="off">' +
+            '<button class="tp-btn tp-btn--primary" id="tp-gen-go">Generate</button>' +
+          '</div>' +
+          '<p class="tp-help" id="tp-gen-note">Colour-theory generator — works offline, and every result is contrast-solved before it is applied.</p>' +
+        '</div>' +
+
+        // Viewport preview. A glass material and a fluid type scale both
+        // behave differently at 390px than at 1440, and judging either from a
+        // desktop window is how a design ships broken on phones.
+        '<div class="tp-vp">' +
+          '<span class="tp-lbl">Preview at</span>' +
+          '<div class="tp-seg" id="tp-vp">' +
+            '<button data-w="390">Phone</button>' +
+            '<button data-w="820">Tablet</button>' +
+            '<button class="on" data-w="0">Full</button>' +
+          '</div>' +
+        '</div>' +
+
         '<div class="tp-looks"><span class="tp-lbl">Quick looks</span><div class="tp-look-row" id="tp-looks"></div></div>' +
+        '<div class="tp-looks"><div class="tp-lbl-row"><span class="tp-lbl">Saved looks</span>' +
+          '<button class="tp-btn tp-btn--quiet" id="tp-save">Save current…</button></div>' +
+          '<div class="tp-look-row" id="tp-saved"></div></div>' +
         '<div class="tp-groups" id="tp-groups"></div>' +
         '<p class="tp-foot" id="tp-status"></p>' +
       '</div>';
@@ -200,6 +228,46 @@
 
     rebuild();
     renderAudit();
+    renderSaved();
+
+    // ── Generator ────────────────────────────────────────────────────
+    var genIn = host.querySelector('#tp-gen-in');
+    function runGen() {
+      if (!window.ThemeGen) return;
+      var out = ThemeGen.generate(genIn.value);
+      var note = host.querySelector('#tp-gen-note');
+      var m = out._matched || [];
+      delete out._matched;
+      draft = out;
+      Theme.apply(draft);
+      rebuild();
+      renderAudit();
+      dirty(true);
+      note.textContent = m.length
+        ? 'Read as: ' + m.join(', ') + '. Words it does not know are ignored rather than guessed at.'
+        : 'No known words in that phrase, so this is the neutral starting point. Try words like calm, bold, dark, warm, medical, editorial, glassy.';
+    }
+    host.querySelector('#tp-gen-go').addEventListener('click', runGen);
+    genIn.addEventListener('keydown', function (e) { if (e.key === 'Enter') runGen(); });
+
+    // ── Viewport preview ─────────────────────────────────────────────
+    host.querySelector('#tp-vp').addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      this.querySelectorAll('button').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      var w = parseInt(b.dataset.w, 10);
+      var doc = document.documentElement;
+      if (!w) { doc.removeAttribute('data-vp'); doc.style.removeProperty('--vp-w'); }
+      else { doc.setAttribute('data-vp', ''); doc.style.setProperty('--vp-w', w + 'px'); }
+    });
+
+    // ── Save current ─────────────────────────────────────────────────
+    host.querySelector('#tp-save').addEventListener('click', async function () {
+      var name = prompt('Name this look');
+      if (!name) return;
+      await Theme.saveLook(name.trim(), draft);
+      renderSaved();
+    });
 
     host.querySelector('#tp-reset').addEventListener('click', function () {
       draft = Object.assign({}, Theme.PRESETS.dawn);
@@ -220,6 +288,38 @@
         ? 'Live for everyone. Visitors see it on their next page load.'
         : 'Could not save. The theme is still applied on this device — check the admin_settings write policy in Supabase.';
       st.className = 'tp-foot' + (ok ? ' ok' : ' err');
+    });
+  }
+
+  async function renderSaved() {
+    var box = document.getElementById('tp-saved');
+    if (!box || !window.Theme.pullLooks) return;
+    var looks = await Theme.pullLooks();
+    box.innerHTML = '';
+    if (!looks.length) {
+      box.innerHTML = '<p class="tp-help" style="grid-column:1/-1">Nothing saved yet. Tune the controls, then Save current.</p>';
+      return;
+    }
+    looks.forEach(function (l) {
+      var t = l.theme || {};
+      var b = h('button', 'tp-look',
+        '<span class="tp-chip" style="background:linear-gradient(135deg,' + (t.au1 || '#ccc') + ',' +
+          (t.au2 || '#ddd') + ' 45%,' + (t.au3 || '#eee') + ')"><i style="background:' + (t.brand || '#888') + '"></i></span>' +
+        '<b>' + l.name + '</b><em>saved look</em>');
+      b.addEventListener('click', function () {
+        draft = Object.assign({}, t);
+        Theme.apply(draft); rebuild(); renderAudit(); dirty(true);
+      });
+      var del = h('button', 'tp-look-del', '×');
+      del.title = 'Delete ' + l.name;
+      del.addEventListener('click', async function (e) {
+        e.stopPropagation();
+        await Theme.deleteLook(l.name);
+        renderSaved();
+      });
+      var wrap = h('div', 'tp-look-wrap');
+      wrap.append(b, del);
+      box.appendChild(wrap);
     });
   }
 

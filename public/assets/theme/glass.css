@@ -419,3 +419,25 @@ body {
 @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .gl, .gl-nav, .gl-btn--ghost { background: var(--m-fill-solid); }
 }
+
+
+/* ══ Viewport preview ════════════════════════════════════════════════
+   The Customize panel can pin the page to a phone or tablet width. It
+   constrains the real document rather than loading an iframe, because an
+   iframe would be a second document that does not share the theme currently
+   being edited — you would be judging the saved theme, not the draft.
+
+   Container queries are what make this honest: components that respond to
+   their container rather than the viewport behave here exactly as they will
+   on a real device of that width. */
+
+html[data-vp] body {
+  width: var(--vp-w, 390px);
+  margin-inline: auto;
+  min-height: 100vh;
+  box-shadow: 0 0 0 1px var(--m-hairline), 0 30px 80px rgba(0 0 0 / 0.18);
+  container-type: inline-size;
+  overflow-x: hidden;
+}
+html[data-vp] .au, html[data-vp] .grain { width: var(--vp-w, 390px); left: 50%; transform: translateX(-50%); }
+html[data-vp] .gl-nav, html[data-vp] #navbar { max-width: var(--vp-w, 390px); margin-inline: auto; }

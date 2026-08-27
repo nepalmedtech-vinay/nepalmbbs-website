@@ -136,6 +136,28 @@
       mo: 1, moTilt: 0.9, moParallax: 1,
       fxGlow: 1, fxFloat: 1, fxSheen: 1, fxGrain: 0.04, sp: 1,
     },
+    nocturne: {
+      label: 'Nocturne', hint: 'Dark — deep indigo ground, cool glass',
+      brand: '#4FD1C5', brand2: '#F0956A', ink: '#EDF1FA', base: '#141A28',
+      au1: '#2E5F63', au2: '#39406E', au3: '#5C4A50', au4: '#2C5A54',
+      auOpacity: 0.62, auBlur: 76, auScale: 1.1, auSpeed: 40,
+      mBlur: 30, mOpacity: 0.52, mSaturate: 150, mBorder: 0.34, mInner: 0.22,
+      radius: 22, border: 1, shScale: 1, depth: 1,
+      tyPair: 'editorial', tyScale: 1, tyWeight: 400, tyWeightD: 600, tyTrack: 0, tyA11y: 1,
+      mo: 1, moTilt: 1, moParallax: 1,
+      fxGlow: 1, fxFloat: 1, fxSheen: 1, fxGrain: 0.045, sp: 1,
+    },
+    graphite: {
+      label: 'Graphite', hint: 'Dark — neutral, low chroma, maximum focus',
+      brand: '#8FB4E8', brand2: '#D8A177', ink: '#E9ECF2', base: '#16181C',
+      au1: '#2B3138', au2: '#333941', au3: '#3A3630', au4: '#2E3439',
+      auOpacity: 0.55, auBlur: 88, auScale: 1.2, auSpeed: 50,
+      mBlur: 22, mOpacity: 0.58, mSaturate: 128, mBorder: 0.3, mInner: 0.2,
+      radius: 14, border: 1, shScale: 1, depth: 1,
+      tyPair: 'precise', tyScale: 1, tyWeight: 400, tyWeightD: 700, tyTrack: 0, tyA11y: 1,
+      mo: 0.8, moTilt: 0.6, moParallax: 0.7,
+      fxGlow: 0, fxFloat: 1, fxSheen: 0, fxGrain: 0.04, sp: 1,
+    },
     slate: {
       label: 'Slate', hint: 'Dimmed light mode — cooler and lower key, still not dark',
       brand: '#3B7A9E', brand2: '#C2703F', ink: '#0C121C', base: '#E4E9F1',
@@ -184,8 +206,17 @@
         msg: 'Text on the page ground is ' + inkOnBase.toFixed(1) + ':1. Aim for 7:1.' });
     }
     // Glass panes sit over the aurora, so the effective background behind text
-    // is the ground lightened by the pane, not the ground itself.
-    var onGlass = contrast(t.ink, '#FFFFFF');
+    // is the ground shifted by the pane — not the ground, and not white. This
+    // checked against white unconditionally, which is right in light mode and
+    // meaningless in dark mode, where it would pass a theme whose panes are
+    // nearly black.
+    var bRgb = hexToRgb(t.base) || [244, 246, 251];
+    var isDark = luminance(bRgb) < 0.4;
+    var lift = isDark ? 0.10 : 0.72;
+    var glass = '#' + bRgb.map(function (c) {
+      return Math.round(c + (255 - c) * lift).toString(16).padStart(2, '0');
+    }).join('');
+    var onGlass = contrast(t.ink, glass);
     if (onGlass < 4.5) {
       issues.push({ level: 'fail', ratio: onGlass,
         msg: 'Text on a glass pane is ' + onGlass.toFixed(1) + ':1. Below 4.5:1 it is unreadable for many people.' });
@@ -229,14 +260,41 @@
       });
     });
 
+    // ── Mode ──────────────────────────────────────────────────────────
+    // There is no dark-mode flag. The mode IS the ground colour: pick a dark
+    // base and everything below follows. A separate switch would be a second
+    // source of truth that can disagree with the palette it is meant to
+    // describe.
+    var baseRgb = hexToRgb(t.base) || [244, 246, 251];
+    var inkRgb  = hexToRgb(t.ink)  || [15, 20, 32];
+    var dark = luminance(baseRgb) < 0.4;
+    el.setAttribute('data-mode', dark ? 'dark' : 'light');
+
     // Glass tint follows the ground, so a warm theme gets warm glass rather
-    // than a grey pane sitting on a warm page.
-    var baseRgb = hexToRgb(t.base);
-    if (baseRgb) {
-      var lifted = baseRgb.map(function (c) { return Math.round(c + (255 - c) * 0.72); });
-      set('--m-tint', lifted.join(' '));
-      set('--dp-hue', hexToRgb(t.ink).join(' '));
-    }
+    // than a grey pane sitting on a warm page. On a dark ground the pane must
+    // be a LIGHTER DARK, not a light pane — lifting 72% toward white there
+    // would drop a white card onto a black page.
+    var lift = dark ? 0.10 : 0.72;
+    set('--m-tint', baseRgb.map(function (c) {
+      return Math.round(c + (255 - c) * lift);
+    }).join(' '));
+
+    // A hairline has to contrast with the pane it edges, so it flips.
+    set('--m-hairline', dark ? 'rgba(255 255 255 / 0.10)' : 'rgba(15 20 32 / 0.07)');
+
+    // Shadows are always dark. Deriving them from the ink made them LIGHT in
+    // dark mode, which is not a shadow — it is a glow, and it made every card
+    // look like it was lit from underneath.
+    set('--dp-hue', dark ? '0 0 0' : inkRgb.join(' '));
+    set('--dp', dark ? String((parseFloat(t.depth) || 1) * 1.6) : String(t.depth));
+
+    // The secondary ink steps are mixed from ink toward the ground rather than
+    // stored, so a preset only has to name two colours and the ramp stays
+    // correct in either direction.
+    [['--g-ink-2', 0.32], ['--g-ink-3', 0.55], ['--g-ink-4', 0.72]].forEach(function (pair) {
+      set(pair[0], 'color-mix(in oklab, ' + t.ink + ' ' +
+          Math.round((1 - pair[1]) * 100) + '%, ' + t.base + ')');
+    });
 
     // Text on the brand fill flips to dark when the brand is light.
     set('--brand-ink', contrast(t.brand, '#FFFFFF') >= 4.5 ? '#FFFFFF' : t.ink);
@@ -289,7 +347,41 @@
     else if (!l) apply(PRESETS.dawn);
   }
 
+  /* Saved looks. Kept in the same admin_settings row family as the theme so
+     one place holds everything the panel can restore. */
+  async function pullLooks() {
+    if (typeof sbR !== 'function') return [];
+    try {
+      var rows = await sbR('/rest/v1/admin_settings?key=eq.site_looks&select=value');
+      if (rows && rows.length && rows[0].value) return JSON.parse(rows[0].value) || [];
+    } catch (e) {}
+    try { return JSON.parse(localStorage.getItem('nmb_looks_v1') || '[]'); } catch (e) { return []; }
+  }
+
+  async function saveLook(name, theme) {
+    var looks = await pullLooks();
+    looks = looks.filter(function (l) { return l.name !== name; });
+    looks.push({ name: name, theme: theme, at: new Date().toISOString() });
+    try { localStorage.setItem('nmb_looks_v1', JSON.stringify(looks)); } catch (e) {}
+    if (typeof sbW !== 'function') return looks;
+    var payload = { value: JSON.stringify(looks), updated_at: new Date().toISOString() };
+    var ok = await sbW('/rest/v1/admin_settings?key=eq.site_looks', payload, 'PATCH');
+    if (!ok) await sbW('/rest/v1/admin_settings', { key: 'site_looks', value: payload.value });
+    return looks;
+  }
+
+  async function deleteLook(name) {
+    var looks = (await pullLooks()).filter(function (l) { return l.name !== name; });
+    try { localStorage.setItem('nmb_looks_v1', JSON.stringify(looks)); } catch (e) {}
+    if (typeof sbW === 'function') {
+      await sbW('/rest/v1/admin_settings?key=eq.site_looks',
+        { value: JSON.stringify(looks), updated_at: new Date().toISOString() }, 'PATCH');
+    }
+    return looks;
+  }
+
   root.Theme = {
+    pullLooks: pullLooks, saveLook: saveLook, deleteLook: deleteLook,
     SCHEMA: SCHEMA, PRESETS: PRESETS, PAIRS: PAIRS,
     apply: apply, audit: audit, contrast: contrast,
     pull: pull, push: push, init: init,

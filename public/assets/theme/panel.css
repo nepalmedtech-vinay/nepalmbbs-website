@@ -198,3 +198,31 @@
 @media (prefers-reduced-motion: reduce) {
   .tp *, .tp *::before, .tp *::after { transition: none !important; }
 }
+
+/* ── Generator ─────────────────────────────────────────────────────── */
+.tp-gen { padding: 16px 20px 4px; }
+.tp-gen-row { display: flex; gap: 8px; margin-top: 8px; }
+.tp-gen-row input {
+  flex: 1; min-width: 0; font: inherit; font-size: 13px;
+  padding: 9px 12px; border: 1px solid var(--tp-line); border-radius: 9px;
+  background: var(--tp-bg); color: var(--tp-ink);
+}
+.tp-gen-row input:focus { outline: none; border-color: var(--tp-blue); box-shadow: 0 0 0 3px rgba(37,99,235,.16); }
+.tp-gen-row .tp-btn { flex: none; }
+
+/* ── Viewport preview ──────────────────────────────────────────────── */
+.tp-vp { padding: 14px 20px 0; }
+.tp-vp .tp-seg { margin-top: 8px; }
+
+/* ── Saved looks ───────────────────────────────────────────────────── */
+.tp-look-wrap { position: relative; }
+.tp-look-wrap .tp-look { width: 100%; }
+.tp-look-del {
+  position: absolute; top: 6px; right: 6px;
+  width: 22px; height: 22px; line-height: 1; padding: 0;
+  border: 1px solid var(--tp-line); border-radius: 6px;
+  background: var(--tp-bg); color: var(--tp-ink-3);
+  font-size: 15px; cursor: pointer; opacity: 0; transition: opacity .15s;
+}
+.tp-look-wrap:hover .tp-look-del, .tp-look-del:focus-visible { opacity: 1; }
+.tp-look-del:hover { color: var(--tp-fail); border-color: var(--tp-fail); }
