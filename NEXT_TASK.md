@@ -15,28 +15,35 @@ file still shows the run as in-progress, finish reading its output before
 starting new feature work, since a red suite changes what "safe to build
 on" means.
 
+## Done since this file was last written
+
+- ✅ **College comparison tool** — `src/pages/colleges/compare.astro` +
+  `public/assets/js/compare.js`, linked from `/colleges`. Pick up to 4
+  colleges, compare the exact fields already published on each college's
+  own page (nothing new, nothing estimated). Verified by
+  `tests/compare-verify.mjs` (13/13), wired into `npm run verify`. See
+  `DECISION_LOG.md`'s 2026-08-28 entry for why it was built this way.
+- ⛔ **Fee/cost planner — do not build this** without re-reading
+  `DECISION_LOG.md`'s 2026-08-28 entry first. The codebase has an existing,
+  deliberate, already-written editorial decision *not* to publish fee
+  figures (`colleges/index.astro` and `colleges/[slug].astro` both say so,
+  in their own copy, not just in these memory files). A calculator would
+  reverse that decision, not fill a gap — and this session did not have
+  the standing to make that call unilaterally on the owner's behalf.
+  Revisit only if the owner explicitly decides to change that policy.
+
 ## Recommended next chunk, in order
 
-1. **Finish reading out this session's `npm run verify` result and fix
-   anything red**, before adding any feature. Do not build on an unverified
-   baseline. If a check fails, fix the actual defect, not the test — unless
-   reading the test shows *it* is the one that's wrong (as was true for the
-   three path bugs this session already fixed).
+1. **Finish reading out the `npm run verify` result from this session's
+   second run** (kicked off after the comparison tool was built) and fix
+   anything red before starting new feature work.
 
-2. **College comparison tool** (`src/pages/colleges/index.astro` and/or a
-   new `compare.astro`). Recommended as the first real feature chunk
-   because: it's the single highest-value gap against the master brief's
-   admissions-ecosystem framing (§10.D), it needs no new content research
-   (all fields already exist in `src/data/colleges.json`: type, badge,
-   location, affiliation, established, seats, duration, admission,
-   website), and it's additive — no risk to the auth/RLS/CSP work that
-   must be preserved. Suggested shape: a picker (2–3 colleges from the 27),
-   a comparison table over the existing fields, respecting the same
-   `data-act`/`data-do` CSP-safe event pattern the rest of the site uses
-   (check `tools/action-allowlist.json` — any new handler name must be
-   added there or `npm run verify` will fail on the CSP handler-dispatch
-   check). Add it to `tests/build-verify.mjs` or a new focused test, not
-   just eyeballed.
+2. **`boot.js`'s dead hero step** (`TECHNICAL_DEBT.md`) — a one-line
+   deletion (`wrapHeroContent()`/`initHeroSlideshow()` don't exist
+   anywhere), currently throwing silently on every page load. Quick,
+   bounded, good first task of a session, but confirm `Hero.astro`/
+   `GlassHero.astro` don't actually need a client-side init call before
+   just deleting the line.
 
 3. **Start real content sourcing** per `CONTENT_SOURCE_LOG.md`. This is
    slower, research-heavy work (verifying 27 colleges' seats/admission
@@ -46,17 +53,20 @@ on" means.
    correctness matters more than speed here, so don't rush it to close
    the checklist item.
 
-4. **Fee/cost planner**, but only after step 3 has real sourced fee data
-   for at least a useful subset of colleges — building the calculator UI
-   before the data exists risks shipping placeholder numbers that read as
-   official, which is exactly what the brief prohibits.
-
-5. Re-check whether the three legacy glass-CSS variants noted in
+4. Re-check whether the three legacy glass-CSS variants noted in
    `docs/DESIGN-SYSTEM.md` §4 are actually dead now that the Phase 3/4
    theme engine exists, or still shipping (see `TECHNICAL_DEBT.md`).
-   Quick, bounded, good "in-between" chunk if 2–4 are blocked.
+   Quick, bounded, good "in-between" chunk if 2–3 are blocked.
+
+5. A deadline/announcement center (brief §10.H) is still a real gap and
+   still needs real dates from an official source before it can exist —
+   same rule as fees: no invented dates, ever.
 
 ## What NOT to do without asking
+
+- Do not build a fee/cost calculator or publish any fee figure — see
+  "Done since this file was last written" above. This is now the second
+  time it's written down; treat it as settled, not open.
 
 - Do not touch `supabase/migrations/`, apply a migration, or change RLS
   policy — this is database access the brief itself flags as needing

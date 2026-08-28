@@ -29,10 +29,15 @@ official source yet. Treat every unsourced claim currently on the site as
    its supporting JS — these should trace to Medical Education Commission
    (MEC) Nepal / National Medical Commission (India) publications, not be
    left as engineering assumptions.
-3. **Any fee figures**, once a fee/cost planner is built (see
-   `TECHNICAL_DEBT.md` and `NEXT_TASK.md`) — must ship with OFFICIAL /
-   ESTIMATED / CALCULATED labeling from day one, per brief §10.E, not
-   retrofitted later.
+3. **Fee figures — not currently planned.** A later session (2026-08-28)
+   found that the codebase already has a deliberate, written editorial
+   decision not to publish fee figures at all ("a number that is stale by
+   the time you read it is worse than no number" — see `colleges/[slug].astro`
+   and `colleges/index.astro`), because fees are set per intake and go
+   stale. `NEXT_TASK.md` now says explicitly not to build a fee calculator
+   without the owner revisiting that decision first. If that ever changes,
+   any fee data shown must still carry OFFICIAL / ESTIMATED / CALCULATED
+   labeling per brief §10.E, sourced here first.
 4. **Deadline/announcement content**, if a deadline center is built —
    dates must never be invented; every date needs a source and a
    last-checked timestamp visible on the page, not just in this log.

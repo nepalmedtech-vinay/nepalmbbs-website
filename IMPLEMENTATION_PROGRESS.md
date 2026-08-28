@@ -15,8 +15,8 @@ Legend: ✅ done · 🟡 partially done · ⬜ not started · 🚫 not applicabl
 | Phase 3 — homepage transformation | ✅ | `Hero.astro` (158 lines) + `GlassHero.astro`, generated graphics, `CollegeMap.astro`. Not independently re-audited against the brief's hero checklist this session — see `NEXT_TASK.md` if a fresh visual QA pass is wanted. |
 | Phase 4 — core admissions IA | 🟡 | `admission-process`, `why-nepal`, `guidelines`, `counseling`, `life-in-nepal`, `faq`, `videos` pages exist. No dedicated deadline center or document center as first-class pages (see gap list in `PROJECT_STATE.md`). |
 | Phase 5 — eligibility engine | 🟡 | `neet-calculator.astro` exists (NEET-score eligibility). No broader eligibility checker covering nationality/document requirements as a distinct flow. |
-| Phase 6 — college discovery + comparison | 🟡 | Discovery: ✅ (`colleges/index.astro`, `colleges/[slug].astro`, `CollegeMap.astro`, 27 profiles). Comparison: ⬜ — no side-by-side compare UI exists. |
-| Phase 7 — fees + cost planner | ⬜ | No fee data in `colleges.json`, no calculator beyond NEET eligibility. |
+| Phase 6 — college discovery + comparison | ✅ | Discovery: `colleges/index.astro`, `colleges/[slug].astro`, `CollegeMap.astro`, 27 profiles. Comparison: `colleges/compare.astro` + `compare.js`, added 2026-08-28 — pick up to 4, compare their published fields side by side. |
+| Phase 7 — fees + cost planner | 🚫 (deliberate) | Not a gap — a deliberate, pre-existing editorial decision. The codebase's own copy says it will not publish fee figures because they go stale per intake. See `DECISION_LOG.md` (2026-08-28) and `NEXT_TASK.md`. Do not build this without the owner revisiting that decision. |
 | Phase 8 — admission journey + document center | 🟡 | `admission-process.astro` covers the journey narratively (44 lines). No document checklist/download center as a distinct feature. |
 | Phase 9 — FAQ + knowledge system | ✅ | `faq.astro` + `chatbot.js` (knowledge-base-backed chat widget). |
 | Phase 10 — lead/conversion system | ✅ | `leads.js`, `ContactBar.astro`, `WhatsAppFloat.astro`, full lead→application pipeline in Supabase (migrations 0002/0004). |
@@ -42,6 +42,27 @@ Legend: ✅ done · 🟡 partially done · ⬜ not started · 🚫 not applicabl
 - ✅ Restored 5 git tags documented in `docs/GOLIVE.md` but missing from
   the repo (`pre-phase0-baseline`, `phase1-static-rollback`,
   `phase2-rollback`, `pre-premium-rollback`, `pre-glass-rollback`).
-- 🟡 `npm run verify` — running; see `QA_REPORT.md` for the outcome once
-  it completes (it is genuinely slow in this sandbox: software-rendered
-  WebGL aurora background across 40 routes, no hardware GL).
+- ✅ `npm run verify` — finished 100% green (all suites, 40 routes). See
+  `QA_REPORT.md`.
+
+## This session, chunk 2 (college comparison)
+
+- ✅ Built `/colleges/compare`: pick up to 4 of the 27 colleges, compare
+  the same fields already published on each one's own page. Shareable via
+  `?c=slug,slug`. New CSP-safe external script (`compare.js`), no changes
+  to `tools/action-allowlist.json` needed.
+- ✅ New permanent test `tests/compare-verify.mjs` (13/13), wired into
+  `npm run verify`.
+- ✅ Caught and fixed a real mobile-layout bug before shipping: the shared
+  `.doc-table` responsive CSS assumes rows-are-items, which broke against
+  this table's rows-are-fields structure. Fixed with a page-scoped
+  override, verified against the same overflow-measurement method
+  `tests/audit.mjs` uses.
+- 🚫 Deliberately did **not** build a fee/cost planner — see
+  `DECISION_LOG.md`. Discovered the codebase already has a written,
+  deliberate stance against publishing fee figures.
+- 📝 Found (not fixed, out of scope): `boot.js` calls two functions that
+  don't exist anywhere in the codebase, throwing silently on every page
+  load. See `TECHNICAL_DEBT.md`.
+- 🟡 `npm run verify` (second run, including the new page/test) —
+  running; see `QA_REPORT.md` once complete.

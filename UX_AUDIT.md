@@ -25,20 +25,16 @@ session; see `QA_REPORT.md` for what verification actually ran.
   the address bar** (`docs/GOLIVE.md` §4.5) — a real, specific UX/security
   decision, not a generic "add auth" gloss.
 
-## Gaps found by reading the routes (not yet fixed)
+## Gaps found by reading the routes
 
-- **No college comparison.** A student choosing between 27 colleges has
-  no way to see two or three side by side. `colleges/index.astro` has a
-  heading that says "before you compare this list" with no comparison UI
-  under it. This is the single highest-value missing module against the
-  brief's admissions-ecosystem framing (§10.D) — it's pure UI work against
-  data that already exists, no new research required.
-- **No cost/fee information anywhere.** A parent's first practical
-  question — "what will this actually cost" — has no page. The NEET
-  calculator answers "am I eligible," not "what do I pay." Building this
-  responsibly requires sourced fee data first (see
-  `CONTENT_SOURCE_LOG.md`) — do not ship a calculator with placeholder or
-  estimated-only numbers presented as if they were official.
+- ~~No college comparison.~~ **Fixed 2026-08-28** — `/colleges/compare`,
+  linked from `/colleges`. Pick up to 4, compare side by side.
+- **No cost/fee information anywhere, and this is deliberate, not a gap.**
+  A parent's first practical question — "what will this actually cost" —
+  genuinely has no page, but reading `colleges/index.astro` and
+  `colleges/[slug].astro`'s own copy turned up a written editorial reason:
+  fees are set per intake and a stale number is worse than none. See
+  `DECISION_LOG.md` (2026-08-28). Do not read this as unfinished work.
 - **`admission-process.astro` is 44 lines** — short for what the brief
   asks of an admission-journey page (research → eligibility → …→
   enrollment, each stage with documents/deadlines/common mistakes). Worth

@@ -45,7 +45,25 @@ place to check, not because they are newly discovered:
   overridden in the cascade. Worth a direct check before assuming this is
   resolved.
 
-## Newly identified this session — not yet fixed
+## Newly identified this session (chunk 2) — not yet fixed
+
+- **`boot.js`'s hero step is entirely dead code.** `await step('hero', () =>
+  { wrapHeroContent(); initHeroSlideshow(); });` calls two functions that do
+  not exist anywhere in the codebase — `docs/DESIGN-SYSTEM.md`'s Phase-1
+  architecture list names a `hero.js` file that defined them, but no such
+  file exists now (removed, per the Phase 3 commit that replaced the
+  30-slide stock-photo slideshow with generated graphics — `ed94657`). The
+  call throws a `ReferenceError` on **every single page load, site-wide**,
+  silently: `step()`'s own try/catch logs it via `console.error` and moves
+  on, and `tests/build-verify.mjs`'s "no JS errors" check only listens for
+  uncaught `pageerror` events, not `console.error`, so this has never once
+  been visible to the site's own test suite. Harmless in practice (nothing
+  downstream depends on it), but it is pure dead weight executing on every
+  visit. Fix: delete that one `step()` line (confirm first whether
+  `Hero.astro`/`GlassHero.astro` need any client-side init call at all —
+  if they do, that's the real call this line should have been updated to).
+
+## Newly identified this session (chunk 1) — not yet fixed
 
 - **No `CONTENT_SOURCE_LOG.md` existed before this session** (an empty one
   has now been created — see that file). None of the 27 college profiles'

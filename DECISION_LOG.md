@@ -5,6 +5,70 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-08-28 — Chunk 2: college comparison tool
+
+**Decision: built it as a new external script + a new page, not by adding
+to the legacy `data-act`/`data-do` dispatcher.** That mechanism
+(`public/assets/js/actions.js` + `tools/action-allowlist.json`) exists
+specifically to replace *inline* `on*=` handlers under CSP — it is a
+migration tool, not the house style for all new interactivity. Phase 3/4
+code (`public/assets/theme/panel.js` etc.) already uses plain
+`addEventListener` directly for new features, which is equally CSP-safe
+(an external `<script src>` file needs no inline-script hash at all) and
+simpler. Followed that precedent: `public/assets/js/compare.js` is a
+self-contained IIFE with no dependency on the allowlist, confirmed by a
+test assertion that the new page introduces zero `data-act` names.
+
+**Decision: did not build a fee/cost comparison, despite it being in
+`NEXT_TASK.md`'s roadmap.** Reading `colleges/index.astro` and
+`colleges/[slug].astro` before writing any code surfaced something the
+earlier audit missed: the site has an explicit, deliberate, already-written
+editorial stance against publishing fee figures — "We do not publish a
+fee figure... a number that is stale by the time you read it is worse
+than no number" — and against per-college recognition badges, for the
+same reason (see the code comment above the trust-register block in
+`colleges/index.astro`). Building a fee calculator now, without sourced
+data and without revisiting that stance, would have overridden a decision
+already made in the codebase, not filled a gap. The comparison table
+therefore shows exactly the fields already public on each college's own
+page — including rendering "Tuition fee: set per intake — ask us" as its
+own row, matching the per-college page's treatment verbatim — and adds
+nothing new. `CONTENT_SOURCE_LOG.md` and `NEXT_TASK.md` are updated to
+flag this stance explicitly, so it isn't overridden by accident in a
+future session either.
+
+**Decision: transposed the comparison table (rows = fields, columns =
+colleges) rather than reusing the existing `.doc-table` list layout as-is.**
+A comparison's whole value is seeing two or three colleges' values for the
+same field side by side; a row-per-college table (the existing pattern on
+`/colleges`) doesn't give you that once more than one is selected. This
+meant the shared `.doc-table` mobile CSS (which stacks `<td>` into cards
+and hides `<thead>` — right for a rows-are-items table) would have broken
+this table's layout, since it uses `<th scope="row">` for field labels, a
+pattern the existing CSS was never written to handle. Fixed with a
+page-scoped mobile override (horizontal scroll with a sticky label column)
+rather than editing the shared `trust.css`, to keep the blast radius to
+this one page. Caught by writing a real mobile-viewport overflow check
+before considering the feature done, not by inspection.
+
+**Decision: capped selection at 4 colleges.** Not specified anywhere; a
+judgment call to keep the table legible on a typical laptop width without
+horizontal scroll being the default experience, while still comfortably
+covering "which of these 3 shortlisted colleges should I pick."
+
+**Found and logged, not fixed (out of scope for this chunk): `boot.js`'s
+hero step calls two functions that don't exist anywhere in the codebase**
+(`wrapHeroContent`, `initHeroSlideshow`) — dead code left behind when
+Phase 3 removed the stock-photo slideshow, throwing silently on every page
+load site-wide. Invisible to `build-verify.mjs` because that check only
+listens for uncaught `pageerror`, not `console.error`, and `step()`'s own
+try/catch turns it into the latter. Left for a future chunk — a one-line
+deletion, but unrelated to comparison work, and touching `boot.js` deserves
+its own focused check rather than riding in on this commit. See
+`TECHNICAL_DEBT.md`.
+
+---
+
 ## 2026-08-27 — Session start: Phase 0 baseline audit
 
 **Context.** First autonomous session against the master brief on
