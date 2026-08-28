@@ -5,6 +5,49 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-08-28 — Chunk 3: dead-code cleanup + first real content-sourcing pass
+
+**Decision: deleted `Hero.astro`, not just the dead `boot.js` call.**
+`TECHNICAL_DEBT.md` had logged the `boot.js` reference to
+`wrapHeroContent()`/`initHeroSlideshow()` as debt to fix. Before deleting
+just that line, checked whether those functions belonged to something
+still in use — they don't. `Hero.astro` (the component whose markup they
+targeted: `#hero-slides`, `.slide-dots`, etc.) is not imported anywhere
+in `src/` (confirmed by search, not assumed); `/` actually renders
+`GlassHero.astro`, a completely different, later component. `Hero.astro`
+also happened to contain exactly the anti-pattern the site's own design
+docs and the master brief prohibit — 50+ hotlinked stock photos with
+captions implying they show this institution ("Medical College Nepal",
+"MRI Machine — Diagnostic Radiology" on generic Unsplash photos). Since
+it was confirmed dead, not a design choice someone might revert, deleting
+it removed both the JS error and a landmine for a future session that
+might have found the file and assumed it was live. Re-ran the full verify
+suite after, since this touches `boot.js`, which loads on every page.
+
+**Decision: started content-sourcing with `WebSearch` only, after
+confirming `WebFetch` is blocked.** Tried `WebFetch` against 4 different
+domains (a news article, its mirror, MEC Nepal's own site, Wikipedia) —
+all refused with `EGRESS_BLOCKED`. This is the sandbox's network policy,
+not a per-domain issue. `WebSearch` still returns real, citable snippets,
+so proceeded with that, but logged the limitation prominently in
+`CONTENT_SOURCE_LOG.md` and `TECHNICAL_DEBT.md` so a future session
+doesn't waste time rediscovering it, and so nobody mistakes
+snippet-level corroboration for having read a primary source directly.
+
+**Decision: did not edit `src/data/colleges.json`, even where a source
+disagreed with it.** Found two real discrepancies (PAHS's established
+year; PoAHS's MBBS-program status) and one gap I couldn't fill with
+confidence (Purbanchal USHS's own founding year vs. its parent
+university's). Logged all three in `CONTENT_SOURCE_LOG.md` and surfaced
+the more serious one (PoAHS) at the top of `NEXT_TASK.md`, rather than
+resolving them myself from search-snippet evidence alone. This is data
+27 colleges' worth of families could act on; "probably right based on a
+search snippet" is not the same bar as "confirmed," and the brief's own
+zero-fabrication standard cuts both ways — replacing one unverified
+number with another isn't an improvement just because I did the typing.
+
+---
+
 ## 2026-08-28 — Chunk 2: college comparison tool
 
 **Decision: built it as a new external script + a new page, not by adding

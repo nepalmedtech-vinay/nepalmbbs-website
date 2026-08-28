@@ -64,5 +64,23 @@ Legend: ✅ done · 🟡 partially done · ⬜ not started · 🚫 not applicabl
 - 📝 Found (not fixed, out of scope): `boot.js` calls two functions that
   don't exist anywhere in the codebase, throwing silently on every page
   load. See `TECHNICAL_DEBT.md`.
-- 🟡 `npm run verify` (second run, including the new page/test) —
-  running; see `QA_REPORT.md` once complete.
+- ✅ `npm run verify` (second run, including the new page/test) —
+  finished 100% green, 41/41 routes. See `QA_REPORT.md`.
+
+## This session, chunk 3 (dead-code cleanup + content sourcing)
+
+- ✅ Deleted `src/components/Hero.astro` (confirmed orphaned — imported
+  nowhere; superseded by `GlassHero.astro`, which is what `/` actually
+  renders) and the dead `boot.js` step that called its two now-nonexistent
+  functions. Third full `npm run verify` re-run to confirm the global
+  `boot.js` change is safe everywhere; see `QA_REPORT.md`.
+- ✅ Started real content-sourcing research (`CONTENT_SOURCE_LOG.md`):
+  all 10 government colleges checked via `WebSearch` (`WebFetch` is
+  blocked in this sandbox — tested against 4 domains, all refused).
+  7 confirmed, 1 wrong-looking date (PAHS: site says 2010, sources say
+  2008), 1 serious open question flagged prominently in `NEXT_TASK.md`
+  (PoAHS — MBBS program status could not be confirmed), 1 unresolved
+  (Purbanchal USHS's own founding year, distinct from its parent
+  university's). Nothing in `colleges.json` was edited — findings only,
+  pending either deeper verification or the owner's direct confirmation.
+  17 `ku`/`tu`-affiliated colleges still unchecked.

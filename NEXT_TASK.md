@@ -15,8 +15,52 @@ file still shows the run as in-progress, finish reading its output before
 starting new feature work, since a red suite changes what "safe to build
 on" means.
 
+## 🔴 Read this first: accuracy problems found in the college data
+
+A first-pass source check of all 27 colleges (`CONTENT_SOURCE_LOG.md`)
+found several things that shouldn't wait for a "someday" content chunk.
+**None of these were auto-corrected** — they need a human or a session
+with working primary-source access. In rough priority order:
+
+1. **Pokhara Academy of Health Sciences may not have a running MBBS
+   program at all**, yet it's listed as one of the 27 MBBS-admitting
+   colleges with 4 foreign-quota seats. One source described it as still
+   working toward launching MBBS, offering only MD/MS. If that's current,
+   the site is telling families they can apply for seats that don't
+   exist. **Check `pahs.gov.np` or call MEC Nepal before the next intake.**
+2. **One college's name is wrong.** "Universal Medicine College" should
+   be **"Universal College of Medical Sciences"** (the UCMS acronym is
+   right). An admissions site misnaming an institution is its own
+   credibility problem.
+3. **Two established years look wrong**: PAHS (site 2010 → sources say
+   2008) and CMS Bharatpur (site 1994 → sources say 1993 *or* 1996,
+   never 1994).
+4. **One seat count conflicts**: Kathmandu Medical College (site 43 → one
+   source says 33 foreign seats).
+5. **Three MBBS programs are brand new and the site doesn't say so**:
+   B&C (2024), MIHS (2024), Madan Bhandari (2025). Consider surfacing
+   "first intake YYYY" — it's exactly the kind of thing this site's own
+   trust-register design exists to communicate honestly.
+6. **9 blank `established` fields are now fillable** from sourced
+   candidates listed in `CONTENT_SOURCE_LOG.md`.
+
 ## Done since this file was last written
 
+- ✅ **Removed dead code**: `src/components/Hero.astro` (confirmed
+  unused anywhere — zero imports found by search) and the boot.js step
+  that called it, `wrapHeroContent()`/`initHeroSlideshow()`, neither of
+  which exist anywhere in the codebase. This ran, threw, and was silently
+  swallowed on **every single page load, site-wide**, since whenever the
+  functions were removed — invisible to `build-verify.mjs` because it
+  only listens for uncaught `pageerror`, not `console.error`. Full verify
+  suite re-run after this change; see `QA_REPORT.md`.
+- ✅ **First-pass content-sourcing research, all 27 colleges** — see
+  `CONTENT_SOURCE_LOG.md` for the per-college tables with sources.
+  Done via `WebSearch` only (`WebFetch` is blocked in this sandbox for
+  every domain tried, including MEC Nepal's own site). Found 1 wrong
+  name, 2 wrong-looking years, 1 conflicting seat count, 1 program whose
+  existence couldn't be confirmed, 3 undisclosed brand-new programs, and
+  9 fillable blanks. Nothing auto-corrected — see the 🔴 section above.
 - ✅ **College comparison tool** — `src/pages/colleges/compare.astro` +
   `public/assets/js/compare.js`, linked from `/colleges`. Pick up to 4
   colleges, compare the exact fields already published on each college's
@@ -34,31 +78,19 @@ on" means.
 
 ## Recommended next chunk, in order
 
-1. **Finish reading out the `npm run verify` result from this session's
-   second run** (kicked off after the comparison tool was built) and fix
-   anything red before starting new feature work.
+1. **Work the 🔴 list above** — resolve each against a primary source
+   (the college's own site, or MEC Nepal), then correct
+   `src/data/colleges.json` and record the confirmation in
+   `CONTENT_SOURCE_LOG.md`. Items 1 and 2 (PoAHS's program, the wrong
+   college name) carry real "a family could be misled right now" risk;
+   the rest are accuracy debt.
 
-2. **`boot.js`'s dead hero step** (`TECHNICAL_DEBT.md`) — a one-line
-   deletion (`wrapHeroContent()`/`initHeroSlideshow()` don't exist
-   anywhere), currently throwing silently on every page load. Quick,
-   bounded, good first task of a session, but confirm `Hero.astro`/
-   `GlassHero.astro` don't actually need a client-side init call before
-   just deleting the line.
-
-3. **Start real content sourcing** per `CONTENT_SOURCE_LOG.md`. This is
-   slower, research-heavy work (verifying 27 colleges' seats/admission
-   routes/affiliations against official sources) — plan for it as its own
-   focused session rather than squeezing it in. High value because it's
-   the biggest gap against the brief's zero-fabrication standard, but
-   correctness matters more than speed here, so don't rush it to close
-   the checklist item.
-
-4. Re-check whether the three legacy glass-CSS variants noted in
+2. Re-check whether the three legacy glass-CSS variants noted in
    `docs/DESIGN-SYSTEM.md` §4 are actually dead now that the Phase 3/4
    theme engine exists, or still shipping (see `TECHNICAL_DEBT.md`).
-   Quick, bounded, good "in-between" chunk if 2–3 are blocked.
+   Quick, bounded, good "in-between" chunk if 1–2 are blocked.
 
-5. A deadline/announcement center (brief §10.H) is still a real gap and
+4. A deadline/announcement center (brief §10.H) is still a real gap and
    still needs real dates from an official source before it can exist —
    same rule as fees: no invented dates, ever.
 

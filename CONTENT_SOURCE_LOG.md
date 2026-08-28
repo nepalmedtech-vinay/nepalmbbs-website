@@ -5,11 +5,107 @@ important factual claim on the site should have a source, URL, date
 checked, and confidence status recorded here. This file did not exist
 before this session — it is being started, not completed.
 
-**Current state: empty inventory, not a verified log.** Do not read the
-absence of a "contradicted" row below as confirmation that the site's
-existing claims are correct — nothing has been checked against an
-official source yet. Treat every unsourced claim currently on the site as
-**unverified**, not as false and not as confirmed.
+**Current state: all 27 colleges have had a first-pass check** (see the
+three tables below and the summary after them). This is *first-pass,
+search-snippet-level* verification, not primary-source confirmation —
+see the environment limitation immediately below. Treat a ✅ here as
+"corroborated by independent secondary sources," not "certified."
+
+## ⚠️ Environment limitation, read before continuing this work
+
+`WebFetch` (fetching a specific page's full content) is blocked by this
+sandbox's network egress policy for every domain tried, including
+`mec.gov.np` itself, official college sites, Wikipedia, and news outlets
+(tested against 4+ distinct domains, all refused with `EGRESS_BLOCKED` —
+this is the sandbox's policy, not a per-domain issue). `WebSearch` still
+works and returns real snippets with citable URLs, so verification below
+was done from search-result snippets only, not by reading a full official
+page or PDF. This is real but shallower evidence than "read the MEC
+notice directly" — good enough to catch a wrong year or a genuinely
+missing program, not good enough to certify an exact current seat count.
+A session with unblocked `WebFetch` (or the owner checking directly)
+should treat every row below as a lead to confirm more deeply, not a
+closed case.
+
+## Findings — government colleges (checked 2026-08-28)
+
+| Claim | Where it appears | What was found | Source | Status |
+|---|---|---|---|---|
+| IOM established 1972 | `institute-of-medicine` | Multiple independent sources agree: 1972 | [Wikipedia](https://en.wikipedia.org/wiki/Institute_of_Medicine,_Nepal), [iom.edu.np](https://iom.edu.np/foreign-students/) | ✅ confirmed |
+| BPKIHS established 1993 | `b-p-koirala-institute-of-health-sciences` | Established Jan 18, 1993; MBBS began 1994; upgraded to autonomous university Oct 1998 | [Wikipedia](https://en.wikipedia.org/wiki/B._P._Koirala_Institute_of_Health_Sciences), [bpkihs.edu](https://bpkihs.edu/2025/about/introduction) | ✅ confirmed |
+| PAHS established 2010 | `patan-academy-of-health-sciences` | Multiple sources (Wikipedia, edufever, bodmaseducation) independently give **2008** (2064 B.S.), not 2010, as the parliamentary charter year | [Wikipedia](https://en.wikipedia.org/wiki/Patan_Academy_of_Health_Sciences), [PAHS MBBS program](https://web.pahs.edu.np/programs/pahs-mbbs-program/) | ❌ **contradicted** — see note below |
+| KAHS established 2011 | `karnali-academy-of-health-sciences` | Established by Act of Parliament, Oct 20, 2011 (upgraded from Karnali Zonal Hospital) | [Wikipedia](https://en.wikipedia.org/wiki/Karnali_Academy_of_Health_Sciences), [kahs.edu.np](https://kahs.edu.np/) | ✅ confirmed |
+| Nepalese Army IHS established — *(currently blank on site)* | `nepalese-army-institute-of-health-sciences` | Ministry of Defence approval: Bhadra 30, 2067 B.S. = **2010**; inaugurated by the President: 10 Jestha 2069 B.S. = **23 May 2012** | [naihs.edu.np](https://naihs.edu.np/), [edusanjal](https://edusanjal.com/college/naihs-college-medicine/) | ⚠️ two candidate years, needs a call — approval (2010) or inauguration (2012)? |
+| Pokhara AHS — listed as MBBS-admitting, 4 foreign-quota seats | `pokhara-academy-of-health-sciences` | **Contradictory.** One source: PoAHS was still only "working towards launching MBBS by 2024," offering MD/MS only as of that writing. A second, separately-worded result calls it MBBS-offering but appears to conflate PoAHS (Pokhara) with the differently-named PAHS (Patan) mid-paragraph — a real, easy mix-up given the near-identical acronyms. Could not resolve with search alone (`WebFetch` to `pahs.gov.np` blocked). | [Wikipedia](https://en.wikipedia.org/wiki/Pokhara_Academy_of_Health_Sciences), [pahs.gov.np/about-us](https://pahs.gov.np/about-us) | 🔴 **needs urgent direct verification** — if PoAHS does not actually have a running, recognised MBBS intake, it should not be listed among the 27 colleges at all. This is a "could this be actively misleading a family" case, not a routine data-freshness one. |
+| MIHS established 2021 | `madhesh-institute-of-health-sciences` | Established 2021 under the Madhesh Institute of Health Science Act 2077; MBBS program itself only started **2024**, 50-student MEC permission | [edusanjal](https://edusanjal.com/university/madhesh-institute-health-sciences/), [mihs.edu.np](https://mihs.edu.np/) | ✅ established year confirmed; note MBBS is very new (since 2024) — worth stating on the college's own page as a trust signal, not hiding a young program |
+| Rapti AHS established 2017 | `rapti-academy-of-health-sciences` | "Rapti Health Science Academy Bill 2074" (2017) passed unanimously by parliament, upgrading Rapti Sub-regional Hospital | [Wikipedia](https://en.wikipedia.org/wiki/Rapti_Academy_of_Health_Sciences), [rahs.edu.np](https://www.rahs.edu.np/about-us/introduction) | ✅ confirmed |
+| Madan Bhandari AHS established 2018 | `madan-bhandari-academy-of-health-sciences` | Established by Provincial Act, 2018, Hetauda. **MBBS program itself only launched in 2025** — scholarship for 37 of 50 total MBBS seats mentioned, but that figure isn't clearly the foreign quota specifically | [Wikipedia](https://en.wikipedia.org/wiki/Madan_Bhandari_Academy_of_Health_Sciences), [mbahs.edu.np](https://mbahs.edu.np/pages/introduction/) | ✅ established year confirmed; ⚠️ MBBS is extremely new (2025) — the foreign-quota seat figure (site says 4) could not be independently confirmed and deserves a direct check given how new the program is |
+| Purbanchal USHS established — *(currently blank on site)* | `purbanchal-university-school-of-health-sciences` | Purbanchal **University** (the parent) was established 1993 — but PUSHS as a constituent school may have a later, distinct founding date not found in this search. One source describes PUSHS as standing "alongside a **forthcoming** medical college and teaching hospital," which may signal the teaching-hospital side is still being built out | [pufomas.edu.np](https://www.pufomas.edu.np/pushs/about), [pushs.edu.np](https://pushs.edu.np/) | ⚠️ could not verify a PUSHS-specific founding year (1993 is the university's, not necessarily this school's) — do not fill in 1993 without confirming it's the right date for this specific school |
+
+## Findings — Kathmandu University-affiliated colleges (checked 2026-08-28)
+
+| Claim | Where it appears | What was found | Source | Status |
+|---|---|---|---|---|
+| Manipal MCOMS est. 1994 | `manipal-college-of-medical-sciences` | Opened 1994 with an MBBS program; first private medical institute in Nepal post-1990 liberalisation | [Wikipedia](https://en.wikipedia.org/wiki/Manipal_College_of_Medical_Sciences), [manipal.edu](https://www.manipal.edu/campus/mcoms.html) | ✅ confirmed |
+| CMS Bharatpur est. 1994 | `college-of-medical-sciences` | Three candidate dates found, **none of them 1994**: agreement signed 8 Aug **1993**; letter of intent **1993**; first MBBS batch **1996** (Wikipedia gives 1996 as "established") | [Wikipedia](https://en.wikipedia.org/wiki/College_of_Medical_Sciences,_Bharatpur), [cmsnepal.edu.np](https://cmsnepal.edu.np/) | ❌ **contradicted** — 1994 matches no source found. Likely should be 1993 (founding) or 1996 (first intake); pick one and label which it means |
+| KUSMS est. 2001 | `kathmandu-university-school-of-medical-sciences` | MBBS program began 7 Sept 2001 with Dhulikhel Hospital | [Wikipedia](https://en.wikipedia.org/wiki/Kathmandu_University_School_of_Medical_Sciences), [kusms.edu.np](https://kusms.edu.np/) | ✅ confirmed |
+| KMC est. 1997; **43** foreign seats | `kathmandu-medical-college` | Established 1997 ✅. But one source states "100 seats for MBBS with **33** foreign seats" — not 43 | [Wikipedia](https://en.wikipedia.org/wiki/Kathmandu_Medical_College) | ✅ year confirmed; ⚠️ **seat count conflicts** (33 vs the site's 43) — needs a direct MEC check |
+| Nepal Medical College Jorpati est. — *(blank on site)* | `nepal-medical-college-jorpati` | Most sources: **1997** (teaching hospital also 1997); one outlier says 1994 | [Wikipedia](https://en.wikipedia.org/wiki/Nepal_Medical_College) | ⬜ gap fillable with 1997, pending confirmation |
+| Nobel est. 2004 | `nobel-medical-college-teaching-hospital` | Established 2004, Biratnagar; KU-affiliated, NMC-recognised | [nobelmedicalcollege.com.np](https://www.nobelmedicalcollege.com.np/about) | ✅ confirmed |
+| Birat Medical College est. — *(blank on site)* | `birat-medical-college-biratnagar` | **2014** (one outlier source says 1991, which looks wrong) | [biratmedicalcollegenepal.com](https://biratmedicalcollegenepal.com/about-us.php) | ⬜ gap fillable with 2014, pending confirmation |
+| Nepalgunj est. — *(blank)*; location "Nepalgunj" | `nepalgunj-medical-college` | Established **1996**, MBBS from 1997. Note the campus/teaching hospital is at **Kohalpur**, Banke (750-bed), with a second 250-bed hospital at Nepalgunj — so "Nepalgunj" alone is imprecise as the location | [Wikipedia](https://en.wikipedia.org/wiki/Nepalgunj_Medical_College) | ⬜ year fillable with 1996; ⚠️ location field arguably should say Kohalpur, Banke |
+| Lumbini est. 2009 | `lumbini-medical-college-teaching-hospital` | 2009 per most sources (one says 2008) | [edusanjal](https://edusanjal.com/college/lumbini-medical-college/) | ✅ confirmed (minor 2008/2009 variance) |
+| Devdaha est. 2008 | `devdaha-medical-college-research-institute` | Established 2008, Devdaha-9, Rupandehi; KU affiliation for MBBS | [edusanjal](https://edusanjal.com/college/devdaha-medical-college/) | ✅ confirmed |
+| B&C Medical College est. — *(blank)* | `b-c-medical-college-and-teaching-hospital` | Hospital opened **2015**; the **medical college formally commenced 2024**, MBBS offered from **2024 AD** | [Wikipedia](https://en.wikipedia.org/wiki/B&C_Medical_College_Teaching_Hospital_and_Research_Center), [bncmedicalcollege.edu.np](https://bncmedicalcollege.edu.np/) | ⚠️ **MBBS program is brand new (2024)** — a family should be told this plainly; a 1-year-old program is a materially different proposition from a 30-year-old one |
+
+## Findings — Tribhuvan University-affiliated colleges (checked 2026-08-28)
+
+| Claim | Where it appears | What was found | Source | Status |
+|---|---|---|---|---|
+| KIST est. 2006 | `kist-medical-college-teaching-hospital` | Established BS 2062 = 2006 AD; **MBBS itself started BS 2065 = 2008** | [kistmcth.edu.np](https://kistmcth.edu.np/kist/about-hospital) | ✅ confirmed |
+| Chitwan Medical College est. 2006 | `chitwan-medical-college` | Established 20 June 2006, TU-affiliated | [Wikipedia](https://en.wikipedia.org/wiki/Chitwan_Medical_College) | ✅ confirmed |
+| Gandaki est. — *(blank on site)* | `gandaki-medical-college` | **2007**, Pokhara, TU-affiliated (GMCTHRC) | [collegesnepal](https://www.collegesnepal.com/gandaki-medical-college/) | ⬜ gap fillable with 2007, pending confirmation (sources here are aggregators, not the college's own site) |
+| National Medical College Birgunj est. — *(blank)* | `national-medical-college-birgunj` | **2001**, TU-affiliated, NMC-recognised, 1,050-bed teaching hospital | [edusanjal](https://edusanjal.com/college/national-medical-college/) | ⬜ gap fillable with 2001, pending confirmation |
+| **Name: "Universal Medicine College (UCMS)"** | `universal-medicine-college` | The institution's actual name is **"Universal College of Medical Sciences"** — the site's name is wrong, though the "UCMS" acronym is right. Established **1998**, Bhairahawa, affiliated to TU's Institute of Medicine | [ucms.edu.np](https://ucms.edu.np/about/introduction/) | ❌ **name is incorrect** — an admissions site getting an institution's name wrong is a credibility problem in itself. Also: est. 1998 fillable |
+| Janaki est. — *(blank on site)* | `janaki-medical-college` | **2003** per Wikipedia (one source says 1999); Janakpur, TU/IOM association | [Wikipedia](https://en.wikipedia.org/wiki/Janaki_Medical_College) | ⬜ gap fillable with 2003, pending confirmation |
+
+## Summary of what this pass found
+
+All 27 colleges have now had at least a first-pass search check. Headline
+results:
+
+- **1 name is wrong** — "Universal Medicine College" should be
+  "Universal College of Medical Sciences".
+- **2 established years look wrong** — PAHS (site 2010, sources 2008) and
+  CMS Bharatpur (site 1994, sources 1993 or 1996, never 1994).
+- **1 seat count conflicts** — KMC (site 43, one source 33).
+- **1 program's existence is unconfirmed** — PoAHS (see 🔴 above and
+  `NEXT_TASK.md`).
+- **3 MBBS programs are brand new** and the site doesn't say so: B&C
+  (2024), MIHS (2024), Madan Bhandari (2025). Not an error, but a family
+  choosing a college would reasonably want to know a program is in its
+  first or second intake.
+- **9 blank `established` fields are fillable** from sources found here
+  (Nepal Medical College 1997, Birat 2014, Nepalgunj 1996, Gandaki 2007,
+  National 2001, UCMS 1998, Janaki 2003, NAIHS 2010-or-2012, plus
+  Purbanchal USHS still unresolved).
+- **1 location is imprecise** — Nepalgunj Medical College's campus is at
+  Kohalpur, Banke.
+
+**Nothing in `src/data/colleges.json` was changed based on any of this.**
+Editing a live data file from search-snippet-level evidence, without being
+able to read the primary source directly, risks trading one unverified
+claim for another. These are findings for a human (or a future session
+with working `WebFetch`) to act on, not applied fixes.
+
+One genuinely reassuring cross-check found along the way: a
+Kathmandu Post article (Aug 2026) independently confirmed KUSMS's 43
+foreign-quota seats exactly matches what's already in `colleges.json` —
+so the repeated "43" across several `ku`-affiliated colleges is plausibly
+a real, uniform per-university policy (43 of a 130-seat program is
+~33%, matching the legal cap), not a copy-paste error. The KMC 33-vs-43
+conflict above is the one data point that cuts against that theory, so
+it is worth resolving specifically.
 
 ## Format for each entry, once research starts
 

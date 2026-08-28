@@ -72,3 +72,29 @@ new page didn't regress anything and passes on its own merits.
 not the shared `.doc-table` stacking rule) is confirmed working by the
 same overflow-measurement method `tests/audit.mjs` itself uses, not just
 by inspection.
+
+## 2026-08-28 — Third run, after removing dead code ⏳ IN FLIGHT
+
+**Context:** deleted the orphaned `src/components/Hero.astro` and the
+`boot.js` step that called its two non-existent functions. Because
+`boot.js` loads on every non-bare page, this warranted a full re-run
+rather than a spot check.
+
+| Step | Result |
+|---|---|
+| `npm run build` | ✅ 41 pages, clean |
+| `node tools/gen-csp.mjs --check` | ✅ current (no inline-script hashes affected) |
+| the browser suites | ⏳ **still running when this was committed** |
+
+**This entry is deliberately not marked green.** The commit it ships with
+was made before the run finished, on the reasoning that both changes are
+provably dead-code removals — `Hero.astro` had zero importers anywhere in
+`src/` (verified by search), and the deleted `boot.js` line called two
+functions that exist nowhere, so it threw on every page load and its
+removal can only reduce errors, never add one. The build and CSP checks
+both pass, and the two immediately preceding full runs were 100% green on
+this same codebase.
+
+**A future session must confirm this run actually finished green** and
+update this entry, or re-run `npm run verify` if the result was lost.
+Do not treat the reasoning above as a substitute for the result.

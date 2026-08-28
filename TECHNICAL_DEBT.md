@@ -13,6 +13,12 @@ leaving it as a silent TODO, and give each item a path to being resolved.
   tests.~~ Fixed — added as a pinned `devDependency`.
 - ~~5 of the 5 rollback tags documented in `docs/GOLIVE.md` did not exist
   in the repository.~~ Restored.
+- ~~`boot.js`'s hero step called two functions that don't exist anywhere
+  in the codebase, throwing silently on every page load site-wide.~~
+  Confirmed `Hero.astro` (which they belonged to) is itself dead —
+  imported nowhere, replaced by `GlassHero.astro` — so deleted both the
+  component and the dead `step('hero', ...)` call together. Full verify
+  suite re-run after the change; see `QA_REPORT.md`.
 
 ## Open — inherited from previous phases, documented by their own authors
 
@@ -45,23 +51,24 @@ place to check, not because they are newly discovered:
   overridden in the cascade. Worth a direct check before assuming this is
   resolved.
 
-## Newly identified this session (chunk 2) — not yet fixed
+## Newly identified this session (chunk 3 — content sourcing) — not yet fixed
 
-- **`boot.js`'s hero step is entirely dead code.** `await step('hero', () =>
-  { wrapHeroContent(); initHeroSlideshow(); });` calls two functions that do
-  not exist anywhere in the codebase — `docs/DESIGN-SYSTEM.md`'s Phase-1
-  architecture list names a `hero.js` file that defined them, but no such
-  file exists now (removed, per the Phase 3 commit that replaced the
-  30-slide stock-photo slideshow with generated graphics — `ed94657`). The
-  call throws a `ReferenceError` on **every single page load, site-wide**,
-  silently: `step()`'s own try/catch logs it via `console.error` and moves
-  on, and `tests/build-verify.mjs`'s "no JS errors" check only listens for
-  uncaught `pageerror` events, not `console.error`, so this has never once
-  been visible to the site's own test suite. Harmless in practice (nothing
-  downstream depends on it), but it is pure dead weight executing on every
-  visit. Fix: delete that one `step()` line (confirm first whether
-  `Hero.astro`/`GlassHero.astro` need any client-side init call at all —
-  if they do, that's the real call this line should have been updated to).
+- **`WebFetch` is blocked by this sandbox's network egress policy for
+  every domain tried** (tested: `kathmandupost.com`, `asianews.network`,
+  `mec.gov.np`, `en.wikipedia.org` — all refused with `EGRESS_BLOCKED`).
+  `WebSearch` still works. This means content verification in this
+  environment is limited to search-snippet-level evidence, not full
+  primary-source reads. See `CONTENT_SOURCE_LOG.md` for what that limits.
+  A future session should check whether this is fixable (network policy
+  setting) or is a fixed constraint of this sandbox kind.
+- **Possible real accuracy problem, not just missing sourcing**: Pokhara
+  Academy of Health Sciences may not have a running MBBS program despite
+  being listed as one of the 27 admitting colleges — see the 🔴 flag at
+  the top of `NEXT_TASK.md` and the detail in `CONTENT_SOURCE_LOG.md`.
+  This is higher priority than routine debt cleanup.
+- Patan Academy of Health Sciences' `established` year on the site (2010)
+  conflicts with multiple independent sources (2008). See
+  `CONTENT_SOURCE_LOG.md`.
 
 ## Newly identified this session (chunk 1) — not yet fixed
 
