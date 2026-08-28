@@ -66,7 +66,7 @@
     "seats": "4",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
-    "website": null,
+    "website": "https://naihs.edu.np",
     "enquiryName": "Nepalese Army Institute of Health Sciences, Kathmandu"
   },
   {
@@ -94,7 +94,7 @@
     "seats": "4",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
-    "website": null,
+    "website": "https://www.rahs.edu.np",
     "enquiryName": "RAHS, Dang"
   },
   {
@@ -160,7 +160,7 @@
     "badge": "KU Affiliated",
     "location": "Bharatpur, Chitwan",
     "affiliation": "Kathmandu University",
-    "established": "1994",
+    "established": "1993",
     "seats": "65",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
@@ -351,16 +351,16 @@
   },
   {
     "slug": "universal-medicine-college",
-    "name": "Universal Medicine College (UCMS)",
+    "name": "Universal College of Medical Sciences (UCMS)",
     "type": "tu",
     "badge": "TU Affiliated",
     "location": "Bhairahawa",
     "affiliation": "Tribhuvan University",
-    "established": "",
+    "established": "1998",
     "seats": "40",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
-    "website": null,
+    "website": "https://ucms.edu.np",
     "enquiryName": "UCMS, Bhairahawa"
   },
   {

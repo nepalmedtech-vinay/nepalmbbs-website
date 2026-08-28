@@ -15,34 +15,52 @@ file still shows the run as in-progress, finish reading its output before
 starting new feature work, since a red suite changes what "safe to build
 on" means.
 
-## 🔴 Read this first: accuracy problems found in the college data
+## College data: what got fixed, and what is still open
 
-A first-pass source check of all 27 colleges (`CONTENT_SOURCE_LOG.md`)
-found several things that shouldn't wait for a "someday" content chunk.
-**None of these were auto-corrected** — they need a human or a session
-with working primary-source access. In rough priority order:
+Two research passes ran (see `CONTENT_SOURCE_LOG.md` for full sourcing).
+The second pass restricted search to each institution's **own website**,
+which is what the applied fixes rest on.
 
-1. **Pokhara Academy of Health Sciences may not have a running MBBS
-   program at all**, yet it's listed as one of the 27 MBBS-admitting
-   colleges with 4 foreign-quota seats. One source described it as still
-   working toward launching MBBS, offering only MD/MS. If that's current,
-   the site is telling families they can apply for seats that don't
-   exist. **Check `pahs.gov.np` or call MEC Nepal before the next intake.**
-2. **One college's name is wrong.** "Universal Medicine College" should
-   be **"Universal College of Medical Sciences"** (the UCMS acronym is
-   right). An admissions site misnaming an institution is its own
-   credibility problem.
-3. **Two established years look wrong**: PAHS (site 2010 → sources say
-   2008) and CMS Bharatpur (site 1994 → sources say 1993 *or* 1996,
-   never 1994).
-4. **One seat count conflicts**: Kathmandu Medical College (site 43 → one
-   source says 33 foreign seats).
-5. **Three MBBS programs are brand new and the site doesn't say so**:
-   B&C (2024), MIHS (2024), Madan Bhandari (2025). Consider surfacing
-   "first intake YYYY" — it's exactly the kind of thing this site's own
-   trust-register design exists to communicate honestly.
-6. **9 blank `established` fields are now fillable** from sourced
-   candidates listed in `CONTENT_SOURCE_LOG.md`.
+### ✅ Fixed in `src/data/colleges.json`
+
+- **A wrong institution name** — "Universal Medicine College" →
+  **"Universal College of Medical Sciences"**, per ucms.edu.np itself.
+  Also filled its `established` (1998) and `website`.
+- **CMS Bharatpur `established`** 1994 → **1993**, per cmsnepal.edu.np
+  (agreement signed 8 Aug 1993). Their first MBBS intake was 1996 — both
+  dates are recorded in the log so this isn't "corrected" back by mistake.
+- **Two missing official websites** filled (NAIHS, Rapti AHS).
+
+### ❌ A flag that turned out to be wrong (worth reading before you trust the rest)
+
+The first pass claimed PAHS's `established: 2010` was wrong because
+secondary sources said 2008. **That was my error.** PAHS's own site says
+teaching began in 2010; 2008 is the charter year. Both are true, they
+just mean different things. Value left unchanged.
+
+The lesson matters for the remaining blanks: an aggregator's
+"established" year may be measuring a different milestone than this
+dataset means. Do not bulk-fill them.
+
+### ⚠️ Still open — needs MEC or a phone call, not more searching
+
+1. **Kathmandu Medical College foreign-quota seats** — site says 43, one
+   secondary source says 33. KMC's own site doesn't publish the number.
+2. **Pokhara Academy (PoAHS)** — *downgraded from the earlier alarm.*
+   Their own site does have an MBBS page, so the program appears to
+   exist; the "launching by 2024" text that worried me is stale content
+   on a different domain of theirs. What's still unconfirmed is whether
+   it takes **foreign-quota** students and whether "4 seats" is right.
+3. **NAIHS `established`** — still blank. Two defensible dates (2010
+   ministry approval, 2012 inauguration); left blank rather than guessed.
+4. **7 other blank `established` fields** — candidates exist in the log
+   but only from aggregators. Left alone deliberately (see the PAHS
+   lesson above).
+5. **Three MBBS programs are brand new** — B&C (2024), MIHS (2024),
+   Madan Bhandari (2025) — and the site doesn't say so. Surfacing "first
+   intake YYYY" would fit the existing trust-register design and is
+   arguably owed to a family comparing a first-intake program against a
+   30-year-old one.
 
 ## Done since this file was last written
 

@@ -84,3 +84,22 @@ Legend: ✅ done · 🟡 partially done · ⬜ not started · 🚫 not applicabl
   university's). Nothing in `colleges.json` was edited — findings only,
   pending either deeper verification or the owner's direct confirmation.
   17 `ku`/`tu`-affiliated colleges still unchecked.
+
+## This session, chunk 4 (official-source verification + data fixes)
+
+- ✅ Found that `WebSearch`'s `allowed_domains` filter reaches each
+  institution's **own website**, even though `WebFetch` stays blocked —
+  correcting chunk 3's overly pessimistic "primary sources unreachable"
+  conclusion.
+- ✅ **Applied 4 corrections to `src/data/colleges.json`**, each backed by
+  the college's own site: UCMS's name (was genuinely wrong), UCMS's
+  established year + website, CMS Bharatpur's established year
+  (1994 → 1993), and 2 missing official website URLs.
+- ✅ **Withdrew a wrong finding of my own**: PAHS's `established: 2010`
+  is correct (their site: teaching began 2010); the 2008 figure secondary
+  sources give is the charter year. No change made.
+- ✅ **Downgraded the PoAHS alarm** from "may not have an MBBS program at
+  all" to "seat figure unconfirmed" — their own site has an MBBS page.
+- 🟡 Left 7 blank `established` fields blank on purpose (aggregator-only
+  sourcing), plus KMC's seat conflict and NAIHS's ambiguous year.
+  See `NEXT_TASK.md`.

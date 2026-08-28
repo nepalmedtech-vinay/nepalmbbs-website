@@ -5,6 +5,54 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-08-28 — Chunk 4: official-source verification, and four data fixes
+
+**Decision: used `WebSearch`'s `allowed_domains` to reach official
+sources, after `WebFetch` stayed blocked.** Chunk 3 concluded that
+primary-source verification was impossible here because `WebFetch` is
+blocked for every domain. That was half right: `WebFetch` is still
+blocked (re-tested against `ucms.edu.np`), but restricting `WebSearch` to
+a single institution's own domain returns snippets *from that domain's
+own pages*, including page titles. That is materially stronger evidence
+than the general-search results chunk 3 relied on, which were dominated
+by consultancy and aggregator sites. Chunk 3's "cannot verify" conclusion
+was too pessimistic and is corrected here.
+
+**Decision: applied four fixes, all backed by the institution's own
+website, and left everything else alone.** Fixed: UCMS's name (the site
+had "Universal Medicine College"; their own site says "Universal College
+of Medical Sciences" throughout), UCMS's established year and website,
+CMS Bharatpur's established year (1994 → 1993, per their own site's
+account of the founding agreement), and two missing official website
+URLs. Everything sourced only to aggregators was deliberately left
+unapplied.
+
+**Withdrew one of my own earlier findings, which was wrong.** Chunk 3
+flagged PAHS's `established: 2010` as contradicted by sources saying
+2008. PAHS's own site says its School of Medicine "began to teach
+prospective doctors in 2010" — so 2010 and 2008 are both correct and
+measure different milestones (teaching start vs. parliamentary charter).
+The existing value is right and was left unchanged. Recording this
+explicitly rather than quietly dropping it, because it is the concrete
+justification for chunk 3's rule about not auto-applying findings: had
+that "fix" been applied, a correct value would have been replaced with a
+differently-correct one and the site would have silently lost the meaning
+it had chosen. The same reasoning is why the seven remaining blank
+`established` fields were left blank despite having aggregator-sourced
+candidates.
+
+**Downgraded, not resolved, the PoAHS alarm.** Chunk 3 raised it as a
+possible "listing a college with no MBBS program" case, which would have
+been the most serious kind of error this site can make. Searching their
+own domains found a dedicated MBBS page, so the program does appear to
+exist; the alarming "working to launch MBBS by 2024" text is stale
+content on a second domain they run. Downgraded from 🔴 to ⚠️ — what
+remains unconfirmed is the foreign-quota seat figure, not the program's
+existence. Correcting the severity in both directions matters as much as
+finding the issue did.
+
+---
+
 ## 2026-08-28 — Chunk 3: dead-code cleanup + first real content-sourcing pass
 
 **Decision: deleted `Hero.astro`, not just the dead `boot.js` call.**

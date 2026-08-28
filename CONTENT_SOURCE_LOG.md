@@ -11,6 +11,76 @@ search-snippet-level* verification, not primary-source confirmation —
 see the environment limitation immediately below. Treat a ✅ here as
 "corroborated by independent secondary sources," not "certified."
 
+## Second pass, 2026-08-28 — official-domain evidence + corrections applied
+
+The first pass below used general web search, which surfaces aggregator
+sites (edusanjal, edufever, consultancy pages) as often as primary ones.
+A second pass used `WebSearch`'s `allowed_domains` filter to restrict
+results **to each institution's own website**, which is much stronger
+evidence and is what the fixes below rest on. (`WebFetch` remains blocked
+— see the limitation note after this section — so this is still
+snippet-level reading of official pages, not full-page reads.)
+
+### Corrections applied to `src/data/colleges.json`
+
+| College | Field | Was | Now | Official source |
+|---|---|---|---|---|
+| Universal College of Medical Sciences | `name` | "Universal **Medicine College** (UCMS)" | "Universal **College of Medical Sciences** (UCMS)" | [ucms.edu.np](https://ucms.edu.np/about/introduction/) — the site's own page titles read "Universal College of Medical Sciences" throughout |
+| Universal College of Medical Sciences | `established` | *(blank)* | 1998 | ucms.edu.np: "founded in 1998 with accreditation from Tribhuwan University" |
+| Universal College of Medical Sciences | `website` | `null` | `https://ucms.edu.np` | confirmed live official domain |
+| College of Medical Sciences, Bharatpur | `established` | 1994 | 1993 | [cmsnepal.edu.np](https://cmsnepal.edu.np/introduction/): ISME and the Ministry of Education "signed an agreement on the 8th day of August **1993** giving birth to the College of Medical Sciences-Nepal". 1994 matches no date on their own site. (Their first MBBS intake was **1996** — noted here so a future editor knows the two candidate meanings and doesn't "correct" 1993 back.) |
+| Nepalese Army Institute of Health Sciences | `website` | `null` | `https://naihs.edu.np` | official domain confirmed live, hosts their MBBS material |
+| Rapti Academy of Health Sciences | `website` | `null` | `https://www.rahs.edu.np` | official domain; also re-confirmed est. 2017 from their own site |
+
+### ❌ A correction to my own earlier finding — PAHS was NOT wrong
+
+The first pass flagged Patan Academy of Health Sciences' `established:
+"2010"` as contradicted, because several secondary sources give 2008
+(the parliamentary charter year). **That flag was wrong and has been
+withdrawn.** PAHS's own website says the academy's School of Medicine
+"began to teach prospective doctors in **2010**" — so 2010 and 2008 are
+both true and simply mean different things (teaching start vs. charter).
+The site's existing value is defensible and was left alone.
+
+This is exactly why the first pass deliberately changed nothing: had
+those findings been auto-applied, this one would have replaced a correct
+value with a differently-correct-but-unintended one, and the site would
+have silently lost the meaning it had chosen. Worth remembering before
+bulk-"fixing" the remaining blanks.
+
+### ⚠️ PoAHS — earlier alarm downgraded, but still not resolved
+
+The first pass raised Pokhara Academy of Health Sciences as a possible
+"listed but has no MBBS program" case. Searching their own domains
+found a **dedicated MBBS page at `poahs.edu.np/pages/MBBS/`**, which is
+meaningful evidence the program does exist. The "working to launch MBBS
+by 2024" language that triggered the alarm sits on `pahs.gov.np`'s
+about-us page and reads as pre-2024 text that was never updated.
+
+**Downgraded from 🔴 to ⚠️.** Still unresolved: whether it currently
+admits *foreign-quota* students and whether the site's figure of 4 seats
+is right. Neither could be read from search snippets. Worth confirming
+with MEC before the next intake, but it is no longer a "we may be
+advertising seats that don't exist" concern.
+
+### Still open after this pass
+
+- **Kathmandu Medical College seats (site 43 vs. one secondary source 33)** —
+  KMC's own site describes the admission process but the snippets did not
+  expose a foreign-quota number. Unresolved; needs MEC or a direct call.
+- **NAIHS `established`** — still blank. Their own site did not state a
+  founding year in the snippets; secondary sources give 2010 (Ministry of
+  Defence approval) or 2012 (presidential inauguration). Left blank rather
+  than guessing between two defensible dates.
+- **The other blank `established` fields** (Nepal Medical College Jorpati,
+  Birat, Nepalgunj, Gandaki, National, Janaki, Purbanchal USHS) — sourced
+  candidates exist in the first-pass tables below, but from aggregators,
+  not official domains. Deliberately **not** applied. The PAHS lesson
+  above is the reason: an aggregator's "established" year may be a
+  different milestone than the one this dataset means.
+- **Three programs whose MBBS is very new** (B&C 2024, MIHS 2024, Madan
+  Bhandari 2025) — still not surfaced anywhere on the site.
+
 ## ⚠️ Environment limitation, read before continuing this work
 
 `WebFetch` (fetching a specific page's full content) is blocked by this
