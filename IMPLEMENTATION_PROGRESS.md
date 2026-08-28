@@ -85,6 +85,28 @@ Legend: ✅ done · 🟡 partially done · ⬜ not started · 🚫 not applicabl
   pending either deeper verification or the owner's direct confirmation.
   17 `ku`/`tu`-affiliated colleges still unchecked.
 
+## This session, chunk 6 (the assistant becomes data-driven)
+
+- ✅ **Diagnosed that the "AI chatbot" was neither AI nor connected to the
+  site's data** — 45 hard-coded answers, substring-matched, with no access
+  to `colleges.json`. It could not answer a question about any of the 27
+  colleges whose records the site publishes.
+- ✅ **Rewrote it as deterministic retrieval over a reviewed dataset.**
+  New `src/data/knowledge.json` (32 sourced topics) plus a build-time
+  endpoint `/api/knowledge.json` that merges it with the college records.
+  All 27 colleges answerable, with no second copy of the data to drift.
+- ✅ **Every answer names its source and the date it was checked**, and
+  labels itself official / estimate / general. Refuses plainly when it has
+  no sourced answer, instead of offering counselling as if that were one.
+- ✅ **Fixed an XSS-shaped defect**: the visitor's own message was being
+  rendered with `innerHTML`. Now `textContent`.
+- ✅ **New `tests/assistant-verify.mjs` (18 checks)**, wired into
+  `npm run verify` — including a **data-freshness audit that fails after
+  365 days without a review**, with no code change required to trip it.
+- ✅ Caught and fixed 4 bugs in my own new code via that test; one of the
+  four turned out to be the test's fault, and I corrected the assertion
+  rather than the matcher. See `DECISION_LOG.md`.
+
 ## This session, chunk 5 (premium pass on the chrome)
 
 Driven by an owner screenshot ("looks cheap") and by the design skill they

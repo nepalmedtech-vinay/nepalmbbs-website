@@ -51,6 +51,29 @@ place to check, not because they are newly discovered:
   overridden in the cascade. Worth a direct check before assuming this is
   resolved.
 
+## Newly identified this session (chunk 6 — the assistant)
+
+- ~~**`tests/audit.mjs` only ever measured a page's default state.**~~
+  **Partly fixed.** It now reveals `display:none` success and error
+  containers and measures those too, reported with a `[revealed]` prefix.
+  Found by exactly the failure it was blind to: `/counseling`'s enquiry
+  confirmation — the screen every enquiry ends on — carried
+  `rgba(255,255,255,.6)` from the dark build and was white on white, while
+  the suite reported the page clean.
+  **Still not covered**: open modals, the admin panel's own screens, the
+  chat window's answers, and any state reachable only by driving a real
+  form submission. Revealing a container by hand is blunt; driving each
+  form to a genuine success needs a backend per page.
+- **`public/assets/js/config.js` still declares `chatOpen` and
+  `chatHistory` as globals** that nothing reads any more — the assistant
+  now scopes its own. Harmless, but they are the kind of leftover that
+  makes a future reader think the chat state is shared when it is not.
+- **Admin panel toasts are written in a different register from the
+  site**: `toast('✅ Saved to Supabase — live on all devices!')` and about
+  fifteen siblings. Staff-facing rather than public, so lower priority
+  than the public copy fixed in this chunk, but the owner asked for one
+  professional tone across the whole product and these are not it.
+
 ## Newly identified this session (chunk 5 — premium pass)
 
 - **The dark→light migration is still unfinished in the legacy CSS, and

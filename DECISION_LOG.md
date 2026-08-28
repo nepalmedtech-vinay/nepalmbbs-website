@@ -5,6 +5,72 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-08-28 — Chunk 6: the assistant becomes data-driven and sourced
+
+The owner asked for maximum automation, corporate content, and for me to
+audit my own output and fix what the audit found.
+
+**Diagnosis first: the "AI chatbot" was not AI and could not reach the
+site's own data.** `chatbot.js` was 45 hard-coded answers matched by
+substring — no model, no retrieval, no access to `colleges.json`. So "how
+many seats does Nobel Medical College have?" fell through to "book a
+counselling session" on a site that publishes exactly that number on that
+college's own page. It also claimed, in the widget header, that all
+answers were "based on official sources" while none of those 45 answers
+were recorded in `CONTENT_SOURCE_LOG.md` — precisely the kind of unbacked
+claim this project's own standard forbids.
+
+**Decision: deterministic retrieval over a reviewed dataset, not an LLM.**
+A generative model over this data would produce fluent sentences about
+seat counts, fees and deadlines — the three things most likely to be
+wrong and most costly to be wrong about. It would also need a server-side
+key, which a static site cannot hold safely. The assistant now reads
+`/api/knowledge.json`, built at build time from `src/data/knowledge.json`
+and `src/data/colleges.json`, so it cannot drift from the pages: change a
+seat count once and the answer changes with it. All 27 colleges became
+answerable without writing 27 answers.
+
+**Every answer now carries its source and the date that source was
+checked, and declines when it has none.** The old default thanked the
+visitor and offered counselling, which reads as an answer without being
+one. Refusing plainly is the behaviour a family deserves from a site they
+are using to make a five-and-a-half-year decision.
+
+**Fixed a live XSS-shaped defect found while rewriting.** The old
+`addChatMsg` used `innerHTML` for *both* sides of the conversation, so
+the visitor's own words were re-inserted as markup. The CSP stopped it
+executing, but the right fix is not to build the node that way: user
+messages are `textContent` now.
+
+**Four bugs my own test caught, all in code I had just written.** Worth
+recording because each was invisible without the test:
+
+1. Colleges named entirely from generic vocabulary — College of Medical
+   Sciences, Nepal Medical College, National Medical College, B & C —
+   had no "distinctive" words left after filtering and became
+   unreachable; "Kathmandu Medical College" resolved to Kathmandu
+   University School of Medical Sciences on the one word they share.
+   Fixed by matching the short name directly, longest wins.
+2. Topic keys were matched as raw substrings, so `age` matched
+   "percentage" and `fee` matched "coffee" — the age topic was answering
+   percentile questions. Now padded to whole words.
+3. Word-coverage fallback rewarded short generic names: asked about
+   Nobel Medical College it answered about Nepalgunj, which scored 0.67
+   on "medical college" alone against Nobel's 0.60. A college now counts
+   as named only if something specific to it appeared.
+4. One failure was the test's own fault, not the code's: it compared a
+   raw college name against escaped HTML, so "B & C" never matched
+   "B &amp; C". Corrected the assertion rather than the matcher — the
+   matcher was right.
+
+**Added a data-freshness audit that fails on the calendar.** The suite
+now fails if `knowledge.json` has not been reviewed within 365 days, with
+nobody having touched the repository. Admissions rules are restated
+yearly; a dataset that quietly ages is how a trustworthy site becomes an
+untrustworthy one without any single person deciding to let it.
+
+---
+
 ## 2026-08-28 — Chunk 5: premium pass on the site chrome
 
 The owner sent a phone screenshot and said the site looked cheap, asked for

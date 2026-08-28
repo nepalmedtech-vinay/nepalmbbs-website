@@ -15,6 +15,38 @@ file still shows the run as in-progress, finish reading its output before
 starting new feature work, since a red suite changes what "safe to build
 on" means.
 
+## The assistant is now sourced and data-driven (2026-08-28)
+
+`public/assets/js/chatbot.js` was 45 hard-coded answers with no access to
+`colleges.json`. It now reads `/api/knowledge.json`, built from
+`src/data/knowledge.json` (32 sourced topics) merged with the college
+records, so:
+
+- all 27 colleges are answerable, and stay answerable when the data
+  changes — there is no second copy to update;
+- every answer names its source and the date that source was checked, and
+  labels itself official / estimate / general;
+- it declines plainly when it has no sourced answer, instead of offering
+  counselling as though that were the answer.
+
+`tests/assistant-verify.mjs` (18 checks) guards this, including a
+**freshness audit that fails once `knowledge.json` is 365 days past its
+last review** — it trips on the calendar, with nobody touching the repo.
+
+**It is not an LLM, and that is deliberate.** A generative model over this
+data would write fluent sentences about seat counts, fees and deadlines —
+the three things most damaging to get wrong. If an LLM is ever added, the
+non-negotiable is that it answers *only* from this dataset and refuses
+outside it; `getBotReply()` is the seam to put that behind.
+
+### Content tone
+
+Public copy audited for register: no emoji or hype language remained in
+page content, but three items were retoned ("Zero Visa!", the videos
+blurb, the enquiry confirmation) and the 50 admin toasts had their status
+emoji and exclamations stripped. Verified mechanically that only the
+message literals changed — 50 toasts before and after, no logic touched.
+
 ## Design: premium pass in progress (2026-08-28)
 
 The owner asked for a premium look and for work to continue in chunks

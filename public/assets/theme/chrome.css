@@ -572,6 +572,58 @@ section.hero, .hero {
 }
 
 
+/* ── Assistant answers ────────────────────────────────────────────────────
+   An answer is now a small record rather than a paragraph: the claim, then
+   the fields it rests on, then the source and the date that source was
+   checked. The source line is the point — an admissions answer a family
+   cannot trace back is not much better than one they did not get. */
+
+.chat-msg.bot .chat-row {
+  display: block;
+  margin-top: 7px;
+  font-size: var(--t-sm);
+  line-height: var(--lh-body);
+}
+.chat-msg.bot .chat-row b {
+  display: inline-block;
+  min-width: 9.5rem;
+  font-weight: 600;
+  color: var(--g-ink-3);
+}
+.chat-msg.bot .chat-row i { color: var(--g-ink-3); }
+
+.chat-msg.bot .chat-src {
+  display: block;
+  margin-top: 12px;
+  padding-top: 9px;
+  border-top: 1px solid var(--m-hairline);
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--g-ink-3);
+}
+.chat-msg.bot .chat-src b {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.92em;
+  color: var(--brand-text);
+}
+.chat-msg.bot .chat-src a { color: var(--brand-text); }
+
+/* Recognition changes per intake year. The assistant says so on every
+   college answer rather than trusting the visitor to remember it. */
+.chat-msg.bot .chat-note {
+  display: block;
+  margin-top: 8px;
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--g-ink-3);
+  font-style: italic;
+}
+
+.chat-avatar svg { width: 20px; height: 20px; }
+
+
 /* ── Floating actions ─────────────────────────────────────────────────────
    Three stacked circles (chat, WhatsApp, WhatsApp-call) covered the bottom
    right of every page and overlapped the footer. Now that the contact bar

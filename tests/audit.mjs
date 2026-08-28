@@ -214,6 +214,41 @@ for (const route of ROUTES) {
   const { low, skipped } = await page.evaluate(CONTRAST);
   const nodes = await page.evaluate(() => document.querySelectorAll('*').length);
 
+  // Second pass over the states a visitor only reaches by doing something.
+  //
+  // The pass above measures the page as it loads, which is every state this
+  // suite has ever checked. That missed a real one: the enquiry confirmation
+  // on /counseling is display:none until the form is submitted, and its
+  // paragraph carried white text from the dark build — so the single screen
+  // every enquiry ends on was white on white, and the suite reported the
+  // page clean. A success message nobody can read is worse than most of what
+  // this file does catch, because it lands at the moment the visitor is
+  // waiting to be reassured.
+  //
+  // Revealing a container by hand is a blunt instrument, but the alternative
+  // — driving each form to a real success — needs a working backend per page.
+  // This costs a few lines and covers the class.
+  // Done as three separate evaluates rather than one with eval(): the site
+  // ships a CSP without 'unsafe-eval', and a checker that needs the policy
+  // relaxed to run is not checking the page that ships.
+  const revealed = await page.evaluate(() => {
+    const hidden = [...document.querySelectorAll(
+      '.form-success, .form-error, [id$="-success"], [id$="-error"]'
+    )].filter((el) => getComputedStyle(el).display === 'none');
+    window.__restore = hidden.map((el) => [el, el.style.display]);
+    hidden.forEach((el) => { el.style.display = 'block'; });
+    return hidden.length;
+  });
+
+  if (revealed) {
+    const stateLow = (await page.evaluate(CONTRAST)).low;
+    for (const s of stateLow) { s.t = '[revealed] ' + s.t; low.push(s); }
+    await page.evaluate(() => {
+      (window.__restore || []).forEach(([el, d]) => { el.style.display = d; });
+      delete window.__restore;
+    });
+  }
+
   // mobile: does the body scroll sideways?
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(400);
