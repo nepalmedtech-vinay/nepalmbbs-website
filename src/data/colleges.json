@@ -202,11 +202,11 @@
     "badge": "KU Affiliated",
     "location": "Jorpati, Kathmandu",
     "affiliation": "Kathmandu University",
-    "established": "",
+    "established": "1996",
     "seats": "43",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
-    "website": null,
+    "website": "https://www.nmcth.edu",
     "enquiryName": "Nepal Medical College, Jorpati, Kathmandu"
   },
   {
@@ -234,7 +234,7 @@
     "seats": "43",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
-    "website": null,
+    "website": "https://biratmedicalcollegenepal.com",
     "enquiryName": "Birat Medical College, Biratnagar"
   },
   {
@@ -242,13 +242,13 @@
     "name": "Nepalgunj Medical College",
     "type": "ku",
     "badge": "KU Affiliated",
-    "location": "Nepalgunj",
+    "location": "Kohalpur, Banke",
     "affiliation": "Kathmandu University",
-    "established": "",
+    "established": "1997",
     "seats": "43",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
-    "website": null,
+    "website": "https://www.ngmc.edu.np",
     "enquiryName": "Nepalgunj Medical College"
   },
   {
@@ -332,7 +332,7 @@
     "seats": "40",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
-    "website": null,
+    "website": "http://gmc.edu.np",
     "enquiryName": "Gandaki Medical College, Pokhara"
   },
   {
@@ -342,11 +342,11 @@
     "badge": "TU Affiliated",
     "location": "Birgunj",
     "affiliation": "Tribhuvan University",
-    "established": "",
+    "established": "2001",
     "seats": "40",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
-    "website": null,
+    "website": "https://nmcbir.edu.np",
     "enquiryName": "National Medical College, Birgunj"
   },
   {
@@ -374,7 +374,7 @@
     "seats": "20",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
-    "website": null,
+    "website": "https://janakimedicalcollege.edu.np",
     "enquiryName": "Janaki Medical College, Janakpur"
   }
 ]

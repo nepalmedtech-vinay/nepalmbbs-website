@@ -11,6 +11,58 @@ search-snippet-level* verification, not primary-source confirmation —
 see the environment limitation immediately below. Treat a ✅ here as
 "corroborated by independent secondary sources," not "certified."
 
+## 🎯 The primary source for every seat count — found, not yet read
+
+Chasing the Kathmandu Medical College seat conflict (this file records 43,
+one secondary source says 33) surfaced the document that settles it, and
+settles all 27 at once. **The Medical Education Commission publishes the
+seat matrix itself:**
+
+- **`https://www.mec.gov.np/uploads/shares/ug2024/ug_2024__seats.pdf`** — the
+  2024 intake seat allocation
+- `https://mec.gov.np/uploads/shares/ug/UG_2023_Seats.pdf` — 2023, for
+  comparison
+- `https://entrance.mec.gov.np/Report/CollegeSeatInfo/List` — the live
+  college seat listing on the entrance portal
+- `https://mec.gov.np/uploads/shares/ug2024/1st_paying_list.pdf` and
+  `.../first_admission_list_scholarship.pdf` — the admission lists, which
+  show the categories a seat can fall into (Nepal Army Welfare Fund,
+  Foreign, Paying, Scholarship)
+
+**This session could not read them.** `WebFetch` is blocked for every
+domain in this sandbox, and these are PDFs behind that block.
+
+**Why this entry matters more than another round of searching.** Every
+seat number on this site currently rests on secondary agreement. One
+person opening that PDF replaces all 27 guesses with the authority's own
+figures, and resolves the KMC 43-vs-33 conflict as a side effect. That is
+an afternoon's work with a browser, not a research project — and it is the
+single highest-value thing anyone can do for this dataset.
+
+Note while reading it: the admission lists show seats are split across
+several categories. "Foreign quota" is one column among Paying,
+Scholarship and Army — so a college's *total* intake is not its foreign
+quota, and the figure this site publishes must be the foreign one.
+
+## Third pass, 2026-08-28 — the six colleges with no website on file
+
+These six had neither an `established` year nor a website recorded. Each
+was searched with results restricted to its own domain.
+
+| College | Applied | Official source |
+|---|---|---|
+| Nepal Medical College, Jorpati | est. **1996**, website `nmcth.edu` | [nmcth.edu/about](https://www.nmcth.edu/about) — "established in 1996 AD". Note: aggregators gave 1997; the institution's own site gives 1996, and it wins. |
+| Nepalgunj Medical College | est. **1997**, website `ngmc.edu.np`, location **Kohalpur, Banke** | [ngmc.edu.np — historical background](https://ngmc.edu.np/about-us/historical-background) — "established in 1997 under the aegis of Lord Buddha Educational Academy". Its own site places the teaching hospital at Kohalpur and the basic-science campus at Chisapani, so "Nepalgunj" alone was imprecise. Aggregators gave 1996. |
+| National Medical College, Birgunj | est. **2001**, website `nmcbir.edu.np` | [nmcbir.edu.np/about-us](https://nmcbir.edu.np/about-us) — "established in the year 2001, promoted by National Medical College Company Pvt. Ltd." |
+| Gandaki Medical College | website `gmc.edu.np` only | Official domain confirmed; no founding year stated in anything readable. `established` deliberately left blank rather than filled from an aggregator. |
+| Janaki Medical College | website `janakimedicalcollege.edu.np` only | Official domain confirmed; no founding year readable. Left blank. |
+| Birat Medical College | website `biratmedicalcollegenepal.com` only | ⚠️ **Its own about-us page has been read as giving both 1991 and 2014.** A source that contradicts itself is not a source. `established` left blank until someone can resolve it against a registration document. |
+
+**A note on what was *not* taken.** National Medical College's own site
+describes itself as "number one among all medical colleges in Nepal".
+That is the institution's marketing, not a fact this site can carry, and
+nothing of that kind was copied across — only the factual fields.
+
 ## Second pass, 2026-08-28 — official-domain evidence + corrections applied
 
 The first pass below used general web search, which surfaces aggregator

@@ -15,6 +15,28 @@ file still shows the run as in-progress, finish reading its output before
 starting new feature work, since a red suite changes what "safe to build
 on" means.
 
+## 🎯 One action worth more than everything else on this list
+
+**Open `https://www.mec.gov.np/uploads/shares/ug2024/ug_2024__seats.pdf`
+and transcribe the foreign-quota column into `src/data/colleges.json`.**
+
+Every seat number on this site currently rests on secondary agreement, and
+seat counts are the most load-bearing field the site publishes — a family
+shortlists on them. The Medical Education Commission publishes the matrix
+itself; that PDF is the authority. Reading it once replaces 27 unverified
+figures with the authority's own, and resolves the outstanding Kathmandu
+Medical College conflict (this site says 43, a secondary source says 33)
+as a side effect.
+
+This session found the document but could not read it: `WebFetch` is
+blocked for every domain in this sandbox, and it is a PDF behind that
+block. It is an afternoon with a browser, not a research project.
+
+When transcribing, note that seats split across categories — Foreign,
+Paying, Scholarship, Nepal Army Welfare Fund. This site publishes the
+**foreign** figure, not the total intake. Full detail and the companion
+URLs are in `CONTENT_SOURCE_LOG.md`.
+
 ## The assistant is now sourced and data-driven (2026-08-28)
 
 `public/assets/js/chatbot.js` was 45 hard-coded answers with no access to
