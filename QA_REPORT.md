@@ -131,7 +131,25 @@ gradient is exactly what the contrast checker was skipping. The two
 failures were the same failure.
 
 Fixed in `chrome.css` alongside the avatar glyph, which was inheriting the
-header's dark ink onto a brand-filled circle.
+header's dark ink onto a brand-filled circle. Re-run confirms it:
+`/ (assistant open)` now measures 0 low-contrast, exit 0.
+
+### And then the checker itself was still half-blind
+
+Reviewing the fix surfaced a flaw in the rule that found it. The checker
+resolved a gradient by taking its **darkest** stop. That is the worst case
+for dark ink — it earned its keep three times over — but it is the **best**
+case for light ink. White text over the light end of a gradient was
+invisible to it, in both senses of the word.
+
+`.chat-msg.user` is exactly that shape: white on a fill running from light
+glass to dark blue. Over the dark end it is fine, which is all the old rule
+ever looked at.
+
+`groundsOf()` now returns every stop, and the measurement takes whichever
+ground contrasts worst with the element's **actual** foreground colour.
+Worst-case in both directions, which is the only rule correct for text of
+any colour.
 
 ### A new kind of check: freshness
 
