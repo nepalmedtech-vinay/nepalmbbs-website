@@ -1,0 +1,146 @@
+---
+import GlassLayout from '../layouts/GlassLayout.astro';
+
+// Written from what the code actually does, not from a template. Every claim
+// below was checked against the source:
+//   - the fields: public/assets/js/leads.js submitLead()
+//   - where they go: the `leads` table, via PostgREST (config.js)
+//   - who can read them back: supabase/migrations/0001 + 0002 RLS policies
+//   - analytics: the GA4 loader in config.js
+//   - third parties: the WhatsApp and Calendly links in the markup
+//
+// Two things are deliberately NOT asserted here, because only the owner can
+// answer them and inventing either would be worse than leaving a gap: the
+// registered legal entity behind the site, and how long enquiry records are
+// kept. Both are marked in the page itself rather than hidden in a comment.
+const UPDATED = 'August 2026';
+---
+<GlassLayout
+  title="Privacy — what we collect and why | NepalMBBS.in"
+  description="Exactly what NepalMBBS.in collects when you submit an enquiry, where it is stored, who can read it, and how to have it deleted."
+  path="/privacy"
+>
+<div class="tab-pane on">
+<div class="container pv-wrap">
+
+  <p class="eyebrow">Last updated {UPDATED}</p>
+  <h1 class="sec-title" style="margin-bottom:12px">Privacy</h1>
+  <p class="sec-sub" style="max-width:62ch">
+    This page describes what actually happens to the details you type into
+    this site. It is written from the code that runs it, not from a template.
+  </p>
+
+  <div class="doc" style="margin-top:28px">
+    <div class="doc-head">
+      <h2 class="doc-title">What the enquiry form sends</h2>
+      <span class="doc-kicker">On submit</span>
+    </div>
+    <div class="doc-body">
+      <div class="doc-rows">
+        <div class="doc-row"><span class="doc-label">Always</span><span class="doc-value">Your name and your phone number.</span></div>
+        <div class="doc-row"><span class="doc-label">If you fill them</span><span class="doc-value">NEET score, state, city, category, which NEET attempt this is, your class 12 PCB percentage band, and your biology marks band.</span></div>
+        <div class="doc-row"><span class="doc-label">Recorded automatically</span><span class="doc-value">Which form you used, the site language you had selected, and that the enquiry came from nepalmbbs.in.</span></div>
+        <div class="doc-row"><span class="doc-label">Never asked for</span><span class="doc-value">Documents, marksheets, passport details, payment details, or your NEET roll number. Nothing on this site uploads a file.</span></div>
+      </div>
+    </div>
+    <p class="doc-source">
+      Fields verified against the form handler in this site&rsquo;s own source
+      (<code>assets/js/leads.js</code>).
+    </p>
+  </div>
+
+  <div class="doc" style="margin-top:24px">
+    <div class="doc-head">
+      <h2 class="doc-title">Where it goes, and who can read it</h2>
+      <span class="doc-kicker">Storage</span>
+    </div>
+    <div class="doc-body">
+      <div class="doc-rows">
+        <div class="doc-row"><span class="doc-label">Stored in</span><span class="doc-value">A Supabase (PostgreSQL) database, hosted outside Nepal and India.</span></div>
+        <div class="doc-row"><span class="doc-label">Readable by</span><span class="doc-value">Only signed-in members of our counseling team. This is enforced by database row-level security, not by hiding a screen &mdash; an enquiry cannot be read back by the public, including by anyone reading this site&rsquo;s code.</span></div>
+        <div class="doc-row"><span class="doc-label">Used for</span><span class="doc-value">Contacting you about MBBS admission in Nepal, and nothing else.</span></div>
+        <div class="doc-row"><span class="doc-label">Not done</span><span class="doc-value">We do not sell enquiry data, and we do not pass it to colleges or agents without asking you first.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc" style="margin-top:24px">
+    <div class="doc-head">
+      <h2 class="doc-title">Other services this site uses</h2>
+      <span class="doc-kicker">Third parties</span>
+    </div>
+    <div class="doc-body">
+      <div class="doc-rows">
+        <div class="doc-row"><span class="doc-label">Google Analytics</span><span class="doc-value">Measures page visits. It sets cookies and receives your IP address. It does not receive anything you type into the enquiry form.</span></div>
+        <div class="doc-row"><span class="doc-label">WhatsApp</span><span class="doc-value">Tapping a WhatsApp button opens WhatsApp and starts a chat with us. From that point the conversation is governed by WhatsApp&rsquo;s own privacy terms, not this page.</span></div>
+        <div class="doc-row"><span class="doc-label">Calendly</span><span class="doc-value">Booking a call opens Calendly, which collects the details you give it directly.</span></div>
+        <div class="doc-row"><span class="doc-label">Netlify</span><span class="doc-value">Serves this website and keeps standard server request logs.</span></div>
+        <div class="doc-row"><span class="doc-label">Google Fonts</span><span class="doc-value">Serves the two typefaces this site uses.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc" style="margin-top:24px">
+    <div class="doc-head">
+      <h2 class="doc-title">If you are under 18</h2>
+      <span class="doc-kicker">Students</span>
+    </div>
+    <div class="doc-body">
+      <p class="doc-empty-body" style="margin:0;text-align:left;max-width:62ch">
+        Many people researching MBBS admission are 17 or 18. If you are under
+        18, please have a parent or guardian with you when you send an
+        enquiry, and use their phone number if you would rather we call them.
+        Tell us and we will speak to them instead of you.
+      </p>
+    </div>
+  </div>
+
+  <div class="doc" style="margin-top:24px">
+    <div class="doc-head">
+      <h2 class="doc-title">Having your details removed</h2>
+      <span class="doc-kicker">Your choice</span>
+    </div>
+    <div class="doc-body">
+      <p class="doc-empty-body" style="margin:0 0 var(--s-3);text-align:left;max-width:62ch">
+        Write to <a href="mailto:info@nepalmbbs.in">info@nepalmbbs.in</a> from
+        the number or address you enquired with, or send us a WhatsApp message,
+        and ask us to delete your enquiry. You do not have to give a reason,
+        and asking will not affect any guidance you have already received.
+      </p>
+      <p class="doc-empty-body" style="margin:0;text-align:left;max-width:62ch">
+        You can also ask us what we hold about you, and we will send it back
+        to you in full.
+      </p>
+    </div>
+  </div>
+
+  {/* Stated as an open item rather than filled with a plausible-sounding
+      figure. A retention period and a registered entity are the owner's to
+      declare; a privacy page that invents either is worse than one that
+      admits the gap. */}
+  <div class="doc-note" style="margin-top:24px">
+    <strong>Two things this page does not yet state.</strong> The registered
+    business behind NepalMBBS.in, and how long enquiry records are kept before
+    deletion. Both are being confirmed and will be published here. Until they
+    are, you can ask us either question directly at
+    <a href="mailto:info@nepalmbbs.in">info@nepalmbbs.in</a> and we will answer.
+  </div>
+
+  <p style="margin-top:28px;font-size:var(--t-sm);color:var(--g-ink-3)">
+    Questions about anything on this page: <a href="mailto:info@nepalmbbs.in" style="color:var(--brand-text)">info@nepalmbbs.in</a>
+  </p>
+
+</div>
+</div>
+
+<style>
+  .pv-wrap { max-width: 60rem; }
+  .pv-wrap code {
+    font-family: var(--ty-mono);
+    font-size: 0.92em;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: color-mix(in oklab, var(--g-ink) 6%, transparent);
+  }
+</style>
+</GlassLayout>

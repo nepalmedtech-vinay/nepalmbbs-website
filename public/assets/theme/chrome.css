@@ -1,0 +1,682 @@
+/* NepalMBBS.in — chrome.css
+   The site chrome: ticker, contact bar, floating actions, footer contacts.
+
+   Why this file exists
+   --------------------
+   These components were written for the original dark build. When Phase 3/4
+   moved the site to the light glass system, bridge.css flipped their *text*
+   colours to dark ink — but left their *backgrounds* as hard-coded dark
+   gradients. The result was dark ink on a near-black slab: the phone numbers
+   in the contact bar were effectively invisible, and the ticker was dark text
+   on saturated blue.
+
+   tests/audit.mjs did not catch it. Its contrast pass resolves an element's
+   background by walking ancestors, and bails out with `return null` the moment
+   it meets a gradient ("gradient: unknowable"). Both components are gradients,
+   so both were skipped rather than measured — which is why the suite reported
+   zero low-contrast elements on a page that plainly had two.
+
+   This file finishes the migration those components missed: it gives them
+   light-theme surfaces so the already-correct dark ink reads, and restyles
+   them in the design system's own terms instead of leftover 2023 chrome.
+
+   Loads last, after panel.css, so it wins over base/sections/bridge without
+   needing to escalate specificity everywhere. !important appears only where
+   bridge.css already used it. */
+
+
+/* ── Fixed-header clearance ───────────────────────────────────────────────
+   Measured, not guessed: the navbar is position:fixed and 69px tall, and at
+   390px every page's first element sat under it — the home page by 18px and
+   the other six checked by 25px. Eyebrows and back-links were being sliced in
+   half by the header on first paint, on every page, on the width most of this
+   site's visitors use.
+
+   The overlap is deliberate as an effect: the navbar is translucent glass and
+   content is meant to pass beneath it while scrolling. What was missing is
+   that the *first* screenful has to start below it. Desktop already cleared
+   it (112px of section padding against a 69px bar); only the mobile end of
+   the clamp fell short.
+
+   So this raises the floor rather than switching the header to sticky, which
+   would have reserved space on every breakpoint and cost the glass effect. */
+
+:root { --nav-h: 69px; }
+
+@media (max-width: 48rem) {
+  .gh,
+  .tab-pane > .container,
+  main > .container {
+    padding-top: calc(var(--nav-h) + 1.5rem) !important;
+  }
+}
+
+
+/* ── The font that was never loaded ───────────────────────────────────────
+   41 rules across base.css and sections.css ask for `'Sora', sans-serif`
+   and 5 more ask for Inter. Neither is loaded: GlassLayout requests
+   Fraunces and Geist only. So the site's logo, every heading, every card
+   title, every button, every statistic and every college name has been
+   rendering in whatever generic sans the device defaults to, while the
+   home page's hero — the one place using the newer `.gl-*` classes —
+   rendered in Fraunces.
+
+   That single fact explains most of "it looks cheap": the premium
+   typography existed on one component and nowhere else, and the rest of
+   the site fell back to a system font on every screen.
+
+   The fix is to point the legacy names at the tokens the design system
+   already defines, rather than to start loading Sora — Phase 3/4 chose
+   Fraunces + Geist deliberately, and adding a third family would mean
+   three typefaces, more webfont weight, and a look nobody picked.
+
+   Split by role, not applied blanket: display serif for things that read
+   as headings and figures, body sans for controls and the wordmark.
+   A serif submit button would be worse than the bug. */
+
+/* Headings and titles → the display serif, matching the home page. */
+.hero h1, .card-title, .form-success h3,
+.process-card h4, .why-body h4, .calc-wrap h3, .result-card h4,
+.guide-card-title, .off-card h4, .vid-info h4, .vid-drive-card h4,
+.lifestyle-hero-text h3, .life-card h4, .curr-title,
+.counsel-left h2, .counsel-btn-text h4, .counsel-card-title,
+.chat-header h4, .college-name, .test-name {
+  font-family: var(--ty-display) !important;
+  letter-spacing: var(--ty-tight);
+}
+
+/* Figures → display serif too, so a statistic on a content page matches the
+   home page's stat cards, with tabular figures so columns of them align. */
+.hstat strong, .stat-box strong, .step-num, .cs-val, .cs-sum strong {
+  font-family: var(--ty-display) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* An <input> with no width takes its intrinsic size from its `size`
+   attribute measured in the current font, so changing the font changes how
+   wide the box is. `.curr-in` had no width set and was sized by whatever
+   system font it happened to fall back to; once it rendered in Geist it
+   grew to 281px inside a 350px container and pushed /life-in-nepal 4px
+   past the viewport.
+
+   The font change surfaced this rather than caused it — an input whose
+   width depends on font metrics was always going to drift. Sizing it from
+   its container is the actual fix. */
+.curr-in { width: 100%; max-width: 100%; box-sizing: border-box; }
+
+/* Controls, inputs and the wordmark → body sans. */
+.ld-logo, .logo, .foot-logo,
+.btn-primary, .sbtn, .calc-btn, .a-btn, .college-enquire,
+.curr-in, .curr-result, .cbar-num-txt, .test-avatar,
+.admin-top h2, #admin-login-view h3 {
+  font-family: var(--ty-body) !important;
+}
+
+
+/* ── Section headings ─────────────────────────────────────────────────────
+   `.sec-title` is the h1 on eleven pages — every route except the home
+   page, which uses `.gl-display`. base.css asks it for `'Sora', sans-serif`,
+   and Sora is not loaded anywhere: the layout requests Fraunces and Geist
+   only. So every one of those headings has been falling back to the
+   browser's default sans while the home page renders in the display serif.
+
+   That is why the site read as inconsistent from page to page — the
+   premium typography existed on exactly one route. Pointing these at the
+   same display face the home page uses is the single highest-impact
+   typographic change available here, and it changes no markup.
+
+   `text-wrap: balance` for the same reason glass.css already applies it to
+   `.gl-display`: these headings are short and wrap badly, and a one-word
+   last line is the cheapest-looking thing a headline can do. */
+
+.sec-title {
+  font-family: var(--ty-display) !important;
+  font-weight: var(--ty-weight-d) !important;
+  /* Multiplied by the same two factors every other size in the system uses:
+     --ty-scale is the admin theme panel's type-scale control, --ty-a11y the
+     accessibility multiplier. A bare clamp() here would render this heading
+     immune to both, which is exactly the kind of one-off that made the
+     legacy layer hard to theme in the first place. */
+  font-size: calc(clamp(1.75rem, 1.35rem + 1.9vw, 2.75rem) * var(--ty-scale) * var(--ty-a11y)) !important;
+  line-height: var(--lh-snug) !important;
+  letter-spacing: var(--ty-tight) !important;
+  color: var(--g-ink) !important;
+  text-wrap: balance;
+}
+
+/* The standfirst under those headings — same measure and rhythm as the
+   home page's lead paragraph, so a content page opens like the home page
+   rather than like a different site. */
+.sec-sub {
+  font-size: var(--t-lead);
+  line-height: var(--lh-prose);
+  color: var(--g-ink-2);
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+/* `.gl-eyebrow` is set in `--brand`, the fill colour, which measures 4.44:1
+   as small uppercase text — just under AA, and it is small and letterspaced,
+   the hardest combination to read. `--brand-text` is the same hue tuned for
+   exactly this ("brand as TEXT — 4.5:1" in engine.css). The ::before rule
+   keeps --brand: it is a decorative rule, not text. */
+.gl-eyebrow { color: var(--brand-text); }
+
+/* The small label above a heading. It was set in a colour that read as
+   disabled text on the lighter surfaces. */
+.eyebrow {
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-text);
+}
+
+
+/* ── Section nav cards ────────────────────────────────────────────────────
+   `.tab-card` carries `white-space: nowrap` from the desktop-first original,
+   where eight cards sat in one row and nothing needed to wrap. At 390px the
+   grid drops to four columns of roughly 83px and the longest label — "Nepal
+   Medical Colleges" — cannot fit, so it was rendering clipped mid-word
+   ("Nepal Medica"). The <br> in the markup breaks the line but nowrap stops
+   any further wrapping, so the overflow had nowhere to go.
+
+   Three columns at phone width gives each card room for its longest word,
+   and letting the label wrap means a future label can be longer without
+   silently truncating again. */
+
+@media (max-width: 30rem) {
+  .tabs-grid { grid-template-columns: repeat(3, 1fr) !important; }
+}
+
+.tab-card {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  hyphens: none;
+}
+
+.tab-card .tab-label {
+  font-size: var(--t-xs) !important;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+
+/* ── Ticker ───────────────────────────────────────────────────────────────
+   A marquee is ambient, not an announcement. The old one was a saturated
+   blue band that read as an ad slot and fought the calm palette for
+   attention it did not need. This is a quiet brand-tinted rule instead:
+   present, legible, and clearly subordinate to the page. */
+
+.ticker {
+  background: color-mix(in oklab, var(--brand) 7%, var(--g-base)) !important;
+  border-top: 1px solid var(--brand-line) !important;
+  border-bottom: 1px solid var(--brand-line);
+  padding: 10px 0 !important;
+  overflow: hidden;
+  /* Fade the ends so items enter and leave instead of being sliced off at
+     the viewport edge, which is what made it look broken on a phone. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.ticker-item {
+  padding: 0 28px !important;
+  font-size: var(--t-xs) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
+  color: var(--brand-text) !important;
+  white-space: nowrap;
+}
+
+.ticker-item::after {
+  content: '' !important;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--brand-line);
+  margin-left: 28px;
+  opacity: 1 !important;
+}
+
+
+/* ── Contact bar ──────────────────────────────────────────────────────────
+   This is a conversion surface: for many visitors it is the moment they
+   decide to call. It was the worst-looking thing on the page — a black slab
+   with unreadable numbers. Rebuilt as a light record-like panel, close to
+   the trust register used elsewhere for facts a family acts on. */
+
+.cbar {
+  background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--brand) 4%, var(--g-base)),
+      var(--g-base)) !important;
+  border-top: 1px solid var(--brand-line) !important;
+  box-shadow: none !important;
+  padding: var(--s-6, 2rem) var(--gutter) !important;
+}
+
+.cbar-inner {
+  max-width: 68rem;
+  margin: 0 auto;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--s-3, 1rem) !important;
+  align-items: stretch;
+}
+
+.cbar-block {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px !important;
+  padding: var(--s-5, 1.5rem) var(--s-4, 1.25rem) !important;
+  background: var(--m-fill-solid) !important;
+  border: 1px solid var(--m-hairline);
+  border-radius: var(--r-md);
+  text-decoration: none;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+
+.cbar-block:hover {
+  background: var(--m-fill-solid) !important;
+  border-color: var(--brand-line);
+  box-shadow: var(--sd-2, 0 6px 20px rgba(15, 20, 32, .07));
+  transform: translateY(-1px);
+}
+
+/* Country / channel label — small caps, muted, the quietest thing in the card. */
+.cbar-country {
+  display: flex !important;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--t-label) !important;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--g-ink-3) !important;
+}
+
+.cbar-country-name { color: inherit !important; }
+.cbar-flag { font-size: 15px; line-height: 1; }
+
+/* The number is the point of the card, so it carries the weight. Tabular
+   figures so the two numbers align rather than wobble against each other. */
+.cbar-number {
+  font-family: var(--ty-body);
+  font-size: calc(clamp(1.05rem, 0.95rem + 0.4vw, 1.25rem) * var(--ty-scale) * var(--ty-a11y)) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--g-ink) !important;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.cbar-number:hover { color: var(--brand) !important; }
+
+.cbar-actions {
+  display: flex !important;
+  gap: 8px !important;
+  margin-top: 2px;
+}
+
+/* 44px min height: these are the primary touch targets on a phone. */
+.cbar-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 16px !important;
+  border-radius: var(--r-pill);
+  border: 1px solid transparent;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .2s, border-color .2s, color .2s;
+}
+
+.cbar-btn svg { width: 15px; height: 15px; flex: none; }
+
+.cbar-btn-call {
+  background: color-mix(in oklab, var(--brand) 10%, transparent) !important;
+  border-color: var(--brand-line) !important;
+  color: var(--brand-text) !important;
+}
+.cbar-btn-call:hover {
+  background: var(--brand) !important;
+  border-color: var(--brand) !important;
+  color: var(--brand-ink) !important;
+}
+
+/* WhatsApp keeps its own green because people recognise it, but a deepened
+   one that clears AA on this surface rather than the brand's own #25D366. */
+.cbar-btn-wa {
+  background: color-mix(in oklab, #0B7A55 10%, transparent) !important;
+  border-color: color-mix(in oklab, #0B7A55 30%, transparent) !important;
+  color: #076046 !important;
+}
+.cbar-btn-wa:hover {
+  background: #0B7A55 !important;
+  border-color: #0B7A55 !important;
+  color: #fff !important;
+}
+
+/* The vertical rules belonged to a single-row flex bar; the grid separates
+   the cards on its own. */
+.cbar-divider { display: none !important; }
+
+.cbar-email-block .cbar-number { font-size: var(--t-sm) !important; font-weight: 500 !important; }
+
+@media (max-width: 30rem) {
+  .cbar { padding: var(--s-5, 1.5rem) var(--gutter) !important; }
+  .cbar-block { padding: var(--s-4, 1.25rem) !important; }
+}
+
+
+/* ── Counseling page ──────────────────────────────────────────────────────
+   The same unfinished dark→light migration as the contact bar, on the page
+   that matters most commercially. `.counsel-bg` is a near-black gradient
+   (#040d1c → #0a1f35), while `.counsel-left h2` and the button labels were
+   already flipped to dark ink by bridge.css. So the page's headline — "Free
+   Counseling — No Pressure" — rendered black on near-black, and the three
+   contact cards used white-tint surfaces meant for a dark page.
+
+   A single dark section in an otherwise light site also reads as a
+   copy-paste accident even when the contrast is fine. This brings the page
+   into the same light language as every other route. */
+
+.counsel-bg {
+  background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--brand) 5%, var(--g-base)),
+      var(--g-base)) !important;
+}
+
+.counsel-grid {
+  grid-template-columns: 1fr !important;
+  gap: var(--s-6, 2rem) !important;
+  max-width: 68rem;
+  padding: var(--s-8, 3rem) var(--gutter) !important;
+}
+
+@media (min-width: 60rem) {
+  .counsel-grid { grid-template-columns: 1fr 26rem !important; gap: var(--s-8, 3rem) !important; }
+}
+
+.counsel-left h2 {
+  font-family: var(--ty-display) !important;
+  font-size: calc(clamp(1.75rem, 1.35rem + 1.9vw, 2.75rem) * var(--ty-scale) * var(--ty-a11y)) !important;
+  line-height: var(--lh-snug) !important;
+  letter-spacing: var(--ty-tight) !important;
+  color: var(--g-ink) !important;
+  text-wrap: balance;
+}
+
+.counsel-left p {
+  font-size: var(--t-lead) !important;
+  line-height: var(--lh-prose) !important;
+  color: var(--g-ink-2) !important;
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+/* The three contact routes. White-on-dark tints became real cards. */
+.counsel-btn {
+  background: var(--m-fill-solid) !important;
+  border: 1px solid var(--m-hairline) !important;
+  border-radius: var(--r-md) !important;
+  min-height: 72px;
+  transition: border-color .2s, box-shadow .2s, transform .2s !important;
+}
+.counsel-btn:hover {
+  background: var(--m-fill-solid) !important;
+  border-color: var(--brand-line) !important;
+  box-shadow: var(--sd-2, 0 6px 20px rgba(15, 20, 32, .07));
+  transform: translateY(-1px) !important;
+}
+
+.counsel-btn-icon { border-radius: var(--r-sm) !important; }
+/* The Calendly tile was pure white on a dark page; on a white card it
+   disappeared into the surface. */
+.cb-cal .counsel-btn-icon {
+  background: color-mix(in oklab, var(--g-ink) 5%, transparent) !important;
+  border: 1px solid var(--m-hairline);
+}
+
+.counsel-btn-text h4 { color: var(--g-ink) !important; font-size: var(--t-body) !important; }
+.counsel-btn-text p  { color: var(--g-ink-3) !important; font-size: var(--t-sm) !important; }
+
+.counsel-card {
+  background: var(--m-fill-solid) !important;
+  border: 1px solid var(--m-hairline) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--sd-3) !important;
+  padding: var(--s-6, 2rem) !important;
+}
+.counsel-card-title { color: var(--g-ink) !important; }
+.counsel-card-sub   { color: var(--g-ink-3) !important; }
+
+
+/* ── Buttons that lost their contrast in the dark→light move ──────────────
+   Found by the audit only after its gradient blind spot was fixed; before
+   that all three were invisible to the suite.
+
+   Each is the same shape of fault: the fill stayed a brand colour while
+   bridge.css flipped the label to dark ink, which is right on a pale
+   surface and wrong on a saturated one. Labels on a brand fill take
+   --brand-ink. */
+
+.calc-btn {
+  background: linear-gradient(135deg, var(--brand-lift), var(--brand)) !important;
+  color: var(--brand-ink) !important;
+}
+.calc-btn:hover { background: var(--brand-deep) !important; }
+
+/* /videos: this carried an inline pale-green-on-pale-green from the dark
+   build and measured 1.01:1 — the label was effectively not there. The
+   inline style is gone from the markup; this is its replacement. */
+.btn-wa-req {
+  background: color-mix(in oklab, #0B7A55 10%, transparent) !important;
+  border: 1px solid color-mix(in oklab, #0B7A55 30%, transparent) !important;
+  color: #076046 !important;
+  font-size: var(--t-sm) !important;
+  padding: 10px 20px !important;
+}
+.btn-wa-req:hover {
+  background: #0B7A55 !important;
+  border-color: #0B7A55 !important;
+  color: #fff !important;
+}
+
+/* Same page, same story: an inline `color: rgba(255,255,255,.8)` left over
+   from the dark build, measuring 1.21:1 on the light button beside it. */
+.btn-req-email {
+  background: var(--m-fill-solid) !important;
+  border: 1px solid var(--m-hairline) !important;
+  color: var(--g-ink-2) !important;
+  font-size: var(--t-sm) !important;
+  padding: 10px 20px !important;
+}
+.btn-req-email:hover {
+  border-color: var(--brand-line) !important;
+  color: var(--brand-text) !important;
+}
+
+
+/* The video page's college filter. `.college-tab.on` kept `color:#fff` from
+   the dark build while its background became a light glass fill, so the
+   selected tab's label was white on near-white — 1.12:1, unreadable, and
+   precisely the state a user needs to see to know what they filtered by. */
+.college-tab {
+  background: var(--m-fill-solid) !important;
+  border: 1px solid var(--m-hairline) !important;
+  color: var(--g-ink-2) !important;
+  min-height: 36px;
+  border-radius: var(--r-pill) !important;
+}
+.college-tab:hover {
+  border-color: var(--brand-line) !important;
+  color: var(--brand-text) !important;
+}
+.college-tab.on {
+  background: var(--brand) !important;
+  border-color: var(--brand) !important;
+  color: var(--brand-ink) !important;
+}
+
+
+/* ── /preview ─────────────────────────────────────────────────────────────
+   The theme-preview page was the last route still rendering on the old dark
+   `.hero` gradient (#0f1724 → #0a3060), with the light glass stat cards and
+   dark ink sitting on top of it. Its three figures measured 1.59:1 — the
+   numbers a preview page exists to show off were the least readable text on
+   the site.
+
+   `.hero` had two users: the deleted `Hero.astro` and this page, so this
+   now affects /preview only. A preview of the site should look like the
+   site; that it did not is the clearest sign it was left behind rather than
+   styled that way on purpose. */
+
+/* `section.hero` in sections.css is (0,1,1) and carries !important, so a
+   bare `.hero` here loses on specificity even with !important of its own.
+   Matching the element+class shape rather than escalating further. */
+section.hero, .hero {
+  background: linear-gradient(
+      165deg,
+      color-mix(in oklab, var(--brand) 5%, var(--g-base)),
+      var(--g-base) 55%) !important;
+}
+
+/* The emphasised word in the hero headline was still painted with the old
+   theme's amber gradient (#f5a623 → #f5c842) through background-clip:text,
+   while the home page's equivalent uses the brand. One headline word in a
+   colour that appears nowhere else on the site reads as a leftover, which
+   is what it is. */
+.hero h1 em {
+  background: linear-gradient(135deg, var(--brand-lift), var(--brand)) !important;
+}
+
+/* The hero's type came with the dark background: near-white ink and a heavy
+   dark text-shadow to lift it off the navy. Both have to go with it — the
+   shadow especially, which on a light ground reads as a smudge rather than
+   as depth. */
+.hero-title, .hero h1 {
+  color: var(--g-ink) !important;
+  text-shadow: none !important;
+}
+.hero-sub, .hero p {
+  color: var(--g-ink-2) !important;
+  text-shadow: none !important;
+}
+
+
+/* ── Floating actions ─────────────────────────────────────────────────────
+   Three stacked circles (chat, WhatsApp, WhatsApp-call) covered the bottom
+   right of every page and overlapped the footer. Now that the contact bar
+   carries Call and WhatsApp for both countries as full-size targets, the
+   third floater is redundant — it was the same action twice on one screen.
+
+   Kept: the chat widget and one WhatsApp button. */
+
+.wa-call-btn-f { display: none !important; }
+
+.wa-chat-btn {
+  box-shadow: 0 8px 24px color-mix(in oklab, #0B7A55 28%, transparent) !important;
+}
+
+
+/* ── Admin entry ──────────────────────────────────────────────────────────
+   Hidden from the public. chrome.js adds --shown when a staff session exists
+   or the URL asks for it (#admin). Visually hidden rather than removed, and
+   never display:none on a focused element, so keyboard access still works
+   for anyone who has deliberately revealed it. */
+
+.admin-access-btn {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity .2s, transform .2s;
+}
+
+.admin-access-btn--shown,
+.admin-access-btn:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+
+/* ── Footer ───────────────────────────────────────────────────────────────
+   The mobile footer ran to roughly a full extra screen of scrolling: four
+   stacked columns at desktop line-height with no density change. Tightened,
+   and the contact list given real icons. */
+
+.foot-contacts {
+  display: grid;
+  gap: 2px;
+  margin-top: var(--s-4, 1.25rem);
+}
+
+.foot-contacts a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  font-size: var(--t-sm);
+  color: var(--g-ink-2) !important;
+  text-decoration: none;
+  transition: color .18s;
+}
+.foot-contacts a:hover { color: var(--brand) !important; }
+
+.foot-contacts svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  opacity: .55;
+}
+.foot-contacts a:hover svg { opacity: 1; }
+
+.foot-h {
+  font-size: var(--t-label) !important;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--g-ink-3) !important;
+  margin-bottom: var(--s-2, 0.5rem) !important;
+}
+
+.foot-col a {
+  display: block;
+  min-height: 36px;
+  line-height: 36px;
+  font-size: var(--t-sm);
+}
+
+/* The standing instruction, not a dismissible warning. */
+.foot-note {
+  max-width: 60ch;
+  margin-inline: auto;
+  padding: var(--s-3, 1rem) var(--s-4, 1.25rem);
+  border: 1px solid var(--m-hairline);
+  border-left: 2px solid var(--brand-line);
+  border-radius: var(--r-sm);
+  background: color-mix(in oklab, var(--brand) 3%, transparent);
+  font-size: var(--t-xs);
+  line-height: var(--lh-body);
+  color: var(--g-ink-2) !important;
+}
+.foot-note a { color: var(--brand-text) !important; text-decoration: underline; }
+
+@media (max-width: 48rem) {
+  .foot-top { gap: var(--s-5, 1.5rem) !important; }
+  .foot-col { margin: 0 !important; }
+  .foot-col a { min-height: 34px; line-height: 34px; }
+}
+
+/* The WhatsApp floater was sitting on top of the disclaimer's links at the
+   very bottom of the page, where the footer has no right-hand content to
+   flow around it. */
+.foot-bottom { padding-bottom: calc(var(--s-6, 2rem) + 56px) !important; }

@@ -1,0 +1,98 @@
+---
+import GlassLayout from '../layouts/GlassLayout.astro';
+import { getColleges } from '../lib/colleges.js';
+
+// A 404 is a dead end by definition, so the only useful thing it can do is
+// hand back the routes someone was most likely reaching for. These are the
+// six the nav itself leads with, plus the two tools people arrive searching
+// for by name.
+const colleges = await getColleges();
+
+const routes = [
+  { href: '/colleges',           title: `All ${colleges.length} medical colleges`, note: 'Location, affiliation, seats' },
+  { href: '/colleges/compare',   title: 'Compare colleges',                        note: 'Up to four, side by side' },
+  { href: '/admission-process',  title: 'Admission process',                       note: 'How the MEC route works' },
+  { href: '/neet-calculator',    title: 'NEET eligibility check',                  note: 'Against the indicative threshold' },
+  { href: '/faq',                title: 'Questions families ask',                  note: 'Fees, recognition, FMGE' },
+  { href: '/counseling',         title: 'Talk to a counselor',                     note: 'No cost, no obligation' },
+];
+---
+<GlassLayout
+  title="Page not found — NepalMBBS.in"
+  description="That page does not exist. Here are the parts of NepalMBBS.in people usually want: the college list, the admission process, and the NEET eligibility check."
+  path="/404"
+>
+<div class="tab-pane on">
+<div class="container nf-wrap">
+
+  <p class="eyebrow">Error 404</p>
+  <h1 class="sec-title nf-title">That page isn&rsquo;t here.</h1>
+  <p class="sec-sub nf-sub">
+    The link may be old, or it may have been mistyped. Nothing is broken on
+    your side. Here is where most people were heading.
+  </p>
+
+  <nav class="nf-grid" aria-label="Popular pages">
+    {routes.map((r) => (
+      <a href={r.href} class="nf-card">
+        <span class="nf-card-title">{r.title}</span>
+        <span class="nf-card-note">{r.note}</span>
+      </a>
+    ))}
+  </nav>
+
+  <p class="nf-foot">
+    Still stuck? <a href="/counseling">Ask us directly</a> &mdash; tell us what
+    you were looking for and we will point you at it.
+  </p>
+
+</div>
+</div>
+
+<style>
+  .nf-wrap { max-width: 56rem; }
+  .nf-title { margin-bottom: 12px; }
+  .nf-sub { max-width: 52ch; text-wrap: pretty; }
+
+  .nf-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--s-3, 1rem);
+    margin-top: var(--s-7, 2.5rem);
+  }
+
+  .nf-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--s-4, 1.25rem) var(--s-5, 1.5rem);
+    min-height: 88px;
+    justify-content: center;
+    background: var(--m-fill-solid);
+    border: 1px solid var(--m-hairline);
+    border-radius: var(--r-md);
+    text-decoration: none;
+    transition: border-color .2s, box-shadow .2s, transform .2s;
+  }
+  .nf-card:hover {
+    border-color: var(--brand-line);
+    box-shadow: var(--sd-2, 0 6px 20px rgba(15, 20, 32, .07));
+    transform: translateY(-1px);
+  }
+
+  .nf-card-title {
+    font-weight: 600;
+    font-size: var(--t-body);
+    color: var(--g-ink);
+    letter-spacing: -0.01em;
+  }
+  .nf-card-note { font-size: var(--t-xs); color: var(--g-ink-3); }
+
+  .nf-foot {
+    margin-top: var(--s-7, 2.5rem);
+    font-size: var(--t-sm);
+    color: var(--g-ink-2);
+  }
+  .nf-foot a { color: var(--brand-text); }
+</style>
+</GlassLayout>

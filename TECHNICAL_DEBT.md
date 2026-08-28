@@ -51,6 +51,44 @@ place to check, not because they are newly discovered:
   overridden in the cascade. Worth a direct check before assuming this is
   resolved.
 
+## Newly identified this session (chunk 5 — premium pass)
+
+- **The dark→light migration is still unfinished in the legacy CSS, and
+  `chrome.css` only covers what has been *found*.** Three components have
+  now turned up with hard-coded dark backgrounds that Phase 3/4's
+  `bridge.css` never flipped, each discovered only by looking at a
+  rendered screenshot: `.ticker`, `.cbar`, and `.counsel-bg`. Nothing
+  guarantees those are the last three. A systematic sweep would be:
+  grep `public/assets/css/` for hex literals darker than roughly #333 used
+  as a `background`, and check each against the light-theme ink colours
+  `bridge.css` now forces. Cheaper than finding them one screenshot at a
+  time, which is how all three of these were found.
+- **41 CSS rules request `'Sora'` and 5 request `Inter`; neither font is
+  loaded.** Now redirected to the design tokens in `chrome.css`, but the
+  underlying rules in `base.css`/`sections.css` still name fonts that do
+  not exist. They should be rewritten to use `var(--ty-display)` /
+  `var(--ty-body)` directly so the override layer can eventually be
+  deleted rather than grown.
+
+- ~~**`tests/audit.mjs`'s contrast pass silently skips any element over a
+  gradient.**~~ **Fixed.** It now parses gradient colour stops and uses the
+  darkest opaque one as the worst case, and prints the skip count on every
+  run so a zero can be trusted. Skipped elements went 624 → 0, and the
+  working checker immediately found 11 genuine low-contrast elements that
+  had been invisible to it — see `QA_REPORT.md` for the table. All fixed.
+  Remaining known limitation: real `url()` backgrounds still return null
+  (genuinely unresolvable without sampling a rendered pixel), and elements
+  using `background-clip: text` are excluded by design.
+- **`docs/DESIGN-SYSTEM.md` §4 is wrong about `cbar-*`.** It records the
+  family as "60 classes, almost entirely unreferenced… an entire
+  contact-bar redesign that was styled and never wired up". In fact
+  `ContactBar.astro` renders a *different, later* set of class names
+  (`cbar-inner`, `cbar-block`, `cbar-number`, `cbar-btn`…) than the ones
+  base.css styles (`cbar-in`, `cbar-contact-block`, `cbar-num-txt`,
+  `cbar-icon-btn`…). Both generations are in the tree; the markup uses one
+  and most of the CSS describes the other. The dead half should be deleted
+  per-family with a visual diff, as Phase 1 originally planned.
+
 ## Newly identified this session (chunk 3 — content sourcing) — not yet fixed
 
 - **`WebFetch` is blocked by this sandbox's network egress policy for

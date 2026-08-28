@@ -73,6 +73,57 @@ not the shared `.doc-table` stacking rule) is confirmed working by the
 same overflow-measurement method `tests/audit.mjs` itself uses, not just
 by inspection.
 
+## 2026-08-28 — Fixing the contrast checker's blind spot
+
+`tests/audit.mjs` reported "0 low-contrast elements" for months on a page
+whose contact bar had black text on a black slab. Its `groundOf()` walked
+ancestors for a background and bailed with `return null` the moment it met
+a gradient. Both the contact bar and the ticker are gradients, so both
+were skipped rather than measured — and the skip was silent, so a zero
+looked like full coverage.
+
+Two changes:
+
+1. **Parse gradient colour stops** instead of giving up, and use the
+   darkest opaque stop as the worst case a reader actually meets. Real
+   `url()` images still return null — genuinely unknowable.
+2. **Report the skip count on every run**, so "0 low-contrast" is only
+   meaningful next to "0 skipped".
+
+Two mistakes made while writing it, both worth recording because both
+were invisible until measured:
+
+- The first version put backticks inside a comment that lives **inside a
+  template literal**, which ended the string and broke the file. Caught
+  by the run, not by reading.
+- The second version wrote the stop-matching regex as `\(` inside that
+  same template literal, where the backslash is consumed as an escape and
+  the group silently becomes a capture that matches nothing. So the
+  "gradient parsing" parsed nothing and the suite still passed with 624
+  elements skipped. `parse()` directly above it escapes as `\\(` for
+  exactly this reason — the existing code already knew.
+
+**What the working checker then found: 11 genuine low-contrast elements
+across 5 routes, none of which the suite could previously see.**
+
+| Route | Element | Ratio | Cause |
+|---|---|---|---|
+| `/neet-calculator` | "Check My Eligibility" button | 3.60 | dark ink on the brand-green fill |
+| `/videos` | "Request on WhatsApp" | 1.01 | inline pale-green on pale-green, from the dark build |
+| `/videos` | "Request via Email" | 1.21 | inline `rgba(255,255,255,.8)` on a light button |
+| `/videos` | college filter tabs (`.college-tab.on`) | 1.12 | `color:#fff` kept while the fill became light — the *selected* state was the invisible one |
+| `/counseling` | "Book a Session" | 4.44 | inline `--gold` (the fill colour) where `--brand-text` exists for text |
+| `/preview` | hero + all three statistics | 1.05–1.59 | the last route still on the old dark `.hero`, with light-theme ink on top |
+
+One false positive was found and excluded rather than worked around: the
+home page's gradient headline word uses `background-clip: text` with a
+transparent colour, so measuring it compares the gradient against itself
+and always yields 1.00. Its legibility is a different question than this
+pass asks.
+
+**All 11 fixed. Final: 0 low-contrast, 0 skipped, 0 mobile overflow, 42
+routes, exit 0** — and this time the zero means the checker looked.
+
 ## 2026-08-28 — Third run, after removing dead code ✅ CONFIRMED GREEN
 
 **Context:** deleted the orphaned `src/components/Hero.astro` and the

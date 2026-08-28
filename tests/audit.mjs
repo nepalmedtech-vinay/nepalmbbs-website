@@ -102,12 +102,53 @@ const CONTRAST = `(() => {
     return [ fg[0]*a + bg[0]*(1-a), fg[1]*a + bg[1]*(1-a), fg[2]*a + bg[2]*(1-a), 1 ];
   };
 
+  /* Pull the colour stops out of a gradient and return the DARKEST opaque
+     one, or null if none can be parsed.
+
+     This replaces an earlier bail-out on any background-image, which
+     skipped the element entirely. That skip was silent and it hid a real
+     bug for months: the contact bar, the ticker and the whole counseling
+     page each had dark ink sitting on a hard-coded dark *gradient*, so the
+     suite walked past all three and still printed "0 low-contrast
+     elements". A checker that cannot see a whole class of failure should
+     not report zero as if it had looked.
+
+     (No backticks anywhere in this comment: it lives inside a template
+     literal, and one would end the string. That is how this file was
+     briefly broken while writing this very fix.)
+
+     Darkest stop rather than an average, because it is the worst case a
+     reader actually encounters: text crossing the dark end of a gradient
+     has to pass there too, not merely on average. Conservative in the
+     right direction — it can over-report on a gradient whose dark end sits
+     behind no text, which is a far better failure than under-reporting. */
+  function darkestStop(bgImage) {
+    // Double backslashes: this whole block is a template literal, so a single
+    // \\( would be consumed as an escape and turn the group into a capture,
+    // silently matching nothing. parse() above escapes the same way for the
+    // same reason — worth copying rather than rediscovering.
+    const stops = bgImage.match(/(?:rgba?|oklab|oklch)\\([^)]*\\)|#[0-9a-fA-F]{3,8}/g);
+    if (!stops) return null;
+    let worst = null, worstLum = Infinity;
+    for (const s of stops) {
+      const c = parse(s);
+      if (!c || c[3] < 0.5) continue;            // near-transparent stop decides nothing
+      const l = 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
+      if (l < worstLum) { worstLum = l; worst = [c[0], c[1], c[2], 1]; }
+    }
+    return worst;
+  }
+
   function groundOf(el) {
     const layers = [];
     let n = el;
     while (n) {
       const cs = getComputedStyle(n);
-      if (cs.backgroundImage && cs.backgroundImage !== 'none') return null;  // gradient: unknowable
+      if (cs.backgroundImage && cs.backgroundImage !== 'none') {
+        const g = darkestStop(cs.backgroundImage);
+        if (g) { layers.push(g); break; }
+        return null;                             // a real image: genuinely unknowable
+      }
       const c = parse(cs.backgroundColor);
       if (!c) return null;
       if (c[3] > 0) { layers.push(c); if (c[3] >= 1) break; }
@@ -128,15 +169,25 @@ const CONTRAST = `(() => {
     return 0.2126*s[0] + 0.7152*s[1] + 0.0722*s[2]; };
 
   const out = [];
+  // Counted and reported, so a "0 low-contrast" line means "measured
+  // everything" rather than "measured what it could". A silent skip is how
+  // three genuinely broken components passed this suite for months.
+  out.skipped = 0;
   for (const el of document.querySelectorAll('p,span,a,h1,h2,h3,h4,li,td,th,button,label,div')) {
     if (!el.textContent || !el.textContent.trim()) continue;
     if (el.children.length && ![...el.childNodes].some(n => n.nodeType===3 && n.textContent.trim())) continue;
     const cs = getComputedStyle(el);
     if (cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.95) continue;
+    // Gradient text: the glyphs are painted by the background through
+    // background-clip:text, and the transparent color is the technique, not
+    // a fault. Measuring it compares the gradient against itself and always
+    // reports 1.00. Its legibility is the gradient's contrast with the page
+    // behind it, which is a different question than this pass asks.
+    if ((cs.webkitBackgroundClip || cs.backgroundClip) === 'text') continue;
     const r = el.getBoundingClientRect();
     if (!r.width || !r.height || r.bottom < 0) continue;
     let fg = parse(cs.color); const bg = groundOf(el);
-    if (!fg || !bg) continue;
+    if (!fg || !bg) { out.skipped++; continue; }
     if (fg[3] < 1) fg = over(fg, bg);
     const l1 = lum(fg), l2 = lum(bg);
     const ratio = (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);
@@ -144,7 +195,7 @@ const CONTRAST = `(() => {
     const need = (size >= 24 || (size >= 18.66 && bold)) ? 3 : 4.5;
     if (ratio < need) out.push({ t: el.textContent.trim().slice(0,34), ratio: +ratio.toFixed(2), need });
   }
-  return out;
+  return { low: out, skipped: out.skipped };
 })()`;
 
 const rows = [];
@@ -160,7 +211,7 @@ for (const route of ROUTES) {
   await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'load' });
   await page.waitForTimeout(700);
 
-  const low = await page.evaluate(CONTRAST);
+  const { low, skipped } = await page.evaluate(CONTRAST);
   const nodes = await page.evaluate(() => document.querySelectorAll('*').length);
 
   // mobile: does the body scroll sideways?
@@ -182,7 +233,7 @@ for (const route of ROUTES) {
     return { over, culprit: worst };
   });
 
-  rows.push({ route, low: low.length, worst: low.sort((a,b)=>a.ratio-b.ratio)[0],
+  rows.push({ route, low: low.length, worst: low.sort((a,b)=>a.ratio-b.ratio)[0], skipped,
               kb: Math.round(bytes/1024), reqs, nodes, overflow });
   await ctx.close();
 }
@@ -199,9 +250,13 @@ for (const r of rows) {
     '  ' + (r.overflow.over ? r.overflow.over + 'px ' + r.overflow.culprit : 'none'));
 }
 const tot = rows.reduce((a,r)=>a+r.low,0);
+const totSkipped = rows.reduce((a,r)=>a+(r.skipped||0),0);
 console.log(`\n${rows.length} routes · ${tot} low-contrast elements · ` +
   `${rows.filter(r=>r.overflow.over).length} with mobile overflow · ` +
   `median ${[...rows.map(r=>r.kb)].sort((a,b)=>a-b)[Math.floor(rows.length/2)]} kB`);
+// Reported even when zero: "0 low-contrast" is only meaningful alongside
+// how many elements the walker could not resolve a background for.
+console.log(`${totSkipped} element(s) skipped (background could not be resolved)`);
 
 // the worst offenders, once, so they can be fixed rather than counted
 const seen = new Map();

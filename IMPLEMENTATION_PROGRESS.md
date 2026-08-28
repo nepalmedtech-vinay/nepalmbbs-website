@@ -85,6 +85,36 @@ Legend: ✅ done · 🟡 partially done · ⬜ not started · 🚫 not applicabl
   pending either deeper verification or the owner's direct confirmation.
   17 `ku`/`tu`-affiliated colleges still unchecked.
 
+## This session, chunk 5 (premium pass on the chrome)
+
+Driven by an owner screenshot ("looks cheap") and by the design skill they
+linked. Every change screenshotted at 390px before and after, not judged
+from source.
+
+- ✅ **Contact bar + ticker rebuilt** (`public/assets/theme/chrome.css`).
+  Root cause was a real inherited bug: both kept hard-coded dark
+  backgrounds from the pre-Phase-3 build while `bridge.css` had already
+  flipped their text to dark ink. The two phone numbers — the most
+  conversion-critical elements on the site — were dark-on-dark and
+  effectively invisible.
+- ✅ **Fixed-header overlap on every page** — measured 18–25px at 390px
+  across seven routes; all now clear.
+- ✅ **`.sec-title` typography** — the h1 on eleven pages asked for `Sora`,
+  which the site never loads, so every content page's heading fell back to
+  the system sans while the home page rendered in Fraunces. Pointed at the
+  design system's display face.
+- ✅ **Section-nav cards no longer clip** — `white-space: nowrap` plus a
+  four-column mobile grid truncated "Nepal Medical Colleges" mid-word.
+- ✅ **Admin button hidden from the public**; floating buttons 3 → 2;
+  footer emoji markers replaced with inline SVG; disclaimer restyled.
+- ✅ **New `/404` and `/privacy`** — neither existed. 43 pages now.
+- ✅ Caught two of my own would-be regressions before they shipped:
+  hardcoded `clamp()` font sizes that would have made those headings immune
+  to the admin type-scale control and the accessibility multiplier.
+- 📝 Logged that `tests/audit.mjs` cannot see these faults at all — its
+  contrast pass skips any element over a gradient, silently, so a "0
+  low-contrast" result does not mean full coverage. See `TECHNICAL_DEBT.md`.
+
 ## This session, chunk 4 (official-source verification + data fixes)
 
 - ✅ Found that `WebSearch`'s `allowed_domains` filter reaches each

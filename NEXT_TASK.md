@@ -15,6 +15,57 @@ file still shows the run as in-progress, finish reading its output before
 starting new feature work, since a red suite changes what "safe to build
 on" means.
 
+## Design: premium pass in progress (2026-08-28)
+
+The owner asked for a premium look and for work to continue in chunks
+without stopping for approval. Done so far, each verified by screenshotting
+at 390px before and after:
+
+- ✅ **Contact bar and ticker** — these still had hard-coded *dark*
+  backgrounds from the pre-Phase-3 build while `bridge.css` had flipped
+  their text to dark ink. Dark on dark: the two phone numbers were
+  effectively invisible. Rebuilt in `public/assets/theme/chrome.css`.
+- ✅ **Fixed-header overlap** — the 69px navbar covered the first element
+  of *every* page at 390px (18–25px). Raised the mobile padding floor; all
+  seven routes re-measured clear.
+- ✅ **Admin button hidden from the public** (`chrome.js`) — shown only on
+  an existing staff session or `#admin`. Cannot lock the owner out.
+- ✅ **Floating buttons 3 → 2** — the WhatsApp-call floater duplicated what
+  the contact bar now offers at full size.
+- ✅ **Footer** — emoji list markers (📞📲💬✉️) replaced with inline SVG;
+  disclaimer restyled from a ⚠️ line into a proper standing note.
+- ✅ **New `/404`** — there was none.
+- ✅ **New `/privacy`** — there was none, on a site that collects a
+  student's name, phone, NEET score, city, category and marks bands.
+  Written from what the code does. **Needs the owner to supply two things**
+  it deliberately refuses to invent: the registered legal entity, and the
+  data retention period. Both are flagged on the page itself.
+- ✅ **The font nobody loaded** — 41 rules asked for `Sora` and 5 for
+  `Inter`; neither is loaded, so the logo, every heading, card title,
+  button, statistic and college name fell back to the device's system
+  sans. Only the home-page hero escaped it. Mapped onto the design
+  system's own faces. This was the largest single cause of the site
+  reading as generic.
+- ✅ **Counseling page** — same dark-slab bug as the contact bar, on the
+  most commercially important page: its headline rendered black on
+  near-black. Now light, readable, and consistent with every other route.
+
+### Design skill
+
+`.claude/skills/` now vendors two SKILL.md files from
+github.com/Leonxlnx/taste-skill (MIT), at the owner's request — reviewed
+before adoption, methodology only, no scripts. Its audit is a good
+checklist for the remaining passes.
+
+### Not yet done from that audit
+
+- Section interiors are still flat — the skill's "empty, flat sections with
+  no visual depth" applies to several content pages.
+- `.foot-top` is still a four-column link farm.
+- Shadows are neutral rather than hue-tinted.
+- Headline `text-wrap: balance` is only partly applied.
+- The three-equal-cards pattern appears on a few pages.
+
 ## Deploy status (2026-08-28)
 
 The owner asked for the Netlify deploy to be done for them, without any

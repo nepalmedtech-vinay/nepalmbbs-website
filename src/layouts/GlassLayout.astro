@@ -76,6 +76,9 @@ const canonical = new URL(path, SITE).href;
 <link rel="stylesheet" href="/assets/theme/glass.css">
 <link rel="stylesheet" href="/assets/theme/motion.css">
 <link rel="stylesheet" href="/assets/theme/panel.css">
+{/* Last: finishes the dark→light migration for the site chrome (ticker,
+    contact bar) that bridge.css only half-completed. See chrome.css. */}
+<link rel="stylesheet" href="/assets/theme/chrome.css">
 {/* 36 kB of base64 PNG for a decorative noise overlay, and it was
     render-blocking: nothing could paint until it arrived. media="print"
     keeps the browser from blocking on it; runtime.js flips it to "all"
@@ -156,6 +159,7 @@ const canonical = new URL(path, SITE).href;
     <script is:inline defer src="/assets/js/admin.js"></script>
     <script is:inline defer src="/assets/js/effects.js"></script>
     <script is:inline defer src="/assets/js/actions.js"></script>
+    <script is:inline defer src="/assets/js/chrome.js"></script>
   </>
 )}
 

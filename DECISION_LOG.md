@@ -5,6 +5,128 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-08-28 — Chunk 5: premium pass on the site chrome
+
+The owner sent a phone screenshot and said the site looked cheap, asked for
+a premium look, and asked for the work to continue in chunks without
+stopping for approval. Everything below was driven by what the screenshot
+and the rendered pages actually showed, screenshotted at 390px before and
+after each change rather than judged from source.
+
+**Found the root cause of the worst of it, and it was a real inherited
+bug, not a taste problem.** `.cbar` (the phone/WhatsApp strip) and
+`.ticker` still carried hard-coded *dark* backgrounds from the original
+dark build — `#0b1e3d` and `#1e40af`. When Phase 3/4 moved the site to the
+light glass system, `bridge.css` flipped those components' *text* colours
+to dark ink but never touched their backgrounds. The result on every page
+was near-black text on a near-black slab: the two phone numbers, the
+single most conversion-critical thing on the site, were effectively
+invisible. Fixed by finishing that migration in a new `chrome.css` rather
+than by patching colours one at a time.
+
+**`tests/audit.mjs` could never have caught it.** Its contrast pass walks
+ancestors to resolve an element's background and bails with `return null`
+the moment it meets a gradient (its own comment: "gradient: unknowable").
+Both components are gradients, so both were skipped, not measured — which
+is why the suite reported "0 low-contrast elements" on a page that plainly
+had a dozen. Recorded in `TECHNICAL_DEBT.md`; the checker should fall back
+to sampling a rendered pixel rather than skipping.
+
+**Measured a second site-wide bug the screenshot hinted at.** The fixed
+navbar is 69px tall and every page's first element sat under it at 390px —
+the home page by 18px, six other pages by 25px. Eyebrows and back-links
+were sliced in half on first paint on the width most of this audience
+uses. Desktop was fine (112px of padding against the 69px bar), so only
+the mobile end of the clamp fell short. Raised the floor rather than
+switching the header to `sticky`, which would have reserved space at every
+breakpoint and cost the intended glass-overlay effect. Verified by
+re-measuring all seven routes: all clear.
+
+**Hid the admin button from the public.** It was a fixed pill in the corner
+of every page, telling every visitor the site has an admin panel. RLS is
+what actually protects the data so this was never the security boundary,
+but it read as unfinished. It is now revealed only when a staff session
+exists or the URL asks for it (`#admin`). Deliberately not a secret — the
+sign-in form and the database policies are the actual gate; the point is
+to stop showing the door to families researching a medical degree. Written
+so it can never remove the button or lock an owner out.
+
+**Added the two pages the site was missing.** A branded 404 (there was
+none — a broken link served nothing useful), and a privacy page. The
+privacy page matters more than polish: this site collects a student's
+name, phone, NEET score, city, category, attempt number and class-12 marks
+bands, stores them in Supabase, and had no privacy page at all. It is
+written from what the code actually does — fields read out of
+`leads.js`, storage and access from the RLS policies, third parties from
+the actual embeds — not from a template. Two things it deliberately does
+*not* state are the registered legal entity and the retention period:
+those are the owner's to declare, and a privacy page that invents either
+is worse than one that admits the gap, so the gap is stated on the page
+itself.
+
+**The single biggest cause of "it looks cheap" turned out to be a font
+that was never loaded.** 41 CSS rules ask for `'Sora'` and 5 more for
+Inter; `GlassLayout` requests Fraunces and Geist and nothing else. So the
+logo, every heading, every card title, every button, every statistic and
+every college name had been rendering in whatever generic sans the device
+defaults to. The only component escaping it was the home page hero, which
+uses the newer `.gl-*` classes — which is exactly why the home page looked
+considered and every other page looked like a template. Mapped the legacy
+names onto the design system's tokens rather than starting to load Sora:
+Phase 3/4 chose Fraunces + Geist deliberately, and adding a third family
+would mean more webfont weight and a look nobody picked. Split by role —
+display serif for headings and figures, body sans for controls and the
+wordmark — because a serif submit button would have been worse than the bug.
+
+**The counseling page had the same dark-slab bug, on the page that matters
+most commercially.** `.counsel-bg` is a near-black gradient while its
+headline and button labels had already been flipped to dark ink, so "Free
+Counseling — No Pressure" rendered black on near-black and the three
+contact routes used white-tint surfaces meant for a dark page. Brought
+into the same light language as the rest of the site.
+
+**Caught two of my own would-be regressions before they shipped.** I had
+written bare `clamp()` font sizes for `.sec-title` and `.cbar-number`,
+which would have made those the only text on the site immune to the admin
+theme panel's type-scale control and to the accessibility multiplier —
+reintroducing exactly the kind of un-themeable one-off that made the
+legacy layer hard to work with. Both now multiply by `--ty-scale` and
+`--ty-a11y` like everything else.
+
+**Fixed the contrast checker rather than working around it, and it
+immediately found 11 real bugs.** `tests/audit.mjs` skipped any element
+sitting on a gradient — silently — so its "0 low-contrast" had been
+covering 624 unmeasured elements per run. Taught it to parse gradient
+stops and to print the skip count, on the principle that a checker which
+cannot see a class of failure must not report zero as if it had looked.
+With it working: dark ink on the brand-green calculator button, two
+`/videos` buttons still carrying inline colours from the dark build at
+1.01 and 1.21, the video filter's *selected* tab rendering white on
+near-white, `/counseling`'s eyebrow using the fill colour where a
+text-tuned one exists, and `/preview` — the last route still on the old
+dark hero — with its three headline statistics at 1.59. All fixed; the
+final zero is now a measured zero.
+
+Twice while writing that fix I broke it in ways only the run caught: a
+backtick inside a comment that lives in a template literal, and then
+`\(` in a regex in that same literal, where the backslash is eaten as an
+escape so the "gradient parsing" silently matched nothing and the suite
+went green with 624 elements still skipped. The function directly above
+already escaped as `\\(` for that exact reason. Reading the neighbouring
+code would have been faster than rediscovering it twice.
+
+**Adopted the design skill the owner linked** (github.com/Leonxlnx/taste-skill,
+MIT). Read it before adopting rather than installing blind, and scanned it
+for scripts, network calls and credential access — it is methodology only.
+Vendored just the two SKILL.md files actually used plus the upstream
+LICENSE, with attribution in `.claude/skills/README.md`, rather than the
+whole repository. Its audit independently names the exact fault found
+above — "a single dark-background section breaking an otherwise light page
+looks like a copy-paste accident" — and its "no legal links" and "no
+custom 404" items are what prompted the two new pages.
+
+---
+
 ## 2026-08-28 — Chunk 4: official-source verification, and four data fixes
 
 **Decision: used `WebSearch`'s `allowed_domains` to reach official

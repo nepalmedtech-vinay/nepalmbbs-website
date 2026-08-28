@@ -10,7 +10,12 @@ import GlassLayout from '../layouts/GlassLayout.astro';
 <div class="counsel-bg">
   <div class="counsel-grid">
     <div class="counsel-left rev">
-      <div class="eyebrow" style="color:var(--gold)">Book a Session</div>
+      {/* The inline colour pinned this to --gold, which bridge.css aliases to
+          --brand. --brand is the fill colour and measures 4.44:1 as text on
+          this surface — just under AA. --brand-text exists precisely for this
+          case (engine.css: "brand as TEXT — 4.5:1"), and chrome.css already
+          applies it to .eyebrow, so the override only made it worse. */}
+      <div class="eyebrow">Book a Session</div>
       <h2>Free Counseling —<br>No Pressure</h2>
       <p>Our experienced counselors discuss your NEET score and options honestly — based strictly on official NMC India and MEC Nepal guidelines. No commitment required. No false promises. Ever.</p>
       <div class="counsel-btns">
