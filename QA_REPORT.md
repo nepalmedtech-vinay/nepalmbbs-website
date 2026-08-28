@@ -103,7 +103,7 @@ _Scope note: this run tested the tree **before** the college-data
 corrections committed afterwards (`eba8821`). Those need their own run —
 see the next entry._
 
-## 2026-08-28 — Fourth run, after the college-data corrections ⏳ PENDING
+## 2026-08-28 — Fourth run, after the college-data corrections ✅ CONFIRMED GREEN
 
 **Context:** `src/data/colleges.json` corrections (UCMS's name, its
 established year and website, CMS Bharatpur's established year, two
@@ -153,3 +153,19 @@ Two process lessons worth keeping:
 
 Fixed by regenerating (`node tools/gen-csp.mjs` → 3 inline hashes) and
 re-running the full suite.
+
+### Result of the re-run
+
+**`EXIT=0`, zero `❌` lines, 41/41 routes clean** (0 low-contrast, 0
+mobile overflow, median 265 kB).
+
+That exit code is trustworthy this time: the re-run was invoked with
+`set -o pipefail` and reports `${PIPESTATUS[0]}` explicitly, so it is
+npm's status rather than `tail`'s. And because `npm run verify` chains
+every suite with `&&`, a zero exit is only reachable if all of them
+passed — `gen-csp --check`, `build-verify`, `csp-verify`,
+`console-verify`, `auth-verify`, `a11y-verify`, `compare-verify` and
+`audit`.
+
+The college-data corrections are therefore verified end to end, CSP
+included.
