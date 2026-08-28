@@ -572,6 +572,47 @@ section.hero, .hero {
 }
 
 
+/* ── Assistant header ─────────────────────────────────────────────────────
+   Found by the audit's new assistant pass, on its first run, and it had
+   been there all along: `.chat-header` fills with
+   `linear-gradient(135deg, var(--m-fill), var(--blue-dark))` — light glass
+   at one end, #1e40af at the other — while its text is dark ink. Over the
+   dark half the title measured 2.39:1 and the subtitle 1.03:1, which is
+   text that is simply not there.
+
+   The same fault as the contact bar and the ticker: a component that kept
+   its dark-build background when bridge.css flipped its text. This is the
+   third one, which is a reasonable signal that the dark→light migration
+   should have been audited component by component rather than by eye. */
+
+.chat-header {
+  background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--brand) 6%, var(--g-base)),
+      var(--m-fill-solid)) !important;
+  border-bottom: 1px solid var(--m-hairline);
+}
+
+.chat-header h4 {
+  font-family: var(--ty-body) !important;
+  color: var(--g-ink) !important;
+  letter-spacing: -0.01em;
+}
+.chat-header p { color: var(--g-ink-2) !important; }
+
+/* 10px grey-on-grey; it was the least readable thing in the widget. */
+.swipe-label { color: var(--g-ink-3) !important; font-size: var(--t-label) !important; }
+
+.chat-close-btn { color: var(--g-ink-2) !important; }
+
+/* The avatar is a brand-filled circle, so its glyph takes the on-brand ink
+   rather than inheriting the header's dark text. */
+.chat-avatar {
+  background: linear-gradient(140deg, var(--brand-lift), var(--brand)) !important;
+  color: var(--brand-ink) !important;
+}
+
+
 /* ── Assistant answers ────────────────────────────────────────────────────
    An answer is now a small record rather than a paragraph: the claim, then
    the fields it rests on, then the source and the date that source was

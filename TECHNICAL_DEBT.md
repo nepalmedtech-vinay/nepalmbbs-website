@@ -51,6 +51,34 @@ place to check, not because they are newly discovered:
   overridden in the cascade. Worth a direct check before assuming this is
   resolved.
 
+## The dark→light migration was never audited component by component
+
+Three components have now been found keeping their **dark-build background**
+while `bridge.css` had already flipped their **text** to dark ink, leaving
+dark on dark:
+
+1. `.cbar` — the contact bar (`#0b1e3d` navy). Phone numbers invisible.
+2. `.ticker` — the marquee (`#1e40af` blue). Dark text on saturated blue.
+3. `.chat-header` — the assistant (`var(--blue-dark)` = `#1e40af` at one end
+   of its gradient). Title 2.39:1, subtitle 1.03:1.
+
+All three are gradients, and the contrast checker was silently skipping
+gradients — so the migration was done by eye, and the one tool that could
+have caught the misses was blind to exactly the components that had them.
+Two separate failures that turned out to be the same failure.
+
+**The remaining risk**: there may be a fourth. A grep for hard-coded dark
+literals still in background position would settle it in minutes and is
+worth doing before the next deploy:
+
+```
+grep -rnE "background[^;]*#(0[a-f0-9]|1[0-9a-f]|2[0-9a-f])" \
+  public/assets/css/*.css public/assets/theme/*.css
+```
+
+Anything that matches and is not inside a `[data-theme="dark"]` block is a
+candidate for the same fault.
+
 ## Newly identified this session (chunk 6 — the assistant)
 
 - ~~**`tests/audit.mjs` only ever measured a page's default state.**~~

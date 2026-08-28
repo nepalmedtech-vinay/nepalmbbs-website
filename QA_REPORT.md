@@ -105,6 +105,34 @@ assistant's result into the per-route `rows` array, which would have
 reported the wrong route count and dragged the median page weight down with
 a synthetic `kb: 0` row. Counted separately now.
 
+### The assistant pass found four faults on its first run
+
+Not in the CSS written for it — in the chat **header**, which had been
+carrying them all along. `.chat-header` fills with
+`linear-gradient(135deg, var(--m-fill), var(--blue-dark))`: light glass at
+one end, `#1e40af` at the other, with dark ink text over both. Measured
+against the dark half:
+
+| Text | Ratio | Needs |
+|---|---:|---:|
+| "Answers from sourced records" | **1.03** | 4.5 |
+| "↑ swipe to close" | 1.56 | 4.5 |
+| "Admissions Assistant" | 2.39 | 4.5 |
+
+1.03:1 is text that is not there. Anyone who opened the assistant saw a
+header with a title they could half-read and a subtitle they could not.
+
+This is the **third** component found with the same fault — the contact
+bar, the ticker, and now the chat header all kept their dark-build
+backgrounds when `bridge.css` flipped their text to dark ink. Three of
+three is no longer a coincidence: the dark→light migration was done by eye,
+and eye missed every component whose background was a gradient, because a
+gradient is exactly what the contrast checker was skipping. The two
+failures were the same failure.
+
+Fixed in `chrome.css` alongside the avatar glyph, which was inheriting the
+header's dark ink onto a brand-filled circle.
+
 ### A new kind of check: freshness
 
 `tests/assistant-verify.mjs` fails once `src/data/knowledge.json` is 365
