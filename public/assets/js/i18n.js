@@ -11,7 +11,7 @@ const TRANS={
     'hero_badge':'NEET 2025 Results Out — Nepal Admissions Open',
     'nav_counsel':'Free Counseling →',
     'hero_h1':'After NEET —<br><em>Nepal MBBS</em><br>The Smartest Path',
-    'hero_sub':'NMC India-recognised colleges. Official MEC Nepal admission process. English medium. Zero visa for Indian citizens. Honest guidance — no pressure, no false promises.',
+    'hero_sub':'NMC India-recognised colleges. Official MEC Nepal admission process. English medium. No visa required for Indian citizens. Honest guidance — no pressure, no false promises.',
     'form_title':'Register for Free Guidance',
     'form_btn':'Get Free Guidance →',
     'form_note':'Your information is 100% private and secure',
