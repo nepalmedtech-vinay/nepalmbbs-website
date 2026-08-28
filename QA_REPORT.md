@@ -120,5 +120,36 @@ directory so the in-flight third run's `dist/` was not disturbed:
 - ✅ the old incorrect name appears nowhere in the built output
 - ✅ sitemap URL unchanged (slug deliberately not renamed)
 
-**A full `npm run verify` has not yet been run against these changes.**
-Do that before treating this state as verified.
+### The full run then caught something the scratch build could not
+
+The first full attempt **failed at `gen-csp.mjs --check`**:
+
+```
+netlify.toml CSP is out of date — run: node tools/gen-csp.mjs
+```
+
+Cause: `/colleges/compare` embeds the college dataset as an inline
+`<script type="application/json">`, so editing `colleges.json` changes
+that script's bytes and therefore its CSP hash. `netlify.toml` still
+carried the old hash.
+
+This matters more than a normal test failure. Per `README.md`, a stale
+script hash **does not degrade — it blanks the page**. Shipping this
+would have served an empty `/colleges/compare` in production while
+looking completely fine in local `astro dev` (which sends no CSP).
+
+Two process lessons worth keeping:
+
+1. **The scratch-directory build could not have caught this.**
+   `gen-csp.mjs` reads `dist/`, and that validation deliberately built to
+   `/tmp/testbuild` to avoid disturbing an in-flight run. It correctly
+   confirmed rendering, titles and URLs — but CSP drift was outside what
+   it could see. A scratch build is not a substitute for `npm run verify`.
+2. **`... | tail -N` hides the real exit status.** The run was reported
+   as exit code 0 because that was `tail`'s status, not the pipeline's.
+   Without reading the output text, this failure would have been recorded
+   as a pass. Use `set -o pipefail` (or check `PIPESTATUS`) when a
+   pipeline's success is the thing being judged.
+
+Fixed by regenerating (`node tools/gen-csp.mjs` → 3 inline hashes) and
+re-running the full suite.
