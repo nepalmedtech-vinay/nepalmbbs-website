@@ -9,7 +9,12 @@
 // =====================================================
 const SB='https://fpzgcijbryvddtpegcmm.supabase.co';
 const AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwemdjaWpicnl2ZGR0cGVnY21tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NTk3ODIsImV4cCI6MjA5ODAzNTc4Mn0.EiIiB_CR7briJQ7IZB7fTHIzmooiT4TA6zZ7ox_bK1M';
-let curLang='en',chatOpen=false,chatHistory=[],adminLoggedIn=false,siteWANum='917080800888';
+// `chatOpen` and `chatHistory` used to live here because the chat widget read
+// them as globals. chatbot.js scopes its own state now, and nothing else ever
+// read these — leaving them would suggest the chat's state is shared across
+// files when it is not, which is the kind of thing that costs a future reader
+// half an hour.
+let curLang='en',adminLoggedIn=false,siteWANum='917080800888';
 
 // =====================================================
 // SUPABASE HELPERS

@@ -73,6 +73,45 @@ not the shared `.doc-table` stacking rule) is confirmed working by the
 same overflow-measurement method `tests/audit.mjs` itself uses, not just
 by inspection.
 
+## 2026-08-28 — Chunks 6–8: the assistant, the document centre, two more blind spots
+
+**Run after the document centre and college data ✅ green**: exit 0, zero
+failures, 43 routes, 0 low-contrast, **0 elements skipped**, median 284 kB.
+That covered the rewritten assistant, `tests/assistant-verify.mjs` (18
+checks) and the six newly verified college records.
+
+### Two more places the audit could not see
+
+The contrast pass had been measuring only what a page shows on load. Two
+consequences, both found this session and both now covered:
+
+1. **States reachable only by acting.** `/counseling`'s enquiry
+   confirmation — the one screen every enquiry ends on — carried
+   `rgba(255,255,255,.6)` from the dark build and was white on white. It is
+   `display:none` until submit, so the suite had never seen it. The audit
+   now reveals success and error containers and measures them, reported
+   with a `[revealed]` prefix.
+2. **The assistant's own answers.** The chat is the only surface here whose
+   text is generated rather than authored, its styling lives in `chrome.css`
+   while its markup is built in JavaScript, and none of it had ever been
+   measured — it is closed on load. The audit now opens it once and asks
+   three questions covering the three answer shapes (a college record, a
+   sourced topic, the refusal). Measured once rather than per route: the
+   widget is identical on all 44, and re-measuring it 44 times would cost
+   minutes to learn nothing.
+
+A mistake caught while adding the second: the first version pushed the
+assistant's result into the per-route `rows` array, which would have
+reported the wrong route count and dragged the median page weight down with
+a synthetic `kb: 0` row. Counted separately now.
+
+### A new kind of check: freshness
+
+`tests/assistant-verify.mjs` fails once `src/data/knowledge.json` is 365
+days past its last review. It trips on the calendar with nobody touching
+the repository — the failure mode it exists for is a dataset that quietly
+ages while every test stays green.
+
 ## 2026-08-28 — Fixing the contrast checker's blind spot
 
 `tests/audit.mjs` reported "0 low-contrast elements" for months on a page

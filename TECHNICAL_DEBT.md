@@ -64,10 +64,9 @@ place to check, not because they are newly discovered:
   chat window's answers, and any state reachable only by driving a real
   form submission. Revealing a container by hand is blunt; driving each
   form to a genuine success needs a backend per page.
-- **`public/assets/js/config.js` still declares `chatOpen` and
-  `chatHistory` as globals** that nothing reads any more — the assistant
-  now scopes its own. Harmless, but they are the kind of leftover that
-  makes a future reader think the chat state is shared when it is not.
+- ~~**`public/assets/js/config.js` still declares `chatOpen` and
+  `chatHistory` as globals**~~ **Fixed.** Removed after confirming nothing
+  outside `chatbot.js` ever referenced them.
 - **Admin panel toasts are written in a different register from the
   site**: `toast('✅ Saved to Supabase — live on all devices!')` and about
   fifteen siblings. Staff-facing rather than public, so lower priority
