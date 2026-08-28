@@ -122,46 +122,59 @@ const CONTRAST = `(() => {
      has to pass there too, not merely on average. Conservative in the
      right direction — it can over-report on a gradient whose dark end sits
      behind no text, which is a far better failure than under-reporting. */
-  function darkestStop(bgImage) {
+  function gradientStops(bgImage) {
     // Double backslashes: this whole block is a template literal, so a single
     // \\( would be consumed as an escape and turn the group into a capture,
     // silently matching nothing. parse() above escapes the same way for the
     // same reason — worth copying rather than rediscovering.
-    const stops = bgImage.match(/(?:rgba?|oklab|oklch)\\([^)]*\\)|#[0-9a-fA-F]{3,8}/g);
-    if (!stops) return null;
-    let worst = null, worstLum = Infinity;
-    for (const s of stops) {
+    const found = bgImage.match(/(?:rgba?|oklab|oklch)\\([^)]*\\)|#[0-9a-fA-F]{3,8}/g);
+    if (!found) return null;
+    const stops = [];
+    for (const s of found) {
       const c = parse(s);
       if (!c || c[3] < 0.5) continue;            // near-transparent stop decides nothing
-      const l = 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
-      if (l < worstLum) { worstLum = l; worst = [c[0], c[1], c[2], 1]; }
+      stops.push([c[0], c[1], c[2], 1]);
     }
-    return worst;
+    return stops.length ? stops : null;
   }
 
-  function groundOf(el) {
-    const layers = [];
-    let n = el;
+  /* Returns every ground the text might sit on, not one.
+     An earlier version returned only the darkest stop of a gradient. That is
+     the worst case for dark ink, and it caught three components that way —
+     but it is the BEST case for light ink, so it could not see white text
+     over the light end of a gradient. .chat-msg.user is exactly that: white
+     on a fill running from light glass to dark blue.
+     Handing back every stop lets the caller take whichever contrasts worst
+     with the actual foreground, which is the only rule that is worst-case in
+     both directions. */
+  function groundsOf(el) {
+    const above = [];               // translucent layers, innermost first
+    let n = el, bases = null;
     while (n) {
       const cs = getComputedStyle(n);
       if (cs.backgroundImage && cs.backgroundImage !== 'none') {
-        const g = darkestStop(cs.backgroundImage);
-        if (g) { layers.push(g); break; }
-        return null;                             // a real image: genuinely unknowable
+        const stops = gradientStops(cs.backgroundImage);
+        if (!stops) return null;                 // a real image: genuinely unknowable
+        bases = stops; break;
       }
       const c = parse(cs.backgroundColor);
       if (!c) return null;
-      if (c[3] > 0) { layers.push(c); if (c[3] >= 1) break; }
+      if (c[3] > 0) {
+        if (c[3] >= 1) { bases = [c]; break; }
+        above.push(c);
+      }
       n = n.parentElement;
     }
-    if (!layers.length || layers[layers.length-1][3] < 1) {
+    if (!bases) {
       const html = parse(getComputedStyle(document.documentElement).backgroundColor);
       if (!html || html[3] < 1) return null;
-      layers.push(html);
+      bases = [html];
     }
-    let out = layers[layers.length-1];
-    for (let i = layers.length-2; i >= 0; i--) out = over(layers[i], out);
-    return out;
+    return bases.map((b) => {
+      let out = b;
+      for (let i = above.length - 1; i >= 0; i--) out = over(above[i], out);
+      return out;
+    });
   }
 
   const lum = (c) => { const s = c.slice(0,3).map(v => { v/=255;
@@ -186,11 +199,18 @@ const CONTRAST = `(() => {
     if ((cs.webkitBackgroundClip || cs.backgroundClip) === 'text') continue;
     const r = el.getBoundingClientRect();
     if (!r.width || !r.height || r.bottom < 0) continue;
-    let fg = parse(cs.color); const bg = groundOf(el);
-    if (!fg || !bg) { out.skipped++; continue; }
-    if (fg[3] < 1) fg = over(fg, bg);
-    const l1 = lum(fg), l2 = lum(bg);
-    const ratio = (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);
+    const fg0 = parse(cs.color); const grounds = groundsOf(el);
+    if (!fg0 || !grounds || !grounds.length) { out.skipped++; continue; }
+    // Worst ratio across every stop, so a gradient is judged by the point
+    // where its text is hardest to read rather than by an average or by one
+    // end of it.
+    let ratio = Infinity;
+    for (const bg of grounds) {
+      const fg = fg0[3] < 1 ? over(fg0, bg) : fg0;
+      const l1 = lum(fg), l2 = lum(bg);
+      const r = (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);
+      if (r < ratio) ratio = r;
+    }
     const size = parseFloat(cs.fontSize), bold = parseInt(cs.fontWeight,10) >= 700;
     const need = (size >= 24 || (size >= 18.66 && bold)) ? 3 : 4.5;
     if (ratio < need) out.push({ t: el.textContent.trim().slice(0,34), ratio: +ratio.toFixed(2), need });
