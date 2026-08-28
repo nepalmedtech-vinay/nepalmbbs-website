@@ -468,10 +468,6 @@
    surface and wrong on a saturated one. Labels on a brand fill take
    --brand-ink. */
 
-.calc-btn {
-  background: linear-gradient(135deg, var(--brand-lift), var(--brand)) !important;
-  color: var(--brand-ink) !important;
-}
 .calc-btn:hover { background: var(--brand-deep) !important; }
 
 /* /videos: this carried an inline pale-green-on-pale-green from the dark
@@ -569,6 +565,42 @@ section.hero, .hero {
 .hero-sub, .hero p {
   color: var(--g-ink-2) !important;
   text-shadow: none !important;
+}
+
+
+/* ── Brand fills under white text ─────────────────────────────────────────
+   Found the moment the checker stopped judging a gradient by its darkest
+   stop alone. Every primary action on the site — "Free Counseling", "Sign
+   in", "Open", "Send Enquiry", "Book free counseling" — fills with
+   `linear-gradient(148deg, var(--brand-lift), var(--brand))` and sets white
+   text on it. Measured:
+
+     white on --brand      (#0E7C6B)          5.09:1   passes
+     white on --brand-lift (brand + 16% white) ~3.8:1   fails
+
+   So the label clears AA over the bottom of the button and fails over the
+   top, and the old rule only ever looked at the bottom. 87 elements across
+   the site were sitting on the failing half.
+
+   The fix keeps the gradient — it is what gives these buttons their weight
+   — but runs it the other way, from --brand into --brand-deep. Nothing gets
+   lighter than the shade already proven at 5.09:1, and the button reads as
+   more solid rather than less. */
+
+.btn-primary, .college-enquire, .nav-cta, a.nav-cta, .a-btn-primary,
+.g-tab.on, .tab-card.on, .gl-btn--primary, .calc-btn, .sbtn {
+  background: linear-gradient(148deg, var(--brand), var(--brand-deep)) !important;
+  color: var(--brand-ink) !important;
+}
+
+/* The visitor's own message in the assistant was the worst of the set at
+   1.02:1 — white text on a fill running from near-white glass to dark blue,
+   so over its light end the question you just typed was not there. A solid
+   brand fill, matching every other place the site marks something as
+   "yours". */
+.chat-msg.user {
+  background: var(--brand) !important;
+  color: var(--brand-ink) !important;
 }
 
 
