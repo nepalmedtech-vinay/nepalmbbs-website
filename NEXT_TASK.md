@@ -15,6 +15,33 @@ file still shows the run as in-progress, finish reading its output before
 starting new feature work, since a red suite changes what "safe to build
 on" means.
 
+## Deploy status (2026-08-28)
+
+The owner asked for the Netlify deploy to be done for them, without any
+manual steps on their side. Before deploying, the `docs/GOLIVE.md`
+prerequisites were checked **directly against the live database** rather
+than asked about, and all pass:
+
+| Check | Result |
+|---|---|
+| `staff` rows with `role='admin'` | 1 — no admin-lockout risk |
+| `sequence_steps` seeded | 7 — follow-up tasks will materialise |
+| public tables with RLS off | 0 |
+| `leads` row-level security | on — student contact data is not publicly readable |
+
+So GOLIVE steps 1 (migrations) and 2 (first staff account) were already
+done before this session. The deploy is therefore the documented step 3.
+
+Netlify site: `nepalmbbs` / `fac99d5b-96f8-4ff9-a9da-a34b962a7d13`,
+primary URL `https://nepalmbbs.in`.
+
+**Caveat worth carrying forward:** the Netlify MCP `deploy-site`
+operation takes only a `siteId` — it exposes no draft/preview flag, so a
+deploy through it cannot be guaranteed to stay off production. The
+repo's own `docs/DEPLOYMENT.md` prefers a branch deploy or deploy preview
+first. If a future session needs a genuine preview, use the Netlify CLI
+(`netlify deploy` without `--prod`) rather than this tool.
+
 ## College data: what got fixed, and what is still open
 
 Two research passes ran (see `CONTENT_SOURCE_LOG.md` for full sourcing).
