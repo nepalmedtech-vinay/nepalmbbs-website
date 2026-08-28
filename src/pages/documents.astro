@@ -1,0 +1,203 @@
+---
+import GlassLayout from '../layouts/GlassLayout.astro';
+import knowledge from '../data/knowledge.json';
+
+// The document list is the Commission's, not ours. It is held in
+// src/data/knowledge.json alongside everything else the assistant answers
+// from, so this page and the assistant cannot drift apart — and so the
+// source line below is generated from the same record rather than typed.
+const docTopic = knowledge.topics.find((t) => t.id === 'documents');
+
+// Two registers, kept visibly apart on the page.
+//
+// `required` is what the Commission asks for. `note` is ours: the practical
+// failure we have watched happen, which is guidance and is labelled as such.
+// Merging them would let our advice borrow the Commission's authority, and
+// that is exactly the move this site exists not to make.
+const documents = [
+  {
+    name: 'Class 10 marksheet and certificate',
+    required: 'Notarised copy',
+    note: 'The name printed here is the one every later document is checked against. If it differs from your passport — an initial expanded, a middle name dropped — resolve that before you apply, not during counselling.',
+  },
+  {
+    name: 'Class 12 marksheet and certificate',
+    required: 'Notarised copy',
+    note: 'Physics, Chemistry and Biology must be visible as separate subjects with marks. A consolidated grade sheet without subject-wise marks is usually sent back.',
+  },
+  {
+    name: 'NEET scorecard',
+    required: 'Original, for the year you are applying against',
+    note: 'Download and keep your own PDF as soon as results are published. The NTA portal does not stay open indefinitely, and a scorecard you cannot re-download is a problem you discover at the worst moment.',
+  },
+  {
+    name: 'Passport',
+    required: 'Valid, with adequate remaining validity',
+    note: 'No visa is needed for Nepal, but the passport is still the identity document the college and the Commission work from. If yours expires during the course, renew before you travel rather than from Nepal.',
+  },
+  {
+    name: 'Medical fitness certificate',
+    required: 'From a registered medical practitioner',
+    note: 'Some colleges specify their own format or their own panel. Ask the college before paying for one.',
+  },
+  {
+    name: 'Character certificate',
+    required: 'From the last institution attended',
+    note: 'Issued by your class 12 school or board. Request it while you are still in touch with the school — it is materially harder to obtain a year later.',
+  },
+  {
+    name: 'Passport photographs',
+    required: 'Recent, passport specification',
+    note: 'Carry more than you think you need, in both physical and digital form. Several separate steps each consume a few.',
+  },
+];
+
+const stages = [
+  {
+    stage: 'Before you apply',
+    items: ['Class 10 marksheet', 'Class 12 marksheet', 'NEET scorecard'],
+    body: 'These three decide whether you are eligible at all. Get the notarisation done early — it is the step that most often adds a week nobody planned for.',
+  },
+  {
+    stage: 'At application and counselling',
+    items: ['Passport', 'Passport photographs', 'Character certificate'],
+    body: 'The Commission publishes the definitive list for each intake on its entrance portal, and that list governs over any list — including this one.',
+  },
+  {
+    stage: 'At admission',
+    items: ['Medical fitness certificate', 'Originals of everything above'],
+    body: 'Colleges verify originals against the copies submitted earlier. Never hand over originals permanently; they are shown, checked and returned.',
+  },
+];
+---
+<GlassLayout
+  title="Document Checklist for MBBS in Nepal — What You Need and When | NepalMBBS.in"
+  description="Every document required for MBBS admission in Nepal, what stage it is needed at, and the practical mistakes that cost applicants time. Sourced from the Medical Education Commission."
+  path="/documents"
+>
+<div class="tab-pane on">
+<div class="container doc-centre">
+
+  <p class="eyebrow">Document centre</p>
+  <h1 class="sec-title" style="margin-bottom:12px">What you need, and when you need it</h1>
+  <p class="sec-sub">
+    The requirement list is the Medical Education Commission&rsquo;s. The notes
+    beside each item are ours &mdash; the practical failures we have watched
+    cost applicants a week. They are marked separately so you can tell which
+    is which.
+  </p>
+
+  <div class="doc-note" style="margin-top:24px">
+    <strong>The Commission&rsquo;s list for your intake governs.</strong> It is
+    published on the
+    <a href="https://entrance.mec.gov.np" target="_blank" rel="noopener">entrance portal</a>
+    each year and can change. Treat this page as preparation, and that notice
+    as the authority.
+  </div>
+
+  <div class="doc" style="margin-top:28px">
+    <div class="doc-head">
+      <h2 class="doc-title">The documents</h2>
+      <span class="doc-kicker">{documents.length} items</span>
+    </div>
+    <div class="doc-body">
+      <table class="doc-table dc-table">
+        <thead>
+          <tr><th>Document</th><th>Required form</th></tr>
+        </thead>
+        <tbody>
+          {documents.map((d) => (
+            <tr>
+              <td data-label="Document">
+                <span class="dc-name">{d.name}</span>
+                <span class="dc-note"><b>Practical note</b> {d.note}</span>
+              </td>
+              <td data-label="Required form"><span class="dc-req">{d.required}</span></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="doc-source">
+      Requirement list: {docTopic ? docTopic.source.name : 'Medical Education Commission, Nepal'}
+      {docTopic && docTopic.source.url && (
+        <> &mdash; <a href={docTopic.source.url} target="_blank" rel="noopener">{docTopic.source.url.replace(/^https?:\/\//, '')} ↗</a></>
+      )}
+      {docTopic && <> &middot; checked {docTopic.source.checked}</>}.
+      The practical notes are NepalMBBS.in&rsquo;s own guidance and carry no
+      official standing.
+    </p>
+  </div>
+
+  {stages.map((s) => (
+    <div class="doc" style="margin-top:24px">
+      <div class="doc-head">
+        <h2 class="doc-title">{s.stage}</h2>
+        <span class="doc-kicker">{s.items.length} items</span>
+      </div>
+      <div class="doc-body">
+        <ul class="dc-list">
+          {s.items.map((i) => <li>{i}</li>)}
+        </ul>
+        <p class="doc-empty-body" style="margin:var(--s-3) 0 0;text-align:left;max-width:66ch">{s.body}</p>
+      </div>
+    </div>
+  ))}
+
+  <div class="doc-note doc-note--caution" style="margin-top:24px">
+    <strong>One thing worth more than any checklist.</strong> Pay the
+    institution directly and keep the receipt for every payment. Seats are
+    allocated through the Commission&rsquo;s process, so nobody is in a
+    position to guarantee one &mdash; an offer to do so is the warning, not
+    the opportunity.
+  </div>
+
+  <div class="rev" style="margin-top:32px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+    <a href="/counseling" class="college-enquire" style="text-decoration:none;display:inline-block">Ask about your documents</a>
+    <a href="/admission-process" class="college-link">How the admission process works →</a>
+  </div>
+
+</div>
+</div>
+
+<style>
+  .doc-centre { max-width: 62rem; }
+
+  .dc-name {
+    display: block;
+    font-weight: 600;
+    color: var(--g-ink);
+    font-size: var(--t-body);
+  }
+
+  /* Our guidance, set apart from the Commission's requirement so the two
+     cannot be read as one voice. */
+  .dc-note {
+    display: block;
+    margin-top: 6px;
+    max-width: 58ch;
+    font-size: var(--t-xs);
+    line-height: var(--lh-body);
+    color: var(--g-ink-3);
+  }
+  .dc-note b {
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    color: var(--brand-text);
+    margin-right: 5px;
+  }
+
+  .dc-req {
+    font-size: var(--t-sm);
+    color: var(--g-ink-2);
+    font-weight: 500;
+  }
+
+  .dc-table td { vertical-align: top; padding-top: var(--s-4); padding-bottom: var(--s-4); }
+
+  .dc-list { margin: 0; padding-left: 1.1rem; display: grid; gap: 4px; }
+  .dc-list li { font-size: var(--t-sm); color: var(--g-ink-2); line-height: var(--lh-body); }
+</style>
+</GlassLayout>

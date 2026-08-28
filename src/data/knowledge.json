@@ -102,7 +102,7 @@
       "id": "documents",
       "match": ["document", "documents required", "paperwork", "what i need", "certificates"],
       "question": "Which documents are needed?",
-      "answer": "Typically: notarised class 10 and class 12 marksheets, the NEET scorecard, a valid passport, a medical fitness certificate, a character certificate and passport photographs. The Commission publishes the definitive list for each intake on its entrance portal, and that list governs.",
+      "answer": "Typically: notarised class 10 and class 12 marksheets, the NEET scorecard, a valid passport, a medical fitness certificate, a character certificate and passport photographs. Our document centre sets out which is needed at which stage, and the practical mistakes that cost applicants time. The Commission publishes the definitive list for each intake on its entrance portal, and that list governs.",
       "source": { "name": "MEC Nepal — entrance portal", "url": "https://entrance.mec.gov.np", "checked": "2026-08-28" },
       "status": "official"
     },
