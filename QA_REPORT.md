@@ -73,7 +73,7 @@ not the shared `.doc-table` stacking rule) is confirmed working by the
 same overflow-measurement method `tests/audit.mjs` itself uses, not just
 by inspection.
 
-## 2026-08-28 — Third run, after removing dead code ⏳ IN FLIGHT
+## 2026-08-28 — Third run, after removing dead code ✅ CONFIRMED GREEN
 
 **Context:** deleted the orphaned `src/components/Hero.astro` and the
 `boot.js` step that called its two non-existent functions. Because
@@ -84,17 +84,41 @@ rather than a spot check.
 |---|---|
 | `npm run build` | ✅ 41 pages, clean |
 | `node tools/gen-csp.mjs --check` | ✅ current (no inline-script hashes affected) |
-| the browser suites | ⏳ **still running when this was committed** |
+| `tests/build-verify.mjs` | ✅ 98/98 |
+| `tests/csp-verify.mjs` | ✅ 11/11 |
+| `tests/console-verify.mjs` | ✅ 34/34 |
+| `tests/auth-verify.mjs` | ✅ 12/12 |
+| `tests/a11y-verify.mjs` | ✅ 32/32 |
+| `tests/compare-verify.mjs` | ✅ 13/13 |
+| `tests/audit.mjs` | ✅ 41/41 routes · 0 low-contrast · 0 mobile overflow · median 270 kB |
 
-**This entry is deliberately not marked green.** The commit it ships with
-was made before the run finished, on the reasoning that both changes are
-provably dead-code removals — `Hero.astro` had zero importers anywhere in
-`src/` (verified by search), and the deleted `boot.js` line called two
-functions that exist nowhere, so it threw on every page load and its
-removal can only reduce errors, never add one. The build and CSP checks
-both pass, and the two immediately preceding full runs were 100% green on
-this same codebase.
+**Exit code 0, zero `❌` lines in the entire output.** This entry was
+originally committed marked ⏳ IN FLIGHT, because the commit was made
+before the run finished. That reasoning has now been checked against the
+actual result rather than left standing on its own — the run confirms it.
+Removing the dead `boot.js` call did not disturb anything that depended
+on the surrounding `step()` sequence.
 
-**A future session must confirm this run actually finished green** and
-update this entry, or re-run `npm run verify` if the result was lost.
-Do not treat the reasoning above as a substitute for the result.
+_Scope note: this run tested the tree **before** the college-data
+corrections committed afterwards (`eba8821`). Those need their own run —
+see the next entry._
+
+## 2026-08-28 — Fourth run, after the college-data corrections ⏳ PENDING
+
+**Context:** `src/data/colleges.json` corrections (UCMS's name, its
+established year and website, CMS Bharatpur's established year, two
+website URLs).
+
+Validated so far **without** a full suite run, by building to a scratch
+directory so the in-flight third run's `dist/` was not disturbed:
+
+- ✅ JSON parses, still exactly 27 colleges
+- ✅ build succeeds, 41 pages
+- ✅ 43/43 unique page titles (the assertion `build-verify.mjs` makes)
+- ✅ corrected name renders on the college page and inside the comparison
+  tool's embedded data
+- ✅ the old incorrect name appears nowhere in the built output
+- ✅ sitemap URL unchanged (slug deliberately not renamed)
+
+**A full `npm run verify` has not yet been run against these changes.**
+Do that before treating this state as verified.
