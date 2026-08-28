@@ -593,6 +593,16 @@ section.hero, .hero {
   color: var(--brand-ink) !important;
 }
 
+/* The testimonial initial-circle is the same fault in miniature: it fills
+   from --m-fill (near-white glass) to --blue and sets a light letter on it,
+   so at the top of the circle the initial measured 1.02:1 — a letter the
+   same colour as the disc it sits on. It survived the first sweep because
+   it is one character, and a single letter is easy to read past. */
+.test-avatar {
+  background: linear-gradient(148deg, var(--brand), var(--brand-deep)) !important;
+  color: var(--brand-ink) !important;
+}
+
 /* The visitor's own message in the assistant was the worst of the set at
    1.02:1 — white text on a fill running from near-white glass to dark blue,
    so over its light end the question you just typed was not there. A solid
