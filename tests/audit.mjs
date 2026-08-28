@@ -284,9 +284,52 @@ for (const r of rows) {
     String(r.nodes).padStart(7) +
     '  ' + (r.overflow.over ? r.overflow.over + 'px ' + r.overflow.culprit : 'none'));
 }
-const tot = rows.reduce((a,r)=>a+r.low,0);
-const totSkipped = rows.reduce((a,r)=>a+(r.skipped||0),0);
-console.log(`\n${rows.length} routes · ${tot} low-contrast elements · ` +
+let assistant = { low: [], skipped: 0 };
+
+/* ── the assistant's own answers ────────────────────────────────────────────
+   The chat window is the one surface on this site whose text is generated
+   rather than authored, and none of it had ever been measured: it is closed
+   on load, so the per-route pass above never sees a word of it. It is also
+   the surface most likely to drift, because its styling lives in chrome.css
+   while its markup is built in JavaScript.
+
+   Measured once rather than per route — the widget is identical on all of
+   them, and a second Chromium pass on 42 routes to re-measure the same
+   component would cost minutes to learn nothing. */
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await ctx.route('**/rest/v1/**', r => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
+  const page = await ctx.newPage();
+  await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'load' });
+  await page.waitForTimeout(700);
+
+  // Open it, then ask three questions that exercise the three answer shapes:
+  // a college record, a sourced topic, and the refusal.
+  await page.evaluate(() => window.toggleChat && window.toggleChat());
+  for (const q of ['How many seats does Nobel Medical College have?',
+                   'Is NEET required?',
+                   'Who is the current dean of the faculty?']) {
+    await page.evaluate((x) => window.askBot && window.askBot(x), q);
+    await page.waitForTimeout(700);
+  }
+  await page.waitForTimeout(500);
+
+  const chat = await page.evaluate(CONTRAST);
+  // Deliberately NOT pushed into `rows`: that array is per route, and a
+  // synthetic row with kb:0 would drag the median page weight down and make
+  // the route count wrong. Counted into the totals separately below.
+  assistant = {
+    low: chat.low.sort((a, b) => a.ratio - b.ratio),
+    skipped: chat.skipped,
+  };
+  console.log('/ (assistant open)'.padEnd(30) + String(chat.low.length).padStart(11) +
+    String(chat.low[0] ? chat.low[0].ratio : '-').padStart(8));
+  await ctx.close();
+}
+
+const tot = rows.reduce((a,r)=>a+r.low,0) + assistant.low.length;
+const totSkipped = rows.reduce((a,r)=>a+(r.skipped||0),0) + assistant.skipped;
+console.log(`\n${rows.length} routes + the assistant · ${tot} low-contrast elements · ` +
   `${rows.filter(r=>r.overflow.over).length} with mobile overflow · ` +
   `median ${[...rows.map(r=>r.kb)].sort((a,b)=>a-b)[Math.floor(rows.length/2)]} kB`);
 // Reported even when zero: "0 low-contrast" is only meaningful alongside
@@ -299,6 +342,9 @@ for (const r of rows) if (r.worst) {
   const k = r.worst.t;
   if (!seen.has(k) || seen.get(k).ratio > r.worst.ratio) seen.set(k, { ...r.worst, route: r.route });
 }
+for (const w of assistant.low.slice(0, 3)) {
+  if (!seen.has(w.t)) seen.set(w.t, { ...w, route: '/ (assistant open)' });
+}
 if (seen.size) {
   console.log('\nlowest-contrast text found:');
   [...seen.values()].sort((a,b)=>a.ratio-b.ratio).slice(0,10)
@@ -307,7 +353,7 @@ if (seen.size) {
 
 await browser.close(); server.close();
 
-const fails = rows.reduce((a, r) => a + r.low, 0);
+const fails = rows.reduce((a, r) => a + r.low, 0) + assistant.low.length;
 const overs = rows.filter(r => r.overflow.over);
 if (fails || overs.length) {
   console.log(`\n❌ ${fails} low-contrast element(s), ${overs.length} page(s) overflowing`);

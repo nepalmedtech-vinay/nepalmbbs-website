@@ -3,6 +3,12 @@ import GlassLayout from '../../layouts/GlassLayout.astro';
 import EvidenceBadges from '../../components/EvidenceBadges.astro';
 import { getColleges } from '../../lib/colleges.js';
 import { SITE } from '../../lib/routes.js';
+import knowledge from '../../data/knowledge.json';
+
+// One review date for the whole dataset, taken from the same file the
+// assistant answers from, so a page and an answer cannot claim different
+// freshness for the same record.
+const REVIEWED = knowledge.reviewed;
 
 export async function getStaticPaths() {
   const colleges = await getColleges();
@@ -90,12 +96,30 @@ const schema = {
     </div>
     <p class="doc-source">
       Compiled from the Medical Education Commission (MEC) Nepal 2025-26 intake
-      and the college's own published information. Verify seat numbers against
+      and the college's own published information.
       {c.website
-        ? <> the <a href={c.website} target="_blank" rel="noopener">college's site</a> and </>
-        : <> </>}
-      the MEC notice for your intake year before you act on them.
+        ? <> The college publishes its own details at <a href={c.website} target="_blank" rel="noopener">{c.website.replace(/^https?:\/\//, '')} ↗</a>.</>
+        : <> We do not have an official website on file for this institution.</>}
+      Record last reviewed {REVIEWED}.
     </p>
+  </div>
+
+  {/* Named rather than buried. Every seat figure on this site rests on
+      secondary agreement: the Commission publishes the matrix itself, and we
+      have not yet transcribed it. A family shortlists on this number, so the
+      honest thing is to say which number is not ours to certify and hand over
+      the document that is — not to let the record imply a uniform level of
+      verification it does not have. Removing this block means the seat counts
+      were checked against that matrix, not that we stopped worrying. */}
+  <div class="doc-note doc-note--caution rev" style="margin-top:24px">
+    <strong>The seat figure above is not verified against the Commission.</strong>
+    Foreign-quota seats are set per intake by the Medical Education Commission,
+    which publishes the allocation itself. Ours is compiled from secondary
+    sources and has not yet been checked line by line against that document.
+    Before you shortlist on it, read the Commission's own matrix at
+    <a href="https://entrance.mec.gov.np/Report/CollegeSeatInfo/List" target="_blank" rel="noopener">entrance.mec.gov.np ↗</a>,
+    and note that seats divide across foreign, paying, scholarship and army
+    categories — the figure that concerns you is the foreign one.
   </div>
 
   <div class="doc-note rev" style="margin-top:24px">
