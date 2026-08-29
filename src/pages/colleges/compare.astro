@@ -1,0 +1,165 @@
+---
+import GlassLayout from '../../layouts/GlassLayout.astro';
+import { getColleges } from '../../lib/colleges.js';
+
+const colleges = await getColleges();
+const govt = colleges.filter((c) => c.type === 'govt');
+const priv = colleges.filter((c) => c.type !== 'govt');
+
+// Only the fields already published, per college, on /colleges/[slug] — same
+// labels, same order, same "ask us" treatment for tuition. A comparison tool
+// must not know more than the record it is comparing.
+const cmpData = colleges.map((c) => ({
+  slug: c.slug,
+  name: c.name,
+  ownership: c.badge || (c.type === 'govt' ? 'Government' : 'Private'),
+  location: c.location || '',
+  affiliation: c.affiliation || '',
+  established: c.established || '',
+  seats: c.seats || '',
+  duration: c.duration || '5.5 years, including internship',
+  admission: c.admission || 'NEET qualified, through MEC Nepal',
+  website: c.website || '',
+}));
+
+const groups = [
+  { key: 'govt', title: 'Government colleges', rows: govt },
+  { key: 'priv', title: 'Private colleges', rows: priv },
+];
+---
+<GlassLayout
+  title="Compare Medical Colleges in Nepal — Side by Side | NepalMBBS.in"
+  description={`Pick up to 4 of Nepal's ${colleges.length} medical colleges and compare ownership, affiliation, seats and admission route side by side.`}
+  path="/colleges/compare"
+>
+<div class="tab-pane on">
+<div class="container">
+
+  <div class="rev">
+    <a href="/colleges" class="college-link" style="display:inline-block;margin-bottom:18px">← All Nepal medical colleges</a>
+    <div class="eyebrow">MEC Nepal 2025-26</div>
+    <h1 class="sec-title" style="margin-bottom:12px">Compare medical colleges</h1>
+    <p class="sec-sub" style="max-width:66ch">
+      Pick up to 4 colleges below to see their record side by side. Every field
+      here is the same one published on that college's own page — nothing is
+      added or estimated for this view.
+    </p>
+  </div>
+
+  <div class="doc rev cmp-picker" style="margin-top:28px">
+    <div class="doc-head">
+      <h2 class="doc-title">Pick colleges to compare</h2>
+      <span class="doc-kicker" id="cmp-count">0 selected</span>
+    </div>
+    <div class="doc-body">
+      {groups.map((g) => (
+        <fieldset class="cmp-group">
+          <legend class="cmp-group-title">{g.title}</legend>
+          <div class="cmp-list">
+            {g.rows.map((c) => (
+              <label class="cmp-option">
+                <input type="checkbox" class="cmp-check" value={c.slug} />
+                <span>{c.name}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+    </div>
+  </div>
+
+  <div id="cmp-result" style="margin-top:24px" aria-live="polite"></div>
+
+  <noscript>
+    <div class="doc-note rev" style="margin-top:20px">
+      This comparison table needs JavaScript. Every college's own record is
+      still available on its <a href="/colleges">individual page</a> without it.
+    </div>
+  </noscript>
+
+  <div class="doc-note rev" style="margin-top:20px">
+    <strong>Recognition is per intake year, not permanent.</strong> Confirm
+    current status on the MEC and NMC notices for your intake year — including
+    anything shown here — before you act on it. Tuition is not shown because it
+    is set per intake; <a href="/counseling">ask us</a> for the current structure.
+  </div>
+
+</div>
+</div>
+
+<script type="application/json" id="cmp-data" set:html={JSON.stringify(cmpData)} />
+<script is:inline defer src="/assets/js/compare.js"></script>
+
+<style>
+  .cmp-group { border: 0; margin: 0; padding: 0; }
+  .cmp-group + .cmp-group { margin-top: var(--s-4, 1.5rem); }
+  .cmp-group-title {
+    font-size: var(--t-xs, 0.85rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--doc-text-mute);
+    padding: 0 0 var(--s-2, 0.5rem);
+  }
+  .cmp-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 4px 12px;
+  }
+  .cmp-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 4px;
+    font-size: var(--t-sm, 0.9rem);
+    color: var(--doc-text);
+    cursor: pointer;
+  }
+  .cmp-check { width: 17px; height: 17px; flex: none; accent-color: var(--brand); }
+  .cmp-check:disabled { opacity: 0.4; cursor: not-allowed; }
+  .cmp-check:disabled + span { opacity: 0.5; }
+  .cmp-empty {
+    padding: var(--s-5, 2rem);
+    text-align: center;
+    color: var(--doc-text-mute);
+    font-size: var(--t-sm, 0.9rem);
+  }
+
+  /* The shared .doc-table mobile rule (trust.css) stacks every <td> into a
+     one-column card and hides <thead> — right for a table whose rows are
+     items (27 colleges, one row each). This table is transposed: rows are
+     fields, columns are the colleges being compared, with a <th scope="row">
+     label column. Stacking that would drop the "side by side" the whole
+     table exists for. A horizontally-scrolling table with a sticky label
+     column reads better here than a stack would, and is the pattern
+     tests/audit.mjs's overflow check already treats as intentional (it
+     exempts any element with overflow-x:auto from the "page scrolls
+     sideways" failure). */
+  @media (max-width: 48rem) {
+    #cmp-result :global(.doc-body) {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #cmp-result :global(.doc-table),
+    #cmp-result :global(.doc-table tbody),
+    #cmp-result :global(.doc-table tr),
+    #cmp-result :global(.doc-table td),
+    #cmp-result :global(.doc-table th) {
+      display: revert;
+      width: revert;
+    }
+    #cmp-result :global(.doc-table) {
+      min-width: 32rem;
+    }
+    #cmp-result :global(.doc-table thead) {
+      display: table-header-group;
+    }
+    #cmp-result :global(.doc-table th[scope='row']) {
+      position: sticky;
+      left: 0;
+      background: var(--doc-bg, var(--g-base));
+      white-space: nowrap;
+    }
+  }
+</style>
+</GlassLayout>

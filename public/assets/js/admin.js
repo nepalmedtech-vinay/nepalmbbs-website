@@ -161,11 +161,11 @@ async function saveSet(key,inputId,domId){
   if(ok){
     if(domId){const el=document.getElementById(domId);if(el)el.textContent=val;}
     if(window._S)window._S[key]=val;
-    toast('✅ Saved to Supabase — live on all devices!','ok');
+    toast('Saved to Supabase — live on all devices','ok');
   } else {
     // Try INSERT if PATCH returned no rows
     const ins=await sbW('/rest/v1/admin_settings',{key,value:val});
-    if(ins){toast('✅ Saved!','ok');}else toast('❌ Error saving. Check Supabase connection.','err');
+    if(ins){toast('Saved','ok');}else toast('Error saving. Check Supabase connection.','err');
   }
 }
 
@@ -177,8 +177,8 @@ async function savePhone(){
   if(ok){
     document.querySelectorAll('#footer-phone,#counsel-phone').forEach(el=>{if(el)el.textContent=val;});
     const fl=document.getElementById('footer-phone-link');if(fl)fl.href='tel:'+val.replace(/\s+/g,'');
-    toast('✅ Phone updated sitewide!','ok');
-  } else toast('❌ Error. Check Supabase write policies.','err');
+    toast('Phone updated sitewide','ok');
+  } else toast('Error. Check Supabase write policies.','err');
 }
 
 // SAVE WA NUMBER
@@ -186,8 +186,8 @@ async function saveWANum(){
   const val=document.getElementById('a-wa-num').value.trim().replace(/\D/g,'');
   if(!val||val.length<10){toast('Enter valid number with country code (e.g. 917080800888)','err');return;}
   const ok=await sbW('/rest/v1/admin_settings?key=eq.wa_number',{value:val,updated_at:new Date().toISOString()},'PATCH');
-  if(ok){siteWANum=val;applyWALinks(val);toast('✅ WhatsApp number updated on all devices!','ok');}
-  else toast('❌ Error saving. Check Supabase write policies.','err');
+  if(ok){siteWANum=val;applyWALinks(val);toast('WhatsApp number updated on all devices','ok');}
+  else toast('Error saving. Check Supabase write policies.','err');
 }
 function testWACall(){const num=document.getElementById('a-wa-num').value.replace(/\D/g,'')||siteWANum;window.open('https://wa.me/'+num+'?call','_blank');}
 
@@ -196,8 +196,8 @@ async function saveHeroH1(){
   const val=document.getElementById('a-hero-h1').value.trim();
   if(!val){toast('Enter heading text','err');return;}
   const ok=await sbW('/rest/v1/admin_settings?key=eq.hero_h1',{value:val,updated_at:new Date().toISOString()},'PATCH');
-  if(ok){const el=document.getElementById('hero-h1');if(el)el.innerHTML=val;toast('✅ Hero heading updated!','ok');}
-  else{const ins=await sbW('/rest/v1/admin_settings',{key:'hero_h1',value:val});if(ins){const el=document.getElementById('hero-h1');if(el)el.innerHTML=val;toast('✅ Saved!','ok');}else toast('❌ Error','err');}
+  if(ok){const el=document.getElementById('hero-h1');if(el)el.innerHTML=val;toast('Hero heading updated','ok');}
+  else{const ins=await sbW('/rest/v1/admin_settings',{key:'hero_h1',value:val});if(ins){const el=document.getElementById('hero-h1');if(el)el.innerHTML=val;toast('Saved','ok');}else toast('Error','err');}
 }
 
 // SAVE CALENDLY
@@ -205,8 +205,8 @@ async function saveCalendly(){
   const val=document.getElementById('a-calendly').value.trim();
   if(!val){toast('Enter Calendly URL','err');return;}
   const ok=await sbW('/rest/v1/admin_settings?key=eq.calendly_url',{value:val,updated_at:new Date().toISOString()},'PATCH');
-  if(ok){document.querySelectorAll('#calendly-link,#footer-calendly').forEach(el=>{if(el)el.href=val;});toast('✅ Calendly URL updated!','ok');}
-  else toast('❌ Error saving','err');
+  if(ok){document.querySelectorAll('#calendly-link,#footer-calendly').forEach(el=>{if(el)el.href=val;});toast('Calendly URL updated','ok');}
+  else toast('Error saving','err');
 }
 
 // SAVE GA4 MEASUREMENT ID
@@ -217,8 +217,8 @@ async function saveGA(){
   const ok=await sbW('/rest/v1/admin_settings?key=eq.ga_code',{value:val,updated_at:new Date().toISOString()},'PATCH');
   if(ok){
     loadGA(val);
-    toast('✅ Measurement ID saved & applied!','ok');
-  } else toast('❌ Error saving','err');
+    toast('Measurement ID saved & applied','ok');
+  } else toast('Error saving','err');
 }
 
 // CHANGE PASSWORD
@@ -242,10 +242,10 @@ async function changePass(){
       var j = await r.json().catch(function(){ return {}; });
       throw new Error(j.msg || j.message || 'Could not change password');
     }
-    toast('✅ Password changed.','ok');
+    toast('Password changed.','ok');
     document.getElementById('a-new-pass').value = '';
     document.getElementById('a-conf-pass').value = '';
-  }catch(e){ toast('❌ ' + e.message, 'err'); }
+  }catch(e){ toast('' + e.message, 'err'); }
 }
 
 // FEATURE TOGGLES
@@ -266,7 +266,7 @@ function addTicker(){
   const tc=document.getElementById('ticker-content');
   if(tc){[0,1].forEach(()=>{const s=document.createElement('span');s.className='ticker-item';s.textContent=val;tc.appendChild(s);});}
   document.getElementById('a-ticker-new').value='';
-  toast('✅ Ticker item added!','ok');
+  toast('Ticker item added','ok');
 }
 
 // NMC VIDEO
@@ -282,7 +282,7 @@ async function saveNMCVid(){
   const fr=document.getElementById('nmc-video-frame');
   if(sec)sec.style.display='block';
   if(fr)fr.src=url;
-  toast('✅ NMC video saved to Supabase!','ok');
+  toast('NMC video saved to Supabase','ok');
 }
 async function removeNMCVid(){
   await sbW('/rest/v1/admin_settings?key=eq.nmc_video_url',{value:'',updated_at:new Date().toISOString()},'PATCH');
@@ -308,13 +308,13 @@ async function addVideo(){
   if(!url||!title){toast('URL and title are required','err');return;}
   const ok=await sbW('/rest/v1/site_videos',{url,title,description:desc,category:college,is_active:true,sort_order:0});
   if(ok){
-    toast('✅ Video added to Supabase!','ok');
+    toast('Video added to Supabase','ok');
     document.getElementById('a-vid-url').value='';document.getElementById('a-vid-title').value='';document.getElementById('a-vid-desc').value='';
     await loadAdminVids();
     // Show immediately on page
     const c=document.getElementById('videos-container');
     if(c){const d=document.createElement('div');d.className='vid-card rev';d.innerHTML=`<div class="vid-thumb"><iframe src="${url}" loading="lazy" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe></div><div class="vid-info"><h4>${title}</h4><p>${desc}</p></div>`;c.appendChild(d);revObs.observe(d);}
-  } else toast('❌ Error adding video. Check Supabase write policies.','err');
+  } else toast('Error adding video. Check Supabase write policies.','err');
 }
 async function loadAdminVids(){
   const list=document.getElementById('admin-vid-list');if(!list)return;
@@ -325,7 +325,7 @@ async function loadAdminVids(){
 async function deleteVideo(id){
   if(!confirm('Delete this video permanently?'))return;
   const ok=await sbW(`/rest/v1/site_videos?id=eq.${id}`,null,'DELETE');
-  if(ok){toast('✅ Video deleted','ok');await loadAdminVids();}else toast('❌ Error deleting','err');
+  if(ok){toast('Video deleted','ok');await loadAdminVids();}else toast('Error deleting','err');
 }
 
 // TESTIMONIALS
@@ -338,14 +338,14 @@ async function addTestimonial(){
   if(!name||!quote){toast('Name and quote are required','err');return;}
   const ok=await sbW('/rest/v1/site_testimonials',{name,city,year,stars,quote,is_active:true,sort_order:0});
   if(ok){
-    toast('✅ Testimonial added to Supabase!','ok');
+    toast('Testimonial added to Supabase','ok');
     document.getElementById('a-test-name').value='';document.getElementById('a-test-city').value='';
     document.getElementById('a-test-year').value='';document.getElementById('a-test-quote').value='';
     await loadAdminTests();
     // Show immediately
     const c=document.getElementById('testimonials-container');
     if(c){const d=document.createElement('div');d.className='test-card rev';d.innerHTML=`<div class="test-quote-icon">"</div><div class="test-stars">${'★'.repeat(stars)}</div><div class="test-text">${quote}</div><div class="test-author"><div class="test-avatar">${name[0]}</div><div><div class="test-name">${name}</div><div class="test-college">${city}</div><span class="test-year">${year}</span></div></div>`;c.appendChild(d);revObs.observe(d);}
-  } else toast('❌ Error. Check Supabase write policies.','err');
+  } else toast('Error. Check Supabase write policies.','err');
 }
 async function loadAdminTests(){
   const list=document.getElementById('admin-test-list');if(!list)return;
@@ -356,7 +356,7 @@ async function loadAdminTests(){
 async function deleteTest(id){
   if(!confirm('Delete this testimonial permanently?'))return;
   const ok=await sbW(`/rest/v1/site_testimonials?id=eq.${id}`,null,'DELETE');
-  if(ok){toast('✅ Testimonial deleted','ok');await loadAdminTests();}else toast('❌ Error deleting','err');
+  if(ok){toast('Testimonial deleted','ok');await loadAdminTests();}else toast('Error deleting','err');
 }
 
 // FAQs
@@ -368,13 +368,13 @@ async function addFAQ(){
   if(!q||!a){toast('Question and answer are required','err');return;}
   const ok=await sbW('/rest/v1/site_faqs',{question:q,answer:a,category:cat,sort_order:order,is_active:true});
   if(ok){
-    toast('✅ FAQ added to Supabase!','ok');
+    toast('FAQ added to Supabase','ok');
     document.getElementById('a-faq-q').value='';document.getElementById('a-faq-a').value='';
     await loadAdminFAQs();
     // Show immediately in FAQ tab
     const c=document.getElementById('faq-container');
     if(c){const d=document.createElement('div');d.className='faq-item rev';d.innerHTML=`<div class="faq-q" data-act="click" data-do='[["toggleFaq","@el"]]'><span>${q}</span><div class="faq-icon">+</div></div><div class="faq-body"><p>${a}</p></div>`;c.appendChild(d);revObs.observe(d);}
-  } else toast('❌ Error. Check Supabase (site_faqs table may need creation).','err');
+  } else toast('Error. Check Supabase (site_faqs table may need creation).','err');
 }
 async function loadAdminFAQs(){
   const list=document.getElementById('admin-faq-list');if(!list)return;
@@ -385,7 +385,7 @@ async function loadAdminFAQs(){
 async function deleteFAQ(id){
   if(!confirm('Delete this FAQ permanently?'))return;
   const ok=await sbW(`/rest/v1/site_faqs?id=eq.${id}`,null,'DELETE');
-  if(ok){toast('✅ FAQ deleted','ok');await loadAdminFAQs();}else toast('❌ Error deleting','err');
+  if(ok){toast('FAQ deleted','ok');await loadAdminFAQs();}else toast('Error deleting','err');
 }
 
 // LEADS TABLE
@@ -421,7 +421,7 @@ async function updateLeadStage(id, select){
   select.className=`stage-pill s-${stage}`;
   const ok=await sbW(`/rest/v1/leads?id=eq.${id}`,{stage},'PATCH');
   if(ok) toast(`✅ Stage updated to "${stage}"`, 'ok');
-  else toast('❌ Error updating stage. Check Supabase write policy for leads table.','err');
+  else toast('Error updating stage. Check Supabase write policy for leads table.','err');
 }
 
 // =====================================================
@@ -438,7 +438,7 @@ async function addCollegeAdmin(){
   if(!name){toast('College name is required','err');return;}
   const ok = await sbW('/rest/v1/site_colleges',{name,location:loc,foreign_seats:seats,college_type:type,website:web||null,established:est||null,fee_notes_internal:fees||null,is_active:true,sort_order:99});
   if(ok){
-    toast('✅ College added to Supabase!','ok');
+    toast('College added to Supabase','ok');
     document.getElementById('ac-name').value='';
     document.getElementById('ac-loc').value='';
     document.getElementById('ac-seats').value='';
@@ -446,7 +446,7 @@ async function addCollegeAdmin(){
     document.getElementById('ac-est').value='';
     document.getElementById('ac-fees').value='';
     await loadAdminColleges();
-  } else toast('❌ Error adding college. Ensure site_colleges table exists in Supabase.','err');
+  } else toast('Error adding college. Ensure site_colleges table exists in Supabase.','err');
 }
 async function loadAdminColleges(){
   const list = document.getElementById('admin-college-list');
@@ -460,7 +460,7 @@ async function loadAdminColleges(){
 async function deleteCollege(id){
   if(!confirm('Delete this college from Supabase?'))return;
   const ok = await sbW(`/rest/v1/site_colleges?id=eq.${id}`,null,'DELETE');
-  if(ok){toast('✅ Deleted','ok'); await loadAdminColleges();}else toast('❌ Error','err');
+  if(ok){toast('Deleted','ok'); await loadAdminColleges();}else toast('Error','err');
 }
 
 async function exportCSV(){
@@ -475,7 +475,7 @@ async function exportCSV(){
   a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
   a.download='nepalmbbs_leads_'+new Date().toISOString().slice(0,10)+'.csv';
   a.click();
-  toast('✅ CSV downloaded!','ok');
+  toast('CSV downloaded','ok');
 }
 
 

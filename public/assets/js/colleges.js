@@ -204,24 +204,57 @@ function filterColleges(btn, type) {
   });
 }
 
+/* The enquiry modal.
+   Rewritten for three faults, none of which any suite could see: it is
+   built on click, so it never exists when the page is measured.
+
+   1. Contrast. The two buttons filled with WhatsApp's own #25d366 and a
+      #0d9488 teal, both carrying white text — 1.98:1 and 3.74:1 against a
+      4.5 requirement. The phone numbers, which are the entire point of the
+      modal, were the least readable thing in it. #0B7A55 measures 5.34:1
+      and still reads as WhatsApp green; it is the same deepened green the
+      contact bar already uses, for the same reason.
+   2. The college name went into innerHTML unescaped. It comes from
+      colleges.json today but the admin panel can write it through
+      site_colleges, so a name containing markup would land in the DOM. CSP
+      makes that a formatting bug rather than a scripting one — the node
+      still should not be built that way.
+   3. Emoji as iconography, and a font (Sora) the site does not load.
+
+   Colours are CSS custom properties rather than hex so the modal follows
+   the admin theme panel like everything else. */
 function enquireCollege(collegeName) {
-  const msg = encodeURIComponent(`Hello! I want to enquire about MBBS admission at ${collegeName} in Nepal. Please guide me.`);
-  // Show a mini modal to let user pick number
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const name = esc(collegeName);
+  const msg = encodeURIComponent(
+    `Hello, I would like to enquire about MBBS admission at ${collegeName} in Nepal.`);
+
+  const WA = 'background:#0B7A55;color:#fff';
+  const row = 'display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:10px;' +
+              'text-decoration:none;font-weight:600;font-size:14px;margin-bottom:10px;';
+  const sub = 'font-size:11px;font-weight:500;color:rgba(255,255,255,.85)';
+
   const modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
-  modal.innerHTML = `<div style="background:#fff;border-radius:20px;padding:28px;max-width:340px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.3);text-align:center">
-    <div style="font-size:28px;margin-bottom:8px">💬</div>
-    <h3 style="font-family:Sora,sans-serif;font-size:17px;font-weight:700;color:#0e2347;margin-bottom:4px">Enquire about ${collegeName}</h3>
-    <p style="font-size:12px;color:#64748b;margin-bottom:20px">WhatsApp available on both numbers</p>
-    <a href="https://wa.me/917080800888?text=${msg}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#25d366;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;margin-bottom:10px">
-      <span style="font-size:20px">📱</span><div style="text-align:left"><div>+91 70808 00888</div><div style="font-size:11px;opacity:.8;font-weight:500">India • WhatsApp</div></div>
-    </a>
-    <a href="https://wa.me/9779802769950?text=${msg}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#0d9488;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;margin-bottom:16px">
-      <span style="font-size:20px">📞</span><div style="text-align:left"><div>+977-9802769950</div><div style="font-size:11px;opacity:.8;font-weight:500">Nepal • WhatsApp</div></div>
-    </a>
-    <button data-act="click" data-do='[["closeModal","@el"]]' style="background:transparent;border:none;color:#64748b;font-size:13px;cursor:pointer;text-decoration:underline">Close</button>
-  </div>`;
-  modal.addEventListener('click', (e) => { if(e.target === modal) modal.remove(); });
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,20,32,.55);backdrop-filter:blur(8px);' +
+    'z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML =
+    `<div role="dialog" aria-modal="true" aria-label="Enquire about ${name}" style="background:var(--m-fill-solid,#fff);border-radius:var(--r-md,16px);padding:26px;max-width:360px;width:100%;box-shadow:0 24px 64px rgba(15,20,32,.24)">
+      <h3 style="font-family:var(--ty-body);font-size:16px;font-weight:600;color:var(--g-ink,#0F1420);margin:0 0 6px">Enquire about ${name}</h3>
+      <p style="font-size:12px;color:var(--g-ink-3,#6D717C);margin:0 0 18px">Either number reaches the same counselling team on WhatsApp.</p>
+      <a href="https://wa.me/917080800888?text=${msg}" target="_blank" rel="noopener" style="${row}${WA}">
+        <div style="text-align:left"><div>+91 70808 00888</div><div style="${sub}">India</div></div>
+      </a>
+      <a href="https://wa.me/9779802769950?text=${msg}" target="_blank" rel="noopener" style="${row}${WA}">
+        <div style="text-align:left"><div>+977 9802769950</div><div style="${sub}">Nepal</div></div>
+      </a>
+      <button data-act="click" data-do='[["closeModal","@el"]]' style="background:transparent;border:none;color:var(--g-ink-2,#4F5460);font-size:13px;cursor:pointer;text-decoration:underline;padding:6px 2px;margin-top:4px">Close</button>
+    </div>`;
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  document.addEventListener('keydown', function onEsc(e) {
+    if (e.key === 'Escape') { modal.remove(); document.removeEventListener('keydown', onEsc); }
+  });
   document.body.appendChild(modal);
 }
 // =====================================================

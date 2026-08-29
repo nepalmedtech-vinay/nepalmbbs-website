@@ -1,0 +1,262 @@
+{
+  "reviewed": "2026-08-28",
+  "note": "Every entry carries the source it rests on and the date that source was last checked. `status` is the honesty marker the site shows to the reader: official = stated by the named authority; estimate = our figure, not theirs; general = context, not a rule. Nothing in this file may assert a fee, a seat count or a deadline — those change per intake and belong to the authority that sets them.",
+  "topics": [
+    {
+      "id": "neet-requirement",
+      "match": ["neet required", "neet mandatory", "without neet", "neet compulsory", "need neet", "neet zaroori"],
+      "question": "Is NEET required for MBBS in Nepal?",
+      "answer": "Yes. A qualified NEET result is mandatory for an Indian student who intends to practise medicine in India after completing an MBBS abroad. This follows from the National Medical Commission Act 2019 and the Foreign Medical Graduate Licentiate Regulations 2021.",
+      "source": { "name": "National Medical Commission, India", "url": "https://nmc.org.in", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "neet-percentile",
+      "match": ["percentile", "minimum score", "eligible", "qualify", "my score", "neet score", "cutoff", "category", "obc", "sc", "st", "general"],
+      "question": "What NEET percentile is required?",
+      "answer": "Under the Foreign Medical Graduate Licentiate Regulations 2021, the qualifying threshold is the 50th percentile for General and OBC candidates, and the 40th percentile for SC, ST and OBC candidates covered by reservation. Percentile is not the same as marks: the qualifying mark is fixed each year against that year's results. Confirm the figure published for your own NEET year.",
+      "source": { "name": "NMC India — FMGL Regulations 2021", "url": "https://nmc.org.in", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "fees",
+      "match": ["fee", "fees", "cost", "price", "how much", "kitna", "charges", "tuition", "total cost"],
+      "question": "What are the fees?",
+      "answer": "We do not publish fee figures. Fees are set per intake and are governed by the Medical Education Commission's fee ceiling, so any number we published would be out of date before most readers saw it. The current structure for a specific college is something we will confirm in writing during counselling. One safeguard worth stating plainly: pay the institution directly, never an intermediary.",
+      "source": { "name": "Medical Education Commission, Nepal — fee structure", "url": "https://mec.gov.np/en/feeStructure", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "admission-route",
+      "match": ["apply", "mec", "application", "process", "how to apply", "admission", "steps", "procedure"],
+      "question": "How does admission work?",
+      "answer": "Admission to every MBBS seat in Nepal is administered by the Medical Education Commission, not by the colleges individually. The sequence is: qualify NEET, select a college recognised by both the MEC and the NMC, prepare documents, sit the MECEE-BL entrance or apply through the NEET route as the Commission allows for that intake, and then complete the Commission's counselling and seat-matching process.",
+      "source": { "name": "MEC Nepal — entrance portal", "url": "https://entrance.mec.gov.np", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "visa",
+      "match": ["visa", "passport", "travel", "entry", "border", "immigration"],
+      "question": "Do Indian citizens need a visa for Nepal?",
+      "answer": "No. Under the India–Nepal open border arrangement, Indian citizens do not require a visa to enter Nepal. A valid Indian passport or other accepted proof of Indian citizenship is sufficient. No embassy appointment is involved.",
+      "source": { "name": "India–Nepal bilateral arrangement", "url": "https://mea.gov.in", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "practice-in-india",
+      "match": ["valid in india", "practice", "recognised", "recognized", "recognition", "work in india", "licence", "license"],
+      "question": "Will the degree let me practise in India?",
+      "answer": "A degree from a Nepali college recognised by the NMC can lead to registration in India, but not automatically. After graduating you must clear the screening examination — NExT, which replaces the FMGE — and complete one year of supervised internship in India before you are licensed. Recognition is assessed per college and per intake year, so verify your specific college on the NMC's own search before you commit to it.",
+      "source": { "name": "NMC India — college and course search", "url": "https://nmc.org.in/information-desk/college-and-course-search/", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "next-fmge",
+      "match": ["next", "fmge", "exit test", "screening", "next exam", "licensing exam"],
+      "question": "What is NExT?",
+      "answer": "The National Exit Test is the screening examination replacing the FMGE, conducted by the National Board of Examinations. Clearing it, followed by one year of supervised internship in India, is what converts a foreign medical degree into a licence to practise in India.",
+      "source": { "name": "National Board of Examinations, India", "url": "https://natboard.edu.in", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "duration",
+      "match": ["duration", "years", "how long", "5.5", "time", "length", "course length"],
+      "question": "How long is the course?",
+      "answer": "Five and a half years: four and a half years of academic study followed by a compulsory one-year internship at an affiliated teaching hospital. This mirrors the Indian MBBS structure.",
+      "source": { "name": "Nepal Medical Council", "url": "https://nmc.org.np", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "internship",
+      "match": ["internship", "intern", "one year", "1 year", "housemanship"],
+      "question": "How many internships are required?",
+      "answer": "Two, and they are separate. The first is the one-year internship in Nepal at an affiliated teaching hospital, which is counted within the five and a half years. The second is a further year of supervised internship in India after graduation, required under the FMGL Regulations before Indian registration.",
+      "source": { "name": "NMC India — FMGL Regulations 2021; Nepal Medical Council", "url": "https://nmc.org.in", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "language",
+      "match": ["language", "hindi", "english", "medium", "instruction"],
+      "question": "What is the medium of instruction?",
+      "answer": "English. Hindi is widely understood in daily life in Nepal, which most Indian students find eases the transition outside the classroom.",
+      "source": { "name": "Nepal Medical Council", "url": "https://nmc.org.np", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "eligibility-12th",
+      "match": ["12th", "10+2", "biology", "pcb", "class 12", "plus two", "school marks", "board"],
+      "question": "What are the class 12 requirements?",
+      "answer": "Physics, Chemistry and Biology at 10+2 level, with the aggregate threshold set by the same regulations that govern NEET eligibility — 50% for General and OBC candidates, 40% where reservation applies. Notarised copies of both the class 10 and class 12 marksheets are required at application.",
+      "source": { "name": "NMC India — FMGL Regulations 2021", "url": "https://nmc.org.in", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "age",
+      "match": ["age", "minimum age", "how old", "age limit"],
+      "question": "Is there an age requirement?",
+      "answer": "The candidate must have completed 17 years of age by 31 December of the year of admission. Confirm the current criteria for your intake with the Medical Education Commission, as admission rules are restated each year.",
+      "source": { "name": "Medical Education Commission, Nepal", "url": "https://mec.gov.np", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "documents",
+      "match": ["document", "documents required", "paperwork", "what i need", "certificates"],
+      "question": "Which documents are needed?",
+      "answer": "Typically: notarised class 10 and class 12 marksheets, the NEET scorecard, a valid passport, a medical fitness certificate, a character certificate and passport photographs. Our document centre sets out which is needed at which stage, and the practical mistakes that cost applicants time. The Commission publishes the definitive list for each intake on its entrance portal, and that list governs.",
+      "source": { "name": "MEC Nepal — entrance portal", "url": "https://entrance.mec.gov.np", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "provisional-registration",
+      "match": ["provisional registration", "temporary registration", "registration during internship"],
+      "question": "Is registration provided during internship?",
+      "answer": "The Nepal Medical Council provides provisional registration to MBBS and BDS students for the duration of their one-year internship at affiliated teaching hospitals, permitting supervised practice during that period.",
+      "source": { "name": "Nepal Medical Council — notice, November 2024", "url": "https://nmc.org.np", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "good-standing",
+      "match": ["good standing", "good standing certificate", "home council certificate"],
+      "question": "Is a good standing certificate required?",
+      "answer": "Per the Nepal Medical Council's November 2024 notice, its licensing procedure does not require a certificate of good standing from the candidate's home-country council.",
+      "source": { "name": "Nepal Medical Council — notice, November 2024", "url": "https://nmc.org.np", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "verify-college",
+      "match": ["verify", "check college", "nmc approved", "is it approved", "wdoms", "world directory", "genuine"],
+      "question": "How do I verify a college is recognised?",
+      "answer": "Check it yourself, in three places, before you act on anyone's assurance including ours: the NMC's college and course search for Indian recognition, the Medical Education Commission's list for approval in Nepal, and the World Directory of Medical Schools for the international listing. Recognition is granted per intake year — a college recognised for one year is not automatically recognised for the next.",
+      "source": { "name": "NMC India · MEC Nepal · WDOMS", "url": "https://nmc.org.in/information-desk/college-and-course-search/", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "mecee",
+      "match": ["mecee", "mecee-bl", "entrance exam", "mec portal", "entrance test"],
+      "question": "What is MECEE-BL?",
+      "answer": "MECEE-BL is the bachelor-level entrance examination conducted by the Medical Education Commission. Whether an Indian applicant enters through this examination or through the NEET route depends on the rules the Commission publishes for that intake, so check the current schedule on its portal rather than assuming last year's route still applies.",
+      "source": { "name": "MEC Nepal — entrance portal", "url": "https://entrance.mec.gov.np", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "timing",
+      "match": ["when", "date", "deadline", "admission date", "intake", "session start", "kab"],
+      "question": "When do admissions open?",
+      "answer": "We do not publish admission dates. The Medical Education Commission announces the schedule for each intake on its entrance portal, and a date quoted anywhere else — including here — is a date that can go stale without notice. Check the portal, and register there for the notice that governs your year.",
+      "source": { "name": "MEC Nepal — entrance portal", "url": "https://entrance.mec.gov.np", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "curriculum",
+      "match": ["syllabus", "curriculum", "subjects", "pattern", "topics", "course content"],
+      "question": "What does the curriculum cover?",
+      "answer": "The structure closely follows the Indian MBBS curriculum — Anatomy, Physiology and Biochemistry in the pre-clinical years, then Medicine, Surgery, Obstetrics and Gynaecology and Paediatrics in the clinical years. That alignment is one practical reason graduates find NExT preparation continuous with their coursework rather than separate from it.",
+      "source": { "name": "Nepal Medical Council", "url": "https://nmc.org.np", "checked": "2026-08-28" },
+      "status": "general"
+    },
+    {
+      "id": "teaching-hospital",
+      "match": ["hospital", "clinical", "patient", "ward", "teaching hospital", "clinical exposure"],
+      "question": "Where does clinical training happen?",
+      "answer": "Every college approved by the Medical Education Commission is attached to a teaching hospital, and both clinical training and the internship are completed there. Hospital size and case mix differ substantially between colleges, and it is a fair question to put to any college you are considering.",
+      "source": { "name": "Nepal Medical Council", "url": "https://nmc.org.np", "checked": "2026-08-28" },
+      "status": "general"
+    },
+    {
+      "id": "living-cost",
+      "match": ["living cost", "monthly", "expense", "budget", "hostel cost", "food cost", "kharcha"],
+      "question": "What are living costs?",
+      "answer": "Our working estimate is ₹15,000–25,000 per month covering hostel, food, local transport and personal expenses, with on-campus accommodation at the lower end. This is our estimate, not an official figure, and it will vary with the city and with how you live.",
+      "source": { "name": "NepalMBBS.in — counselling experience", "url": "", "checked": "2026-08-28" },
+      "status": "estimate"
+    },
+    {
+      "id": "currency",
+      "match": ["currency", "inr", "npr", "rupee", "exchange rate", "conversion"],
+      "question": "What is the currency situation?",
+      "answer": "The Nepalese rupee is pegged to the Indian rupee at 1 INR = 1.6 NPR, which means the rate does not fluctuate day to day the way a floating currency would. Indian currency is widely accepted, though notes above ₹100 have historically been restricted — carry smaller denominations or use local banking.",
+      "source": { "name": "Nepal Rastra Bank — pegged exchange rate", "url": "https://www.nrb.org.np", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "accommodation",
+      "match": ["hostel", "accommodation", "food", "mess", "stay", "room"],
+      "question": "What is accommodation like?",
+      "answer": "Colleges generally provide hostel accommodation with separate blocks for men and women, and most messes serve Indian food. Facilities differ meaningfully between institutions, so ask the specific college — and, where you can, ask a current student rather than relying on a brochure.",
+      "source": { "name": "NepalMBBS.in — counselling experience", "url": "", "checked": "2026-08-28" },
+      "status": "general"
+    },
+    {
+      "id": "safety",
+      "match": ["safe", "safety", "security", "danger", "parents worry", "crime"],
+      "question": "Is it safe for Indian students?",
+      "answer": "Nepal and India share long-standing cultural and social ties, and Indian students form a substantial part of the intake at many colleges. Campuses typically maintain security and supervised hostels. We would still encourage speaking directly with students currently enrolled at any college you are shortlisting — that is a better source on daily reality than any consultancy, including us.",
+      "source": { "name": "NepalMBBS.in — counselling experience", "url": "", "checked": "2026-08-28" },
+      "status": "general"
+    },
+    {
+      "id": "travel",
+      "match": ["transport", "bus", "flight", "how to reach", "gorakhpur", "delhi", "patna", "journey"],
+      "question": "How do I travel there?",
+      "answer": "Common routes are overland via the Sonauli border from Gorakhpur or the Raxaul border from Patna, and direct flights from Delhi to Kathmandu. No visa is involved for Indian citizens.",
+      "source": { "name": "India–Nepal bilateral arrangement", "url": "https://mea.gov.in", "checked": "2026-08-28" },
+      "status": "general"
+    },
+    {
+      "id": "loan",
+      "match": ["loan", "education loan", "bank", "finance", "funding"],
+      "question": "Are education loans available?",
+      "answer": "Indian banks do lend for medical study abroad, and an NMC recognition letter for the institution is generally part of what they ask for. Terms differ by bank and by applicant, so treat this as a question for your bank rather than for us.",
+      "source": { "name": "NepalMBBS.in — counselling experience", "url": "", "checked": "2026-08-28" },
+      "status": "general"
+    },
+    {
+      "id": "scholarship",
+      "match": ["scholarship", "merit", "discount", "concession", "free seat", "financial aid"],
+      "question": "Are scholarships available?",
+      "answer": "We are not aware of a government scholarship scheme open to Indian students for MBBS in Nepal. Individual colleges may offer their own concessions. Any offer of a scholarship that arrives through an intermediary rather than from the institution itself deserves scepticism.",
+      "source": { "name": "NepalMBBS.in — counselling experience", "url": "", "checked": "2026-08-28" },
+      "status": "general"
+    },
+    {
+      "id": "refund",
+      "match": ["refund", "cancel", "withdrawal", "leave college", "quit"],
+      "question": "What about refunds if I withdraw?",
+      "answer": "Refund terms are set by each college, not by us and not by the Commission. Ask for the written refund policy before any payment is made, and keep the receipt for every payment. This is the point at which families are most exposed, and the paperwork is the protection.",
+      "source": { "name": "NepalMBBS.in — counselling experience", "url": "", "checked": "2026-08-28" },
+      "status": "general"
+    },
+    {
+      "id": "agents",
+      "match": ["agent", "consultant", "middleman", "broker", "commission", "guaranteed seat", "donation"],
+      "question": "How should I deal with agents?",
+      "answer": "Pay the institution directly and never an intermediary. Seats are allocated through the Medical Education Commission's process, so nobody is in a position to guarantee one, and an offer to do so is itself the warning. Verify every claim against the Commission and the NMC rather than against a brochure.",
+      "source": { "name": "Medical Education Commission, Nepal", "url": "https://mec.gov.np", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "neet-pg",
+      "match": ["neet pg", "post graduate", "pg", "md", "ms", "specialisation", "specialization"],
+      "question": "Can I do PG in India afterwards?",
+      "answer": "Eligibility for NEET PG follows from being registered to practise in India, which in turn requires clearing NExT and completing the supervised internship. The rules here are revised periodically, so confirm the position that applies in the year you intend to sit the examination.",
+      "source": { "name": "National Medical Commission, India", "url": "https://nmc.org.in", "checked": "2026-08-28" },
+      "status": "official"
+    },
+    {
+      "id": "comparison",
+      "match": ["compare", "india vs nepal", "better", "versus", "difference", "why nepal"],
+      "question": "How does this compare with studying in India?",
+      "answer": "The honest comparison is a trade-off rather than a verdict. Nepal offers recognised colleges, no visa requirement, English-medium teaching and a curriculum aligned with India's, generally at a lower cost than an Indian private college. Against that, an Indian degree needs no screening examination, whereas a Nepali one requires NExT and a further supervised year before you can practise in India. Which side that favours depends on your NEET result and your budget, and we would rather work through it with you than tell you the answer in advance.",
+      "source": { "name": "NMC India — FMGL Regulations 2021", "url": "https://nmc.org.in", "checked": "2026-08-28" },
+      "status": "general"
+    },
+    {
+      "id": "contact",
+      "match": ["contact", "call", "phone", "whatsapp", "reach", "talk", "counselling", "counseling", "book", "session", "appointment"],
+      "question": "How do I speak to someone?",
+      "answer": "Counselling is free and carries no obligation. You can reach us on WhatsApp or by telephone on +91 70808 00888, or in Nepal on +977 9802769950, or book a scheduled session if you would prefer a fixed time.",
+      "source": { "name": "NepalMBBS.in", "url": "", "checked": "2026-08-28" },
+      "status": "general"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT = '/home/user/nepalmedtech-vinay/nepalmbbs-website';
+const ROOT = path.resolve(import.meta.dirname, '..');
 const MIME = { '.html':'text/html', '.js':'text/javascript', '.json':'application/json', '.css':'text/css',
                '.png':'image/png', '.xml':'application/xml', '.txt':'text/plain' };
 

@@ -3,6 +3,12 @@ import GlassLayout from '../../layouts/GlassLayout.astro';
 import EvidenceBadges from '../../components/EvidenceBadges.astro';
 import { getColleges } from '../../lib/colleges.js';
 import { SITE } from '../../lib/routes.js';
+import knowledge from '../../data/knowledge.json';
+
+// One review date for the whole dataset, taken from the same file the
+// assistant answers from, so a page and an answer cannot claim different
+// freshness for the same record.
+const REVIEWED = knowledge.reviewed;
 
 export async function getStaticPaths() {
   const colleges = await getColleges();
@@ -90,13 +96,34 @@ const schema = {
     </div>
     <p class="doc-source">
       Compiled from the Medical Education Commission (MEC) Nepal 2025-26 intake
-      and the college's own published information. Verify seat numbers against
+      and the college's own published information.
       {c.website
-        ? <> the <a href={c.website} target="_blank" rel="noopener">college's site</a> and </>
-        : <> </>}
-      the MEC notice for your intake year before you act on them.
+        ? <> The college publishes its own details at <a href={c.website} target="_blank" rel="noopener">{c.website.replace(/^https?:\/\//, '')} ↗</a>.</>
+        : <> We do not have an official website on file for this institution.</>}
+      Record last reviewed {REVIEWED}.
     </p>
   </div>
+
+  {/* This block used to say the seat figure was unverified, because it was.
+      It has since been checked line by line against the Commission's own
+      published matrix, so the note now says what the number actually is —
+      which category and which round — rather than warning it might be wrong.
+      The caveat that remains is real: a first-matching allocation is not a
+      standing figure, and later rounds move. */}
+  {c.seatsSource && (
+    <div class="doc-note rev" style="margin-top:24px">
+      <strong>About the seat figure.</strong> {c.seats} is this college's
+      allocation for <strong>{c.seatsSource.category}</strong> at the
+      <strong> {c.seatsSource.round}</strong> of the {c.seatsSource.intake} intake,
+      taken from the Medical Education Commission's own published matrix.
+      It is not a permanent number: allocations are published per intake, and
+      later matching rounds can change them. Seats also divide across foreign,
+      paying, scholarship and army categories — this is the foreign one, which
+      is the figure that applies to an Indian applicant. Confirm the current
+      position for your own year at
+      <a href="https://entrance.mec.gov.np" target="_blank" rel="noopener">entrance.mec.gov.np ↗</a>.
+    </div>
+  )}
 
   <div class="doc-note rev" style="margin-top:24px">
     <strong>We do not publish a fee figure for {shortName}.</strong> Fees and

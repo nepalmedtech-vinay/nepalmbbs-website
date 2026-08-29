@@ -4,9 +4,15 @@
 <div class="chat-wrap" id="chat-wrap">
   <div class="chat-window" id="chat-window">
     <div class="chat-header" id="chat-header">
+      {/* "Official info • Instant answers" overstated it — the assistant
+          answers from a reviewed dataset, and part of what it does is decline
+          when a question falls outside that. The subtitle now says what it
+          actually is. */}
       <div class="chat-header-left">
-        <div class="chat-avatar">🤖</div>
-        <div><h4>NepalMBBS Assistant</h4><p>Official info • Instant answers</p></div>
+        <div class="chat-avatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>
+        </div>
+        <div><h4>Admissions Assistant</h4><p>Answers from sourced records</p></div>
       </div>
       <div class="chat-header-right">
         <span class="swipe-label">↑ swipe to close</span>
@@ -14,15 +20,18 @@
       </div>
     </div>
     <div class="chat-msgs" id="chat-msgs">
-      <div class="chat-msg bot">👋 Hello! I'm your Nepal MBBS guide. Ask me anything about eligibility, fees, process, or life in Nepal. All answers based on official sources.</div>
+      <div class="chat-msg bot">Ask about eligibility, the admission process, recognition, or any of the 27 colleges. Every answer names the source it came from, and I will tell you when I do not have one.</div>
     </div>
+    {/* One chip now names a college, because the assistant can answer from the
+        college records themselves — that capability is invisible unless a
+        visitor happens to try it. */}
     <div class="chat-suggestions" id="chat-sugs">
-      <span class="chat-sug" data-act="click" data-do='[["askBot","Am I eligible for Nepal MBBS?"]]'>Eligible?</span>
-      <span class="chat-sug" data-act="click" data-do='[["askBot","What are the fees for Nepal MBBS?"]]'>Fees?</span>
-      <span class="chat-sug" data-act="click" data-do='[["askBot","Is NEET required?"]]'>NEET?</span>
-      <span class="chat-sug" data-act="click" data-do='[["askBot","How to apply via MEC Nepal?"]]'>How to apply?</span>
-      <span class="chat-sug" data-act="click" data-do='[["askBot","Is Nepal safe for Indian students?"]]'>Safety?</span>
-      <span class="chat-sug" data-act="click" data-do='[["askBot","WhatsApp call or chat?"]]'>Contact?</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","Is NEET required for MBBS in Nepal?"]]'>NEET required?</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","What NEET percentile is required?"]]'>Percentile?</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","How many seats does Nobel Medical College have?"]]'>Ask about a college</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","How does admission through MEC Nepal work?"]]'>Admission process</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","Will the degree let me practise in India?"]]'>Practising in India</span>
+      <span class="chat-sug" data-act="click" data-do='[["askBot","How do I verify a college is recognised?"]]'>Verify a college</span>
     </div>
     <div class="chat-restart-btn" data-act="click" data-do='[["restartChat"]]'>🔄 Start New Chat</div>
     <div class="chat-input-area">

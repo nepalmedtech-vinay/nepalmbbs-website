@@ -1,80 +1,342 @@
-// NepalMBBS.in — chatbot.js
-// Knowledge base and chat widget
-// Extracted from index.html in Phase 1; content is byte-identical.
-// Classic script (not a module): these functions must stay global because the
-// markup still calls them from inline on* handlers. Load order matters.
+/* NepalMBBS.in — chatbot.js
+   The admissions assistant.
 
-// =====================================================
-const KB=[
-  {q:['eligible','qualify','can i','my score','neet score','minimum'],a:'Per NMC India FMGL Regulations 2021, minimum <strong>50th percentile NEET</strong> (General/OBC) or <strong>40th percentile</strong> (SC/ST) required to practice in India after foreign MBBS. Use our <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;calculator&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">NEET Calculator →</span> or <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;counsel&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">book a free session →</span>. Verify at <a href="https://nmc.org.in" target="_blank">nmc.org.in</a>.'},
-  {q:['fee','cost','price','how much','kitna','charges','total fees'],a:'Fees are regulated by <strong>MEC Nepal\'s official fee ceiling</strong> and vary by college. We share current official figures during counseling — not estimates. Verify at <a href="https://mec.gov.np/en/feeStructure" target="_blank">mec.gov.np/fees</a>. Pay ONLY directly to college — NEVER to agents. <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;counsel&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">Contact us for exact fees →</span>'},
-  {q:['neet required','neet mandatory','without neet','neet compulsory'],a:'<strong>Yes — NEET is mandatory</strong> for Indian students wishing to practice medicine in India after foreign MBBS. Per NMC India Act 2019 and FMGL Regulations 2021. Minimum 50th percentile (General/OBC). Source: <a href="https://nmc.org.in" target="_blank">nmc.org.in</a>'},
-  {q:['apply','mec','application','process','how to apply','admission','steps'],a:'All Nepal MBBS admissions go through <strong>MEC Nepal</strong>. Steps: 1) NEET 2) Select NMC+MEC approved college 3) Documents 4) MECEE-BL exam or NEET quota 5) MEC seat matching. Portal: <a href="https://entrance.mec.gov.np" target="_blank">entrance.mec.gov.np</a>. <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;process&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">Full roadmap →</span>'},
-  {q:['visa','passport','travel','go to nepal','entry','enter'],a:'<strong>Indian citizens do NOT need a visa for Nepal.</strong> India-Nepal bilateral open border agreement. Valid Indian passport or Aadhaar card is sufficient for entry. No embassy visit needed.'},
-  {q:['valid','india','practice','recognized','recognition','work in india'],a:'Degrees from <strong>NMC India recognised</strong> Nepal colleges are valid to practice in India. After graduation: clear NExT/FMGE (NBE) + 1-year supervised India internship → licence to practice. Verify your college at <a href="https://nmc.org.in/information-desk/college-and-course-search/" target="_blank">NMC College Search ↗</a>'},
-  {q:['next','fmge','exit test','screening','next exam'],a:'<strong>NExT (National Exit Test)</strong> is replacing FMGE for all medical graduates — Indian and foreign. Conducted by NBE. After clearing NExT + 1-year India supervised internship → licence to practice. Nepal\'s India-aligned curriculum helps. <a href="https://natboard.edu.in" target="_blank">natboard.edu.in ↗</a>'},
-  {q:['duration','years','how long','5.5','time','semester'],a:'<strong>5.5 years total</strong> — 4.5 years academic study + 1 year compulsory internship at affiliated teaching hospital. Confirmed by Nepal NMC official notice (November 2024). Same structure as Indian MBBS.'},
-  {q:['food','hostel','life','live','living','daily','culture','adjust'],a:'Nepal is safe and culturally familiar for Indian students. Indian food in most hostels. Separate male/female hostels with security. Monthly cost ₹15,000–25,000. Hindi widely understood. <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;lifestyle&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">Life in Nepal →</span>'},
-  {q:['safe','safety','security','danger','parents','crime'],a:'Nepal and India share close historical and cultural ties. Indian students are well-received. Top colleges provide campus security and separate hostels. We strongly recommend speaking with current students at your shortlisted college.'},
-  {q:['monthly','living cost','expense','budget','money'],a:'Approx <strong>₹15,000–25,000/month</strong> covers hostel, food, transport, personal. Varies by lifestyle. On-campus hostel is most affordable. <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;lifestyle&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">See currency converter →</span>'},
-  {q:['loan','education loan','bank','finance','sbi'],a:'Indian banks (SBI, Bank of Baroda) offer education loans for MBBS at NMC recognised colleges. NMC recognition letter required. Consult your bank directly — terms vary.'},
-  {q:['verify','check college','college list','which college','nmc approved'],a:'Verify NMC India recognition: <a href="https://nmc.org.in/information-desk/college-and-course-search/" target="_blank">NMC College Search ↗</a>. MEC Nepal approved list: <a href="https://mec.gov.np" target="_blank">mec.gov.np</a>. NEVER rely on agent or college claims alone.'},
-  {q:['neet pg','post graduate','pg','md','ms','specialisation'],a:'After clearing NExT/FMGE + 1-year supervised India internship, you may be eligible for NEET PG. Rules are subject to NMC updates. Verify current eligibility at <a href="https://nmc.org.in" target="_blank">nmc.org.in</a>.'},
-  {q:['book','counseling','session','talk','appointment','meet','free session'],a:'Book a free 30-min session: <a href="https://calendly.com/nepalmedtech/30min" target="_blank">Calendly →</a> or WhatsApp: <a href="https://wa.me/917080800888" target="_blank">+91 70808 00888</a>. <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;counsel&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">Quick Enquiry →</span>'},
-  {q:['language','hindi','english','medium'],a:'Medium of instruction is <strong>English</strong> per Nepal NMC. Hindi is widely spoken in Nepal daily life — no significant language barrier for Indian students.'},
-  {q:['when','open','date','2025','admission date','deadline'],a:'Nepal MBBS admissions typically open <strong>July–October</strong> each year. MEC Nepal publishes official dates at <a href="https://entrance.mec.gov.np" target="_blank">entrance.mec.gov.np</a>. Apply immediately after NEET results.'},
-  {q:['nepal nmc','nepal medical council','nmc nepal'],a:'Nepal Medical Council (NMC Nepal) regulates medical licensing in Nepal. November 2024 notice: 5.5 year MBBS recognised, provisional registration during internship, no good standing certificate required. Website: <a href="https://nmc.org.np" target="_blank">nmc.org.np</a>'},
-  {q:['video','tour','campus','youtube','watch'],a:'Watch our videos: <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;videos&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">Videos Tab →</span> or <a href="https://drive.google.com/drive/folders/1W-q-NqJwrkJ1K8EirJvphAwW-xsMF4cQ" target="_blank">Google Drive Library ↗</a>'},
-  {q:['official','guideline','regulation','rules','document'],a:'View all official guidelines: <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;guidelines&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">Guidelines Tab →</span>. Sources: NMC India FMGL 2021, Nepal NMC Notice Nov 2024, MEC Nepal.'},
-  {q:['internship','intern','one year','1 year'],a:'Two internships required: 1) <strong>1 year Nepal</strong> at affiliated hospital (Nepal NMC, counted in 5.5 yrs). 2) <strong>1 year India supervised</strong> after graduation (NMC India FMGL 2021). Both mandatory to practice in India.'},
-  {q:['weather','climate','cold','hot','rain','kathmandu'],a:'Kathmandu: 5–30°C. Pleasant spring/autumn. Cold winters. Monsoon June-August. Similar to North India — Indian students generally adapt well.'},
-  {q:['document','documents required','paperwork','what i need'],a:'Required: 10th+12th marksheets (notarised), NEET scorecard, valid passport, medical fitness certificate, character certificate, passport photos. Apply via <a href="https://entrance.mec.gov.np" target="_blank">entrance.mec.gov.np</a>.'},
-  {q:['scholarship','merit','discount','concession','free'],a:'Scholarship availability varies by individual college — no official government scholarships for Indian students as per available information. Verify directly with colleges for merit-based concessions.'},
-  {q:['agent','consultant','middleman','broker','third party'],a:'⚠️ <strong>Always deal directly with colleges and MEC Nepal.</strong> Beware of agents charging commission or promising guaranteed seats. Pay fees ONLY directly to the college. Verify everything at <a href="https://mec.gov.np" target="_blank">mec.gov.np</a>.'},
-  {q:['kathmandu','pokhara','chitwan','location','campus location'],a:'Top Nepal medical colleges are in Kathmandu, Pokhara, Chitwan, Biratnagar, Bhairahawa. Kathmandu colleges typically have better hospital facilities and connectivity to India.'},
-  {q:['age','minimum age','how old'],a:'Minimum age: 17 years as on 31st December of admission year. No upper age limit per general regulations. Verify current MEC Nepal age criteria at <a href="https://mec.gov.np" target="_blank">mec.gov.np</a>.'},
-  {q:['whatsapp call','wa call','call','phone','contact','reach'],a:'📲 <a href="https://wa.me/917080800888?call" target="_blank">WhatsApp Call →</a>&nbsp; 📞 <a href="tel:+917080800888">+91 70808 00888</a>&nbsp; 💬 <a href="https://wa.me/917080800888" target="_blank">WhatsApp Chat →</a>&nbsp; <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;counsel&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">Book Free Session →</span>'},
-  {q:['hello','hi','hey','namaste','start','help'],a:'Hello! 👋 Welcome to NepalMBBS.in — your official guide to MBBS in Nepal. Ask me anything about eligibility, fees, process, or life in Nepal. All answers based on official sources.'},
-  {q:['thank','thanks','helpful','great'],a:"You're welcome! 😊 For personalised guidance, <span data-act='click' data-do='[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;counsel&quot;]]' style=\"color:var(--blue);font-weight:600;cursor:pointer\">book a free counseling session →</span>"},
-  {q:['category','obc','sc','st','general','reservation'],a:'NEET percentile required (indicative): General/OBC — 50th percentile, SC/ST — 40th percentile. For Nepal MBBS to practice in India. MEC Nepal may have its own seat categories. Verify at <a href="https://mec.gov.np" target="_blank">mec.gov.np</a>.'},
-  {q:['refund','cancel','withdrawal','leave','quit college'],a:'Refund and withdrawal policies are set by individual colleges — not by us or MEC. Always check the college\'s refund policy BEFORE paying any fees. MEC Nepal may have guidelines — verify at <a href="https://mec.gov.np" target="_blank">mec.gov.np</a>.'},
-  {q:['syllabus','curriculum','subjects','pattern','topics'],a:'Nepal MBBS syllabus closely mirrors Indian MBBS curriculum — same core subjects (Anatomy, Physiology, Biochemistry in pre-clinical; Medicine, Surgery, OBG, Paediatrics in clinical). This directly aids NExT/FMGE preparation.'},
-  {q:['10+2','12th','biology','pcb','class 12','plus two'],a:'Required: PCB (Physics, Chemistry, Biology) in 10+2 with minimum 50% aggregate (General/OBC) or 40% (SC/ST). Notarised copies of both 10th and 12th marksheets needed for application.'},
-  {q:['currency','inr','npr','rupee','exchange','money'],a:'1 INR ≈ 1.6 NPR (approx). Use our <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;lifestyle&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">currency converter →</span> in the Life in Nepal tab. Verify at xe.com before any transaction.'},
-  {q:['mec portal','mecee','mecee-bl','entrance exam'],a:'MECEE-BL (Bachelor Level Entrance) is conducted by MEC Nepal. Indian students can apply through NEET quota or MECEE. Check <a href="https://entrance.mec.gov.np" target="_blank">entrance.mec.gov.np</a> for current schedules.'},
-  {q:['good standing','certificate','home country','council certificate'],a:'Per Nepal Medical Council November 2024 official notice, their licensing procedure does NOT require a good standing certificate from the candidate\'s home country council — simplifying the process for Indian students.'},
-  {q:['provisional registration','temporary registration','intern'],a:'Nepal NMC provides provisional registration to all MBBS/BDS students during their 1-year internship at affiliated teaching hospitals. This is equivalent to Nepalese citizen registration — allowing supervised practice during internship.'},
-  {q:['transport','bus','flight','how to reach','gorakhpur','delhi','patna'],a:'Common routes from India to Nepal: Bus from Delhi or Gorakhpur (Sonauli border → Kathmandu, ~6-8 hrs). Patna via Raxaul border. Direct flights Delhi→Kathmandu available. No visa required for Indian citizens.'},
-  {q:['why nepalmbbs','why you','why trust','why choose you'],a:'We provide guidance based strictly on official NMC India and MEC Nepal sources. No fake promises, no pressure, no hidden fees. Free counseling, honest eligibility assessment, complete support. <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;counsel&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">Book a free session →</span>'},
-  {q:['neet 2025','this year','2025 admission','current year'],a:'For NEET 2025 qualified students, Nepal MBBS admissions typically open July–October 2025. MEC Nepal will publish official dates at <a href="https://entrance.mec.gov.np" target="_blank">entrance.mec.gov.np</a>. Book a counseling session for 2025 guidance.'},
-  {q:['compare','india vs nepal','better','versus','difference'],a:'Nepal MBBS: NMC recognised colleges, no visa, India-aligned curriculum, English medium, lower cost than India private. After graduation: NExT/FMGE + 1 yr India internship needed. India private: direct practice, no extra exam. Choose based on NEET score and budget. <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;counsel&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">Get personalised advice →</span>'},
-  {q:['wdoms','world directory','global','international recognition'],a:'WDOMS (World Directory of Medical Schools) confirms global recognition. Before applying to any Nepal college, verify it is listed at <a href="https://wdoms.org" target="_blank">wdoms.org</a>.'},
-  {q:['hospital','clinical','patient','ward','teaching hospital'],a:'All MEC-approved Nepal medical colleges have affiliated teaching hospitals. Per Nepal NMC guidelines, clinical training and internship must be completed at these affiliated hospitals. Check hospital facilities before applying.'},
-];
-const DEF='Thank you for your question! For accurate, personalised guidance, <span data-act="click" data-do="[[&quot;closeChat&quot;],[&quot;switchTab&quot;,&quot;counsel&quot;]]" style="color:var(--blue);font-weight:600;cursor:pointer">book a free counseling session →</span> or <a href="https://wa.me/917080800888" target="_blank" style="color:var(--blue);font-weight:600">WhatsApp +91 70808 00888</a>.';
-function getBotReply(msg){const m=msg.toLowerCase().trim();for(const k of KB){if(k.q.some(q=>m.includes(q)))return k.a;}return DEF;}
-function toggleChat(){chatOpen=!chatOpen;document.getElementById('chat-window').classList.toggle('open',chatOpen);}
-function closeChat(){chatOpen=false;document.getElementById('chat-window').classList.remove('open');}
-function restartChat(){chatHistory=[];document.getElementById('chat-msgs').innerHTML='<div class="chat-msg bot">👋 Hello! I\'m your Nepal MBBS guide. Ask me anything about eligibility, fees, process, or life in Nepal.</div>';document.getElementById('chat-sugs').style.display='flex';}
-function addChatMsg(text,type){const c=document.getElementById('chat-msgs');const d=document.createElement('div');d.className='chat-msg '+type;d.innerHTML=text;c.appendChild(d);c.scrollTop=c.scrollHeight;chatHistory.push({type,text});return d;}
-function showTypingDots(){const d=addChatMsg('<div class="typing"><span></span><span></span><span></span></div>','bot');d.id='chat-typing';return d;}
-function askBot(q){addChatMsg(q,'user');document.getElementById('chat-sugs').style.display='none';const td=showTypingDots();setTimeout(()=>{if(td&&td.parentNode)td.remove();addChatMsg(getBotReply(q),'bot');},600+Math.random()*500);}
-function sendMsg(){const i=document.getElementById('chat-input');const msg=(i.value||'').trim();if(!msg)return;i.value='';askBot(msg);}
-function initChatSwipe(){
-  const hd=document.getElementById('chat-header');if(!hd)return;
-  let sy=0,dr=false;
-  hd.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;dr=true;},{passive:true});
-  hd.addEventListener('touchmove',e=>{if(!dr)return;if(sy-e.touches[0].clientY>50){closeChat();dr=false;}},{passive:true});
-  hd.addEventListener('touchend',()=>{dr=false;},{passive:true});
-  hd.addEventListener('mousedown',e=>{sy=e.clientY;dr=true;});
-  document.addEventListener('mousemove',e=>{if(!dr)return;if(sy-e.clientY>60){closeChat();dr=false;}});
-  document.addEventListener('mouseup',()=>{dr=false;});
-}
+   What changed and why
+   --------------------
+   This was 45 hard-coded question/answer pairs matched by substring. It could
+   not answer anything about a specific college, because the college data lived
+   in colleges.json and the assistant had no access to it — so "how many seats
+   does Nobel Medical College have?" fell through to "book a counselling
+   session", despite the site knowing the answer and publishing it on that
+   college's own page.
 
-// COLLEGE_PHOTOS / DEFAULT_COLLEGE_PHOTOS were declared here — a split-point
-// accident from the Phase 1 extraction; they belonged to the college photo
-// slideshow, not the chatbot. That slideshow was removed in Phase 3C for
-// serving stock images as named campuses, leaving these maps as dead data.
+   It now reads /api/knowledge.json, built from the same two files the site
+   renders from (src/data/knowledge.json and src/data/colleges.json). Two
+   consequences worth stating:
 
-// =====================================================
-// HERO SLIDESHOW SYSTEM
+     - All 27 colleges became answerable without writing 27 answers, and they
+       stay answerable when the data changes, because there is no second copy.
+     - Every answer carries the source it rests on and the date that source was
+       last checked, which is the same standard the rest of the site holds
+       itself to.
+
+   And when nothing matches, it says so. The previous default thanked the
+   visitor and offered a counselling session, which reads as an answer without
+   being one. On a site families use to make a five-and-a-half-year decision,
+   an assistant that cannot admit ignorance is worse than one that stays quiet.
+
+   Not an LLM. This is deterministic retrieval over a reviewed dataset — which
+   is a deliberate choice, not a limitation to apologise for: a generative model
+   over unverified admissions data would produce confident sentences about seat
+   counts and deadlines, and being confidently wrong about those is the specific
+   failure this project exists to avoid. */
+
+(function () {
+  'use strict';
+
+  var KB = null;          // { reviewed, topics[], colleges[] }
+  var kbPromise = null;
+  var chatHistory = [];
+  var chatOpen = false;
+
+  /* ── data ─────────────────────────────────────────────────────────────── */
+
+  function loadKB() {
+    if (kbPromise) return kbPromise;
+    kbPromise = fetch('/api/knowledge.json', { credentials: 'omit' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (d) { KB = d; return d; })
+      .catch(function () {
+        // Offline, or the file failed to deploy. Say so rather than answering
+        // from nothing — a wrong answer here is worse than no answer.
+        KB = { reviewed: '', topics: [], colleges: [], failed: true };
+        return KB;
+      });
+    return kbPromise;
+  }
+
+  /* ── matching ─────────────────────────────────────────────────────────── */
+
+  var STOP = /\b(what|which|is|are|the|a|an|of|for|in|at|to|do|does|i|my|me|can|about|tell|please|and|how|much|many)\b/g;
+
+  function normalise(s) {
+    return String(s || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  // Identify the college a question names.
+  //
+  // An earlier version scored only the "distinctive" words, dropping generic
+  // ones like `medical` and `college` so that they could not match all 27.
+  // Its own test caught what that costs: five colleges are named almost
+  // entirely from that generic vocabulary — College of Medical Sciences,
+  // Nepal Medical College, National Medical College, B & C Medical College —
+  // so they had no distinctive words left and became unreachable, while
+  // "Kathmandu Medical College" resolved to Kathmandu University School of
+  // Medical Sciences on the strength of the one word they share.
+  //
+  // People name a college by its short name, so match that directly: the name
+  // up to the first bracket or comma. Where two short names both appear in a
+  // question — "Manipal College of Medical Sciences" contains "College of
+  // Medical Sciences" — the longer one is the more specific claim and wins.
+  function findCollege(q) {
+    if (!KB || !KB.colleges) return null;
+    var text = ' ' + normalise(q) + ' ';
+    var best = null, bestKey = 0;
+
+    KB.colleges.forEach(function (c) {
+      var short = normalise(c.name.split('(')[0].split(',')[0]);
+      var acro = (c.name.match(/\(([A-Za-z]{2,})\)/) || [])[1];
+
+      // The acronym is how people ask about BPKIHS, KUSMS, UCMS.
+      if (acro && text.indexOf(' ' + acro.toLowerCase() + ' ') !== -1) {
+        if (bestKey < 1000) { bestKey = 1000; best = c; }
+        return;
+      }
+
+      // Guard against a stub like "medical college" swallowing everything.
+      if (short.length >= 12 && text.indexOf(' ' + short + ' ') !== -1) {
+        if (short.length > bestKey) { bestKey = short.length; best = c; }
+      }
+    });
+
+    if (best) return best;
+
+    // Nothing named outright. Fall back to word coverage over the full name,
+    // which catches "Nobel" or "Devdaha" on their own.
+    //
+    // Coverage alone is not enough, and the test caught why: asked about
+    // "Nobel Medical College", plain coverage answered about Nepalgunj
+    // Medical College — Nepalgunj matched two of its three words on the
+    // strength of "medical college", scoring 0.67 against Nobel's 0.60. A
+    // shorter name made almost entirely of shared vocabulary will always win
+    // a ratio it did nothing to earn.
+    //
+    // So a college counts as named only if something specific to it appeared.
+    // The threshold stays high on top of that: naming the wrong college is
+    // worse than naming none.
+    var GENERIC = ['medical', 'college', 'institute', 'sciences', 'health',
+                   'academy', 'school', 'university', 'teaching', 'hospital',
+                   'and', 'the', 'for', 'research'];
+    var bestScore = 0, bestHits = 0;
+    best = null;
+
+    KB.colleges.forEach(function (c) {
+      var words = normalise(c.name).split(' ').filter(function (w) { return w.length > 2; });
+      if (!words.length) return;
+
+      var matched = words.filter(function (w) { return text.indexOf(' ' + w + ' ') !== -1; });
+      if (!matched.length) return;
+
+      var distinctive = matched.filter(function (w) { return GENERIC.indexOf(w) === -1; });
+      if (!distinctive.length) return;
+
+      var score = matched.length / words.length;
+      if (score > bestScore || (score === bestScore && matched.length > bestHits)) {
+        bestScore = score; bestHits = matched.length; best = c;
+      }
+    });
+
+    return bestScore >= 0.5 ? best : null;
+  }
+
+  function findTopic(q) {
+    if (!KB || !KB.topics) return null;
+    // Padded on both sides so a key matches whole words only. Without this,
+    // raw substring search makes "age" match "percentage" and "fee" match
+    // "coffee" — the age topic was answering percentile questions.
+    var text = ' ' + normalise(q) + ' ';
+    var best = null, bestLen = 0;
+    KB.topics.forEach(function (t) {
+      (t.match || []).forEach(function (m) {
+        var key = normalise(m);
+        // Longest matching phrase wins, so "neet required" beats "neet".
+        if (key && text.indexOf(' ' + key + ' ') !== -1 && key.length > bestLen) {
+          bestLen = key.length; best = t;
+        }
+      });
+    });
+    return best;
+  }
+
+  /* ── rendering ────────────────────────────────────────────────────────── */
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  var STATUS_LABEL = {
+    official: 'Official source',
+    estimate: 'Our estimate — not an official figure',
+    general:  'General guidance'
+  };
+
+  function sourceLine(src, status) {
+    if (!src) return '';
+    var label = STATUS_LABEL[status] || 'Source';
+    var name = esc(src.name || '');
+    var where = src.url
+      ? '<a href="' + esc(src.url) + '" target="_blank" rel="noopener">' + name + ' ↗</a>'
+      : name;
+    var when = src.checked ? ' · checked ' + esc(src.checked) : '';
+    return '<span class="chat-src"><b>' + esc(label) + '</b> · ' + where + when + '</span>';
+  }
+
+  function collegeAnswer(c, q) {
+    var text = normalise(q);
+    var rows = [];
+    var want = function (keys) { return keys.some(function (k) { return text.indexOf(k) !== -1; }); };
+
+    // Answer the field actually asked about; fall back to the whole record.
+    if (want(['seat', 'quota', 'intake'])) rows.push(['Foreign-quota seats', c.seats]);
+    else if (want(['where', 'location', 'city', 'situated'])) rows.push(['Location', c.location]);
+    else if (want(['affiliat', 'university'])) rows.push(['University affiliation', c.affiliation]);
+    else if (want(['establish', 'founded', 'started', 'old'])) rows.push(['Established', c.established]);
+    else if (want(['government', 'private', 'ownership'])) rows.push(['Ownership', c.ownership]);
+    else {
+      rows.push(['Ownership', c.ownership], ['Location', c.location],
+                ['University affiliation', c.affiliation], ['Foreign-quota seats', c.seats],
+                ['Course duration', c.duration], ['Admission route', c.admission]);
+    }
+
+    var body = rows.map(function (r) {
+      var v = r[1] ? esc(r[1]) : '<i>not on record — ask us</i>';
+      return '<span class="chat-row"><b>' + esc(r[0]) + '</b> ' + v + '</span>';
+    }).join('');
+
+    var fee = '<span class="chat-row"><b>Tuition fee</b> <i>set per intake — we confirm it in writing during counselling</i></span>';
+
+    return '<b>' + esc(c.name) + '</b>' + body + fee +
+      '<span class="chat-row"><a href="/colleges/' + esc(c.slug) + '">Full record for this college →</a></span>' +
+      sourceLine({
+        name: 'MEC Nepal intake data and the college’s own published information',
+        url: c.website || 'https://mec.gov.np',
+        checked: KB.reviewed
+      }, 'official') +
+      '<span class="chat-note">Recognition and seat allocation are set per intake year. Verify against the MEC notice for your own year before acting on this.</span>';
+  }
+
+  var NO_ANSWER =
+    '<b>I don’t have a verified answer to that.</b>' +
+    '<span class="chat-row">I only answer from information this site has checked against an official source, and that question is outside it. Rather than guess, let me put you to someone who can find out.</span>' +
+    '<span class="chat-row"><a href="/counseling">Ask a counsellor →</a> · <a href="https://wa.me/917080800888" target="_blank" rel="noopener">WhatsApp ↗</a></span>';
+
+  var LOAD_FAILED =
+    '<b>I can’t reach my reference data right now.</b>' +
+    '<span class="chat-row">Rather than answer from memory, here is the direct route: <a href="/counseling">ask a counsellor</a>, or check the official sources at <a href="https://mec.gov.np" target="_blank" rel="noopener">mec.gov.np</a> and <a href="https://nmc.org.in" target="_blank" rel="noopener">nmc.org.in</a>.</span>';
+
+  function getBotReply(q) {
+    if (!KB) return NO_ANSWER;
+    if (KB.failed) return LOAD_FAILED;
+
+    var college = findCollege(q);
+    if (college) return collegeAnswer(college, q);
+
+    var topic = findTopic(q);
+    if (topic) return esc(topic.answer).replace(/\n/g, '<br>') + sourceLine(topic.source, topic.status);
+
+    return NO_ANSWER;
+  }
+
+  /* ── ui ───────────────────────────────────────────────────────────────── */
+
+  function addChatMsg(text, type) {
+    var c = document.getElementById('chat-msgs');
+    if (!c) return null;
+    var d = document.createElement('div');
+    d.className = 'chat-msg ' + type;
+    // The visitor's own words are inserted as text, never as markup. The
+    // previous version used innerHTML for both sides, which made the input box
+    // an injection point into the page; CSP stopped it from executing, but the
+    // right fix is not to build the node that way at all.
+    if (type === 'user') d.textContent = text;
+    else d.innerHTML = text;
+    c.appendChild(d);
+    c.scrollTop = c.scrollHeight;
+    chatHistory.push({ type: type, text: text });
+    return d;
+  }
+
+  function showTyping() {
+    var d = addChatMsg('<div class="typing"><span></span><span></span><span></span></div>', 'bot');
+    if (d) d.id = 'chat-typing';
+    return d;
+  }
+
+  function askBot(q) {
+    addChatMsg(q, 'user');
+    var sugs = document.getElementById('chat-sugs');
+    if (sugs) sugs.style.display = 'none';
+    var td = showTyping();
+    loadKB().then(function () {
+      if (td && td.parentNode) td.remove();
+      addChatMsg(getBotReply(q), 'bot');
+    });
+  }
+
+  function sendMsg() {
+    var i = document.getElementById('chat-input');
+    if (!i) return;
+    var msg = (i.value || '').trim();
+    if (!msg) return;
+    i.value = '';
+    askBot(msg);
+  }
+
+  function toggleChat() {
+    chatOpen = !chatOpen;
+    var w = document.getElementById('chat-window');
+    if (w) w.classList.toggle('open', chatOpen);
+    if (chatOpen) loadKB();   // warm the data on open, not on page load
+  }
+
+  function closeChat() {
+    chatOpen = false;
+    var w = document.getElementById('chat-window');
+    if (w) w.classList.remove('open');
+  }
+
+  function restartChat() {
+    chatHistory = [];
+    var c = document.getElementById('chat-msgs');
+    if (c) {
+      c.replaceChildren();
+      addChatMsg('Ask about eligibility, the admission process, recognition, or any of the 27 colleges. Every answer names the source it came from, and I will tell you when I do not have one.', 'bot');
+    }
+    var sugs = document.getElementById('chat-sugs');
+    if (sugs) sugs.style.display = 'flex';
+  }
+
+  function initChatSwipe() {
+    var hd = document.getElementById('chat-header');
+    if (!hd) return;
+    var sy = 0, dragging = false;
+    hd.addEventListener('touchstart', function (e) { sy = e.touches[0].clientY; dragging = true; }, { passive: true });
+    hd.addEventListener('touchmove', function (e) {
+      if (dragging && sy - e.touches[0].clientY > 50) { closeChat(); dragging = false; }
+    }, { passive: true });
+    hd.addEventListener('touchend', function () { dragging = false; }, { passive: true });
+    hd.addEventListener('mousedown', function (e) { sy = e.clientY; dragging = true; });
+    document.addEventListener('mousemove', function (e) {
+      if (dragging && sy - e.clientY > 60) { closeChat(); dragging = false; }
+    });
+    document.addEventListener('mouseup', function () { dragging = false; });
+  }
+
+  // actions.js dispatches these by name through its allow-list, so they have
+  // to stay on window.
+  window.askBot = askBot;
+  window.sendMsg = sendMsg;
+  window.toggleChat = toggleChat;
+  window.closeChat = closeChat;
+  window.restartChat = restartChat;
+  window.getBotReply = getBotReply;
+  window.initChatSwipe = initChatSwipe;
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initChatSwipe, { once: true });
+  } else {
+    initChatSwipe();
+  }
+})();

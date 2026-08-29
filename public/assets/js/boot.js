@@ -35,7 +35,6 @@ window.addEventListener('load',()=>hideLoader());
 
   await step('initSiteSettings', initSiteSettings);
   await step('loadDynamicContent', loadDynamicContent);
-  await step('hero', () => { wrapHeroContent(); initHeroSlideshow(); });
 
   // Supabase realtime polling for live updates
   setInterval(async()=>{
