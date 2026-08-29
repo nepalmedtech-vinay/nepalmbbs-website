@@ -38,12 +38,37 @@ leaving it as a silent TODO, and give each item a path to being resolved.
   this token (`CLAUDE.md` records this). But the practical effect is that the
   project's main gate has not run end-to-end in any fresh container.
 
-  **Path to resolution, in preference order:** (1) the owner pushes the five
-  tags by hand, which fixes it permanently for everyone; or (2)
-  `build-verify.mjs` degrades to a skip-with-warning when the tag is absent,
-  rather than throwing — so a missing tag costs one check instead of six
-  suites. (2) is a ten-line change and worth doing even after (1), because
-  the current failure mode is silent-by-abort.
+  **The commit it should point at has been identified: `d48a4c6`** ("docs:
+  record the design system and the debt Phase 3 inherits") — the last commit
+  of the single-page era, immediately before `61dd892` ("feat: multi-page
+  Astro architecture"), which is the commit that moved the trackers from the
+  repo root into `public/`. That matches both `docs/GOLIVE.md`'s description
+  of the tag ("the single-page build") and `build-verify.mjs`'s own comment
+  ("the pre-Phase-2 commit").
+
+  Confirmed rather than assumed: all seven tracker files hash identically
+  between `d48a4c6`, `public/` and `dist/` today, and with the tag recreated
+  at that commit `build-verify.mjs` passes **98/98**, tracker check included.
+
+  So any session that hits this can unblock itself in one command:
+
+  ```bash
+  git tag phase1-static-rollback d48a4c6
+  ```
+
+  It was deliberately **not pushed** from this session. The byte match proves
+  the tracker contents are right; it does not prove `d48a4c6` is the same
+  object the original tag pointed at, and publishing a permanent ref under a
+  name whose original target cannot be checked is not this session's call.
+  The owner should push their own five tags.
+
+  **Still worth fixing in the test:** `build-verify.mjs` line 188 throws
+  rather than recording a failed check, so a missing tag aborts the process
+  and takes the six later suites in `npm run verify` down with it —
+  silently, because the chain is `&&`. Catching the missing-tag case and
+  recording it as a failed check would cost one check instead of six suites,
+  and would make `npm run verify`'s exit code mean what a reader assumes it
+  means.
 
 - **`.foot-top` is still a four-column link farm**, and the trust badge row
   is still six equal cards. Both were on the interiors list for this chunk

@@ -1,6 +1,6 @@
 # PROJECT_STATE.md
 
-_Last updated: 2026-08-27, by an autonomous Claude Code session on
+_Last updated: 2026-08-29 (chunk 7: page interiors), by an autonomous Claude Code session on
 `redesign/premium-ecosystem`. Read this file first in any new session before
 doing implementation work._
 
@@ -41,7 +41,8 @@ suggesting a deploy or a database migration.
 - **Styling:** hand-maintained CSS in `public/assets/css/` (legacy Phase-1
   layer) + `public/assets/theme/` (the live token/glass/motion engine —
   `engine.css`, `glass.css`, `motion.css`, `panel.css`, `bridge.css`,
-  ~1900 lines) + `public/assets/theme/*.js` (engine runtime, aurora WebGL
+  then `chrome.css` and `interiors.css` last, which finish the dark→light
+  migration for the site chrome and for the page interiors respectively) + `public/assets/theme/*.js` (engine runtime, aurora WebGL
   background, theme generator, admin theme panel).
 - **JS:** classic scripts (not modules) in `public/assets/js/` —
   `auth.js` (Supabase session), `admin.js` (admin panel), `actions.js`

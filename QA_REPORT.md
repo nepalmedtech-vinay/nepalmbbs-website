@@ -4,6 +4,90 @@ Records actual `npm run verify` / individual test-suite results. Every
 entry is a real run's output, not a description of what the suites check —
 see `README.md`/`tests/*.mjs` for that.
 
+## 2026-08-29 — Chunk 7 (page interiors) ✅ ALL EIGHT SUITES GREEN — but `npm run verify` did not run them
+
+**Read the caveat before the table.** `npm run verify` **exited 1 without
+running six of its eight suites.** `tests/build-verify.mjs` line 188 shells out
+to `git show phase1-static-rollback:...`; this container is a fresh clone with
+**no tags at all** (`git tag -l` empty, `git ls-remote --tags origin` empty),
+so the call throws `fatal: invalid object name`, the exception kills the
+process, and the `&&` chain takes `csp-verify`, `console-verify`,
+`auth-verify`, `a11y-verify`, `compare-verify`, `assistant-verify` and `audit`
+down with it. Nothing in the output says six suites were skipped.
+
+This is the environmental blocker `CLAUDE.md` already records (tag pushes
+return 403). What was not previously recorded is that it **aborts the gate**
+rather than costing one check.
+
+**Resolved for this run** by identifying the commit the tag belongs on —
+`d48a4c6`, the last commit of the single-page build, immediately before
+`61dd892` moved the trackers into `public/` — and recreating it locally:
+
+```bash
+git tag phase1-static-rollback d48a4c6
+```
+
+Independently confirmed before trusting it: all seven tracker files hash
+identically between `d48a4c6`, `public/` and `dist/`. With the tag present the
+whole gate runs and the tracker byte-identical check passes on its own terms.
+
+| Step | Result |
+|---|---|
+| `npm run build` | ✅ 44 pages, clean |
+| `node tools/gen-csp.mjs --check` | ✅ netlify.toml CSP current |
+| `tests/build-verify.mjs` | ✅ **98/98** — including "Tracker apps byte-identical to Phase 1" |
+| `tests/csp-verify.mjs` | ✅ 11/11 · 45 routes · **2949** handlers fired · zero CSP violations |
+| `tests/console-verify.mjs` | ✅ 34/34 |
+| `tests/auth-verify.mjs` | ✅ 12/12 · 0 JS errors |
+| `tests/a11y-verify.mjs` | ✅ 32/32 |
+| `tests/compare-verify.mjs` | ✅ 13/13 |
+| `tests/assistant-verify.mjs` | ✅ 18/18 |
+| `tests/audit.mjs` | ✅ 43 routes + the assistant · **0 low-contrast · 0 mobile overflow · 0 skipped** · median 279 kB |
+
+The audit result is the one that matters for this chunk, because the chunk was
+almost entirely visual: a new stylesheet, a rebuilt home-page section, a
+three-column stage row, a two-column step list, and eight heading tags
+promoted. **Zero contrast regressions and zero elements skipped** — the
+"skipped" count is the number that caught the contact-bar bug by being
+non-zero, so it is worth reading every time.
+
+### Handler count moved, and that is expected
+
+2949 CSP-safe handlers against 2733 at the 2026-08-27 baseline and 45 routes
+against 42. The map's town list adds `pointerenter`/`pointerleave` listeners
+per row, attached in the component's existing inline script (re-hashed with
+`npm run csp`; the check confirms `netlify.toml` is current).
+
+### What the suites did **not** catch, and did not claim to
+
+Three of this chunk's defects were invisible to every one of these suites, and
+all three were found by measuring the rendered page directly:
+
+- the map printing **26 places / 691 seats** under a hero reading **27 / 734**
+  — no suite compares two numbers on one page for agreement;
+- government and private colleges plotted with a **2% fill difference** under
+  a legend announcing the distinction — `audit.mjs` measures *text* contrast,
+  not whether an encoding is discriminable;
+- the fixed header covering the first 9px of every inner route **at desktop**
+  — `audit.mjs` checks overflow at 390px only, and the overlap is at ≥48rem.
+
+Worth stating plainly: a green suite here means no regression, not that the
+page is right. All three would have shipped.
+
+### A measurement trap, recorded so the next session does not lose an hour
+
+A full-page Playwright screenshot of `/` renders everything below the fold at
+**opacity 0** and looks like a catastrophically broken page. It is not: the
+reveals are scroll-driven (`animation-timeline: view()` in `motion.css`), and
+a full-page capture does not scroll, so every scroll timeline sits at its
+start value. Confirmed by scrolling to the element and re-reading computed
+style — `opacity: 1`, transform none.
+
+**Screenshot with `reducedMotion: 'reduce'`**, which the CSS already gates on,
+and the static end state renders.
+
+---
+
 ## 2026-08-27 — First `npm run verify` run in this container
 
 **Context:** first time this suite has run in this session's container.

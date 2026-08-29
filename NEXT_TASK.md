@@ -3,45 +3,116 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
-## Status as of 2026-08-29
+## Status as of 2026-08-29 (end of chunk 7)
 
-`npm run verify` is green: 44 routes, 0 failures, 0 low-contrast elements
-with 0 skipped, 18/18 assistant checks. The full record is in
-`QA_REPORT.md`. The honest score is **85/100** — see `SELF_AUDIT.md`, and
-do not raise a number there because a suite went green.
+**Read this before trusting a green run: `npm run verify` does not run to
+completion in a fresh container.** `tests/build-verify.mjs` line 188 needs the
+`phase1-static-rollback` tag, this clone has no tags, and the test *throws*
+rather than recording a failed check — which kills the process and takes the
+six later suites down with it, silently, because the chain is `&&`. A session
+that reads only the exit code learns nothing about a11y, contrast, CSP or the
+assistant.
 
-**The MEC seat matrix is done.** The owner supplied the Commission's own
-MECEE-BL 2026 first-matching table on 2026-08-28 and all 27 figures were
-transcribed from it, summing to the document's stated total of 734. Four
-were overstated in the old data — Institute of Medicine by 4.5×. Every
-record now carries a `seatsSource` naming the category, round and intake,
-and each college page states that a first-matching allocation is not a
-standing number. Content and Trust are both 10/10 as a result. There is
-nothing left to do here; do not re-open it.
+`TECHNICAL_DEBT.md` now names the commit the tag belongs on and the one-line
+recovery. Do this first, before anything else:
 
-## 🎯 The next chunk: page interiors
+```bash
+git tag phase1-static-rollback d48a4c6
+```
 
-This is the largest remaining block of points that belongs to Claude
-rather than to the owner or to production hardware: **Visual 16/20 and
-UX 12/15**.
+With that tag in place the whole gate runs and **all eight suites pass**:
 
-The chrome is coherent now — one type system, one palette, every route
-clearing the fixed header. The **interiors are not**. They are still the
-layout this site was built with: a section-card grid, the three-equal-
-cards pattern repeated on most pages, stacked identical `.doc` blocks,
-and a single column on desktop where there is room for two. Phase 3/4
-made those blocks legible; nobody has yet made them good.
+| Suite | Result |
+|---|---|
+| `build-verify` | 98/98 — tracker byte-identical check included |
+| `csp-verify` | 11/11 · 45 routes · 2949 handlers |
+| `console-verify` | 34/34 |
+| `auth-verify` | 12/12 · 0 JS errors |
+| `a11y-verify` | 32/32 |
+| `compare-verify` | 13/13 |
+| `assistant-verify` | 18/18 |
+| `audit` | see `QA_REPORT.md` for this chunk's run |
 
-Start with the pages a family actually lands on, in this order:
-`/` → `/colleges` → `/admission-process` → `/documents`.
+The honest score is still in `SELF_AUDIT.md`. Do not raise a number there
+because a suite went green.
 
-Constraints that still hold while doing it:
+## What chunk 7 did, and the one lesson worth carrying
+
+The chunk was "page interiors, starting `/` → `/colleges` →
+`/admission-process` → `/documents`". Measuring those four first turned up
+three defects that had to be fixed before any layout work was worth doing —
+all three were **the site asserting something it did not deliver**, and all
+three had been recorded in this file as done.
+
+1. **The home map dropped a college and printed a different total from the
+   hero directly above it** — 26 places / 691 seats under a hero reading
+   27 / 734. `colleges.json` says "Kohalpur, Banke"; `places.json` had
+   "Nepalgunj"; the component `.filter()`ed the mismatch away and generated
+   its copy from what survived. Now a build-time throw that names the college.
+2. **Government and private colleges plotted identically** — the legend
+   announced the distinction, the marks differed by a 12% fill against a 10%
+   one with the same stroke.
+3. **The fixed header covered the first line of every inner page at desktop**
+   — 9px, at every width above 48rem, on all 36 inner routes. This file said
+   "every route clearing the fixed header". That was true at 390px, which is
+   where it was measured; the desktop half was asserted from `.gh`, the home
+   hero, and never checked against `.tab-pane > .container`, which computes
+   `padding-top: 0`.
+
+**The lesson, and it is the third time this repo has learned it: a
+measurement on one component is not a measurement of the pattern.** When you
+fix something "site-wide", enumerate the sites and measure each. Both the
+contact-bar bug and this one hid in exactly that gap.
+
+Full write-up in `DECISION_LOG.md` (2026-08-29). Sourcing for the Kohalpur
+coordinates is in `CONTENT_SOURCE_LOG.md`.
+
+### Also done, and why it was in scope
+
+Promoting `/admission-process`' title from a `<div>` to an `<h1>` exposed
+**seven other routes with no `<h1>` at all** — `/counseling` opened on an
+`<h2>`, `/life-in-nepal` on an `<h3>`. Outside the four pages named, fixed
+anyway: one tag per page, a real a11y/SEO defect, and fixing one heading
+outline while leaving seven broken is half a job. All 42 routes now have
+exactly one `<h1>`, re-measured for identical font/size/weight/margins.
+
+## 🎯 The next chunk: finish the interiors
+
+Chunk 7 took the four pages it named and no more. The same audit items are
+still open on everything else:
+
+1. **`.foot-top` is a four-column link farm** and the trust-badge row is six
+   equal cards. Both appear on *every* route, so they are worth more than any
+   single page.
+2. **The remaining content routes** — `/why-nepal`, `/faq`, `/guidelines`,
+   `/videos`, `/life-in-nepal`, `/neet-calculator`, `/counseling`. Two of
+   them (`/faq`, `/neet-calculator`) still centre their section header over
+   left-aligned content; `/admission-process` had the same mismatch and the
+   fix was one class.
+3. **Shadows are still neutral rather than hue-tinted** — `--sd-*` in
+   `engine.css` already carries `--dp-hue`, so this is a token change, not a
+   refactor.
+4. **Headline `text-wrap: balance` is still only partly applied.**
+
+`public/assets/theme/interiors.css` is the place for this work — new this
+chunk, loaded after `chrome.css`, with its reasoning in its own header. Its
+first rule is the one to keep: **a layout has to earn its columns.** Two
+columns because the content is two things, not because there is room. The
+map's town list was built side-by-side first and measured wrong — a 912×427
+plot beside an 882px list — and was rebuilt stacked.
+
+Constraints that still hold:
 
 - `npm run csp` after touching any inline `<script>`.
-- Contrast is measured, not assumed — the audit will catch a regression,
-  but it takes ~15 minutes, so run it in the background.
-- No new typeface. `chrome.css` already maps the orphaned `Sora`/`Inter`
-  rules onto the token system.
+- Contrast is measured, not assumed. `tests/audit.mjs` is ~15 min; background
+  it, and remember `set -o pipefail` — piping to `tail` has masked a failure
+  in this repo before.
+- No new typeface.
+- Screenshot with `reducedMotion: 'reduce'`. The home page's reveals are
+  scroll-driven (`animation-timeline: view()`), so a full-page screenshot
+  taken without it renders everything below the fold at opacity 0 and looks
+  like a catastrophically broken page. That cost this session a wrong
+  diagnosis before the setting was found.
 
 ## Blocked on the owner, not on work
 
@@ -101,9 +172,12 @@ at 390px before and after:
   backgrounds from the pre-Phase-3 build while `bridge.css` had flipped
   their text to dark ink. Dark on dark: the two phone numbers were
   effectively invisible. Rebuilt in `public/assets/theme/chrome.css`.
-- ✅ **Fixed-header overlap** — the 69px navbar covered the first element
-  of *every* page at 390px (18–25px). Raised the mobile padding floor; all
-  seven routes re-measured clear.
+- ⚠️ **Fixed-header overlap — this was only half fixed, and said otherwise
+  for three sessions.** The 69px navbar covered the first element of every
+  page at 390px (18–25px); the mobile padding floor was raised and seven
+  routes re-measured clear. **Desktop was never measured.** It overlapped by
+  9px on all 36 inner routes until chunk 7. See the 2026-08-29 entry in
+  `DECISION_LOG.md`. Now clear at 1440, 1024 and 390.
 - ✅ **Admin button hidden from the public** (`chrome.js`) — shown only on
   an existing staff session or `#admin`. Cannot lock the owner out.
 - ✅ **Floating buttons 3 → 2** — the WhatsApp-call floater duplicated what
@@ -248,7 +322,7 @@ dataset means. Do not bulk-fill them.
   the standing to make that call unilaterally on the owner's behalf.
   Revisit only if the owner explicitly decides to change that policy.
 
-## Recommended next chunk, in order
+## Older backlog (pre-chunk-7, still valid but superseded in priority by the section at the top)
 
 1. **Work the 🔴 list above** — resolve each against a primary source
    (the college's own site, or MEC Nepal), then correct
