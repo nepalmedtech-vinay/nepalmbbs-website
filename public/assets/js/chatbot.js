@@ -39,6 +39,12 @@
   var chatHistory = [];
   var chatOpen = false;
 
+  // The last college the visitor named, so "and its seats?" has a subject.
+  // Deliberately the only piece of conversation state there is: anything more
+  // and the assistant starts inferring what was meant, which is the failure
+  // mode this whole component is built to avoid.
+  var lastCollege = null;
+
   /* ── data ─────────────────────────────────────────────────────────────── */
 
   function loadKB() {
@@ -217,6 +223,173 @@
       '<span class="chat-note">Recognition and seat allocation are set per intake year. Verify against the MEC notice for your own year before acting on this.</span>';
   }
 
+  /* ── comparison ───────────────────────────────────────────────────────
+     "IOM vs KMC", "compare Manipal and Nobel". The site already has a
+     side-by-side tool at /colleges/compare; this answers the two-college
+     case inline and points at the tool for anything larger.
+
+     Same fields, same records, same source line as a single-college answer —
+     a comparison is two lookups printed next to each other, not a new claim.
+     Fees are absent here for exactly the reason they are absent everywhere. */
+
+  function comparisonAnswer(list) {
+    var FIELDS = [
+      ['Ownership', 'ownership'], ['Location', 'location'],
+      ['University', 'affiliation'], ['Foreign-quota seats', 'seats'],
+      ['Established', 'established']
+    ];
+
+    var head = '<span class="chat-cmp-row chat-cmp-head"><b></b>' +
+      list.map(function (c) {
+        return '<b>' + esc(c.name.split('(')[0].split(',')[0].trim()) + '</b>';
+      }).join('') + '</span>';
+
+    var body = FIELDS.map(function (f) {
+      return '<span class="chat-cmp-row"><b>' + esc(f[0]) + '</b>' +
+        list.map(function (c) {
+          return '<span>' + (c[f[1]] ? esc(c[f[1]]) : '—') + '</span>';
+        }).join('') + '</span>';
+    }).join('');
+
+    return '<b>Comparing ' + list.length + ' colleges</b>' +
+      '<span class="chat-cmp">' + head + body + '</span>' +
+      '<span class="chat-row"><b>Tuition fee</b> <i>set per intake — not published here for either; we confirm in writing during counselling</i></span>' +
+      '<span class="chat-row"><a href="/colleges/compare">Compare these side by side, with every field →</a></span>' +
+      sourceLine({
+        name: 'MEC Nepal intake data and each college’s own published information',
+        url: 'https://mec.gov.np',
+        checked: KB.reviewed
+      }, 'official') +
+      '<span class="chat-note">Recognition and seat allocation are set per intake year. Verify against the MEC notice for your own year before acting on this.</span>';
+  }
+
+  /* ── questions about the set, not about one college ───────────────────
+     "Which college has the most seats?", "how many government colleges are
+     there?", "which colleges are in Kathmandu?"
+
+     Every one of these is arithmetic over the same committed records the
+     pages render from. Nothing is estimated and nothing is ranked by a
+     quality judgement the site has no basis for — the only orderings offered
+     are ones the data literally contains. */
+
+  function aggregateAnswer(q) {
+    var text = normalise(q);
+    var cols = KB.colleges || [];
+    if (!cols.length) return null;
+
+    var num = function (c) { return parseInt(c.seats, 10) || 0; };
+    var isGovt = function (c) { return /govern/i.test(c.ownership || ''); };
+    var wrap = function (title, body, note) {
+      return '<b>' + esc(title) + '</b>' + body +
+        sourceLine({
+          name: 'Counted from this site’s own college records (MEC Nepal intake data)',
+          url: 'https://mec.gov.np',
+          checked: KB.reviewed
+        }, 'official') +
+        '<span class="chat-note">' + esc(note ||
+          'Seat allocation is set per intake year. Verify against the MEC notice for your own year.') +
+        '</span>';
+    };
+    var list = function (arr) {
+      return '<span class="chat-row">' + arr.slice(0, 12).map(function (c) {
+        return '<a href="/colleges/' + esc(c.slug) + '">' + esc(c.name) + '</a>';
+      }).join(' · ') + (arr.length > 12 ? ' … and ' + (arr.length - 12) + ' more' : '') + '</span>';
+    };
+
+    // Most / fewest seats.
+    if (/\b(most|highest|maximum|largest|biggest)\b/.test(text) && /seat|quota|intake/.test(text)) {
+      var top = cols.slice().sort(function (a, b) { return num(b) - num(a); })[0];
+      return wrap('Most foreign-quota seats',
+        '<span class="chat-row"><b>' + esc(top.name) + '</b> — ' + num(top) + ' seats, ' + esc(top.location) + '</span>' +
+        '<span class="chat-row"><a href="/colleges/' + esc(top.slug) + '">Full record →</a></span>');
+    }
+    if (/\b(fewest|least|lowest|smallest|minimum)\b/.test(text) && /seat|quota|intake/.test(text)) {
+      var low = cols.slice().filter(function (c) { return num(c) > 0; })
+        .sort(function (a, b) { return num(a) - num(b); })[0];
+      return wrap('Fewest foreign-quota seats',
+        '<span class="chat-row"><b>' + esc(low.name) + '</b> — ' + num(low) + ' seats, ' + esc(low.location) + '</span>' +
+        '<span class="chat-row"><a href="/colleges/' + esc(low.slug) + '">Full record →</a></span>');
+    }
+
+    // Counts and totals.
+    if (/how many|number of|total|count/.test(text) && /college|seat|quota/.test(text)) {
+      var govt = cols.filter(isGovt), priv = cols.filter(function (c) { return !isGovt(c); });
+      var sum = function (a) { return a.reduce(function (n, c) { return n + num(c); }, 0); };
+      return wrap('The list, counted',
+        '<span class="chat-row"><b>Colleges</b> ' + cols.length + ' admitting Indian students</span>' +
+        '<span class="chat-row"><b>Foreign-quota seats</b> ' + sum(cols) + ' between them</span>' +
+        '<span class="chat-row"><b>Government</b> ' + govt.length + ' colleges · ' + sum(govt) + ' seats</span>' +
+        '<span class="chat-row"><b>Private</b> ' + priv.length + ' colleges · ' + sum(priv) + ' seats</span>' +
+        '<span class="chat-row"><a href="/colleges">The full list →</a></span>');
+    }
+
+    // Government / private subsets.
+    if (/\bgovernment\b/.test(text) && /college|list|which/.test(text)) {
+      var g = cols.filter(isGovt);
+      return wrap(g.length + ' government colleges', list(g));
+    }
+    if (/\bprivate\b/.test(text) && /college|list|which/.test(text)) {
+      var pv = cols.filter(function (c) { return !isGovt(c); });
+      return wrap(pv.length + ' private colleges', list(pv));
+    }
+
+    // By town or by university — matched against the values actually on the
+    // records, so this cannot name a place the data does not contain.
+    if (/\b(in|at|near|around)\b/.test(text) || /which colleges/.test(text)) {
+      var places = {};
+      cols.forEach(function (c) { if (c.location) places[normalise(c.location)] = c.location; });
+      var hitPlace = null;
+      Object.keys(places).forEach(function (k) {
+        k.split(' ').forEach(function (word) {
+          if (word.length > 3 && text.indexOf(word) !== -1) hitPlace = word;
+        });
+      });
+      if (hitPlace) {
+        var inPlace = cols.filter(function (c) { return normalise(c.location).indexOf(hitPlace) !== -1; });
+        if (inPlace.length) {
+          return wrap(inPlace.length + ' college' + (inPlace.length > 1 ? 's' : '') +
+            ' in ' + hitPlace.charAt(0).toUpperCase() + hitPlace.slice(1), list(inPlace));
+        }
+      }
+
+      var unis = {};
+      cols.forEach(function (c) { if (c.affiliation) unis[normalise(c.affiliation)] = c.affiliation; });
+      var hitUni = null;
+      Object.keys(unis).forEach(function (k) {
+        if (k.length > 6 && text.indexOf(k.split(' ')[0]) !== -1 && /universit|affiliat/.test(text)) hitUni = k;
+      });
+      if (hitUni) {
+        var underUni = cols.filter(function (c) { return normalise(c.affiliation) === hitUni; });
+        if (underUni.length) return wrap(underUni.length + ' colleges under ' + unis[hitUni], list(underUni));
+      }
+    }
+
+    return null;
+  }
+
+  /* ── a NEET score in the question ─────────────────────────────────────
+     "I got 420 in NEET, can I get in?"
+
+     What this must NOT do is convert that number into a percentile or a
+     verdict. The qualifying percentile is published per year by the NTA and
+     the site does not hold this year's cut-off, so any specific answer would
+     be an invented fact — the exact thing rule one forbids. It states the
+     rule that does apply, and hands over to the tool built for it. */
+
+  function neetScoreAnswer(q) {
+    var m = String(q).match(/\b(\d{2,3})\b/);
+    if (!m) return null;
+    if (!/neet|score|marks|percentile|rank/.test(normalise(q))) return null;
+    var topic = (KB.topics || []).filter(function (t) { return t.id === 'neet-requirement'; })[0];
+
+    return '<b>On a NEET score of ' + esc(m[1]) + '</b>' +
+      '<span class="chat-row">I will not turn that number into a yes or a no, because the qualifying percentile is set per year by the NTA and this site does not publish a cut-off it cannot source. Guessing one would be worse than not answering.</span>' +
+      '<span class="chat-row">What does apply: a <b>qualified</b> NEET result is mandatory, at the 50th percentile for General/OBC and the 40th for SC/ST/OBC-PwD, under the NMC’s Foreign Medical Graduate Licentiate Regulations 2021. Whether a given score qualifies depends on that year’s percentile boundary.</span>' +
+      '<span class="chat-row"><a href="/neet-calculator">Check your score against the published rule →</a> · <a href="/counseling">Ask a counsellor →</a></span>' +
+      (topic ? sourceLine(topic.source, topic.status)
+             : sourceLine({ name: 'National Medical Commission, India', url: 'https://nmc.org.in', checked: KB.reviewed }, 'official'));
+  }
+
   var NO_ANSWER =
     '<b>I don’t have a verified answer to that.</b>' +
     '<span class="chat-row">I only answer from information this site has checked against an official source, and that question is outside it. Rather than guess, let me put you to someone who can find out.</span>' +
@@ -226,15 +399,60 @@
     '<b>I can’t reach my reference data right now.</b>' +
     '<span class="chat-row">Rather than answer from memory, here is the direct route: <a href="/counseling">ask a counsellor</a>, or check the official sources at <a href="https://mec.gov.np" target="_blank" rel="noopener">mec.gov.np</a> and <a href="https://nmc.org.in" target="_blank" rel="noopener">nmc.org.in</a>.</span>';
 
+  /* Every college named in the question, longest name first, so "Manipal
+     College of Medical Sciences vs College of Medical Sciences" resolves to
+     two records rather than one twice. */
+  function findColleges(q) {
+    if (!KB || !KB.colleges) return [];
+    var text = ' ' + normalise(q) + ' ';
+    var hits = [];
+    KB.colleges.forEach(function (c) {
+      var short = normalise(c.name.split('(')[0].split(',')[0]);
+      var acro = (c.name.match(/\(([A-Za-z]{2,})\)/) || [])[1];
+      if ((acro && text.indexOf(' ' + acro.toLowerCase() + ' ') !== -1) ||
+          (short.length >= 12 && text.indexOf(' ' + short + ' ') !== -1)) hits.push(c);
+    });
+    return hits;
+  }
+
   function getBotReply(q) {
     if (!KB) return NO_ANSWER;
     if (KB.failed) return LOAD_FAILED;
 
+    var text = normalise(q);
+
+    // Two or more colleges named, and a word asking them to be set against
+    // each other. Both halves are required: "IOM and KMC both take NEET" is
+    // not a comparison request.
+    var named = findColleges(q);
+    if (named.length >= 2 && /\bvs\b|versus|compare|comparison|difference|better|between/.test(text)) {
+      lastCollege = named[0];
+      return comparisonAnswer(named.slice(0, 3));
+    }
+
     var college = findCollege(q);
-    if (college) return collegeAnswer(college, q);
+    if (college) { lastCollege = college; return collegeAnswer(college, q); }
+
+    // A question about the set as a whole is tried before a topic, because
+    // "how many government colleges are there" would otherwise match the
+    // topic keyed on "government".
+    var agg = aggregateAnswer(q);
+    if (agg) return agg;
 
     var topic = findTopic(q);
     if (topic) return esc(topic.answer).replace(/\n/g, '<br>') + sourceLine(topic.source, topic.status);
+
+    var neet = neetScoreAnswer(q);
+    if (neet) return neet;
+
+    // A follow-up with no subject of its own — "and its seats?", "what about
+    // the fees there?" — is answered about the college last named. Only when
+    // the question actually asks for a field, so a bare "thanks" does not
+    // re-print a college record.
+    if (lastCollege && /\b(it|its|there|that one|this college|same)\b/.test(text) &&
+        /seat|quota|location|where|affiliat|universit|establish|founded|ownership|fee|duration/.test(text)) {
+      return collegeAnswer(lastCollege, q);
+    }
 
     return NO_ANSWER;
   }
@@ -298,6 +516,7 @@
   }
 
   function restartChat() {
+    lastCollege = null;
     chatHistory = [];
     var c = document.getElementById('chat-msgs');
     if (c) {

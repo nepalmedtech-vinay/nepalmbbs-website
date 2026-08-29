@@ -293,10 +293,10 @@ section.hero.sliding .hero-content{
 .test-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;transition:all .3s;position:relative}
 .test-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px);border-color:transparent}
 .test-quote-icon{font-size:36px;color:var(--blue);opacity:.2;font-family:Georgia,serif;line-height:1;margin-bottom:8px}
-.test-stars{color:#9a6400;font-size:14px;margin-bottom:12px;letter-spacing:2px}
+.test-stars{color:var(--brand-text);font-size:14px;margin-bottom:12px;letter-spacing:2px}
 .test-text{font-size:13.5px;color:var(--text);line-height:1.78;margin-bottom:18px;font-style:italic}
 .test-author{display:flex;align-items:center;gap:12px}
-.test-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--m-fill),var(--blue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;font-family:'Sora',sans-serif;flex-shrink:0}
+.test-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--brand-lift),var(--brand));display:flex;align-items:center;justify-content:center;color:var(--brand-ink);font-weight:700;font-size:18px;font-family:'Sora',sans-serif;flex-shrink:0}
 .test-name{font-weight:700;color:var(--navy);font-size:14px;font-family:'Sora',sans-serif}
 .test-college{font-size:12px;color:var(--muted);margin-top:2px}
 .test-year{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:4px;background:#dbeafe;color:#1d4ed8}
@@ -373,7 +373,7 @@ section.hero.sliding .hero-content{
 .res-ok h4{color:#6ee7b7}.res-warn h4{color:var(--gold)}
 .result-card p{font-size:13px;color:var(--g-ink-2);line-height:1.65}
 .res-cta{display:inline-block;margin-top:10px;margin-right:8px;background:linear-gradient(135deg,var(--accent),var(--gold));color:var(--navy);padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer}
-.calc-dis{font-size:11px;color:var(--g-ink-4);margin-top:12px;text-align:center;line-height:1.6}
+.calc-dis{font-size:11px;color:var(--g-ink-3);margin-top:12px;text-align:center;line-height:1.6}
 .calc-dis a{color:var(--accent)}
 
 /* GUIDELINES */
@@ -417,7 +417,7 @@ section.hero.sliding .hero-content{
 .vid-info{padding:16px}
 .vid-info h4{font-family:'Sora',sans-serif;font-size:14.5px;font-weight:700;color:var(--navy);margin-bottom:4px;line-height:1.4}
 .vid-info p{font-size:12px;color:var(--muted)}
-.vid-drive-card{background:linear-gradient(135deg,var(--off),#fff);border:2px dashed var(--border);border-radius:var(--r-lg);padding:32px;text-align:center}
+.vid-drive-card{background:linear-gradient(135deg,var(--off),var(--m-fill));border:2px dashed var(--border);border-radius:var(--r-lg);padding:32px;text-align:center}
 .vid-drive-card h4{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:8px}
 .vid-drive-card p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6}
 
@@ -460,7 +460,7 @@ section.hero.sliding .hero-content{
 .curr-note{font-size:10.5px;color:var(--g-ink-4);text-align:center;margin-top:8px}
 
 /* COLLEGE COMPARISON */
-.compare-table{width:100%;border-collapse:collapse;margin-top:24px;background:#fff;border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.compare-table{width:100%;border-collapse:collapse;margin-top:24px;background:var(--m-fill);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
 .compare-table th{background:var(--m-fill);color:var(--g-ink);padding:14px 16px;text-align:left;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 .compare-table th:first-child{width:35%}
 .compare-table td{padding:13px 16px;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--text);vertical-align:top}
@@ -524,8 +524,8 @@ section.hero.sliding .hero-content{
 .chat-suggestions{padding:0 14px 10px;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
 .chat-sug{padding:5px 10px;background:var(--off);border:1px solid var(--border);border-radius:16px;font-size:11.5px;font-weight:600;color:var(--blue);cursor:pointer;transition:all .2s;white-space:nowrap}
 .chat-sug:hover{background:var(--blue);color:#fff;border-color:transparent}
-.chat-restart-btn{padding:6px 12px;background:rgba(232,160,32,.08);border:1px solid rgba(232,160,32,.2);border-radius:8px;font-size:11px;font-weight:700;color:var(--accent);cursor:pointer;margin:0 14px 8px;text-align:center;flex-shrink:0;transition:all .2s}
-.chat-restart-btn:hover{background:rgba(232,160,32,.15)}
+.chat-restart-btn{padding:6px 12px;background:var(--brand-soft);border:1px solid var(--brand-line);border-radius:8px;font-size:11px;font-weight:700;color:var(--brand-text);cursor:pointer;margin:0 14px 8px;text-align:center;flex-shrink:0;transition:all .2s}
+.chat-restart-btn:hover{background:color-mix(in oklab, var(--brand) 20%, transparent)}
 .chat-input-area{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
 .chat-input{flex:1;padding:9px 13px;border:1.5px solid var(--border);border-radius:22px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
 .chat-input:focus{border-color:var(--blue)}
@@ -559,7 +559,7 @@ footer{background:var(--m-fill);padding:56px 24px 24px;border-top:1px solid rgba
 .foot-col a{display:block;color:var(--g-ink-3);font-size:13px;text-decoration:none;margin-bottom:9px;transition:color .2s;cursor:pointer}
 .foot-col a:hover{color:var(--accent)}
 .foot-bottom{padding-top:20px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-.foot-bottom p{font-size:11.5px;color:var(--g-ink-4);line-height:1.6}
+.foot-bottom p{font-size:11.5px;color:var(--g-ink-3);line-height:1.6}
 .foot-bottom a{color:var(--g-ink-3);text-decoration:none}
 
 

@@ -92,15 +92,22 @@
      "Quick Looks". Each is a complete, checked theme — not a colour swap. */
 
   var PRESETS = {
-    midnight: {
-      label: 'Midnight', hint: 'Champagne on midnight — the default',
-      brand: '#D9B26A', brand2: '#4FA88F', ink: '#F2F5F9', base: '#0A0E13',
+    twilight: {
+      label: 'Twilight', hint: 'Champagne on deep slate — the default',
+      /* Deep slate rather than near-black. #0A0E13 was tried first and read
+         as pitch: at that luminance the glass has almost nothing to sit
+         against, every pane collapses to the same flat grey, and the whole
+         interface goes hard rather than deep. #1C232E is roughly four times
+         the luminance — still unmistakably a dark theme, but with enough
+         ground left for a pane to be lighter than it and for the champagne
+         to read as warm light rather than as the only thing on screen. */
+      brand: '#D9B26A', brand2: '#4FA88F', ink: '#F2F5F9', base: '#1C232E',
       /* Deep pools, not pastels. On a dark ground the aurora is the only
          thing giving the glass something to refract, so these carry more
          weight here than in any light preset — hence the higher opacity and
          the larger, softer blobs. */
-      au1: '#14403C', au2: '#1B2A4E', au3: '#40311B', au4: '#2E2338',
-      auOpacity: 0.78, auBlur: 92, auScale: 1.15, auSpeed: 38,
+      au1: '#1E4F49', au2: '#26365E', au3: '#4E3D22', au4: '#3A2C46',
+      auOpacity: 0.72, auBlur: 92, auScale: 1.15, auSpeed: 38,
       mBlur: 30, mOpacity: 0.07, mSaturate: 145, mBorder: 0.17, mInner: 0.11,
       radius: 20, border: 1, shScale: 1, depth: 1,
       tyPair: 'editorial', tyScale: 1, tyWeight: 400, tyWeightD: 600, tyTrack: 0, tyA11y: 1,
@@ -318,10 +325,19 @@
       issues.push({ level: 'fail', ratio: onGlass,
         msg: 'Text on a glass pane is ' + onGlass.toFixed(1) + ':1. Below 4.5:1 it is unreadable for many people.' });
     }
-    var btn = contrast(t.brand, '#FFFFFF');
+    // Judge the button on the ink it will ACTUALLY get, not on white.
+    // apply() flips --brand-ink to the ground when the brand is too light for
+    // white — so a champagne brand renders dark-on-champagne at about 8:1,
+    // while this check reported "White text on the brand colour is 2.0:1" and
+    // warned about a combination the page never paints. A checker that
+    // disagrees with the thing it is checking trains people to ignore it.
+    var btnInk = contrast(t.brand, '#FFFFFF') >= 4.5 ? '#FFFFFF' : t.base;
+    var btn = contrast(t.brand, btnInk);
     if (btn < 4.5) {
       issues.push({ level: 'warn', ratio: btn,
-        msg: 'White text on the brand colour is ' + btn.toFixed(1) + ':1. Buttons may be hard to read.' });
+        msg: 'Button text on the brand colour is ' + btn.toFixed(1) +
+             ':1, using ' + (btnInk === '#FFFFFF' ? 'white' : 'the page ground') +
+             '. Buttons may be hard to read.' });
     }
     return issues;
   }
@@ -342,7 +358,7 @@
   }
 
   function apply(theme, target) {
-    var t = Object.assign({}, PRESETS.midnight, theme || {});
+    var t = Object.assign({}, PRESETS.twilight, theme || {});
     var el = (target || document.documentElement);
     var s = el.style;
 
@@ -415,6 +431,24 @@
       ? t.brand
       : hex(darkenToContrast(brandRgb, deepest, 4.5)));
 
+    // WhatsApp is the one colour on this site that cannot follow the theme:
+    // the green IS the recognition cue, and a champagne WhatsApp button is
+    // not a WhatsApp button. But the SHADE still has to be legible, and
+    // chrome.css had pinned a deepened #076046 chosen against a near-white
+    // page — which measured about 1.5:1 once the ground went to midnight.
+    // Same solve as --brand-text: keep the hue, move it until it clears AA
+    // on whatever ground the theme picked. darkenToContrast already mixes
+    // toward white on a dark ground and toward black on a light one.
+    var waRgb = [37, 211, 102];
+    set('--wa', '#25D366');
+    // Solved at 5:1 rather than 4.5. This label sits on a button that tints
+    // its OWN background with the same green, so the surface it lands on is
+    // a step further from the pane the solve measures against. Measured at
+    // 4.42:1 with a 4.5 target — passing the solve and failing the page.
+    set('--wa-text', contrastRgb(waRgb, deepest) >= 5
+      ? '#25D366'
+      : hex(darkenToContrast(waRgb, deepest, 5)));
+
     // Text on the brand fill flips to dark when the brand is light.
     //
     // The fallback used to be `t.ink`, which is right only while the ink is
@@ -469,7 +503,7 @@
     if (l) apply(l);
     var remote = await pull();
     if (remote) apply(remote);
-    else if (!l) apply(PRESETS.midnight);
+    else if (!l) apply(PRESETS.twilight);
   }
 
   /* Saved looks. Kept in the same admin_settings row family as the theme so
@@ -510,7 +544,7 @@
     SCHEMA: SCHEMA, PRESETS: PRESETS, PAIRS: PAIRS,
     apply: apply, audit: audit, contrast: contrast,
     pull: pull, push: push, init: init,
-    get: function () { return Object.assign({}, PRESETS.midnight, current || local() || {}); },
-    reset: function () { try { localStorage.removeItem(LS_KEY); } catch (e) {} apply(PRESETS.midnight); },
+    get: function () { return Object.assign({}, PRESETS.twilight, current || local() || {}); },
+    reset: function () { try { localStorage.removeItem(LS_KEY); } catch (e) {} apply(PRESETS.twilight); },
   };
 })(window);

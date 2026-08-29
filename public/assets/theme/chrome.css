@@ -16,9 +16,23 @@
    so both were skipped rather than measured — which is why the suite reported
    zero low-contrast elements on a page that plainly had two.
 
-   This file finishes the migration those components missed: it gives them
-   light-theme surfaces so the already-correct dark ink reads, and restyles
-   them in the design system's own terms instead of leftover 2023 chrome.
+   This file finishes the migration those components missed: it restyles them
+   in the design system's own terms instead of leftover 2023 chrome.
+
+   NOTE, 2026-08-29: it originally did that by giving them *light-theme
+   surfaces*, because the engine's ground was light at the time. The ground
+   is now midnight, and almost none of that had to be undone — because the
+   restyle was written against --g-base, --m-fill, --brand and --m-hairline
+   rather than against colours. The only rules that needed changing were the
+   ones that had a literal hex left in them, and there were three: the two
+   WhatsApp buttons (a #076046 deepened for a near-white page, measuring
+   about 1.5:1 on midnight) and the admin button. Those now solve against
+   the live ground in engine.js.
+
+   The lesson is the one bridge.css also demonstrates, and it is worth
+   stating twice because this file is where it was learned the hard way: a
+   component that names tokens survives a palette inversion untouched, and a
+   component that names colours has to be found and fixed by hand every time.
 
    Loads last, after panel.css, so it wins over base/sections/bridge without
    needing to escalate specificity everywhere. !important appears only where
@@ -374,17 +388,20 @@
   color: var(--brand-ink) !important;
 }
 
-/* WhatsApp keeps its own green because people recognise it, but a deepened
-   one that clears AA on this surface rather than the brand's own #25D366. */
+/* WhatsApp keeps its own green because people recognise it. The shade used
+   to be a hard-coded #076046, deepened to clear AA against a near-white
+   page — which is 1.5:1 once the ground is midnight. --wa-text is solved
+   against the live ground in engine.js instead, so it stays legible in
+   either direction and there is no second copy to remember. */
 .cbar-btn-wa {
-  background: color-mix(in oklab, #0B7A55 10%, transparent) !important;
-  border-color: color-mix(in oklab, #0B7A55 30%, transparent) !important;
-  color: #076046 !important;
+  background: color-mix(in oklab, var(--wa) 12%, transparent) !important;
+  border-color: color-mix(in oklab, var(--wa) 34%, transparent) !important;
+  color: var(--wa-text) !important;
 }
 .cbar-btn-wa:hover {
-  background: #0B7A55 !important;
-  border-color: #0B7A55 !important;
-  color: #fff !important;
+  background: var(--wa) !important;
+  border-color: var(--wa) !important;
+  color: #06251A !important;
 }
 
 /* The vertical rules belonged to a single-row flex bar; the grid separates
@@ -498,16 +515,16 @@
    build and measured 1.01:1 — the label was effectively not there. The
    inline style is gone from the markup; this is its replacement. */
 .btn-wa-req {
-  background: color-mix(in oklab, #0B7A55 10%, transparent) !important;
-  border: 1px solid color-mix(in oklab, #0B7A55 30%, transparent) !important;
-  color: #076046 !important;
+  background: color-mix(in oklab, var(--wa) 12%, transparent) !important;
+  border: 1px solid color-mix(in oklab, var(--wa) 34%, transparent) !important;
+  color: var(--wa-text) !important;
   font-size: var(--t-sm) !important;
   padding: 10px 20px !important;
 }
 .btn-wa-req:hover {
-  background: #0B7A55 !important;
-  border-color: #0B7A55 !important;
-  color: #fff !important;
+  background: var(--wa) !important;
+  border-color: var(--wa) !important;
+  color: #06251A !important;
 }
 
 /* Same page, same story: an inline `color: rgba(255,255,255,.8)` left over

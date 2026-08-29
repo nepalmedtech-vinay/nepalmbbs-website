@@ -23,7 +23,7 @@
 
 :root {
   /* ══ 1. GROUND ═════════════════════════════════════════════════════════
-     Midnight. This reverses what this file used to say — "deliberately
+     Deep slate. This reverses what this file used to say — "deliberately
      light; on near-black there is nothing to frost" — and the objection was
      right about the mechanism and wrong about the conclusion.
 
@@ -36,13 +36,18 @@
      to bend. On this ground a pane reads as smoked glass over a lit surface,
      which is the material the owner asked for.
 
+     The ground is deliberately NOT near-black. #0A0E13 was tried and read as
+     pitch: at that luminance every pane collapses to the same flat grey
+     because there is nothing for it to be lighter *than*. Deep slate keeps
+     the theme unmistakably dark while leaving the material room to work.
+
      The other half of the reversal is the ink ramp: on a dark ground the
      ramp fades ink DOWN toward the ground, not up, so every value below is
      re-solved against #0A0E13 rather than inverted by hand. */
 
-  --g-base:        #0A0E13;   /* page ground — midnight         */
-  --g-base-2:      #10151C;   /* secondary bands                */
-  --g-ink:         #F2F5F9;   /* primary text — 14.6:1 on base  */
+  --g-base:        #1C232E;   /* page ground — deep slate       */
+  --g-base-2:      #232B38;   /* secondary bands                */
+  --g-ink:         #F2F5F9;   /* primary text — 12.6:1 on base  */
   /* The ramp is solved, not chosen. engine.js recomputes these per theme by
      fading ink toward the ground until it hits a contrast target against the
      ground; these three are that solve for the default light pair, so the
@@ -68,7 +73,13 @@
      use it run `linear-gradient(--brand, --brand-deep)`, so the value has to
      clear the *lighter* stop, which is --brand itself: near-black on #D9B26A
      is 10.4:1, and on the deep stop it is better still. */
-  --brand-ink:     #0A0E13;   /* text on a brand fill           */
+  --brand-ink:     #1C232E;   /* text on a brand fill           */
+
+  /* WhatsApp. Not themed — the green is the recognition cue — but the text
+     shade is solved against the ground by engine.js, the same way
+     --brand-text is. These two are the pre-JS values for the default theme. */
+  --wa:            #25D366;   /* the fill: WhatsApp's own green  */
+  --wa-text:       #56E08E;   /* lifted to clear AA on the ground */
 
   /* Derived — do not set these directly from the panel. */
   --brand-soft:    color-mix(in oklab, var(--brand) 12%, transparent);
@@ -91,11 +102,11 @@
      pastel blob is a bright smear, while a deep pool reads as light *within*
      the ground. Opacity is up from 0.5 to 0.78 because they have to carry the
      whole job of giving the glass something to refract — see section 1. */
-  --au-1:          #14403C;   /* deep jade    */
-  --au-2:          #1B2A4E;   /* deep indigo  */
-  --au-3:          #40311B;   /* deep bronze  */
-  --au-4:          #2E2338;   /* deep plum    */
-  --au-opacity:    0.78;      /* 0 disables the field entirely  */
+  --au-1:          #1E4F49;   /* deep jade    */
+  --au-2:          #26365E;   /* deep indigo  */
+  --au-3:          #4E3D22;   /* deep bronze  */
+  --au-4:          #3A2C46;   /* deep plum    */
+  --au-opacity:    0.72;      /* 0 disables the field entirely  */
   --au-scale:      1.15;      /* blob size multiplier           */
   --au-blur:       92px;      /* softness                       */
   --au-speed:      38s;       /* one full drift cycle           */

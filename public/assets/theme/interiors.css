@@ -333,3 +333,475 @@
      this it would sit on the row below its own prose with a gap. */
   .doc-step-body + .doc-step-body { margin-top: var(--s-2) !important; }
 }
+
+
+/* ══ The trust row ════════════════════════════════════════════════════════
+   Six equal cards floating in a band, on every route. The problem was not
+   the six — it is six official bodies and all six matter equally, so equal
+   cards are honest — it was that they floated. Nothing tied them together,
+   so the row read as six small links rather than as one statement about
+   where this site's facts come from.
+
+   They are now inside one glass panel with the claim set beside them, which
+   is the same move the document register makes elsewhere: a fact and its
+   source in one enclosure rather than two adjacent things. */
+
+.trust-section { padding: var(--s-7) var(--gutter) !important; }
+
+.trust-in {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--s-6);
+  border-radius: var(--r-lg);
+  background: var(--m-fill-soft);
+  border: 1px solid var(--m-hairline);
+  backdrop-filter: var(--m-filter);
+  -webkit-backdrop-filter: var(--m-filter);
+  box-shadow: var(--sd-2), inset 0 1px 0 var(--m-edge-top);
+  display: grid;
+  grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+  gap: var(--s-6);
+  align-items: center;
+}
+
+/* The label stops being a centred caption and becomes the sentence the row
+   is the evidence for. */
+.trust-title {
+  text-align: left !important;
+  margin: 0 !important;
+  font-family: var(--ty-display);
+  font-size: var(--t-h3) !important;
+  font-weight: var(--w-semi, 600) !important;
+  letter-spacing: var(--ty-tight) !important;
+  text-transform: none !important;
+  line-height: var(--lh-snug);
+  color: var(--g-ink) !important;
+  text-wrap: balance;
+}
+
+.trust-grid {
+  max-width: none !important;
+  margin: 0 !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: var(--s-3) !important;
+}
+
+/* The anchor itself carried the browser's default link blue (#0000EE) —
+   invisible until now only because every child set its own colour. */
+.trust-badge {
+  color: var(--g-ink-2) !important;
+  gap: var(--s-3) !important;
+  padding: var(--s-4) var(--s-2) !important;
+  transition: transform var(--d-2) var(--ea-out),
+              border-color var(--d-2) var(--ea-out),
+              box-shadow var(--d-2) var(--ea-out) !important;
+}
+.trust-badge:hover {
+  transform: translateY(-3px) !important;
+  border-color: var(--brand-line) !important;
+  box-shadow: var(--sd-3), 0 0 0 1px var(--brand-line),
+              0 8px 30px color-mix(in oklab, var(--brand) 18%, transparent) !important;
+}
+.trust-badge-icon { width: 44px !important; height: 44px !important; }
+
+@media (max-width: 64rem) {
+  .trust-in { grid-template-columns: minmax(0, 1fr); gap: var(--s-5); }
+  .trust-title { text-align: center !important; }
+  .trust-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 30rem) {
+  .trust-in { padding: var(--s-4); }
+  .trust-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+
+/* ══ The footer ═══════════════════════════════════════════════════════════
+   A four-column link farm — 2.5fr for the brand and three 1fr columns of
+   seventeen links, every one of them the same size, weight and colour. It
+   is the last thing on every page on the site and it was the least designed
+   thing on it.
+
+   Three changes, no markup moved:
+
+     1. The footer gets a ground of its own. It was transparent, so the page
+        simply ran out rather than ending. A step down plus a hairline reads
+        as a base.
+     2. The columns are re-proportioned and the headings become champagne
+        labels, so the eye can find a column before reading it.
+     3. The links get room and a hover that moves, so seventeen of them stop
+        reading as one grey block. */
+
+/* `hidden` has to actually hide.
+   The HTML attribute maps to `display: none` in the UA stylesheet, which any
+   author `display` rule outranks — and this site has plenty. The visible
+   symptom was "WA Call India" sitting in the footer contact list on every
+   page of the site: the markup carries `hidden aria-hidden="true"`, and
+   base.css's `.foot-contacts a { display: flex }` beat it. It has been
+   showing a link the markup explicitly hides for as long as both rules have
+   coexisted. There was no `[hidden]` rule anywhere in the CSS; there is now.
+
+   Site-wide on purpose — the same trap is set for every `hidden` element
+   with an author display, and this site has several (the theme sheet, the
+   map's hover card, the mobile drawer). */
+[hidden] { display: none !important; }
+
+
+footer {
+  position: relative;
+  background: linear-gradient(180deg,
+      transparent,
+      color-mix(in oklab, var(--g-base) 92%, var(--g-ink) 8%) 22%) !important;
+  border-top: 1px solid var(--m-hairline);
+  padding-top: var(--s-8) !important;
+}
+
+/* One champagne hairline across the top edge, fading out at both ends. It
+   is the only ornament in here and it is what makes the base read as
+   deliberate rather than as the page running out of content. */
+footer::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent,
+      color-mix(in oklab, var(--brand) 55%, transparent) 30%,
+      color-mix(in oklab, var(--brand) 55%, transparent) 70%,
+      transparent);
+  pointer-events: none;
+}
+
+.foot-top {
+  grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr)) !important;
+  gap: var(--s-7) var(--s-6) !important;
+  margin-bottom: var(--s-7) !important;
+}
+
+.foot-desc {
+  font-size: var(--t-sm) !important;
+  line-height: var(--lh-prose) !important;
+  color: var(--g-ink-2) !important;
+  max-width: 34ch !important;
+  text-wrap: pretty;
+}
+
+.foot-h {
+  font-size: var(--t-label) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+  color: var(--brand-text) !important;
+  margin: 0 0 var(--s-4) !important;
+}
+
+/* A hover that moves. Seventeen static grey links read as a block of text;
+   the same seventeen with a 3px shift under the pointer read as a list of
+   things you can do. */
+.foot-col a,
+.foot-contacts a {
+  font-size: var(--t-sm) !important;
+  line-height: 1.5;
+  color: var(--g-ink-2) !important;
+  transition: color var(--d-2) var(--ea-out), transform var(--d-2) var(--ea-out);
+}
+.foot-col a { margin-bottom: var(--s-2) !important; }
+.foot-col a:hover,
+.foot-contacts a:hover {
+  color: var(--brand-text) !important;
+  transform: translateX(3px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .foot-col a:hover, .foot-contacts a:hover { transform: none; }
+}
+
+.foot-contacts { margin-top: var(--s-5); display: grid; gap: 0; }
+.foot-contacts a { margin-bottom: var(--s-2) !important; }
+
+.foot-logo { font-size: var(--t-h3) !important; margin-bottom: var(--s-3) !important; }
+
+.foot-bottom {
+  border-top: 1px solid var(--m-hairline) !important;
+  padding-top: var(--s-5) !important;
+  align-items: flex-start !important;
+  gap: var(--s-5) !important;
+}
+
+/* The disclaimer is the most consequential line in the footer on a site
+   families act on. It gets the provisional register — the same treatment
+   any other standing instruction on this site gets — rather than being one
+   more grey paragraph beside the copyright. */
+.foot-note {
+  max-width: 46ch;
+  padding: var(--s-3) var(--s-4);
+  border-left: 3px solid var(--ev-provisional);
+  border-radius: 0 var(--r-xs) var(--r-xs) 0;
+  background: var(--ev-provisional-bg);
+  color: var(--g-ink-2) !important;
+  font-size: var(--t-xs) !important;
+  line-height: var(--lh-body) !important;
+}
+
+@media (max-width: 60rem) {
+  .foot-top { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
+}
+@media (max-width: 40rem) {
+  .foot-top { grid-template-columns: minmax(0, 1fr) !important; gap: var(--s-6) !important; }
+}
+
+
+/* ══ The material, extended to the rest of the site ═══════════════════════
+   glass.css builds a complete premium material — a masked gradient rim that
+   fades from lit to unlit around the corner, an inner top edge that gives
+   the pane thickness, a pointer-tracked specular, a sheen on the primary
+   button. It is genuinely good, and it was reaching almost nothing: the
+   `.gl-*` classes it is written against appear on the home hero and the
+   standalone preview, and nowhere else. Every other surface on the site —
+   the trust badges, the section nav, the contact blocks, the college and
+   FAQ cards — was a flat fill with a 1px border.
+
+   So this is not a new effect. It is the effect that already existed,
+   applied to the components that actually carry the site.
+
+   Two deliberate exclusions:
+
+     - `.doc` and everything in the document register. trust.css's first
+       rule is "no blur, no glow, no gradient — an effect on a fact makes it
+       look sold", and that is exactly right. The register stays flat.
+     - `.calc-wrap`'s ::before, which is a decorative corner glow rather
+       than an edge. It keeps its own and takes only the depth. */
+
+.trust-badge,
+.tab-card,
+.cbar-block,
+.college-card,
+.why-card,
+.faq-item,
+.life-card,
+.guide-card,
+.off-card,
+.vid-card,
+.test-card,
+.counsel-card {
+  position: relative;
+  isolation: isolate;
+  box-shadow: var(--sd-2), inset 0 1px 0 rgba(255 255 255 / var(--m-inner));
+  transition: transform var(--d-3) var(--ea-out),
+              box-shadow var(--d-3) var(--ea-out),
+              border-color var(--d-3) var(--ea-out);
+}
+
+/* The lit rim. Replaces the crude "linear-gradient over the top 45%"
+   pseudo-elements base.css and components.css used on .trust-badge and
+   .tab-card — same intent, but a rim that follows the corner radius instead
+   of a band that stops halfway down a rounded box. */
+.trust-badge::before,
+.tab-card::before,
+.cbar-block::before,
+.college-card::before,
+.why-card::before,
+.faq-item::before,
+.life-card::before,
+.guide-card::before,
+.off-card::before,
+.vid-card::before,
+.test-card::before,
+.counsel-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  height: auto;
+  border-radius: inherit;
+  padding: var(--sh-border);
+  background: linear-gradient(
+    160deg,
+    var(--m-edge-top) 0%,
+    rgba(255 255 255 / calc(var(--m-border) * 0.15)) 42%,
+    var(--m-edge-bottom) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Lift on hover. `--fx-float` is the panel's own control for this, so a
+   visitor who turns effects down gets a card that stays put. */
+.trust-badge:hover,
+.tab-card:hover,
+.cbar-block:hover,
+.college-card:hover,
+.why-card:hover,
+.life-card:hover,
+.guide-card:hover,
+.off-card:hover,
+.vid-card:hover,
+.counsel-card:hover {
+  transform: translate3d(0, calc(-3px * var(--fx-float)), 0);
+  border-color: var(--brand-line) !important;
+  box-shadow:
+    var(--sd-4),
+    0 10px 34px color-mix(in oklab, var(--brand) calc(16% * var(--fx-glow)), transparent),
+    inset 0 1px 0 rgba(255 255 255 / calc(var(--m-inner) * 1.5));
+}
+
+.calc-wrap, .curr-wrap {
+  box-shadow: var(--sd-3), inset 0 1px 0 rgba(255 255 255 / var(--m-inner));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trust-badge, .tab-card, .cbar-block, .college-card, .why-card, .faq-item,
+  .life-card, .guide-card, .off-card, .vid-card, .test-card, .counsel-card {
+    transition: none;
+  }
+  .trust-badge:hover, .tab-card:hover, .cbar-block:hover, .college-card:hover,
+  .why-card:hover, .life-card:hover, .guide-card:hover, .off-card:hover,
+  .vid-card:hover, .counsel-card:hover { transform: none; }
+}
+
+
+/* ══ Champagne, used as light ═════════════════════════════════════════════
+   On a light ground the brand does its work as a fill. On midnight a warm
+   light hue reads as a light SOURCE, and the cheapest way to make a dark
+   interface look expensive is to let one warm colour behave like it is lit
+   rather than painted. Three places only — a glow on everything would be
+   the Vegas version of this idea. */
+
+/* The primary action. Gets the ambient it would cast if it were emitting. */
+.btn-primary, .college-enquire, .calc-btn, .sbtn, .a-btn {
+  box-shadow:
+    var(--sd-2),
+    0 8px 26px color-mix(in oklab, var(--brand) calc(24% * var(--fx-glow)), transparent);
+}
+.btn-primary:hover, .college-enquire:hover, .calc-btn:hover,
+.sbtn:hover, .a-btn:hover {
+  box-shadow:
+    var(--sd-3),
+    0 12px 38px color-mix(in oklab, var(--brand) calc(36% * var(--fx-glow)), transparent);
+}
+
+/* Focus. The ring was a flat brand outline; on a dark ground it needs the
+   halo to separate from the pane behind it. Keeps the same 3px geometry the
+   engine's --focus-ring defines, so nothing about keyboard behaviour moves. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow:
+    var(--focus-ring),
+    0 0 0 6px color-mix(in oklab, var(--brand) 16%, transparent);
+}
+
+
+/* ══ The assistant's comparison table ═════════════════════════════════════
+   The assistant can now answer "IOM vs KMC" inline. Two or three colleges,
+   the same fields its single-college answer prints, in a grid narrow enough
+   for the chat panel — which is why it caps at three: a fourth column inside
+   a 22rem panel stops being a table and starts being a horizontal scroll.
+   Anything larger is what /colleges/compare is for, and the answer says so.
+
+   `--n` is set from the column count so one rule handles two and three. */
+
+.chat-cmp {
+  display: block;
+  margin: var(--s-3) 0 var(--s-2);
+  border-top: 1px solid var(--m-hairline);
+}
+
+.chat-cmp-row {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 1fr) repeat(auto-fit, minmax(0, 1fr));
+  gap: var(--s-2);
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--m-hairline);
+  font-size: var(--t-xs);
+  line-height: 1.4;
+  align-items: baseline;
+}
+
+.chat-cmp-row > b:first-child {
+  color: var(--g-ink-3);
+  font-weight: 600;
+}
+
+.chat-cmp-row > span { color: var(--g-ink); font-variant-numeric: tabular-nums; }
+
+/* The header row carries the college names, so it is the one place the
+   display face earns its keep in a 12px table. */
+.chat-cmp-head { border-bottom-color: var(--brand-line); }
+.chat-cmp-head > b {
+  font-family: var(--ty-display);
+  font-size: var(--t-sm);
+  color: var(--g-ink);
+  letter-spacing: var(--ty-tight);
+}
+
+
+/* ══ Links nobody styled ══════════════════════════════════════════════════
+   The single largest contrast failure in the palette inversion, and it was
+   not caused by the inversion: 54 of the 94 elements the audit flagged were
+   plain `<a>` tags with no class, inside `.doc-note` and a few prose blocks,
+   rendering in the browser's default `#0000EE`.
+
+   That was 2.3:1 on the old near-white ground — bad, and quiet enough that
+   nobody looked. On midnight it is 1.55:1, which is where it finally became
+   impossible to miss. The links were always wrong; the dark ground only made
+   them loud about it.
+
+   A content link with no component styling now takes the brand's text
+   colour, which the engine solves against whatever ground is live. Scoped to
+   `main` and `footer` so it cannot reach the nav, the chat or a button that
+   happens to be an anchor. */
+
+main a:not([class]),
+footer a:not([class]),
+.doc-note a,
+.doc-empty-body a {
+  color: var(--brand-text);
+  text-underline-offset: 2px;
+}
+main a:not([class]):hover,
+footer a:not([class]):hover,
+.doc-note a:hover { color: var(--g-ink); }
+
+
+/* ══ The appearance control ═══════════════════════════════════════════════
+   Sits between the language switch and the CTA, at the same weight as the
+   language switch — it is the same kind of control (a preference about how
+   the site is presented), and giving it more presence than "Free Counseling"
+   would be the wrong priority on a page whose job is admissions. */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  padding: 0;
+  border-radius: var(--r-xs);
+  background: var(--m-fill);
+  border: 1px solid var(--m-hairline);
+  color: var(--g-ink-2);
+  cursor: pointer;
+  transition: color var(--d-2) var(--ea-out),
+              border-color var(--d-2) var(--ea-out),
+              background var(--d-2) var(--ea-out);
+}
+.theme-toggle svg { width: 17px; height: 17px; }
+.theme-toggle:hover,
+.theme-toggle[aria-expanded='true'] {
+  color: var(--brand-text);
+  border-color: var(--brand-line);
+  background: var(--brand-soft);
+}
+
+/* Below the point where the nav collapses to a burger the CTA is already
+   hidden; the control follows it into the drawer's territory rather than
+   crowding a 390px bar. */
+@media (max-width: 56rem) {
+  .theme-toggle { width: 30px; height: 30px; }
+  .theme-toggle svg { width: 15px; height: 15px; }
+}
+
+/* Was an inline `color:#92400e` in guidelines.astro — an amber picked for a
+   near-white page, and inline, so no stylesheet could reach it. */
+.doc-note-link { color: var(--brand-text); font-weight: 700; }

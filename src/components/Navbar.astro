@@ -13,6 +13,25 @@
   </div>
   <div class="nav-right">
     <div class="lang-sw"><button class="lbtn on" data-act="click" data-do='[["setLang","en"]]'>EN</button><button class="lbtn" data-act="click" data-do='[["setLang","hi"]]'>हि</button></div>
+    {/* The appearance control. The theme engine, its seven presets and every
+        colour/type/shape/motion slider have existed since Phase 3/4 — but
+        runtime.js only mounts the panel when a `#theme-toggle` is present,
+        and no live page had one. The whole customiser shipped behind a
+        button that was never built, reachable only from /preview.
+
+        So this is the button, not a new feature: one element turns on light
+        and dark presets, the two brand colour pickers, the type pairing, the
+        corner radius, depth, glass and motion controls, all of which persist
+        per visitor in localStorage. */}
+    <button id="theme-toggle" class="theme-toggle" type="button"
+            aria-expanded="false" aria-controls="theme-panel"
+            aria-label="Appearance settings" title="Appearance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 3a9 9 0 0 0 0 18" fill="currentColor" stroke="none" />
+      </svg>
+    </button>
     <a class="nav-cta" href="/counseling" data-en="Free Counseling →" data-hi="निःशुल्क काउंसलिंग →">Free Counseling →</a>
   </div>
   <div class="hbg" id="hbg" data-act="click" data-do='[["toggleMenu"]]'><span></span><span></span><span></span></div>

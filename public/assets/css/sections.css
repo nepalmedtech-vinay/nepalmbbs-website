@@ -138,9 +138,9 @@ section.hero {
   box-shadow: 0 0 16px color-mix(in oklab, var(--brand) 26%, transparent);
 }
 .cbar-btn-wa {
-  background: color-mix(in oklab, #25D366 16%, transparent);
-  border: 1px solid color-mix(in oklab, #25D366 34%, transparent);
-  color: var(--wa-text, #5BE58E) !important;
+  background: color-mix(in oklab, var(--wa) 16%, transparent);
+  border: 1px solid color-mix(in oklab, var(--wa) 34%, transparent);
+  color: var(--wa-text) !important;
 }
 .cbar-btn-wa:hover {
   background: rgba(37,211,102,0.28);

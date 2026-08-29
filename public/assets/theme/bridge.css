@@ -128,12 +128,12 @@
      the brand: this is the register that says "verified / provisional /
      caution", and collapsing it into one colour would cost the distinction
      the whole trust system rests on. */
-  --ev-verified:       #5FC79B;
-  --ev-verified-bg:    color-mix(in oklab, #5FC79B 16%, transparent);
-  --ev-provisional:    #E0B65C;
-  --ev-provisional-bg: color-mix(in oklab, #E0B65C 16%, transparent);
-  --ev-caution:        #F08A80;
-  --ev-caution-bg:     color-mix(in oklab, #F08A80 16%, transparent);
+  --ev-verified:       #74D6AC;
+  --ev-verified-bg:    color-mix(in oklab, #74D6AC 14%, transparent);
+  --ev-provisional:    #E8C674;
+  --ev-provisional-bg: color-mix(in oklab, #E8C674 14%, transparent);
+  --ev-caution:        #F79C92;
+  --ev-caution-bg:     color-mix(in oklab, #F79C92 14%, transparent);
   --ev-neutral:        var(--g-ink-3);
   --ev-neutral-bg:     color-mix(in oklab, var(--g-ink) 8%, transparent);
 
