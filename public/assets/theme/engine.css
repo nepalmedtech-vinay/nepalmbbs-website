@@ -23,31 +23,52 @@
 
 :root {
   /* ══ 1. GROUND ═════════════════════════════════════════════════════════
-     The page's base. Deliberately light — a glass system needs light and
-     colour behind it to refract; on near-black there is nothing to frost. */
+     Midnight. This reverses what this file used to say — "deliberately
+     light; on near-black there is nothing to frost" — and the objection was
+     right about the mechanism and wrong about the conclusion.
 
-  --g-base:        #F4F6FB;   /* page ground                    */
-  --g-base-2:      #EBEFF8;   /* secondary bands                */
-  --g-ink:         #0F1420;   /* primary text                   */
+     What glass needs is not a *light* ground, it is a ground with luminance
+     and hue VARIATION behind the pane. A flat near-black gives a frosted
+     panel nothing to pick up and the material collapses into a grey box.
+     The answer is not to go back to light, it is to make the field do its
+     job: section 3's aurora is now four deep chromatic pools rather than
+     four pastels, at higher opacity, so there is real light under the glass
+     to bend. On this ground a pane reads as smoked glass over a lit surface,
+     which is the material the owner asked for.
+
+     The other half of the reversal is the ink ramp: on a dark ground the
+     ramp fades ink DOWN toward the ground, not up, so every value below is
+     re-solved against #0A0E13 rather than inverted by hand. */
+
+  --g-base:        #0A0E13;   /* page ground — midnight         */
+  --g-base-2:      #10151C;   /* secondary bands                */
+  --g-ink:         #F2F5F9;   /* primary text — 14.6:1 on base  */
   /* The ramp is solved, not chosen. engine.js recomputes these per theme by
      fading ink toward the ground until it hits a contrast target against the
      ground; these three are that solve for the default light pair, so the
      paint before JS runs matches the paint after it.
      Do not hand-pick a value here that "looks about right" — the previous set
      did, and roughly 890 pieces of text on the site sat below WCAG AA. */
-  --brand-text:    #0B6154;   /* brand as TEXT — 4.5:1 on the deepest glass */
-  --g-ink-2:       #4F5460;   /* secondary text        — 7.0:1 on base */
-  --g-ink-3:       #6D717C;   /* tertiary / captions   — 4.5:1 on base */
-  --g-ink-4:       #8A8F98;   /* placeholder, disabled — 3.0:1, never body copy */
+  --brand-text:    #E3C289;   /* brand as TEXT — 9.7:1 on base  */
+  --g-ink-2:       #BAC2CE;   /* secondary text        — 8.9:1 on base */
+  --g-ink-3:       #939BA8;   /* tertiary / captions   — 5.5:1 on base */
+  --g-ink-4:       #6C7480;   /* placeholder, disabled — 3.3:1, never body copy */
 
   /* ══ 2. BRAND ══════════════════════════════════════════════════════════
      One brand hue and one counter-hue. Everything tinted downstream derives
      from these two, so the admin panel needs only two colour pickers to
      re-skin the entire site coherently. */
 
-  --brand:         #0E7C6B;   /* primary action, links, focus   */
-  --brand-2:       #E2703A;   /* counter accent, highlights     */
-  --brand-ink:     #FFFFFF;   /* text on a brand fill           */
+  --brand:         #D9B26A;   /* champagne — primary action, links, focus */
+  --brand-2:       #4FA88F;   /* jade — counter accent, highlights */
+
+  /* Dark, not white. --brand-ink is "text on a brand fill" everywhere in the
+     system (16 rules across six sheets), and champagne is a LIGHT fill — the
+     white this used to hold would sit at about 1.9:1 on it. The buttons that
+     use it run `linear-gradient(--brand, --brand-deep)`, so the value has to
+     clear the *lighter* stop, which is --brand itself: near-black on #D9B26A
+     is 10.4:1, and on the deep stop it is better still. */
+  --brand-ink:     #0A0E13;   /* text on a brand fill           */
 
   /* Derived — do not set these directly from the panel. */
   --brand-soft:    color-mix(in oklab, var(--brand) 12%, transparent);
@@ -65,14 +86,19 @@
      and becomes the subject — the glass then reads as a filter over a
      rainbow rather than as a material. These are the same hues at roughly
      half the saturation, which is where the panes start to look like glass. */
-  --au-1:          #BCE4DA;   /* jade      */
-  --au-2:          #C9D3F2;   /* periwinkle*/
-  --au-3:          #F3DCC8;   /* apricot   */
-  --au-4:          #E7D2E0;   /* blush     */
-  --au-opacity:    0.5;       /* 0 disables the field entirely  */
-  --au-scale:      1;         /* blob size multiplier           */
-  --au-blur:       84px;      /* softness                       */
-  --au-speed:      34s;       /* one full drift cycle           */
+  /* Deep, not pastel. These are the same four hues the light build used, but
+     placed at the bottom of the value range instead of the top: on midnight a
+     pastel blob is a bright smear, while a deep pool reads as light *within*
+     the ground. Opacity is up from 0.5 to 0.78 because they have to carry the
+     whole job of giving the glass something to refract — see section 1. */
+  --au-1:          #14403C;   /* deep jade    */
+  --au-2:          #1B2A4E;   /* deep indigo  */
+  --au-3:          #40311B;   /* deep bronze  */
+  --au-4:          #2E2338;   /* deep plum    */
+  --au-opacity:    0.78;      /* 0 disables the field entirely  */
+  --au-scale:      1.15;      /* blob size multiplier           */
+  --au-blur:       92px;      /* softness                       */
+  --au-speed:      38s;       /* one full drift cycle           */
 
   /* ══ 4. MATERIAL ═══════════════════════════════════════════════════════
      The glass itself. These five are the controls that actually decide
@@ -80,21 +106,33 @@
      panel exposes all of them because the right value is a taste call, not
      a constant. */
 
+  /* The tint stays white and the OPACITY carries the theme. White at 62% over
+     a light ground is a bright pane; white at 7% over midnight is smoked
+     glass. Same material, same five controls, one number moved — which is
+     the property this section was built for. The edge values drop hard for
+     the same reason: a 0.62 white top-edge that read as a highlight on light
+     is a hard bright line on dark. */
+
   --m-tint:        255 255 255;  /* glass body, as an RGB triple */
-  --m-opacity:     0.62;         /* how much body it has         */
-  --m-blur:        26px;         /* backdrop blur radius         */
-  --m-saturate:    172%;         /* colour boost behind the pane */
-  --m-border:      0.62;         /* top-edge highlight strength  */
-  --m-inner:       0.42;         /* inner sheen strength         */
+  --m-opacity:     0.07;         /* how much body it has         */
+  --m-blur:        30px;         /* backdrop blur radius         */
+  --m-saturate:    145%;         /* colour boost behind the pane */
+  --m-border:      0.17;         /* top-edge highlight strength  */
+  --m-inner:       0.11;         /* inner sheen strength         */
 
   /* Derived material surfaces. */
   --m-fill:        rgba(var(--m-tint) / var(--m-opacity));
-  --m-fill-soft:   rgba(var(--m-tint) / calc(var(--m-opacity) * 0.66));
-  --m-fill-solid:  rgba(var(--m-tint) / 0.94);
+  --m-fill-soft:   rgba(var(--m-tint) / calc(var(--m-opacity) * 0.55));
+  /* Was a hard-coded `rgba(tint / 0.94)` — a near-opaque WHITE panel, which
+     is correct on a light ground and a flashlight on a dark one. Derived from
+     the ground now, so "the opaque version of the glass" means the same thing
+     in either direction. */
+  --m-fill-solid:  color-mix(in oklab, var(--g-base) 86%, white 14%);
   --m-filter:      blur(var(--m-blur)) saturate(var(--m-saturate));
   --m-edge-top:    rgba(255 255 255 / var(--m-border));
   --m-edge-bottom: rgba(255 255 255 / calc(var(--m-border) * 0.28));
-  --m-hairline:    rgba(15 20 32 / 0.07);
+  /* Also inverted: a dark hairline is invisible on a dark ground. */
+  --m-hairline:    rgba(255 255 255 / 0.10);
 
   /* ══ 5. SHAPE ══════════════════════════════════════════════════════════ */
 

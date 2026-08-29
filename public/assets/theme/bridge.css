@@ -11,26 +11,32 @@
    re-skins to the glass palette.
 
    The one thing that makes this work is that the mapping is SEMANTIC, not
-   literal. The old palette was dark: --navy was a dark surface, --text was
-   near-white, --border was a light hairline on dark. The new palette is light.
-   Aliasing by value would produce white text on white. Each token below is
-   therefore mapped by the ROLE it played, which flips light and dark where it
-   has to:
+   literal. Each token below is mapped by the ROLE it played, never by its
+   value — which is the property that has now survived the palette being
+   inverted twice.
 
        old role                     new role
-       --navy   dark surface   ->   translucent light glass
-       --text   near-white     ->   near-black ink
-       --muted  dim grey-blue  ->   mid grey on light
-       --border light hairline ->   dark hairline
+       --navy   dark surface   ->   the ink colour (it was used as text)
+       --text   near-white     ->   whatever the ground says is legible
+       --muted  dim grey-blue  ->   the ramp's tertiary step
+       --border light hairline ->   --m-hairline, which follows the ground
+
+   Worth reading before editing anything here: this file was written when the
+   engine went light, and its comments described that specific direction
+   ("now a dark hairline drawn on light"). The engine has since gone to a
+   midnight ground, and almost nothing in this file needed to change — because
+   the mappings point at --g-ink, --g-base and --m-* rather than at colours.
+   The handful that DID need changing were the ones that had a literal hex in
+   them. That is the lesson this file exists to demonstrate; keep it that way.
 
    Load order: after engine.css, before the legacy stylesheets. */
 
 :root {
 
   /* ── Surfaces ─────────────────────────────────────────────────────
-     The old dark surfaces become glass. Deliberately translucent rather than
-     a flat light colour, so anything that used --navy as a card background
-     now refracts the aurora like the rest of the site. */
+     The old flat surfaces become glass. Deliberately translucent rather than
+     a flat colour, so anything that used --navy as a card background refracts
+     the aurora like the rest of the site. */
 
   /* --navy keeps its original meaning: the dark brand colour. It was used as
      dark text on light chips 32 times and as a dark panel fill 24 times, and a
@@ -40,7 +46,7 @@
      instead, so this can stay dark and every text usage is correct. */
   --navy:        var(--g-ink);
   /* -1 and -2 were only ever surfaces — never text — so unlike --navy they
-     stay light. Aliasing them to ink painted the hero's own ancestor dark. */
+     stay as glass. Aliasing them to ink painted the hero's own ancestor. */
   --navy-1:      var(--m-fill-soft);
   --navy-2:      var(--m-fill);
   --off:         color-mix(in oklab, var(--g-base) 92%, var(--g-ink) 8%);
@@ -79,13 +85,15 @@
   --blue-dim:    var(--brand-soft);
   --blue-border: var(--brand-line);
 
-  --green:       #0F8A5F;
-  --green-dim:   color-mix(in oklab, #0F8A5F 14%, transparent);
-  --teal:        var(--brand);
-  --red:         #C2321F;
+  /* Lifted with the rest of the ramp: #0F8A5F and #C2321F were picked to
+     clear 4.5:1 on near-white and sit at roughly 2:1 on midnight. */
+  --green:       #56C08E;
+  --green-dim:   color-mix(in oklab, #56C08E 16%, transparent);
+  --teal:        var(--brand-2);
+  --red:         #EE8478;
 
   /* ── Lines ────────────────────────────────────────────────────────
-     Was a light hairline drawn on dark; now a dark hairline drawn on light. */
+     Follows --m-hairline, which the engine flips with the ground. */
 
   --border:           var(--m-hairline);
   --glass-bg:         var(--m-fill-soft);
@@ -97,10 +105,10 @@
 
   /* ── Trust register ───────────────────────────────────────────────
      trust.css is entirely token-driven, so re-pointing these re-skins the
-     whole document register with no edit to that file. It was a darker panel
-     on a dark page; it is now a denser, less translucent panel on a light one
-     — the contrast against its surroundings is what carried the meaning, and
-     that survives the inversion. */
+     whole document register with no edit to that file. What carries the
+     meaning is the register's contrast against its surroundings, not its
+     absolute lightness — which is why these four are color-mix() of the
+     ground with the ink and have now survived two inversions untouched. */
 
   --doc-bg:        color-mix(in oklab, var(--g-base) 96%, var(--g-ink) 4%);
   --doc-bg-alt:    color-mix(in oklab, var(--g-base) 91%, var(--g-ink) 9%);
@@ -109,14 +117,23 @@
   --doc-text:      var(--g-ink);
   --doc-text-mute: var(--g-ink-3);
 
-  /* Evidence states, restated for a light ground — the dark-mode versions
-     were too pale to read here. */
-  --ev-verified:       #086244;
-  --ev-verified-bg:    color-mix(in oklab, #0B7A55 12%, transparent);
-  --ev-provisional:    #8A5A08;
-  --ev-provisional-bg: color-mix(in oklab, #8A5A08 12%, transparent);
-  --ev-caution:        #B3261E;
-  --ev-caution-bg:     color-mix(in oklab, #B3261E 12%, transparent);
+  /* Status colours, re-solved for a dark ground.
+     These were dark inks chosen to clear 4.5:1 on near-white (#086244,
+     #8A5A08, #B3261E). On midnight they invert: the same three hues taken
+     to the light end of their range, where they clear 4.5:1 against #0A0E13
+     instead. The fills go up from 12% to 16% because a tint that reads as a
+     wash on white disappears entirely on black.
+
+     Deliberately still three distinguishable hues rather than three shades of
+     the brand: this is the register that says "verified / provisional /
+     caution", and collapsing it into one colour would cost the distinction
+     the whole trust system rests on. */
+  --ev-verified:       #5FC79B;
+  --ev-verified-bg:    color-mix(in oklab, #5FC79B 16%, transparent);
+  --ev-provisional:    #E0B65C;
+  --ev-provisional-bg: color-mix(in oklab, #E0B65C 16%, transparent);
+  --ev-caution:        #F08A80;
+  --ev-caution-bg:     color-mix(in oklab, #F08A80 16%, transparent);
   --ev-neutral:        var(--g-ink-3);
   --ev-neutral-bg:     color-mix(in oklab, var(--g-ink) 8%, transparent);
 

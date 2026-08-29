@@ -12,11 +12,11 @@
 section.hero {
   background: linear-gradient(
     135deg,
-    #0f1724 0%,
-    #0d2144 25%,
-    #0a3060 50%,
-    #0d2144 75%,
-    #0f1724 100%
+    var(--g-base) 0%,
+    color-mix(in oklab, var(--g-base) 82%, var(--brand) 18%) 25%,
+    color-mix(in oklab, var(--g-base) 70%, var(--brand) 30%) 50%,
+    color-mix(in oklab, var(--g-base) 82%, var(--brand) 18%) 75%,
+    var(--g-base) 100%
   ) !important;
   background-size: 400% 400% !important;
   animation: heroGradientShift 8s ease infinite !important;
@@ -28,13 +28,14 @@ section.hero {
 }
 .hero-slides { background: transparent !important; }
 
-/* Each slide has its own gradient fallback color */
-.hero-slide { background-color: #0a2040 !important; }
-.hero-slide:nth-child(1)  { background-color: #0f1f3d !important; }
-.hero-slide:nth-child(2)  { background-color: #0d2540 !important; }
-.hero-slide:nth-child(3)  { background-color: #0a1e38 !important; }
-.hero-slide:nth-child(4)  { background-color: #102030 !important; }
-.hero-slide:nth-child(5)  { background-color: #0e1f35 !important; }
+/* Each slide had its own hard-coded navy. They are now steps along the
+   ground, so the fallback follows the theme instead of being five blues. */
+.hero-slide { background-color: var(--g-base) !important; }
+.hero-slide:nth-child(1)  { background-color: color-mix(in oklab, var(--g-base) 94%, var(--brand) 6%) !important; }
+.hero-slide:nth-child(2)  { background-color: color-mix(in oklab, var(--g-base) 90%, var(--brand-2) 10%) !important; }
+.hero-slide:nth-child(3)  { background-color: color-mix(in oklab, var(--g-base) 94%, var(--g-ink) 6%) !important; }
+.hero-slide:nth-child(4)  { background-color: color-mix(in oklab, var(--g-base) 88%, var(--brand) 12%) !important; }
+.hero-slide:nth-child(5)  { background-color: color-mix(in oklab, var(--g-base) 92%, var(--brand-2) 8%) !important; }
 
 /* Hero content always visible — premium look even without images */
 .hero-content {
@@ -42,20 +43,22 @@ section.hero {
   z-index: 5 !important;
 }
 .hero-title, .hero h1 {
-  color: #f0f4ff !important;
-  text-shadow: 0 2px 40px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1) !important;
+  color: var(--g-ink) !important;
+  text-shadow: none !important;
   font-weight: 800 !important;
 }
 .hero-sub, .hero p {
-  color: rgba(200,212,232,0.92) !important;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.6) !important;
+  color: var(--g-ink-2) !important;
+  text-shadow: none !important;
 }
 
 /* ── CONTACT BAR — PREMIUM (Apple/Stripe reference) ── */
 .cbar {
-  background: linear-gradient(180deg, #101828 0%, #0d1f38 100%) !important;
-  border-top: 1px solid rgba(255,255,255,0.08) !important;
-  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  background: linear-gradient(180deg,
+      color-mix(in oklab, var(--g-base) 94%, var(--brand) 6%) 0%,
+      var(--g-base) 100%) !important;
+  border-top: 1px solid var(--m-hairline) !important;
+  border-bottom: 1px solid var(--m-hairline) !important;
   padding: 0 !important;
 }
 .cbar-inner {
@@ -98,12 +101,12 @@ section.hero {
   font-family: 'Sora', sans-serif;
   font-size: 14.5px;
   font-weight: 700;
-  color: #f0f4ff !important;
+  color: var(--g-ink) !important;
   text-decoration: none !important;
   letter-spacing: -0.3px;
   white-space: nowrap;
 }
-.cbar-number:hover { color: #f0a500 !important; }
+.cbar-number:hover { color: var(--brand-text) !important; }
 .cbar-actions {
   display: flex;
   gap: 6px;
@@ -121,19 +124,23 @@ section.hero {
   transition: all 0.2s;
   letter-spacing: 0.01em;
 }
+/* Call and WhatsApp were a hard blue and a hard green picked against the
+   original navy. The call action follows the brand; WhatsApp keeps its own
+   green because that green IS the recognition cue, and is lifted to a shade
+   that reads on either ground rather than left at #4ade80. */
 .cbar-btn-call {
-  background: rgba(59,130,246,0.18);
-  border: 1px solid rgba(59,130,246,0.35);
-  color: #93c5fd !important;
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-line);
+  color: var(--brand-text) !important;
 }
 .cbar-btn-call:hover {
-  background: rgba(59,130,246,0.30);
-  box-shadow: 0 0 16px rgba(59,130,246,0.3);
+  background: color-mix(in oklab, var(--brand) 22%, transparent);
+  box-shadow: 0 0 16px color-mix(in oklab, var(--brand) 26%, transparent);
 }
 .cbar-btn-wa {
-  background: rgba(37,211,102,0.16);
-  border: 1px solid rgba(37,211,102,0.32);
-  color: #4ade80 !important;
+  background: color-mix(in oklab, #25D366 16%, transparent);
+  border: 1px solid color-mix(in oklab, #25D366 34%, transparent);
+  color: var(--wa-text, #5BE58E) !important;
 }
 .cbar-btn-wa:hover {
   background: rgba(37,211,102,0.28);
@@ -156,109 +163,111 @@ section.hero {
 
 /* ── STEP CARDS — Dark readable text ── */
 .step-card {
-  background: #ffffff !important;
-  border: 1px solid rgba(0,0,0,0.08) !important;
-  color: #1e293b !important;
+  background: var(--m-fill) !important;
+  border: 1px solid var(--m-hairline) !important;
+  color: var(--g-ink-2) !important;
 }
 .step-title {
-  color: #0f172a !important;
+  color: var(--g-ink) !important;
   font-weight: 700 !important;
   font-size: 17px !important;
 }
 .step-body, .step-body p, .step-body li {
-  color: #334155 !important;
+  color: var(--g-ink-2) !important;
   font-size: 14px !important;
   line-height: 1.75 !important;
   font-weight: 450 !important;
 }
-.step-body strong { color: #0f172a !important; font-weight: 700 !important; }
+.step-body strong { color: var(--g-ink) !important; font-weight: 700 !important; }
 .step-num {
-  background: #1a3a8f !important;
-  color: #ffffff !important;
+  background: var(--brand) !important;
+  color: var(--brand-ink) !important;
   font-weight: 800 !important;
 }
 .step-icon { font-size: 28px !important; }
 .step-link a {
-  color: #1d4ed8 !important;
+  color: var(--brand-text) !important;
   font-weight: 600 !important;
   text-decoration: none !important;
 }
 .step-link a:hover { color: var(--brand-deep) !important; }
 
-/* Why Nepal cards — dark text on white bg */
+/* Why Nepal cards. Were a hard white panel with slate text; now the glass
+   material, so they refract the field like every other surface. */
 .why-card {
-  background: #ffffff !important;
-  color: #334155 !important;
+  background: var(--m-fill) !important;
+  color: var(--g-ink-2) !important;
 }
-.why-card h4 { color: #0f172a !important; font-weight: 700 !important; }
-.why-card p, .why-card li { color: #475569 !important; font-size: 14px !important; }
+.why-card h4 { color: var(--g-ink) !important; font-weight: 700 !important; }
+.why-card p, .why-card li { color: var(--g-ink-2) !important; font-size: 14px !important; }
 
 /* Comparison table — dark text */
-.comp-table th { background: #1a3a8f !important; color: #ffffff !important; font-weight: 700 !important; }
-.comp-table td { color: #1e293b !important; background: #ffffff !important; }
-.comp-table tr:nth-child(even) td { background: #f8fafc !important; }
+.comp-table th { background: var(--brand) !important; color: var(--brand-ink) !important; font-weight: 700 !important; }
+.comp-table td { color: var(--g-ink-2) !important; background: var(--m-fill-soft) !important; }
+.comp-table tr:nth-child(even) td { background: var(--m-fill) !important; }
 
 /* FAQ — dark text */
-.faq-item { background: #ffffff !important; }
-.faq-q { color: #0f172a !important; font-weight: 600 !important; }
-.faq-a { color: #334155 !important; line-height: 1.7 !important; }
+.faq-item { background: var(--m-fill) !important; }
+.faq-q { color: var(--g-ink) !important; font-weight: 600 !important; }
+.faq-a { color: var(--g-ink-2) !important; line-height: 1.7 !important; }
 
 /* Calculator results */
-.calc-result { background: #ffffff !important; }
-.calc-result h3, .calc-result p { color: #0f172a !important; }
+.calc-result { background: var(--m-fill) !important; }
+.calc-result h3, .calc-result p { color: var(--g-ink) !important; }
 
 /* ── TRUST BADGES — Visible text ── */
+/* The trust row. Two hard 2px navy rules and a white card on a pale blue
+   band — three colours that existed in no token and matched nothing else on
+   the site. Rebuilt on the material, and restyled properly in interiors.css;
+   what is left here is only the part that has to beat an earlier !important. */
 .trust-section {
-  background: #f0f4ff !important;
-  border-top: 2px solid #1a3a8f !important;
-  border-bottom: 2px solid #1a3a8f !important;
+  background: transparent !important;
+  border-top: 1px solid var(--m-hairline) !important;
+  border-bottom: 1px solid var(--m-hairline) !important;
 }
 .trust-title {
-  color: #1a3a8f !important;
-  font-weight: 800 !important;
+  color: var(--g-ink-3) !important;
+  font-weight: 700 !important;
   letter-spacing: 0.12em !important;
 }
 .trust-badge {
-  background: #ffffff !important;
-  border: 1.5px solid #dbeafe !important;
-  box-shadow: 0 2px 12px rgba(26,58,143,0.10) !important;
-  border-radius: 16px !important;
-  padding: 14px 10px 12px !important;
+  background: var(--m-fill) !important;
+  border: 1px solid var(--m-hairline) !important;
+  box-shadow: var(--sd-1) !important;
+  border-radius: var(--r-sm) !important;
 }
 .trust-badge:hover {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 4px 20px rgba(59,130,246,0.20) !important;
-  transform: translateY(-3px) !important;
+  border-color: var(--brand-line) !important;
+  box-shadow: var(--sd-3) !important;
 }
 .trust-badge-name {
-  color: #1e3a5f !important;
-  font-weight: 700 !important;
-  font-size: 11px !important;
+  color: var(--g-ink-2) !important;
+  font-weight: 600 !important;
 }
 .trust-badge-icon {
-  background: #eff6ff !important;
-  border: 1px solid #bfdbfe !important;
-  border-radius: 12px !important;
+  background: var(--m-fill-soft) !important;
+  border: 1px solid var(--m-hairline) !important;
+  border-radius: var(--r-xs) !important;
 }
 
 /* ── ALL LINK/BUTTON TEXT — Teal/blue for visibility ── */
-/* Tab section background */
+/* Section nav. The band was a hard-coded #111827 slab — which happened to
+   look right on the original dark build, wrong on the light one, and right
+   again by accident now. Transparent, so it is right on purpose. */
 .tabs-section {
-  background: #111827 !important;
+  background: transparent !important;
 }
 
-/* Tab cards on dark bg */
 .tab-card {
-  background: rgba(255,255,255,0.10) !important;
-  border: 1.5px solid rgba(255,255,255,0.20) !important;
+  background: var(--m-fill) !important;
+  border: 1px solid var(--m-hairline) !important;
 }
 .tab-label {
-  color: #e2e8f0 !important;
-  font-weight: 700 !important;
-  font-size: 10.5px !important;
+  color: var(--g-ink-2) !important;
+  font-weight: 600 !important;
 }
-.tab-card.on { background: rgba(240,165,0,0.25) !important; }
-.tab-card.on .tab-label { color: #fde68a !important; font-weight: 800 !important; }
+.tab-card.on { background: var(--brand-soft) !important; border-color: var(--brand-line) !important; }
+.tab-card.on .tab-label { color: var(--brand-text) !important; font-weight: 700 !important; }
 .tab-svg { opacity: 0.85 !important; }
 .tab-card.on .tab-svg { opacity: 1 !important; }
 
@@ -281,18 +290,18 @@ section.hero {
 
 /* Ticker */
 .ticker-wrap {
-  background: #1a3a8f !important;
+  background: transparent !important;
   border: none !important;
 }
-.ticker-text { color: #e0f2fe !important; font-weight: 600 !important; }
+.ticker-text { color: var(--brand-text) !important; font-weight: 600 !important; }
 
 /* Admin button */
 .admin-access-btn {
   /* White at 50% on a 10%-white pill reads as a discreet control on a dark
      page and as 1.04:1 on a light one -- a button nobody can see. It stays
      discreet by being small and cornered, not by being invisible. */
-  background: rgba(15,20,32,0.86) !important;
-  color: rgba(255,255,255,0.92) !important;
-  border: 1px solid rgba(255,255,255,0.16) !important;
+  background: var(--m-fill-solid) !important;
+  color: var(--g-ink) !important;
+  border: 1px solid var(--m-hairline) !important;
 }
 

@@ -92,8 +92,23 @@
      "Quick Looks". Each is a complete, checked theme — not a colour swap. */
 
   var PRESETS = {
+    midnight: {
+      label: 'Midnight', hint: 'Champagne on midnight — the default',
+      brand: '#D9B26A', brand2: '#4FA88F', ink: '#F2F5F9', base: '#0A0E13',
+      /* Deep pools, not pastels. On a dark ground the aurora is the only
+         thing giving the glass something to refract, so these carry more
+         weight here than in any light preset — hence the higher opacity and
+         the larger, softer blobs. */
+      au1: '#14403C', au2: '#1B2A4E', au3: '#40311B', au4: '#2E2338',
+      auOpacity: 0.78, auBlur: 92, auScale: 1.15, auSpeed: 38,
+      mBlur: 30, mOpacity: 0.07, mSaturate: 145, mBorder: 0.17, mInner: 0.11,
+      radius: 20, border: 1, shScale: 1, depth: 1,
+      tyPair: 'editorial', tyScale: 1, tyWeight: 400, tyWeightD: 600, tyTrack: 0, tyA11y: 1,
+      mo: 1, moTilt: 1, moParallax: 1,
+      fxGlow: 1, fxFloat: 1, fxSheen: 1, fxGrain: 0.05, sp: 1,
+    },
     dawn: {
-      label: 'Dawn', hint: 'Jade on warm light — the default',
+      label: 'Dawn', hint: 'Jade on warm light — the previous default',
       brand: '#0E7C6B', brand2: '#E2703A', ink: '#0F1420', base: '#F4F6FB',
       au1: '#BCE4DA', au2: '#C9D3F2', au3: '#F3DCC8', au4: '#E7D2E0',
       auOpacity: 0.5, auBlur: 84, auScale: 1, auSpeed: 34,
@@ -327,7 +342,7 @@
   }
 
   function apply(theme, target) {
-    var t = Object.assign({}, PRESETS.dawn, theme || {});
+    var t = Object.assign({}, PRESETS.midnight, theme || {});
     var el = (target || document.documentElement);
     var s = el.style;
 
@@ -401,7 +416,13 @@
       : hex(darkenToContrast(brandRgb, deepest, 4.5)));
 
     // Text on the brand fill flips to dark when the brand is light.
-    set('--brand-ink', contrast(t.brand, '#FFFFFF') >= 4.5 ? '#FFFFFF' : t.ink);
+    //
+    // The fallback used to be `t.ink`, which is right only while the ink is
+    // dark — i.e. only on a light theme. Give it a light brand on a dark
+    // ground (champagne on midnight, which is now the default) and it put
+    // near-white text on a near-white button at about 1.8:1. The dark option
+    // has to be the GROUND, which is dark exactly when the ink is light.
+    set('--brand-ink', contrast(t.brand, '#FFFFFF') >= 4.5 ? '#FFFFFF' : t.base);
 
     var pair = PAIRS[t.tyPair] || PAIRS.editorial;
     set('--ty-display', pair.display);
@@ -448,7 +469,7 @@
     if (l) apply(l);
     var remote = await pull();
     if (remote) apply(remote);
-    else if (!l) apply(PRESETS.dawn);
+    else if (!l) apply(PRESETS.midnight);
   }
 
   /* Saved looks. Kept in the same admin_settings row family as the theme so
@@ -489,7 +510,7 @@
     SCHEMA: SCHEMA, PRESETS: PRESETS, PAIRS: PAIRS,
     apply: apply, audit: audit, contrast: contrast,
     pull: pull, push: push, init: init,
-    get: function () { return Object.assign({}, PRESETS.dawn, current || local() || {}); },
-    reset: function () { try { localStorage.removeItem(LS_KEY); } catch (e) {} apply(PRESETS.dawn); },
+    get: function () { return Object.assign({}, PRESETS.midnight, current || local() || {}); },
+    reset: function () { try { localStorage.removeItem(LS_KEY); } catch (e) {} apply(PRESETS.midnight); },
   };
 })(window);
