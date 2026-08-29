@@ -441,13 +441,25 @@
     // toward white on a dark ground and toward black on a light one.
     var waRgb = [37, 211, 102];
     set('--wa', '#25D366');
-    // Solved at 5:1 rather than 4.5. This label sits on a button that tints
-    // its OWN background with the same green, so the surface it lands on is
-    // a step further from the pane the solve measures against. Measured at
-    // 4.42:1 with a 4.5 target — passing the solve and failing the page.
-    set('--wa-text', contrastRgb(waRgb, deepest) >= 5
+    // Solved against the SOLID pane, not the glass one, and at 5:1.
+    //
+    // Two corrections, both found by measuring rather than reasoning. This
+    // label sits on a button that tints its own background with the same
+    // green, on top of a --m-fill-solid card — which is lighter than the
+    // `deepest` surface the other solves target. Solving against `deepest`
+    // returned the pure brand green and the page measured 4.46:1: the solve
+    // passed its own target and the rendered pixel failed.
+    // The background is built, not guessed: the solid pane the button sits
+    // on (--m-fill-solid, the ground lifted toward white), then the button's
+    // own 12% green tint composited over it. Estimating it as "the pane"
+    // returned pure #25D366 and the page measured 4.46:1 — green text on a
+    // green tint is exactly the case where an approximate ground is not
+    // good enough.
+    var waPane   = mixOklab(baseRgb, [255, 255, 255], dark ? 0.16 : 0.72);
+    var waGround = mixOklab(waPane, waRgb, 0.12);
+    set('--wa-text', contrastRgb(waRgb, waGround) >= 4.6
       ? '#25D366'
-      : hex(darkenToContrast(waRgb, deepest, 5)));
+      : hex(darkenToContrast(waRgb, waGround, 4.6)));
 
     // Text on the brand fill flips to dark when the brand is light.
     //

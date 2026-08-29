@@ -680,14 +680,26 @@ footer::before {
     0 12px 38px color-mix(in oklab, var(--brand) calc(36% * var(--fx-glow)), transparent);
 }
 
-/* Focus. The ring was a flat brand outline; on a dark ground it needs the
-   halo to separate from the pane behind it. Keeps the same 3px geometry the
-   engine's --focus-ring defines, so nothing about keyboard behaviour moves. */
+/* Focus.
+
+   The first attempt at this dropped `outline: none` and rebuilt the ring as
+   a box-shadow, and a11y-verify caught it immediately: `.nl-btn` reported
+   `0px none` on /colleges — no outline and no ring, so the nav links had no
+   visible focus state at all.
+
+   Two mistakes in one rule. `:where()` has zero specificity, so ANY other
+   rule setting box-shadow on a focused element wins and the replacement ring
+   simply vanishes — while `outline: none` still applies, because nothing
+   competes with it. And a box-shadow can be clobbered by a component's own
+   shadow, whereas an outline cannot: it is a separate property with no other
+   claimants.
+
+   So the outline stays and does the work. Champagne at 70% reads on the
+   glass and on the ground, and --focus-off keeps the offset the engine
+   already defines. */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline: none;
-  box-shadow:
-    var(--focus-ring),
-    0 0 0 6px color-mix(in oklab, var(--brand) 16%, transparent);
+  outline: 3px solid color-mix(in oklab, var(--brand) 70%, transparent);
+  outline-offset: var(--focus-off, 2px);
 }
 
 

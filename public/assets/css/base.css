@@ -499,7 +499,7 @@ section.hero.sliding .hero-content{
 
 /* CHATBOT */
 .chat-wrap{position:fixed;bottom:160px;right:16px;z-index:991;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-.chat-window{width:330px;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.2);border:1px solid var(--border);overflow:hidden;display:none;flex-direction:column;max-height:500px}
+.chat-window{width:330px;background:var(--m-fill-solid);border-radius:20px;box-shadow:var(--sd-4);border:1px solid var(--border);overflow:hidden;display:none;flex-direction:column;max-height:500px}
 .chat-window.open{display:flex}
 .chat-header{background:linear-gradient(135deg,var(--m-fill),var(--blue-dark));padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;cursor:grab;user-select:none}
 .chat-header-left{display:flex;align-items:center;gap:10px}
@@ -671,7 +671,7 @@ textarea.a-inp{min-height:80px;resize:vertical}
 @media(prefers-reduced-motion:reduce){.rev{opacity:1;transform:none}.ticker-track{animation:none}}
 
 /* COLLEGE SELECTOR */
-.college-selector{background:linear-gradient(135deg,var(--off),#fff);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px}
+.college-selector{background:linear-gradient(135deg,var(--off),var(--m-fill));border:1px solid var(--border);border-radius:var(--r-lg);padding:20px}
 .college-sel-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
 .college-tabs-wrap{display:flex;gap:8px;flex-wrap:wrap}
 .college-tab{padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--muted);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
