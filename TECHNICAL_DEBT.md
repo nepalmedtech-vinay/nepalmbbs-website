@@ -22,6 +22,17 @@ leaving it as a silent TODO, and give each item a path to being resolved.
   component and the dead `step('hero', ...)` call together. Full verify
   suite re-run after the change; see `QA_REPORT.md`.
 
+## Open — found 2026-08-29 (chunk 8, second pass)
+
+- **The z-index token scale is not what the site uses.** `engine.css` defines
+  a ladder — `--z-nav: 200`, `--z-modal: 500`, `--z-float: 600`,
+  `--z-toast: 700` — and `base.css` sets `#navbar { z-index: 1000 }` as a raw
+  number that ignores it. So any surface that has to sit above the navbar
+  must clear 1000 by hand, which is what `.tp-sheet` now does. The ladder
+  describes an ordering the site does not follow; either the navbar should
+  use `--z-nav` or the ladder should be renumbered to match reality. Cheap to
+  fix, and it will bite the next overlay someone adds.
+
 ## Open — found 2026-08-29 (chunk 8)
 
 - **`sections.css` is still the main obstacle to any theme change.** 298

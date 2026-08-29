@@ -825,3 +825,72 @@ footer a:not([class]):hover,
    margin. A neutral pane, with the brand kept on the border where it costs
    no contrast. */
 .chat-restart-btn { background: var(--m-fill); }
+
+
+/* ══ The appearance panel's own frame ═════════════════════════════════════
+   `#theme-panel` carries the class `tp-sheet`, and **`.tp-sheet` is defined
+   nowhere**. panel.css styles the panel's insides (`.tp`, `.tp-head`,
+   `.tp-btn`, …) and never its host, so the host had no position, no size and
+   no layer — the panel simply rendered in normal flow at the bottom of the
+   document. Measured: `position: static`, 1440x1531, at y=3886.
+
+   That was invisible for as long as the only page mounting it was /preview,
+   where an appearance panel sitting inline under the demo is defensible. It
+   stopped being defensible the moment the toggle went into the site nav: on
+   a real page it dumps fifteen hundred pixels of sliders below the footer
+   and the visitor is left scrolling to find what their own button did.
+
+   So the host gets a frame. A right-hand drawer at desktop, a bottom sheet
+   on small screens, scrollable in both — the panel is taller than most
+   viewports and that is fine for a settings surface, as long as it scrolls
+   itself rather than the page behind it. */
+
+.tp-sheet {
+  position: fixed;
+  /* Not `var(--z-modal)`, which is 500 and would lose. base.css sets
+     `#navbar { z-index: 1000 }` as a raw number, ignoring the engine's
+     z-scale entirely — so the token ladder (nav 200, modal 500, float 600)
+     describes an ordering the site does not actually use. Until that is
+     reconciled, a surface that must sit above the navbar has to clear 1000
+     by hand. Above the floats too, or the WhatsApp button prints over the
+     sliders. */
+  z-index: 1200;
+  top: 0;
+  right: 0;
+  width: min(24rem, 100vw);
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #fff;
+  border-left: 1px solid rgba(15 20 32 / 0.14);
+  box-shadow: -24px 0 60px rgba(0 0 0 / 0.45);
+  /* The panel is a neutral high-contrast surface on purpose — see the header
+     of panel.css — so it does not take the site's glass. It only needs to be
+     unmistakably in front of it. */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tp-sheet { animation: tp-slide var(--d-3, 260ms) var(--ea-out, cubic-bezier(.22,1,.36,1)) both; }
+  @keyframes tp-slide { from { transform: translateX(2rem); opacity: 0; } to { transform: none; opacity: 1; } }
+}
+
+@media (max-width: 40rem) {
+  .tp-sheet {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    height: auto;
+    max-height: 86dvh;
+    border-left: 0;
+    border-top: 1px solid rgba(15 20 32 / 0.14);
+    border-radius: var(--r-md) var(--r-md) 0 0;
+    box-shadow: 0 -20px 60px rgba(0 0 0 / 0.5);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tp-sheet { animation-name: tp-rise; }
+    @keyframes tp-rise { from { transform: translateY(2rem); opacity: 0; } to { transform: none; opacity: 1; } }
+  }
+}
