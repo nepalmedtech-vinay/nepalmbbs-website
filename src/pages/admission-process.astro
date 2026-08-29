@@ -8,7 +8,11 @@ import GlassLayout from '../layouts/GlassLayout.astro';
 >
 <div class="tab-pane on" id="pane-process">
 <div class="container">
-  <div class="tc rev"><div class="eyebrow">Step by Step</div><div class="sec-title">From NEET to Nepal MBBS</div><div class="sec-sub">Complete official roadmap — every step verified from NMC India and MEC Nepal sources.</div></div>
+  <!-- Not `tc`. This header was centred over a step list, a comparison table
+       and six source links that are all hard left, and the mismatch read as
+       two pages spliced together. /colleges and /documents set their headers
+       left for exactly this reason; this one was the odd page out. -->
+  <div class="rev"><div class="eyebrow">Step by Step</div><h1 class="sec-title">From NEET to Nepal MBBS</h1><div class="sec-sub" style="max-width:66ch">Complete official roadmap — every step verified from NMC India and MEC Nepal sources.</div></div>
   <ol class="doc-steps">
     <li class="doc-step"><h3 class="doc-step-title">NEET Score & Eligibility</h3><p class="doc-step-body">Per NMC India FMGL Regulations 2021, minimum 50th percentile NEET (General/OBC) or 40th percentile (SC/ST) required to practice in India after foreign MBBS. Verify current rules at NMC before applying.</p><p class="doc-step-body" style="margin-top:var(--s-2)"><a href="https://nmc.org.in" target="_blank" rel="noopener" class="card-link">NMC India ↗</a></p></li>
     <li class="doc-step"><h3 class="doc-step-title">College Selection via MEC Nepal</h3><p class="doc-step-body">All Nepal MBBS admissions are regulated by the Medical Education Commission (MEC Nepal). Select only MEC-approved colleges that are also NMC India recognised. Verify both lists before deciding.</p><p class="doc-step-body" style="margin-top:var(--s-2)"><a href="https://mec.gov.np" target="_blank" rel="noopener" class="card-link">MEC Nepal ↗</a></p></li>
@@ -26,12 +30,12 @@ import GlassLayout from '../layouts/GlassLayout.astro';
     <table class="compare-table">
       <thead><tr><th>Factor</th><th>Nepal MBBS</th><th>India Private MBBS</th></tr></thead>
       <tbody>
-        <tr><td><strong>NEET Requirement</strong></td><td>✅ Yes (50th percentile min)</td><td>✅ Yes (varies by college)</td></tr>
-        <tr><td><strong>Medium of Instruction</strong></td><td>✅ English</td><td>✅ English</td></tr>
+        <tr><td><strong>NEET Requirement</strong></td><td>Yes — 50th percentile minimum</td><td>Yes — threshold varies by college</td></tr>
+        <tr><td><strong>Medium of Instruction</strong></td><td>English</td><td>English</td></tr>
         <tr><td><strong>Duration</strong></td><td>5.5 years (incl. internship)</td><td>5.5 years (incl. internship)</td></tr>
-        <tr><td><strong>NMC India Recognition</strong></td><td>✅ Select colleges (verify)</td><td>✅ All NMC approved</td></tr>
-        <tr><td><strong>Visa Required</strong></td><td>✅ No visa for Indians</td><td>N/A (same country)</td></tr>
-        <tr><td><strong>Language Barrier</strong></td><td>✅ Hindi widely understood</td><td>✅ None</td></tr>
+        <tr><td><strong>NMC India Recognition</strong></td><td>Select colleges — verify for your intake year</td><td>All NMC approved</td></tr>
+        <tr><td><strong>Visa Required</strong></td><td>No visa required for Indian citizens</td><td>Not applicable — same country</td></tr>
+        <tr><td><strong>Language Barrier</strong></td><td>Hindi widely understood</td><td>None</td></tr>
         <tr><td><strong>After Graduation</strong></td><td>NExT/FMGE + 1yr India intern</td><td>Direct India practice</td></tr>
         <tr><td><strong>Typical Cost</strong></td><td>Contact for official MEC fees</td><td>₹50L–1.5Cr+ (varies)</td></tr>
       </tbody>

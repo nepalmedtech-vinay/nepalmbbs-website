@@ -5,6 +5,116 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-08-29 — Chunk 7: page interiors, and two things the pages asserted but did not deliver
+
+The chunk was "make the interiors good, starting with `/`, `/colleges`,
+`/admission-process`, `/documents`". Measuring those four first turned up two
+defects that had to be fixed before any of the layout work was worth doing,
+because both were the site making a claim it did not honour — the one failure
+mode this project defines itself against.
+
+**1. The home map was dropping a college, and printing a different total from
+the hero above it.** `CollegeMap.astro` filtered out any college whose
+`location` had no matching key in `places.json`, and generated its own copy
+from what survived. `colleges.json` says "Kohalpur, Banke"; `places.json` had
+"Nepalgunj". So Nepalgunj Medical College — 43 seats, the joint-largest
+private intake — vanished, and the section announced **26 places / 691 seats**
+directly under a hero reading **27 / 734**.
+
+Decision: **fail the build rather than filter.** The filter was a silent
+correctness hole with no upper bound on the damage; the next college added
+with a new town would have reopened it, equally invisibly. The component now
+throws with the college and the exact location string named. Verified by
+removing the key and confirming the failure. The coordinates added for
+Kohalpur are Wikipedia's, corroborated against the municipality's own
+published extent, and logged in `CONTENT_SOURCE_LOG.md`.
+
+**2. Government and private colleges were plotted identically.** The legend
+said "Government" and "Private"; the marks differed by a **12% fill against a
+10% one, with the same stroke** — a 2% difference, which is to say none. That
+is the attribute deciding fee exposure and competitiveness, and the one
+`/colleges` divides its whole table on. Government now draws in the counter
+accent. This is a legend being made true, not a restyle.
+
+**3. `chrome.css` claimed desktop already cleared the fixed header. It did
+not, on any inner route.** The claim — "112px of section padding against a
+69px bar" — was true of `.gh`, the home hero, which is where it was checked
+and where the reasoning stopped. Every other route lays out in
+`.tab-pane > .container`, which computes `padding-top: 0` above 48rem:
+measured at 0px on all 36 inner routes, first eyebrow top at 60px against a
+navbar bottom of 69. Every inner page had been serving its first line with 9px
+sliced off, at every width above the mobile breakpoint, since Phase 3/4.
+`NEXT_TASK.md` recorded this as done because the mobile fix had been measured
+and the desktop half had only been asserted.
+
+The lesson is the one this repo keeps relearning: a measurement on one
+component is not a measurement of the pattern. The fix applies at every width
+and was re-measured at 1440, 1024 and 390.
+
+### The layout work itself
+
+- **The map now names its towns.** Every mark was anonymous until hovered,
+  which is no answer at all on a phone, so the one question a map invites —
+  which town — was the one it would not answer. A ranking of towns by intake
+  sits beneath it, generated from the same records, with pointing at either
+  half lighting the other.
+
+  Side by side was the obvious arrangement and **measured wrong**: a 912×427
+  plot next to an 882px list, the annotation twice the height of the thing it
+  annotates, 455px of nothing under the map. Two columns because there was
+  room is the exact habit this chunk was called on to break. Stacked, the plot
+  takes the full container and the ranking runs under it in self-balancing
+  columns.
+
+- **`/documents`' three stage panels became a row.** They are a sequence —
+  before you apply, at application, at admission — and stacking three
+  identical panels said only "here is another list". Left to right, the order
+  is the layout. Subgrid aligns the three heads; without subgrid support they
+  simply sit at their own heights, which needs no polyfill.
+
+- **`/colleges` now states the split it was only implying.** Ten government
+  colleges hold 39 of the 734 seats and seventeen private ones hold 695. Both
+  are sums of figures already in the table below; the page just adds them up
+  once so a family does not have to. The intro record and the recognition
+  warning are paired side by side rather than stacked.
+
+- **`/admission-process`' step list splits title from body across the row**,
+  which uses the width without reordering a sequence, and its header is no
+  longer centred over hard-left content — `/colleges` and `/documents` set
+  theirs left, and this page was the odd one out.
+
+- **The green ticks are gone from the comparison table.** `trust.css` states
+  the rule in its own header — "deliberately not an emoji: a green tick is a
+  claim" — and the table had five, including ticks against *both* columns of
+  "NEET Requirement" and "Language Barrier", where the tick was decorating a
+  neutral fact as though it were an endorsement. The words carry it now.
+
+### Scope call: the missing `<h1>`s
+
+Promoting `/admission-process`' title from a `<div>` to an `<h1>` showed that
+**seven other routes had no `<h1>` at all** — `/counseling` opened on an
+`<h2>`, `/life-in-nepal` on an `<h3>`. That is outside the four pages this
+chunk names, and I fixed it anyway: it is one tag per page, it is a real
+accessibility and SEO defect, and fixing one page's heading outline while
+leaving seven broken is half a job. All 42 routes now have exactly one `<h1>`.
+
+Two CSS rule sites targeted those headings by element name
+(`.counsel-left h2`, `.lifestyle-hero-text h3`) and would have been orphaned
+by the tag change; both selectors were extended rather than the markup left
+alone. Re-measured after: identical font, size, weight and margins on every
+one of the seven, so this is a semantic fix with no visual change.
+
+### Where the interior styles live
+
+A new sheet, `public/assets/theme/interiors.css`, loaded after `chrome.css` on
+the same reasoning that file gives for itself: `chrome.css` finished the
+dark→light migration for the site chrome, and this finishes it for what is
+inside the routes, which that migration never reached. Ten sheets now rather
+than nine — the layout's own comment explains why they are not bundled, and
+that argument is unchanged by adding one.
+
+---
+
 ## 2026-08-28 — Chunk 6: the assistant becomes data-driven and sourced
 
 The owner asked for maximum automation, corporate content, and for me to

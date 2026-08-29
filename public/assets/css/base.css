@@ -442,7 +442,7 @@ section.hero.sliding .hero-content{
 .lifestyle-hero img{width:100%;height:100%;object-fit:cover}
 .lifestyle-hero-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(10,22,40,.8),rgba(10,22,40,.3))}
 .lifestyle-hero-text{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:32px}
-.lifestyle-hero-text h3{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:var(--g-ink);margin-bottom:8px}
+.lifestyle-hero-text h1,.lifestyle-hero-text h3{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:var(--g-ink);margin-bottom:8px}
 .lifestyle-hero-text p{color:var(--g-ink-2);font-size:15px}
 .life-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:32px}
 .life-card{text-align:center;padding:24px 14px;background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);transition:all .3s;box-shadow:var(--shadow-sm)}
@@ -472,7 +472,7 @@ section.hero.sliding .hero-content{
 /* COUNSEL */
 .counsel-bg{background:linear-gradient(155deg,#040d1c,#071524,#0a1f35)}
 .counsel-grid{display:grid;grid-template-columns:1fr 460px;gap:64px;align-items:start;max-width:1280px;margin:0 auto;padding:64px 24px}
-.counsel-left h2{font-family:'Sora',sans-serif;font-size:clamp(28px,3.5vw,44px);font-weight:800;color:var(--g-ink);margin-bottom:14px;letter-spacing:-.5px}
+.counsel-left h1,.counsel-left h2{font-family:'Sora',sans-serif;font-size:clamp(28px,3.5vw,44px);font-weight:800;color:var(--g-ink);margin-bottom:14px;letter-spacing:-.5px}
 .counsel-left p{font-size:16px;color:var(--g-ink-2);line-height:1.8;margin-bottom:28px}
 .counsel-btns{display:flex;flex-direction:column;gap:12px}
 .counsel-btn{display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:12px;text-decoration:none;transition:all .25s;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15)}

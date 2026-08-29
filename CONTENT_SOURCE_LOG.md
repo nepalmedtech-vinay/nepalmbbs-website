@@ -69,6 +69,50 @@ will not match and this note is why. The Commission also writes
 "Purbanchal University School of Medicine" where the site says "Purbanchal
 University School of Health Sciences".
 
+## Town coordinates — `src/data/places.json` (2026-08-29)
+
+The home page map plots each college at its town's coordinates. These are
+approximate by design — the file says so in its own `_note`, and the graphic
+draws no borders and claims no cartographic precision — but "approximate"
+still means sourced, not remembered.
+
+### One town was missing entirely, and it cost a college
+
+`colleges.json` gives Nepalgunj Medical College's location as
+**"Kohalpur, Banke"**. `places.json` had a key for **"Nepalgunj"** and none
+for Kohalpur, and `CollegeMap.astro` filtered out any college whose location
+had no match. So the college — 43 seats, the joint-largest private intake in
+the dataset — was silently dropped from the map, and the seat total printed
+beside the map is derived from the same filtered list, so it printed **691
+seats across 26 places** directly beneath a hero reading **734 across 27**.
+
+Kohalpur is a municipality in Banke district, ~13 km north of Nepalgunj; the
+college is in Kohalpur, so it gets its own entry rather than borrowing
+Nepalgunj's.
+
+| Field | Value |
+|---|---|
+| Key added | `"Kohalpur, Banke"` |
+| Coordinates | 28.1986 N, 81.6911 E |
+| Source | Wikipedia, *Kohalpur* — 28°11′55″N 81°41′28″E |
+| Corroboration | Kohalpur Municipality's own site states the municipality's extent as 28°07′12″–28°18′54″N, 81°38′24″–81°49′51.6″E, which brackets the figure above |
+| URLs | `en.wikipedia.org/wiki/Kohalpur` · `kohalpurmun.gov.np/en/brief-introduction` |
+| Checked | 2026-08-29 |
+| Confidence | Corroborated — two independent sources agree, one of them the municipality itself |
+
+### The silent-drop mode is now closed
+
+The `.filter()` that discarded unplaceable colleges is gone. `CollegeMap.astro`
+throws at build time instead, naming each college and the exact location string
+it could not place. A town added without coordinates is now a build failure
+with a five-second fix, rather than a wrong number on the home page that
+nobody sees. Verified by removing the Kohalpur key and confirming the build
+fails with the college named.
+
+**Note for whoever adds the next college:** its `location` string must exist
+as a key in `places.json`, spelled identically. That is the whole contract,
+and the build now enforces it.
+
 ## 🎯 The primary source for every seat count — found, not yet read
 
 Chasing the Kathmandu Medical College seat conflict (this file records 43,

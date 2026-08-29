@@ -129,20 +129,27 @@ const stages = [
     </p>
   </div>
 
-  {stages.map((s) => (
-    <div class="doc" style="margin-top:24px">
-      <div class="doc-head">
-        <h2 class="doc-title">{s.stage}</h2>
-        <span class="doc-kicker">{s.items.length} items</span>
+  {/* These three are a sequence, not three more panels. Stacked full-width
+      they read as "and here is another list", which is exactly what they are
+      not — the whole point is that a document is needed at a particular
+      point, and the order is the information. Side by side, left to right,
+      the order is the layout. */}
+  <div class="stage-row">
+    {stages.map((s, i) => (
+      <div class="doc stage">
+        <div class="doc-head">
+          <h2 class="doc-title">{s.stage}</h2>
+          <span class="doc-kicker">Step {i + 1} of {stages.length}</span>
+        </div>
+        <div class="doc-body">
+          <ul class="dc-list">
+            {s.items.map((it) => <li>{it}</li>)}
+          </ul>
+          <p class="stage-body">{s.body}</p>
+        </div>
       </div>
-      <div class="doc-body">
-        <ul class="dc-list">
-          {s.items.map((i) => <li>{i}</li>)}
-        </ul>
-        <p class="doc-empty-body" style="margin:var(--s-3) 0 0;text-align:left;max-width:66ch">{s.body}</p>
-      </div>
-    </div>
-  ))}
+    ))}
+  </div>
 
   <div class="doc-note doc-note--caution" style="margin-top:24px">
     <strong>One thing worth more than any checklist.</strong> Pay the

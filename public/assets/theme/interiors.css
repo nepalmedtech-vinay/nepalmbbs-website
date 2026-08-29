@@ -196,3 +196,140 @@
    is room to set them at a size that does not ask a parent to lean in. */
 .tab-card { font-size: var(--t-xs); }
 .tab-card .tab-label { font-size: var(--t-xs); letter-spacing: 0; line-height: 1.35; }
+
+
+/* ══ The paired block ═════════════════════════════════════════════════════
+   Two things that belong together, set beside each other instead of down
+   the page: a record and the caveat that governs it, a summary and its
+   warning. Used on /colleges for "Before you compare this list" and the
+   recognition notice, which ran stacked with the notice at a 66ch measure
+   and the other half of a 1220px row empty next to it — so the warning read
+   as an afterthought rather than the other half of the point.
+
+   This is the file's first rule in practice: two columns because the
+   content is two things. The aside is the narrower column because a caveat
+   is read after the thing it qualifies, not instead of it. */
+
+.pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: var(--s-5);
+  align-items: start;
+}
+
+/* The notice carries its own measure when it is a full-width block. Inside
+   a pair the column already is the measure, and leaving both in place made
+   the text stop halfway across its own panel.
+
+   It hugs its text rather than stretching to the record's height: stretched,
+   a four-line warning became a tall tinted box that was mostly empty, which
+   reads as something failing to load. */
+.pair > .pair-aside { max-width: none; }
+
+@media (max-width: 60rem) {
+  .pair { grid-template-columns: minmax(0, 1fr); gap: var(--s-4); }
+  .pair > .pair-aside { max-width: var(--measure); }
+}
+
+
+/* ══ /documents: the three stages ═════════════════════════════════════════
+   Three `.doc` panels, identical, stacked down the page under a 62rem
+   column — the "stacked identical doc blocks" this pass was called on.
+
+   They are not three more panels. They are a sequence: before you apply, at
+   application, at admission. The order is the information, and stacking them
+   full-width said only "here is another list". Left to right, the order is
+   the layout, and the three fit on one screen where before they took three
+   scrolls. */
+
+.stage-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+  align-items: stretch;
+}
+
+/* Equal height, so the three read as one row of a process rather than three
+   panels that happen to be adjacent — and the body text sits on a common
+   baseline at the bottom of each. */
+.stage-row > .stage {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+}
+.stage-row > .stage .doc-body { flex: 1; display: flex; flex-direction: column; }
+
+/* The kicker stacks under the title rather than sitting opposite it. At a
+   third of the width "At application and counselling" wraps, and a
+   space-between head then put its counter on a second line in one panel and
+   not the other two. */
+.stage-row > .stage .doc-head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-2);
+}
+
+/* Subgrid aligns the three heads to the tallest of them, so the rules under
+   them line up across the row. Without it the heads are still stacked and
+   still legible — they simply sit at their own heights, which is what the
+   flex rules above already give. Nothing here is load-bearing enough to
+   need a polyfill. */
+@supports (grid-template-rows: subgrid) {
+  .stage-row { grid-template-rows: auto 1fr; }
+  .stage-row > .stage {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+  }
+}
+
+.stage-body {
+  margin: auto 0 0;
+  padding-top: var(--s-3);
+  font-size: var(--t-sm);
+  line-height: var(--lh-body);
+  color: var(--doc-text-mute, var(--g-ink-3));
+  text-wrap: pretty;
+}
+
+/* The step counter earns its place only while the three are a row. Stacked,
+   "Step 1 of 3" beside a heading that already says "Before you apply" is
+   just noise, but so is losing the ordering — so it stays, and the row
+   simply becomes a column. */
+@media (max-width: 60rem) {
+  .stage-row { grid-template-columns: minmax(0, 1fr); gap: var(--s-4); }
+}
+
+
+/* ══ /documents: the column itself ════════════════════════════════════════
+   `.doc-centre` set a 62rem max-width and no auto margins, so the whole page
+   hugged the left edge of a 1220px container with ~25rem of dead margin down
+   the right. It reads as a page that failed to finish loading. */
+
+.doc-centre { margin-inline: auto; }
+
+
+/* ══ /admission-process: the numbered steps ═══════════════════════════════
+   The step list is an ordered sequence, so it stays one column — reflowing a
+   process into two would break the only thing it is trying to say. But each
+   step was a title with its body directly underneath at a 66ch measure,
+   which left the right 55% of the row empty for all six of them.
+
+   Splitting title from body across the row uses that width without touching
+   the order: the titles form a column you can scan on their own, and each
+   body sits beside its own title. */
+
+@media (min-width: 64rem) {
+  .doc-step {
+    display: grid;
+    grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+    column-gap: var(--s-6);
+    align-items: start;
+  }
+  .doc-step-title { grid-column: 1; margin-bottom: 0; }
+  .doc-step-body { grid-column: 2; }
+  /* The source link is a second body paragraph in the same column; without
+     this it would sit on the row below its own prose with a gap. */
+  .doc-step-body + .doc-step-body { margin-top: var(--s-2) !important; }
+}

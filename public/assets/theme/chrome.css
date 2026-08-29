@@ -102,8 +102,8 @@
 .hero h1, .card-title, .form-success h3,
 .process-card h4, .why-body h4, .calc-wrap h3, .result-card h4,
 .guide-card-title, .off-card h4, .vid-info h4, .vid-drive-card h4,
-.lifestyle-hero-text h3, .life-card h4, .curr-title,
-.counsel-left h2, .counsel-btn-text h4, .counsel-card-title,
+.lifestyle-hero-text h1, .lifestyle-hero-text h3, .life-card h4, .curr-title,
+.counsel-left h1, .counsel-left h2, .counsel-btn-text h4, .counsel-card-title,
 .chat-header h4, .college-name, .test-name {
   font-family: var(--ty-display) !important;
   letter-spacing: var(--ty-tight);
@@ -429,7 +429,7 @@
   .counsel-grid { grid-template-columns: 1fr 26rem !important; gap: var(--s-8, 3rem) !important; }
 }
 
-.counsel-left h2 {
+.counsel-left h1, .counsel-left h2 {
   font-family: var(--ty-display) !important;
   font-size: calc(clamp(1.75rem, 1.35rem + 1.9vw, 2.75rem) * var(--ty-scale) * var(--ty-a11y)) !important;
   line-height: var(--lh-snug) !important;

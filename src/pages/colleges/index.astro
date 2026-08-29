@@ -21,10 +21,21 @@ const schema = {
   })),
 };
 
+const seatsIn = (rows) => rows.reduce((n, c) => n + (parseInt(c.seats, 10) || 0), 0);
+
+// The split is the whole point of this page, and until now it was only
+// visible to a reader willing to add up a column of 27 numbers: ten
+// government colleges hold 40 of the 734 foreign-quota seats, and seventeen
+// private ones hold the other 694. The note under each heading said
+// "fewer seats" and "the most competitive" without ever saying how few.
+//
+// Both figures are sums of the per-college numbers already published in the
+// table below, so nothing new is being asserted — it is the same data, added
+// up once so a family does not have to.
 const groups = [
-  { key: 'govt', title: 'Government colleges', rows: govt,
+  { key: 'govt', title: 'Government colleges', rows: govt, seats: seatsIn(govt),
     note: 'Government and autonomous institutions. Fewer foreign-quota seats, and the most competitive.' },
-  { key: 'priv', title: 'Private colleges', rows: priv,
+  { key: 'priv', title: 'Private colleges', rows: priv, seats: seatsIn(priv),
     note: 'Privately run, affiliated to Tribhuvan, Kathmandu or Purbanchal University.' },
 ];
 ---
@@ -52,7 +63,13 @@ const groups = [
        ownership and affiliation per college; it does not carry a per-college
        recognition record, and a badge implying otherwise would be the site
        manufacturing its own authority. -->
-  <div class="doc rev" style="margin-top:28px">
+  <!-- These two are one unit: what the process is, and the thing about it
+       that most often costs money. They ran stacked down a 1220px container,
+       the notice set to a 66ch measure with the other half of the row empty
+       beside it — so the warning read as an afterthought to the summary
+       rather than the other half of it. -->
+  <div class="pair rev" style="margin-top:28px">
+  <div class="doc">
     <div class="doc-head">
       <h2 class="doc-title">Before you compare this list</h2>
       <span class="doc-kicker">Read first</span>
@@ -86,18 +103,19 @@ const groups = [
     </p>
   </div>
 
-  <div class="doc-note rev" style="margin-top:20px">
+  <div class="doc-note pair-aside">
     <strong>Recognition is per intake year, not permanent.</strong> A college
     recognised for one year is not automatically recognised for the next. Before
     you pay anyone anything, confirm the current status on the MEC and NMC
     notices for your intake year — including anything you read here.
+  </div>
   </div>
 
   {groups.map((g) => (
     <div class="doc rev" style="margin-top:24px">
       <div class="doc-head">
         <h2 class="doc-title">{g.title}</h2>
-        <span class="doc-kicker">{g.rows.length} colleges</span>
+        <span class="doc-kicker">{g.rows.length} colleges &middot; {g.seats} seats</span>
       </div>
       <div class="doc-body">
         <p class="doc-empty-body" style="margin:0 0 var(--s-3);text-align:left;max-width:66ch">{g.note}</p>

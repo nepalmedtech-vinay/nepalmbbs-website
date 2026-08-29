@@ -12,13 +12,53 @@ leaving it as a silent TODO, and give each item a path to being resolved.
   only present as a global install in whatever container had last run the
   tests.~~ Fixed — added as a pinned `devDependency`.
 - ~~5 of the 5 rollback tags documented in `docs/GOLIVE.md` did not exist
-  in the repository.~~ Restored.
+  in the repository.~~ Restored — **locally only, and that is not enough.**
+  See "The rollback tags still break verify on a fresh clone" below; this
+  line read as closed for three sessions while the problem was live.
 - ~~`boot.js`'s hero step called two functions that don't exist anywhere
   in the codebase, throwing silently on every page load site-wide.~~
   Confirmed `Hero.astro` (which they belonged to) is itself dead —
   imported nowhere, replaced by `GlassHero.astro` — so deleted both the
   component and the dead `step('hero', ...)` call together. Full verify
   suite re-run after the change; see `QA_REPORT.md`.
+
+## Open — found 2026-08-29 (chunk 7)
+
+- **The rollback tags still break `npm run verify` on a fresh clone.** This
+  container has **zero tags**, locally and on the remote
+  (`git ls-remote --tags origin` returns nothing). `tests/build-verify.mjs`
+  line 188 runs `git show phase1-static-rollback:<tracker files>` to prove the
+  legacy tracker apps are byte-identical, and dies with `fatal: invalid object
+  name` — **which aborts `npm run verify` before six of its eight suites
+  run**. It is not a soft failure; everything after `build-verify` is simply
+  skipped, so a session that reads only the exit code learns nothing about
+  a11y, contrast, CSP or the assistant.
+
+  It is environmental, not a code defect: `git push --tags` returns 403 for
+  this token (`CLAUDE.md` records this). But the practical effect is that the
+  project's main gate has not run end-to-end in any fresh container.
+
+  **Path to resolution, in preference order:** (1) the owner pushes the five
+  tags by hand, which fixes it permanently for everyone; or (2)
+  `build-verify.mjs` degrades to a skip-with-warning when the tag is absent,
+  rather than throwing — so a missing tag costs one check instead of six
+  suites. (2) is a ten-line change and worth doing even after (1), because
+  the current failure mode is silent-by-abort.
+
+- **`.foot-top` is still a four-column link farm**, and the trust badge row
+  is still six equal cards. Both were on the interiors list for this chunk
+  and neither was reached; the four named pages took the whole budget.
+
+- **Section headers are centred on `/faq` and `/neet-calculator`** over
+  left-aligned content. `/admission-process` had the same mismatch and was
+  fixed this chunk; those two were left because they are outside the four
+  pages it named. It is a one-class change (`tc`) per page.
+
+- **`/life-in-nepal` uses an Unsplash stock photograph** of Kathmandu as its
+  hero. The home page's own copy says "no stock photographs standing in for a
+  campus" — this is a city, not a campus, so it is arguably within the letter
+  of that promise, but it is close enough to the line that someone should
+  decide deliberately rather than inherit it.
 
 ## Open — inherited from previous phases, documented by their own authors
 
