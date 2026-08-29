@@ -1,0 +1,198 @@
+/* NepalMBBS.in — interiors.css
+   The page interiors.
+
+   Why this file exists
+   --------------------
+   Phase 3/4 rebuilt the site chrome — one type system, one palette, every
+   route clearing the header. It did not touch what is *inside* the routes.
+   Those were still the layout the site was built with in its single-page
+   days: a section-card grid, the same three-equal-cards row on most pages,
+   identical `.doc` panels stacked down the screen, and one column of content
+   on a 1220px container with the right half of it empty.
+
+   Legible, in other words, and not yet good. bridge.css made those blocks
+   readable; this file makes them read as designed.
+
+   Three rules, and they are the same three the rest of the system already
+   follows:
+
+     1. A layout has to earn its columns. Two columns because the content is
+        two things, not because there is room.
+     2. Nothing here invents content. Every figure, ranking and total on this
+        page is derived from colleges.json at build time; if the data changes
+        the layout changes with it, and there is no second copy to update.
+     3. Depth comes from a hairline, a background step and a tinted shadow —
+        not from a glow on a fact. trust.css's rule, kept.
+
+   Loads last, after chrome.css, so it can finish a component without
+   escalating specificity. */
+
+
+/* ══ Home: the map and its town list ══════════════════════════════════════
+   The plot could not answer the question it invited. Every mark was
+   anonymous until hovered — no answer at all on a phone — so the one thing a
+   family wants from it, which town, was the one thing it would not say.
+
+   The list says it: same records, ranked by intake, with pointing at either
+   half lighting the other.
+
+   Side by side was the obvious arrangement and it measured wrong — at 1440,
+   a 912x427 plot beside an 882px list, the ranking twice the height of the
+   thing it annotates and 455px of nothing under the map. Two columns because
+   there was room, which is the habit this file exists to break.
+
+   Stacked, each half gets the shape it wants: the plot takes the full 1220px
+   container (582px tall rather than 427, and it is the one graphic on this
+   site that earns the width), and the ranking runs beneath it in balanced
+   columns at a third of its former height. */
+
+/* 2rem, not 3: the head runs to 62ch and the plot to the full container, so
+   there is a width change between them that a larger gap turns into a hole. */
+.map-layout { margin-top: var(--s-6); }
+
+.map-layout > .map-figure { margin: 0; min-width: 0; }
+
+.map-places {
+  min-width: 0;
+  margin-top: var(--s-7);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--doc-rule, rgba(15 20 32 / 0.1));
+}
+
+.map-places-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+  margin: 0 0 var(--s-4);
+}
+
+.map-places-title {
+  font-family: var(--ty-display);
+  font-size: var(--t-h3);
+  font-weight: var(--w-semi, 600);
+  letter-spacing: var(--ty-tight);
+  line-height: var(--lh-snug);
+  color: var(--g-ink);
+}
+
+.map-places-sub {
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--g-ink-3);
+}
+
+/* CSS multi-column rather than a grid, for one reason: it balances itself.
+   A grid needs the row count hard-coded to flow a ranking down-then-across,
+   and that number would be wrong the day a college is added. `columns` keeps
+   the order (down column one, then column two) and re-balances for whatever
+   the data happens to hold. */
+.map-places-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 3;
+  column-gap: var(--s-7);
+}
+
+/* A row is three columns, not a sentence: town, magnitude, figure. The bar
+   is the only reason the ranking reads at a glance instead of asking the eye
+   to compare 25 numbers. */
+.map-place {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4rem 2.1rem;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 5px 6px;
+  border-radius: var(--r-xs);
+  break-inside: avoid;
+  transition: background var(--d-2) var(--ea-out);
+}
+
+.map-place-name {
+  font-size: var(--t-xs);
+  line-height: 1.35;
+  color: var(--g-ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-place-bar {
+  display: block;
+  height: 5px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--g-ink) 8%, transparent);
+  overflow: hidden;
+}
+.map-place-bar i {
+  display: block;
+  height: 100%;
+  width: var(--w, 0%);
+  border-radius: inherit;
+  background: color-mix(in oklab, var(--brand) 62%, transparent);
+}
+
+.map-place-seats {
+  font-family: var(--ty-display);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--g-ink);
+}
+
+.map-place.is-lit { background: color-mix(in oklab, var(--brand) 9%, transparent); }
+.map-place.is-lit .map-place-name { color: var(--g-ink); }
+.map-place.is-lit .map-place-bar i { background: var(--brand); }
+
+.map-places-foot {
+  margin: var(--s-5) 0 0;
+  max-width: var(--measure);
+  font-size: var(--t-xs);
+  line-height: var(--lh-body);
+  color: var(--g-ink-3);
+  text-wrap: pretty;
+}
+
+/* Pointing at a town in the list dims the rest of the plot rather than
+   colouring the match, so the answer is found by subtraction — which is what
+   makes a single mark findable among twenty-seven. */
+.map-figure.is-focusing .map-pt { opacity: 0.22; transition: opacity var(--d-2) var(--ea-out); }
+.map-figure.is-focusing .map-pt.is-lit { opacity: 1; }
+.map-pt.is-lit .map-ring { fill: color-mix(in oklab, var(--brand) 34%, transparent); stroke-width: 2.4; }
+
+@media (prefers-reduced-motion: reduce) {
+  .map-figure.is-focusing .map-pt { transition: none; }
+}
+
+/* The ranking sheds columns before it sheds rows. It is the half of this
+   section that works without a pointer, so it is the last thing to give up
+   space — every town stays listed at every width. */
+@media (max-width: 64rem) { .map-places-list { columns: 2; column-gap: var(--s-6); } }
+@media (max-width: 40rem) { .map-places-list { columns: 1; } }
+
+
+/* ══ Home: the section nav ════════════════════════════════════════════════
+   Nine cards in an eight-column grid, which put one card alone on a second
+   row — the single most visible "unfinished" tell on the home page, and a
+   pure arithmetic accident: the grid was written for the eight tabs this
+   component had before /counseling joined them.
+
+   Nine divides by three, so every breakpoint below gets a whole rectangle:
+   9 across, then 3x3. Nothing else about the component changes. */
+
+.tabs-grid { grid-template-columns: repeat(9, 1fr); }
+
+@media (max-width: 75rem) {
+  .tabs-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* 10.5px was the label size inherited from the dark build, where these were
+   compact tabs rather than the page's own navigation. At three columns there
+   is room to set them at a size that does not ask a parent to lean in. */
+.tab-card { font-size: var(--t-xs); }
+.tab-card .tab-label { font-size: var(--t-xs); letter-spacing: 0; line-height: 1.35; }

@@ -60,9 +60,9 @@ const canonical = new URL(path, SITE).href;
      Loading bridge last settles that without escalating specificity anywhere.
      Its :root aliases are unaffected by the move, because var() resolves at
      computed-value time rather than at parse time. -->
-{/* Nine separate sheets, deliberately. Bundling them into one 169 kB file
+{/* Ten separate sheets, deliberately. Bundling them into one 169 kB file
     was tried and measured WORSE — LCP 1632ms → 1916ms — because nothing can
-    apply until a single file finishes, while nine stream in parallel. The
+    apply until a single file finishes, while ten stream in parallel. The
     round-trip argument for bundling assumes HTTP/1.1 head-of-line blocking;
     Netlify serves HTTP/2, where the requests multiplex and the only thing
     left is the serialisation penalty. tools/bundle-css.mjs is kept for the
@@ -76,9 +76,12 @@ const canonical = new URL(path, SITE).href;
 <link rel="stylesheet" href="/assets/theme/glass.css">
 <link rel="stylesheet" href="/assets/theme/motion.css">
 <link rel="stylesheet" href="/assets/theme/panel.css">
-{/* Last: finishes the dark→light migration for the site chrome (ticker,
-    contact bar) that bridge.css only half-completed. See chrome.css. */}
+{/* Last two, in this order: chrome.css finishes the dark→light migration for
+    the site chrome (ticker, contact bar) that bridge.css only half-completed;
+    interiors.css does the same for what is *inside* the routes, which that
+    migration never reached. See the header comment in each. */}
 <link rel="stylesheet" href="/assets/theme/chrome.css">
+<link rel="stylesheet" href="/assets/theme/interiors.css">
 {/* 36 kB of base64 PNG for a decorative noise overlay, and it was
     render-blocking: nothing could paint until it arrived. media="print"
     keeps the browser from blocking on it; runtime.js flips it to "all"

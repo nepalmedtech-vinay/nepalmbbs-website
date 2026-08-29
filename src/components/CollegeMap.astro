@@ -72,6 +72,26 @@ const points = colleges
 // reducing the raw records concatenates them into a 45-digit number instead of
 // adding them. `points` has already been through parseInt.
 const totalSeats = points.reduce((n, p) => n + p.seats, 0);
+
+// The same 27 records, grouped by town and ranked by seats.
+//
+// The plot alone could not answer the question it invites. Every mark was
+// anonymous until you hovered it, which is no answer at all on a phone, and
+// the one thing a family wants from a map — *which* town — was the one thing
+// it would not say. Meanwhile the figure sat in a single column with the
+// right half of a 1220px container empty beside it.
+//
+// So the towns are listed next to the plot, largest intake first: the list
+// names what the marks cannot, the plot shows where the names are, and the
+// two are the same data read two ways rather than a graphic and a decoration.
+const byPlace = [...
+  points.reduce((m, p) => {
+    const e = m.get(p.location) || { location: p.location, seats: 0, colleges: [] };
+    e.seats += p.seats;
+    e.colleges.push(p.name);
+    return m.set(p.location, e);
+  }, new Map()).values(),
+].sort((a, b) => b.seats - a.seats || a.location.localeCompare(b.location));
 ---
 
 <section class="map-section">
@@ -91,7 +111,8 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
       </p>
     </div>
 
-    <figure class="map-figure m-rise">
+    <div class="map-layout m-rise">
+    <figure class="map-figure">
       <svg
         class="map-svg"
         style="color:var(--brand)"
@@ -161,6 +182,32 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
       </figcaption>
     </figure>
 
+    <aside class="map-places" aria-label="Towns by foreign-quota seats">
+      <p class="map-places-head">
+        <span class="map-places-title">Where the seats are</span>
+        {/* Spelled out because the heading above says "27 places" meaning 27
+            colleges, and this list has 24 rows. Both are right; side by side
+            without the sentence they read as a contradiction. */}
+        <span class="map-places-sub">{colleges.length} colleges across {byPlace.length} towns &middot; largest intake first</span>
+      </p>
+      <ol class="map-places-list">
+        {byPlace.map((pl) => (
+          <li class="map-place" data-place={pl.location}>
+            <span class="map-place-name">{pl.location}</span>
+            <span class="map-place-bar" aria-hidden="true">
+              <i style={`--w:${(pl.seats / byPlace[0].seats) * 100}%`}></i>
+            </span>
+            <span class="map-place-seats">{pl.seats}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="map-places-foot">
+        Seats, not colleges: {byPlace[0].location} leads on intake, not on the
+        number of institutions. Hover or tap a town to find it on the plot.
+      </p>
+    </aside>
+    </div>
+
   </div>
 </section>
 
@@ -207,6 +254,37 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
     fig.addEventListener('focusout', function (e) {
       if (!fig.contains(e.relatedTarget)) hide();
     });
+
+    /* The town list and the plot are the same records, so pointing at one
+       points at the other. Matching is on the location string both sides were
+       generated from, which is also the key places.json is looked up by — if
+       that key were ever wrong the build would already have failed. */
+    var list = document.querySelector('.map-places');
+    if (list) {
+      var lit = null;
+      list.querySelectorAll('.map-place').forEach(function (row) {
+        function light() {
+          if (lit === row) return;
+          unlight();
+          lit = row;
+          row.classList.add('is-lit');
+          fig.classList.add('is-focusing');
+          fig.querySelectorAll('.map-pt').forEach(function (g) {
+            if (g.dataset.loc === row.dataset.place) g.classList.add('is-lit');
+          });
+        }
+        function unlight() {
+          if (!lit) return;
+          lit.classList.remove('is-lit');
+          lit = null;
+          fig.classList.remove('is-focusing');
+          fig.querySelectorAll('.map-pt.is-lit').forEach(function (g) { g.classList.remove('is-lit'); });
+        }
+        row.addEventListener('pointerenter', light);
+        row.addEventListener('pointerleave', unlight);
+        list.addEventListener('pointerleave', unlight);
+      });
+    }
 
     // Draw the points in only once the figure is actually on screen.
     if ('IntersectionObserver' in window) {

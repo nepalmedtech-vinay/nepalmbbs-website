@@ -398,8 +398,18 @@ p, li, dd, .sec-sub, .card-sub, .curr-note, .calc-note {
 }
 .map-dot { fill: var(--brand); transition: fill var(--d-2) var(--ea-out); }
 
-.map-pt.is-govt .map-ring { fill: color-mix(in oklab, var(--brand) 12%, transparent); stroke: var(--brand); }
-.map-pt.is-govt .map-dot  { fill: var(--brand); }
+/* Government points, in the counter accent rather than the brand.
+   These two rules used to differ from the private ones by a 12% fill against
+   a 10% one, with the same stroke — a 2% difference, which is to say none.
+   The legend underneath announced "Government" and "Private" as though the
+   plot distinguished them, and it did not: every mark looked the same.
+
+   Government vs private is not a decorative split on this site. It decides
+   fee exposure and how competitive a seat is, and /colleges divides its
+   entire table on it. A legend that claims the distinction has to be backed
+   by a mark that carries it. */
+.map-pt.is-govt .map-ring { fill: color-mix(in oklab, var(--brand-2) 16%, transparent); stroke: var(--brand-2); }
+.map-pt.is-govt .map-dot  { fill: var(--brand-2); }
 
 .map-halo { opacity: 0; transition: opacity var(--d-3) var(--ea-out); }
 .map-hit  { fill: transparent; }
@@ -464,7 +474,10 @@ p, li, dd, .sec-sub, .card-sub, .curr-note, .calc-note {
   background: color-mix(in oklab, var(--brand) 14%, transparent);
   border: 1.4px solid var(--brand);
 }
-.map-key.is-govt i { background: rgba(240, 165, 0, 0.16); border-color: var(--brand); }
+/* Matches the mark it stands for. It previously showed a gold fill with a
+   brand border, which described neither the government points nor the
+   private ones. */
+.map-key.is-govt i { background: color-mix(in oklab, var(--brand-2) 16%, transparent); border-color: var(--brand-2); }
 .map-key--scale i { border-style: dashed; border-color: var(--g-ink-4); background: none; }
 
 /* Below the point-density threshold the graticule labels collide and the
