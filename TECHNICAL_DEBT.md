@@ -22,6 +22,30 @@ leaving it as a silent TODO, and give each item a path to being resolved.
   component and the dead `step('hero', ...)` call together. Full verify
   suite re-run after the change; see `QA_REPORT.md`.
 
+## Open — found 2026-08-29 (chunk 8)
+
+- **`sections.css` is still the main obstacle to any theme change.** 298
+  lines, **104 `!important`**, and it was written across two eras so it
+  contradicts itself: some rules assume a dark page, some a light one.
+  Sixteen blocks were re-pointed at tokens this chunk (that is what made the
+  palette inversion possible at all), but the sheet as a whole still fights
+  the token system. Retiring it is bounded, mechanical and high value.
+
+- **Colours in inline `style` attributes cannot be themed.** Two links in
+  `guidelines.astro` carried `style="color:#92400e"` and were unreachable
+  from any stylesheet. Both are fixed; nobody has swept the other pages for
+  the same pattern. `style-src` still allows `unsafe-inline` (see below), so
+  nothing prevents a new one.
+
+- **The three-equal-cards / inherited-interior problem remains on seven
+  content routes.** `/why-nepal`, `/faq`, `/guidelines`, `/videos`,
+  `/life-in-nepal`, `/neet-calculator`, `/counseling`.
+
+- **Median page weight rose 279 kB → 314 kB** with the dark palette — the
+  aurora carries more work on a dark ground (higher opacity, larger blobs)
+  plus one more stylesheet. Not diagnosable from this sandbox (no GPU); worth
+  a Lighthouse run against a deploy.
+
 ## Open — found 2026-08-29 (chunk 7)
 
 - **The rollback tags still break `npm run verify` on a fresh clone.** This

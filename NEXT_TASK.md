@@ -3,116 +3,97 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
-## Status as of 2026-08-29 (end of chunk 7)
+## Status as of 2026-08-29 (end of chunk 8)
 
-**Read this before trusting a green run: `npm run verify` does not run to
-completion in a fresh container.** `tests/build-verify.mjs` line 188 needs the
-`phase1-static-rollback` tag, this clone has no tags, and the test *throws*
-rather than recording a failed check — which kills the process and takes the
-six later suites down with it, silently, because the chain is `&&`. A session
-that reads only the exit code learns nothing about a11y, contrast, CSP or the
-assistant.
-
-`TECHNICAL_DEBT.md` now names the commit the tag belongs on and the one-line
-recovery. Do this first, before anything else:
+**Recreate the tag before running anything**, or `npm run verify` dies in
+`build-verify` and silently skips six of its eight suites (see
+`TECHNICAL_DEBT.md`):
 
 ```bash
 git tag phase1-static-rollback d48a4c6
 ```
 
-With that tag in place the whole gate runs and **all eight suites pass**:
+All eight suites then pass: build-verify 98/98, csp 11/11 (2949 handlers),
+console 34/34, auth 12/12, a11y 32/32, compare 13/13, assistant 18/18, and
+**audit 43 routes + the assistant with 0 low-contrast and 0 mobile overflow**.
 
-| Suite | Result |
-|---|---|
-| `build-verify` | 98/98 — tracker byte-identical check included |
-| `csp-verify` | 11/11 · 45 routes · 2949 handlers |
-| `console-verify` | 34/34 |
-| `auth-verify` | 12/12 · 0 JS errors |
-| `a11y-verify` | 32/32 |
-| `compare-verify` | 13/13 |
-| `assistant-verify` | 18/18 |
-| `audit` | see `QA_REPORT.md` for this chunk's run |
-
-The honest score is still in `SELF_AUDIT.md`. Do not raise a number there
+The honest score is **89/100** — `SELF_AUDIT.md`. Do not raise a number there
 because a suite went green.
 
-## What chunk 7 did, and the one lesson worth carrying
+## The site is now champagne on deep slate, and the visitor can change it
 
-The chunk was "page interiors, starting `/` → `/colleges` →
-`/admission-process` → `/documents`". Measuring those four first turned up
-three defects that had to be fixed before any layout work was worth doing —
-all three were **the site asserting something it did not deliver**, and all
-three had been recorded in this file as done.
+The owner picked the palette from three options and then asked for two
+corrections: not "complete dark", and theme/colour/style customisable.
 
-1. **The home map dropped a college and printed a different total from the
-   hero directly above it** — 26 places / 691 seats under a hero reading
-   27 / 734. `colleges.json` says "Kohalpur, Banke"; `places.json` had
-   "Nepalgunj"; the component `.filter()`ed the mismatch away and generated
-   its copy from what survived. Now a build-time throw that names the college.
-2. **Government and private colleges plotted identically** — the legend
-   announced the distinction, the marks differed by a 12% fill against a 10%
-   one with the same stroke.
-3. **The fixed header covered the first line of every inner page at desktop**
-   — 9px, at every width above 48rem, on all 36 inner routes. This file said
-   "every route clearing the fixed header". That was true at 390px, which is
-   where it was measured; the desktop half was asserted from `.gh`, the home
-   hero, and never checked against `.tab-pane > .container`, which computes
-   `padding-top: 0`.
+- The ground is `#1C232E`, not the `#0A0E13` tried first. At near-black every
+  glass pane collapses to the same flat grey because there is nothing for it
+  to be lighter *than*.
+- **The customiser now has a button in the navbar.** This is the single most
+  useful thing in the chunk and it was already built: the theme engine, seven
+  presets (four light, two dark, one dimmed), two brand colour pickers, type
+  pairing, corner radius, depth, glass and motion sliders, an offline
+  colour-theory generator and a live contrast checker have existed since
+  Phase 3/4 — but `runtime.js` mounts the panel only when a `#theme-toggle`
+  element is present and **no live page had one**. Verified: the panel opens,
+  and clicking Dawn switches the ground to `#F4F6FB` live.
 
-**The lesson, and it is the third time this repo has learned it: a
-measurement on one component is not a measurement of the pattern.** When you
-fix something "site-wide", enumerate the sites and measure each. Both the
-contact-bar bug and this one hid in exactly that gap.
+So the site is not locked to dark. Anyone can switch it, and the choice
+persists per browser.
 
-Full write-up in `DECISION_LOG.md` (2026-08-29). Sourcing for the Kohalpur
-coordinates is in `CONTENT_SOURCE_LOG.md`.
+## The lesson from chunk 8, and it is the same one as chunk 7
 
-### Also done, and why it was in scope
+**A component that names a token survives a palette inversion untouched. A
+component that names a colour has to be found and fixed by hand.**
 
-Promoting `/admission-process`' title from a `<div>` to an `<h1>` exposed
-**seven other routes with no `<h1>` at all** — `/counseling` opened on an
-`<h2>`, `/life-in-nepal` on an `<h3>`. Outside the four pages named, fixed
-anyway: one tag per page, a real a11y/SEO defect, and fixing one heading
-outline while leaving seven broken is half a job. All 42 routes now have
-exactly one `<h1>`, re-measured for identical font/size/weight/margins.
+The inversion broke exactly and only the second kind. `bridge.css` needed
+three literal hexes changed and nothing else. `engine.js` did the rest on its
+own — detecting dark from luminance, flipping the hairline, re-solving the
+whole ink ramp against contrast targets. Meanwhile `sections.css` needed
+sixteen blocks rewritten because it pinned `#ffffff` and `#111827`, and two
+links in `guidelines.astro` could not be themed at all because their colour
+was **inline**.
 
-## 🎯 The next chunk: finish the interiors
+A second, sharper pattern, which caught three separate tokens: **a colour
+solved against the standard pane fails when it lands on a tint of itself.**
+`--wa-text` on a 12% green button, the evidence colours on 14% tints of
+themselves, the chat restart button on a 12% brand tint — each passed its own
+solve and failed the rendered page. Solve against the surface actually
+painted, not the nearest convenient approximation.
 
-Chunk 7 took the four pages it named and no more. The same audit items are
-still open on everything else:
+## 🎯 The next chunk
 
-1. **`.foot-top` is a four-column link farm** and the trust-badge row is six
-   equal cards. Both appear on *every* route, so they are worth more than any
-   single page.
-2. **The remaining content routes** — `/why-nepal`, `/faq`, `/guidelines`,
-   `/videos`, `/life-in-nepal`, `/neet-calculator`, `/counseling`. Two of
-   them (`/faq`, `/neet-calculator`) still centre their section header over
-   left-aligned content; `/admission-process` had the same mismatch and the
-   fix was one class.
-3. **Shadows are still neutral rather than hue-tinted** — `--sd-*` in
-   `engine.css` already carries `--dp-hue`, so this is a token change, not a
-   refactor.
-4. **Headline `text-wrap: balance` is still only partly applied.**
-
-`public/assets/theme/interiors.css` is the place for this work — new this
-chunk, loaded after `chrome.css`, with its reasoning in its own header. Its
-first rule is the one to keep: **a layout has to earn its columns.** Two
-columns because the content is two things, not because there is room. The
-map's town list was built side-by-side first and measured wrong — a 912×427
-plot beside an 882px list — and was rebuilt stacked.
+1. **The remaining content routes' interiors** — `/why-nepal`, `/faq`,
+   `/guidelines`, `/videos`, `/life-in-nepal`, `/neet-calculator`,
+   `/counseling`. `/faq` and `/neet-calculator` still centre their section
+   header over left-aligned content; `/admission-process` had the same
+   mismatch and the fix was one class.
+2. **Retire `sections.css`.** It is still 104 `!important` declarations
+   fighting the token system, and it is now the main reason a theme change
+   needs a hand-audit. Sixteen blocks were converted this chunk; the rest is
+   a bounded, mechanical, high-value job.
+3. **`text-wrap: balance`** is still only partly applied.
+4. **The assistant can go further.** It now answers comparisons ("IOM vs
+   KMC"), aggregate questions over the college set ("which college has the
+   most seats", "how many government colleges", "colleges in Pokhara"), a
+   NEET-score question (by restating the rule and refusing to invent a
+   cut-off), and one-step follow-ups ("what about its seats?"). Still
+   deterministic, still zero running cost, still every answer sourced —
+   the owner asked for maximum capability *without any cost*, and an LLM
+   would mean an API key, a Netlify Function and a per-message charge.
+   `getBotReply()` remains the seam if that ever changes.
 
 Constraints that still hold:
 
 - `npm run csp` after touching any inline `<script>`.
-- Contrast is measured, not assumed. `tests/audit.mjs` is ~15 min; background
-  it, and remember `set -o pipefail` — piping to `tail` has masked a failure
-  in this repo before.
+- **Never rebuild while a suite is running.** One audit run was invalidated
+  this chunk by exactly that, and `dist/` is what they read.
+- Screenshot with `reducedMotion: 'reduce'`, or scroll-driven reveals render
+  at opacity 0 and the page looks broken when it is not.
+- Focus indicators are **outlines, not box-shadows**. A box-shadow can be
+  clobbered by a component's own shadow; an outline cannot. Rebuilding the
+  ring as a box-shadow inside a `:where()` removed keyboard focus from the
+  nav links entirely, and only `a11y-verify` caught it.
 - No new typeface.
-- Screenshot with `reducedMotion: 'reduce'`. The home page's reveals are
-  scroll-driven (`animation-timeline: view()`), so a full-page screenshot
-  taken without it renders everything below the fold at opacity 0 and looks
-  like a catastrophically broken page. That cost this session a wrong
-  diagnosis before the setting was found.
 
 ## Blocked on the owner, not on work
 

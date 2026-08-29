@@ -4,6 +4,52 @@ Records actual `npm run verify` / individual test-suite results. Every
 entry is a real run's output, not a description of what the suites check —
 see `README.md`/`tests/*.mjs` for that.
 
+## 2026-08-29 — Chunk 8 (palette inversion + customiser) ✅ ALL EIGHT SUITES GREEN
+
+Recreate the tag first, as chunk 7 recorded: `git tag phase1-static-rollback d48a4c6`.
+
+| Suite | Result |
+|---|---|
+| `build-verify` | ✅ 98/98 |
+| `csp-verify` | ✅ 11/11 · 45 routes · 2949 handlers |
+| `console-verify` | ✅ 34/34 |
+| `auth-verify` | ✅ 12/12 · 0 JS errors |
+| `a11y-verify` | ✅ 32/32 |
+| `compare-verify` | ✅ 13/13 |
+| `assistant-verify` | ✅ 18/18 |
+| `audit` | ✅ 43 routes + the assistant · **0 low-contrast · 0 mobile overflow** · median 314 kB |
+
+### The audit earned its keep this chunk
+
+It went **94 → 86 → 1 → 0** across four runs. A whole-palette inversion is
+exactly the change a contrast suite exists for, and nothing else would have
+caught most of it: 54 of the first 94 were unstyled `<a>` tags showing the
+browser's default `#0000EE`, which had been failing at 2.3:1 on the *old*
+light ground and which no one had noticed for the life of the site.
+
+Median page weight is up, 279 kB → 314 kB. That is the aurora field carrying
+more work on a dark ground (higher opacity, larger blobs) plus one more
+stylesheet. Worth watching, not worth acting on from a sandbox with no GPU.
+
+### Two regressions the suites caught that review did not
+
+- **`a11y-verify` 31/32.** A focus ring rebuilt as a box-shadow inside a
+  `:where()` left the nav links with `0px none` — no visible focus at all.
+  Invisible to the eye in a screenshot, obvious to the suite. Back to 32/32.
+- **The audit's own run was invalidated once**, by me: I rebuilt `dist/`
+  while it was reading it. `CLAUDE.md` warns about this in as many words. The
+  run was discarded and repeated rather than reported.
+
+### `assistant-verify` passed unchanged through a 220-line rewrite
+
+The assistant gained comparison answers, aggregate answers over the college
+set, a NEET-score path and one-step follow-up memory, and all 18 checks held
+— including "never answers a fee question with a number", "declines a
+question it cannot source" and "all 27 colleges reachable by name". That is
+the value of having written those checks before the feature.
+
+---
+
 ## 2026-08-29 — Chunk 7 (page interiors) ✅ ALL EIGHT SUITES GREEN — but `npm run verify` did not run them
 
 **Read the caveat before the table.** `npm run verify` **exited 1 without

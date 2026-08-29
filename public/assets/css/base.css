@@ -524,8 +524,8 @@ section.hero.sliding .hero-content{
 .chat-suggestions{padding:0 14px 10px;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
 .chat-sug{padding:5px 10px;background:var(--off);border:1px solid var(--border);border-radius:16px;font-size:11.5px;font-weight:600;color:var(--blue);cursor:pointer;transition:all .2s;white-space:nowrap}
 .chat-sug:hover{background:var(--blue);color:#fff;border-color:transparent}
-.chat-restart-btn{padding:6px 12px;background:var(--brand-soft);border:1px solid var(--brand-line);border-radius:8px;font-size:11px;font-weight:700;color:var(--brand-text);cursor:pointer;margin:0 14px 8px;text-align:center;flex-shrink:0;transition:all .2s}
-.chat-restart-btn:hover{background:color-mix(in oklab, var(--brand) 20%, transparent)}
+.chat-restart-btn{padding:6px 12px;background:var(--m-fill);border:1px solid var(--brand-line);border-radius:8px;font-size:11px;font-weight:700;color:var(--brand-text);cursor:pointer;margin:0 14px 8px;text-align:center;flex-shrink:0;transition:all .2s}
+.chat-restart-btn:hover{background:var(--brand-soft)}
 .chat-input-area{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
 .chat-input{flex:1;padding:9px 13px;border:1.5px solid var(--border);border-radius:22px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
 .chat-input:focus{border-color:var(--blue)}

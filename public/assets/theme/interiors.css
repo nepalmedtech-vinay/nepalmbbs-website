@@ -817,3 +817,11 @@ footer a:not([class]):hover,
 /* Was an inline `color:#92400e` in guidelines.astro — an amber picked for a
    near-white page, and inline, so no stylesheet could reach it. */
 .doc-note-link { color: var(--brand-text); font-weight: 700; }
+
+/* The chat's restart control sat on --brand-soft — a 12% tint of the brand —
+   with --brand-text on top, and measured 4.37:1. The same trap the WhatsApp
+   label fell into: --brand-text is solved against the plain pane, so putting
+   it on a tint OF THE BRAND moves the ground toward the text and eats the
+   margin. A neutral pane, with the brand kept on the border where it costs
+   no contrast. */
+.chat-restart-btn { background: var(--m-fill); }

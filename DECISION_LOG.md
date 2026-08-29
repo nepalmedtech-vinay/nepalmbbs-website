@@ -5,6 +5,115 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-08-29 — Chunk 8: the palette inverts, and the customiser gets a button
+
+The owner asked for a more premium look in the glass style, picked
+**midnight + champagne** from three options, and later asked for it not to be
+"complete dark" and for theme, colour and style to be customisable.
+
+### The palette was the easy part; finding out why it did nothing was not
+
+Changing the tokens in `engine.css` had **no visible effect**. `engine.js`
+writes a preset onto `<html>` as inline style after load, so `PRESETS.dawn`
+overwrote the new defaults within a frame of first paint. There is now a
+`twilight` preset carrying the full 30-value theme and the four
+`PRESETS.dawn` defaults point at it; Dawn stays as a Quick Look.
+
+Then three layers had to be made to follow it:
+
+- **`sections.css`** — 298 lines, 104 `!important`, ~50 hard-coded hexes, and
+  internally inconsistent because it was written across two eras.
+  `.tabs-section` pinned `#111827` and `.tab-card` pinned white-at-10%
+  (correct on the original dark build); `.why-card`, `.faq-item` and
+  `.trust-badge` pinned `#ffffff` and `.trust-section` pinned `#f0f4ff`
+  (correct on the light one). Sixteen blocks re-pointed at tokens. This is
+  why the trust badges rendered as solid white cards showing the *browser's
+  default link blue* on a dark page: nothing in the token system could reach
+  them.
+- **`bridge.css`** needed only its literal hexes changed. Everything mapped
+  through `--g-ink`/`--g-base`/`--m-*` survived the inversion untouched.
+- **`engine.js`** had a latent bug that fires only with a light brand on a
+  dark ground: `--brand-ink` fell back to `t.ink` when the brand was too
+  light for white text. On a light theme the ink is dark and that is right;
+  here it put near-white text on a champagne button at about 1.8:1.
+
+**What the engine got right on its own is worth recording**, because it is
+the reason this took hours rather than days: it detects dark from the
+ground's luminance, lifts the glass tint 10% toward white instead of 72%,
+flips the hairline, switches shadows to black, boosts depth 1.6x, and
+re-solves the whole ink ramp and `--brand-text` against contrast targets.
+None of that needed touching. The parts that broke were, without exception,
+the parts that named a colour instead of a token.
+
+### Not complete dark
+
+The first pass went to `#0A0E13` and read as pitch: at that luminance every
+pane collapses to the same flat grey, because there is nothing for a pane to
+be lighter *than*. `#1C232E` is roughly four times the luminance — still
+unmistakably dark, with room left for the material to work.
+
+### The customiser had been finished for two phases and had no button
+
+This is the finding worth carrying. The theme engine, seven presets (four
+light, two dark, one dimmed), two brand colour pickers, type pairing, corner
+radius, depth, glass and motion sliders, an offline colour-theory generator
+and a live contrast checker have all existed since Phase 3/4.
+`runtime.js` mounts the panel only when a `#theme-toggle` element exists —
+and **no live page had one**. The entire customiser shipped behind a button
+nobody built, reachable only from `/preview`.
+
+One `<button>` in the navbar turned on 65 controls. Decision: expose it to
+everyone rather than keep it behind the admin gate. It writes to
+`localStorage` per visitor, changes nothing server-side, and the alternative
+— an owner who cannot change their own site's colours without a code change
+— is worse than a visitor who can change their own copy of it.
+
+Its contrast checker also disagreed with the engine it checks: `audit()`
+judged buttons as "white text on the brand colour", which `apply()` stopped
+doing once `--brand-ink` was fixed. It warned about a combination the page
+never paints. A checker that disagrees with the thing it checks trains
+people to ignore it, so it now judges the ink actually used.
+
+### 94 low-contrast elements, and what they actually were
+
+The inversion did not cause most of them; it made them loud.
+
+**54 of the 94 were plain `<a>` tags with no class**, rendering in the
+browser default `#0000EE`. That is 2.3:1 on the old near-white ground —
+already a failure, quiet enough that nobody looked — and 1.55:1 on a dark
+one. They were always wrong. The dark ground only made them impossible to
+ignore.
+
+The rest were hard-coded light-theme values no token could reach:
+`.chat-window` was `#fff` (so the entire assistant panel was a white card on
+a dark page), `.compare-table`, `.college-selector` and `.vid-drive-card`
+pinned white, `.test-stars` a `#9a6400`, and two links in `guidelines.astro`
+carrying an **inline** `color:#92400e`, which no stylesheet can override.
+`--g-ink-4` was doing duty as body text in the footer and on `.calc-dis`; it
+is the 3:1 placeholder step.
+
+**A pattern worth naming, because it caught three separate tokens:** a
+colour solved against the standard pane fails when it lands on a tint *of
+itself*. `--wa-text` (green on a 12% green button), the three evidence
+colours (each on a 14% tint of itself) and the chat restart button (champagne
+on a 12% brand tint) all passed their own solve and failed the page. The
+fix in each case was to solve against the surface actually rendered — for
+`--wa-text`, the solid pane with the button's own tint composited over it —
+rather than against the nearest convenient approximation.
+
+Final: **1 low-contrast element**, then 0.
+
+### A regression I introduced, and the rule it produced
+
+Rebuilding the focus ring as a box-shadow inside a `:where()` removed the
+focus indicator entirely on the nav links — `0px none`, caught by
+`a11y-verify`, not by eye. `:where()` has zero specificity, so any other
+box-shadow rule wins, while the `outline: none` still applies because
+nothing competes with it. **An outline cannot be clobbered by a component's
+own shadow; a box-shadow can.** Focus rings stay outlines.
+
+---
+
 ## 2026-08-29 — Chunk 7: page interiors, and two things the pages asserted but did not deliver
 
 The chunk was "make the interiors good, starting with `/`, `/colleges`,
