@@ -1,41 +1,63 @@
 # NEXT_TASK.md
 
-_Read this file first in a new session, after `PROJECT_STATE.md`. It is
-overwritten at the end of every chunk to point at the next one._
+_Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
+It is overwritten at the end of every chunk to point at the next one._
 
-## Status as of the end of this session's Phase 0
+## Status as of 2026-08-29
 
-`npm run verify` was run for the first time in this container. It could
-not run at all until three real bugs were fixed (see `DECISION_LOG.md`):
-a missing `playwright` devDependency, three test files hardcoding a dead
-absolute path, and a missing git tag a test asserts against. All three
-are fixed. See `QA_REPORT.md` for the actual pass/fail results once the
-run this session started has finished and been recorded there — if that
-file still shows the run as in-progress, finish reading its output before
-starting new feature work, since a red suite changes what "safe to build
-on" means.
+`npm run verify` is green: 44 routes, 0 failures, 0 low-contrast elements
+with 0 skipped, 18/18 assistant checks. The full record is in
+`QA_REPORT.md`. The honest score is **85/100** — see `SELF_AUDIT.md`, and
+do not raise a number there because a suite went green.
 
-## 🎯 One action worth more than everything else on this list
+**The MEC seat matrix is done.** The owner supplied the Commission's own
+MECEE-BL 2026 first-matching table on 2026-08-28 and all 27 figures were
+transcribed from it, summing to the document's stated total of 734. Four
+were overstated in the old data — Institute of Medicine by 4.5×. Every
+record now carries a `seatsSource` naming the category, round and intake,
+and each college page states that a first-matching allocation is not a
+standing number. Content and Trust are both 10/10 as a result. There is
+nothing left to do here; do not re-open it.
 
-**Open `https://www.mec.gov.np/uploads/shares/ug2024/ug_2024__seats.pdf`
-and transcribe the foreign-quota column into `src/data/colleges.json`.**
+## 🎯 The next chunk: page interiors
 
-Every seat number on this site currently rests on secondary agreement, and
-seat counts are the most load-bearing field the site publishes — a family
-shortlists on them. The Medical Education Commission publishes the matrix
-itself; that PDF is the authority. Reading it once replaces 27 unverified
-figures with the authority's own, and resolves the outstanding Kathmandu
-Medical College conflict (this site says 43, a secondary source says 33)
-as a side effect.
+This is the largest remaining block of points that belongs to Claude
+rather than to the owner or to production hardware: **Visual 16/20 and
+UX 12/15**.
 
-This session found the document but could not read it: `WebFetch` is
-blocked for every domain in this sandbox, and it is a PDF behind that
-block. It is an afternoon with a browser, not a research project.
+The chrome is coherent now — one type system, one palette, every route
+clearing the fixed header. The **interiors are not**. They are still the
+layout this site was built with: a section-card grid, the three-equal-
+cards pattern repeated on most pages, stacked identical `.doc` blocks,
+and a single column on desktop where there is room for two. Phase 3/4
+made those blocks legible; nobody has yet made them good.
 
-When transcribing, note that seats split across categories — Foreign,
-Paying, Scholarship, Nepal Army Welfare Fund. This site publishes the
-**foreign** figure, not the total intake. Full detail and the companion
-URLs are in `CONTENT_SOURCE_LOG.md`.
+Start with the pages a family actually lands on, in this order:
+`/` → `/colleges` → `/admission-process` → `/documents`.
+
+Constraints that still hold while doing it:
+
+- `npm run csp` after touching any inline `<script>`.
+- Contrast is measured, not assumed — the audit will catch a regression,
+  but it takes ~15 minutes, so run it in the background.
+- No new typeface. `chrome.css` already maps the orphaned `Sora`/`Inter`
+  rules onto the token system.
+
+## Blocked on the owner, not on work
+
+- **Deadline centre** (Journey 7→9, UX 12→13) needs the Commission's
+  published per-intake dates. Inventing plausible ones would score well
+  and be the most harmful thing this project could ship.
+- **Performance 4/5** cannot be scored from this sandbox — no GPU. Run
+  Lighthouse against the deployed site.
+- **SEO 4/5** is capped by a decision, not a gap: the brief wants an
+  "MBBS fees Nepal" page and this site declines to publish fees.
+- **Rollback tags** are still local-only; `git push --tags` returns 403.
+  `tests/build-verify.mjs` reads `phase1-static-rollback`, so a fresh
+  clone fails verify until someone pushes them by hand.
+- **Three blank `established` fields** remain (Gandaki, Janaki, Birat).
+  Birat's own site contradicts itself — 1991 in one place, 2014 in
+  another. The field stays blank until the college resolves it.
 
 ## The assistant is now sourced and data-driven (2026-08-28)
 
