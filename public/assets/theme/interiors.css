@@ -776,13 +776,28 @@ footer a:not([class]):hover,
 
 
 /* ══ The appearance control ═══════════════════════════════════════════════
-   Sits between the language switch and the CTA, at the same weight as the
-   language switch — it is the same kind of control (a preference about how
-   the site is presented), and giving it more presence than "Free Counseling"
+   The owner's control, not a visitor preference — it edits the site's own
+   palette, type and motion, which are brand decisions. Hidden by default and
+   revealed by chrome.js on the same rule as the admin button: an existing
+   staff session, or #admin in the URL.
+
+   Hidden in CSS rather than only in JS, so a visitor never sees it even for
+   the frame before the script runs. Never `display: none` from the script and
+   never removed from the DOM — chrome.js's own rule, so that nothing here can
+   lock the owner out of their own panel.
+
+   When shown it sits between the language switch and the CTA, at the weight
+   of the language switch: giving it more presence than "Free Counseling"
    would be the wrong priority on a page whose job is admissions. */
 
+/* Hidden until chrome.js says otherwise. The appearance rules live on the
+   base class so the shown/hidden decision is exactly one declaration — an
+   earlier pass set `display: inline-flex` here as well and silently undid
+   the gate, which is the cascade collision this file warns about. */
+.theme-toggle { display: none; }
+.theme-toggle--shown { display: inline-flex; }
+
 .theme-toggle {
-  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 34px;
@@ -810,7 +825,7 @@ footer a:not([class]):hover,
    hidden; the control follows it into the drawer's territory rather than
    crowding a 390px bar. */
 @media (max-width: 56rem) {
-  .theme-toggle { width: 30px; height: 30px; }
+  .theme-toggle--shown { width: 30px; height: 30px; }
   .theme-toggle svg { width: 15px; height: 15px; }
 }
 
