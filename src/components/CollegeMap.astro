@@ -11,7 +11,33 @@ import places from '../data/places.json';
 // It is a relative-position field, which is honest about its precision while
 // still telling a family, at a glance, that the east has clusters and the
 // far west has almost nothing.
-const colleges = (await getColleges()).filter((c) => places[c.location]);
+// A location with no entry in places.json used to be dropped here silently, by
+// a `.filter()` on this line. That is not a cosmetic loss: this figure's own
+// copy is generated from whatever survives the filter, so one unmapped town
+// made the section announce "26 places" and "691 foreign-quota seats" directly
+// beneath a hero reading 27 and 734 — two different answers to the same
+// question, on the same screen, on a site whose whole claim is that its
+// numbers are checkable.
+//
+// That is exactly what had happened. Nepalgunj Medical College (Kohalpur,
+// Banke — 43 seats, the joint-largest private intake in the dataset) was
+// missing from the map, because colleges.json calls the town "Kohalpur, Banke"
+// and places.json only had a "Nepalgunj" key. Nothing anywhere reported it.
+//
+// So this fails the build instead of filtering. A town added without
+// coordinates is a five-second fix when the error names it, and an invisible
+// wrong number on the home page when it does not.
+const colleges = await getColleges();
+const unplaced = colleges.filter((c) => !places[c.location]);
+if (unplaced.length) {
+  throw new Error(
+    `CollegeMap: ${unplaced.length} college(s) have no entry in src/data/places.json, so they\n` +
+      `would be dropped from the map — and from the college count and seat total printed\n` +
+      `beside it, which are derived from the same list:\n` +
+      unplaced.map((c) => `  · ${c.name} — location ${JSON.stringify(c.location)}`).join('\n') +
+      `\nAdd each location to src/data/places.json with sourced coordinates.`,
+  );
+}
 
 // Nepal's extent, padded. Latitude is inverted because SVG y grows downward.
 const LON = [80.0, 88.35];

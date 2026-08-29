@@ -34,14 +34,38 @@
 
    The overlap is deliberate as an effect: the navbar is translucent glass and
    content is meant to pass beneath it while scrolling. What was missing is
-   that the *first* screenful has to start below it. Desktop already cleared
-   it (112px of section padding against a 69px bar); only the mobile end of
-   the clamp fell short.
+   that the *first* screenful has to start below it.
 
-   So this raises the floor rather than switching the header to sticky, which
-   would have reserved space on every breakpoint and cost the glass effect. */
+   The desktop half of that claim was wrong, and stayed wrong because it was
+   asserted rather than measured. "112px of section padding against a 69px
+   bar" is true of `.gh` — the home page's hero, and the only place it was
+   checked. Every *other* route lays its content out in `.tab-pane > .container`,
+   which computes `padding-top: 0` above 48rem: measured at 0px on all 36 inner
+   routes, with the first eyebrow's top at 60px against a navbar bottom of 69.
+
+   So every inner page has been serving its first line of content with 9px of
+   it sliced off underneath the header, at every width above the mobile
+   breakpoint — /colleges, /admission-process, /documents, /faq, /why-nepal,
+   all 27 college records, and the rest. It reads as a rendering glitch on the
+   first thing a visitor sees.
+
+   The clamp below therefore applies at every width rather than only the
+   mobile end, and the mobile value is kept as a separate, larger floor
+   because the bar is proportionally much more of a small screen. Still a
+   floor, not a switch to `position: sticky`, which would reserve space on
+   every breakpoint and cost the glass effect. */
 
 :root { --nav-h: 69px; }
+
+/* Every width. `.gh` is excluded here because it already clears the bar on
+   its own at this end (112px at 1440, 96px at 1024) and re-stating it would
+   only add space the hero was composed without. */
+@media (min-width: 48.0625rem) {
+  .tab-pane > .container,
+  main > .container {
+    padding-top: calc(var(--nav-h) + 1.75rem);
+  }
+}
 
 @media (max-width: 48rem) {
   .gh,
