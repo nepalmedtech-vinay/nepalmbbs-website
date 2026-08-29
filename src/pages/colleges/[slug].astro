@@ -104,23 +104,26 @@ const schema = {
     </p>
   </div>
 
-  {/* Named rather than buried. Every seat figure on this site rests on
-      secondary agreement: the Commission publishes the matrix itself, and we
-      have not yet transcribed it. A family shortlists on this number, so the
-      honest thing is to say which number is not ours to certify and hand over
-      the document that is — not to let the record imply a uniform level of
-      verification it does not have. Removing this block means the seat counts
-      were checked against that matrix, not that we stopped worrying. */}
-  <div class="doc-note doc-note--caution rev" style="margin-top:24px">
-    <strong>The seat figure above is not verified against the Commission.</strong>
-    Foreign-quota seats are set per intake by the Medical Education Commission,
-    which publishes the allocation itself. Ours is compiled from secondary
-    sources and has not yet been checked line by line against that document.
-    Before you shortlist on it, read the Commission's own matrix at
-    <a href="https://entrance.mec.gov.np/Report/CollegeSeatInfo/List" target="_blank" rel="noopener">entrance.mec.gov.np ↗</a>,
-    and note that seats divide across foreign, paying, scholarship and army
-    categories — the figure that concerns you is the foreign one.
-  </div>
+  {/* This block used to say the seat figure was unverified, because it was.
+      It has since been checked line by line against the Commission's own
+      published matrix, so the note now says what the number actually is —
+      which category and which round — rather than warning it might be wrong.
+      The caveat that remains is real: a first-matching allocation is not a
+      standing figure, and later rounds move. */}
+  {c.seatsSource && (
+    <div class="doc-note rev" style="margin-top:24px">
+      <strong>About the seat figure.</strong> {c.seats} is this college's
+      allocation for <strong>{c.seatsSource.category}</strong> at the
+      <strong> {c.seatsSource.round}</strong> of the {c.seatsSource.intake} intake,
+      taken from the Medical Education Commission's own published matrix.
+      It is not a permanent number: allocations are published per intake, and
+      later matching rounds can change them. Seats also divide across foreign,
+      paying, scholarship and army categories — this is the foreign one, which
+      is the figure that applies to an Indian applicant. Confirm the current
+      position for your own year at
+      <a href="https://entrance.mec.gov.np" target="_blank" rel="noopener">entrance.mec.gov.np ↗</a>.
+    </div>
+  )}
 
   <div class="doc-note rev" style="margin-top:24px">
     <strong>We do not publish a fee figure for {shortName}.</strong> Fees and

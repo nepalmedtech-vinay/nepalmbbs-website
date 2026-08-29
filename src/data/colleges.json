@@ -7,11 +7,19 @@
     "location": "Kathmandu",
     "affiliation": "Tribhuvan University",
     "established": "1972",
-    "seats": "9",
+    "seats": "2",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://iom.edu.np",
-    "enquiryName": "Institute of Medicine (IOM), Kathmandu"
+    "enquiryName": "Institute of Medicine (IOM), Kathmandu",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "b-p-koirala-institute-of-health-sciences",
@@ -21,11 +29,19 @@
     "location": "Dharan, Sunsari",
     "affiliation": "Autonomous",
     "established": "1993",
-    "seats": "9",
+    "seats": "3",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.bpkihs.edu",
-    "enquiryName": "BPKIHS, Dharan"
+    "enquiryName": "BPKIHS, Dharan",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "patan-academy-of-health-sciences",
@@ -35,11 +51,19 @@
     "location": "Patan, Lalitpur",
     "affiliation": "Autonomous",
     "established": "2010",
-    "seats": "6",
+    "seats": "5",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.pahs.edu.np",
-    "enquiryName": "PAHS, Patan"
+    "enquiryName": "PAHS, Patan",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "karnali-academy-of-health-sciences",
@@ -53,7 +77,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.kahs.edu.np",
-    "enquiryName": "KAHS, Jumla"
+    "enquiryName": "KAHS, Jumla",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "nepalese-army-institute-of-health-sciences",
@@ -67,7 +99,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://naihs.edu.np",
-    "enquiryName": "Nepalese Army Institute of Health Sciences, Kathmandu"
+    "enquiryName": "Nepalese Army Institute of Health Sciences, Kathmandu",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "pokhara-academy-of-health-sciences",
@@ -81,7 +121,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.poahs.edu.np",
-    "enquiryName": "PoAHS, Pokhara"
+    "enquiryName": "PoAHS, Pokhara",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "rapti-academy-of-health-sciences",
@@ -95,7 +143,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.rahs.edu.np",
-    "enquiryName": "RAHS, Dang"
+    "enquiryName": "RAHS, Dang",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "madhesh-institute-of-health-sciences",
@@ -109,7 +165,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.mihs.edu.np",
-    "enquiryName": "MIHS, Janakpur"
+    "enquiryName": "MIHS, Janakpur",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "madan-bhandari-academy-of-health-sciences",
@@ -123,7 +187,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.mbahs.edu.np",
-    "enquiryName": "MBAHS, Makawanpur"
+    "enquiryName": "MBAHS, Makawanpur",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "purbanchal-university-school-of-health-sciences",
@@ -137,7 +209,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.pushs.edu.np",
-    "enquiryName": "PUSHS, Morang"
+    "enquiryName": "PUSHS, Morang",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "manipal-college-of-medical-sciences",
@@ -147,11 +227,19 @@
     "location": "Pokhara",
     "affiliation": "Kathmandu University",
     "established": "1994",
-    "seats": "60",
+    "seats": "59",
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.nepalmanipal.edu.np",
-    "enquiryName": "Manipal MCOMS, Pokhara"
+    "enquiryName": "Manipal MCOMS, Pokhara",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "college-of-medical-sciences",
@@ -165,7 +253,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.cmsnepal.edu.np",
-    "enquiryName": "CMS, Bharatpur, Chitwan"
+    "enquiryName": "CMS, Bharatpur, Chitwan",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "kathmandu-university-school-of-medical-sciences",
@@ -179,7 +275,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.kusms.edu.np",
-    "enquiryName": "KUSMS, Dhulikhel"
+    "enquiryName": "KUSMS, Dhulikhel",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "kathmandu-medical-college",
@@ -193,7 +297,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.kmc.edu.np",
-    "enquiryName": "KMC, Kathmandu"
+    "enquiryName": "KMC, Kathmandu",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "nepal-medical-college-jorpati",
@@ -207,7 +319,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.nmcth.edu",
-    "enquiryName": "Nepal Medical College, Jorpati, Kathmandu"
+    "enquiryName": "Nepal Medical College, Jorpati, Kathmandu",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "nobel-medical-college-teaching-hospital",
@@ -221,7 +341,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.nobelmedicalcollege.com.np",
-    "enquiryName": "Nobel Medical College, Biratnagar"
+    "enquiryName": "Nobel Medical College, Biratnagar",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "birat-medical-college-biratnagar",
@@ -235,7 +363,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://biratmedicalcollegenepal.com",
-    "enquiryName": "Birat Medical College, Biratnagar"
+    "enquiryName": "Birat Medical College, Biratnagar",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "nepalgunj-medical-college",
@@ -249,7 +385,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.ngmc.edu.np",
-    "enquiryName": "Nepalgunj Medical College"
+    "enquiryName": "Nepalgunj Medical College",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "lumbini-medical-college-teaching-hospital",
@@ -263,7 +407,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.lmc.edu.np",
-    "enquiryName": "Lumbini Medical College, Tansen"
+    "enquiryName": "Lumbini Medical College, Tansen",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "devdaha-medical-college-research-institute",
@@ -277,7 +429,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.devdahamedicalcollege.edu.np",
-    "enquiryName": "Devdaha Medical College, Rupandehi"
+    "enquiryName": "Devdaha Medical College, Rupandehi",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "b-c-medical-college-and-teaching-hospital",
@@ -291,7 +451,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": null,
-    "enquiryName": "B&C Medical College, Jhapa"
+    "enquiryName": "B&C Medical College, Jhapa",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "kist-medical-college-teaching-hospital",
@@ -305,7 +473,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.kistmcth.edu.np",
-    "enquiryName": "KIST Medical College, Lalitpur"
+    "enquiryName": "KIST Medical College, Lalitpur",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "chitwan-medical-college",
@@ -319,7 +495,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://www.cmc.edu.np",
-    "enquiryName": "Chitwan Medical College, Bharatpur"
+    "enquiryName": "Chitwan Medical College, Bharatpur",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "gandaki-medical-college",
@@ -333,7 +517,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "http://gmc.edu.np",
-    "enquiryName": "Gandaki Medical College, Pokhara"
+    "enquiryName": "Gandaki Medical College, Pokhara",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "national-medical-college-birgunj",
@@ -347,7 +539,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://nmcbir.edu.np",
-    "enquiryName": "National Medical College, Birgunj"
+    "enquiryName": "National Medical College, Birgunj",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "universal-medicine-college",
@@ -361,7 +561,15 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://ucms.edu.np",
-    "enquiryName": "UCMS, Bhairahawa"
+    "enquiryName": "UCMS, Bhairahawa",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   },
   {
     "slug": "janaki-medical-college",
@@ -375,6 +583,14 @@
     "duration": "5.5 Years",
     "admission": "NEET via MEC",
     "website": "https://janakimedicalcollege.edu.np",
-    "enquiryName": "Janaki Medical College, Janakpur"
+    "enquiryName": "Janaki Medical College, Janakpur",
+    "seatsSource": {
+      "name": "Medical Education Commission, Nepal — MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)",
+      "url": "https://mec.gov.np",
+      "checked": "2026-08-28",
+      "category": "Foreign Sub-Category-II",
+      "round": "First Matching",
+      "intake": "2026"
+    }
   }
 ]

@@ -11,6 +11,64 @@ search-snippet-level* verification, not primary-source confirmation —
 see the environment limitation immediately below. Treat a ✅ here as
 "corroborated by independent secondary sources," not "certified."
 
+## ✅ Seat counts — transcribed from the Commission's own matrix (2026-08-28)
+
+The owner supplied the document this log had been asking for:
+**MECEE-BL 2026, Seats for Foreign Sub-Category-II (First Matching)**,
+published and signed by the Medical Education Commission. All 27 seat
+figures now come from it rather than from secondary agreement.
+
+**Integrity check before applying:** the transcription sums to **734**,
+which is the total the document itself states. A transcription that adds
+up to the source's own total is unlikely to contain a silent digit error.
+
+### Four figures were wrong, all of them overstated
+
+| College | Site said | Commission says |
+|---|---:|---:|
+| Institute of Medicine | 9 | **2** |
+| B.P. Koirala Institute of Health Sciences | 9 | **3** |
+| Patan Academy of Health Sciences | 6 | **5** |
+| Manipal College of Medical Sciences | 60 | **59** |
+
+The IOM error is the one that matters: the site was advertising **four and
+a half times** the seats that actually exist in this category, at the most
+sought-after government institution in the country. A family shortlisting
+on 9 seats versus 2 is making a materially different decision.
+
+Site-wide total drops from **749 to 734**, which corrects the headline
+figure on the home page, the colleges index and the college map — all
+three compute it from this file, so none needed editing.
+
+### Two open questions the document closed on its own
+
+- **Kathmandu Medical College: 43, not 33.** The site's figure was right
+  and the secondary source that said 33 was wrong. Conflict resolved.
+- **Pokhara Academy of Health Sciences appears in the list, at 4 seats.**
+  This retires the 🔴 flag raised earlier in this log, which questioned
+  whether PoAHS had a running MBBS programme at all. It does, and it takes
+  foreign-quota students.
+
+### What the figure is, and is not
+
+Recorded on each college record as `seatsSource`, and stated on each
+college page rather than left in this file:
+
+- it is the **Foreign Sub-Category-II** allocation — not the total intake,
+  which also spans paying, scholarship and Nepal Army Welfare Fund seats;
+- it is the **First Matching** round of the **2026** intake — a
+  first-round allocation, not a standing figure. Later rounds move.
+
+### One naming note worth keeping
+
+The Commission lists **"Maharajgunj Medical Campus" (2 seats)** where this
+site says "Institute of Medicine (IOM)". Maharajgunj is IOM's constituent
+medical campus and is the only IOM entity in the list, so the mapping is
+sound — but if a future editor cross-checks names mechanically, that row
+will not match and this note is why. The Commission also writes
+"Purbanchal University School of Medicine" where the site says "Purbanchal
+University School of Health Sciences".
+
 ## 🎯 The primary source for every seat count — found, not yet read
 
 Chasing the Kathmandu Medical College seat conflict (this file records 43,
