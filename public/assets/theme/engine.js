@@ -108,7 +108,7 @@
          the larger, softer blobs. */
       au1: '#1E4F49', au2: '#26365E', au3: '#4E3D22', au4: '#3A2C46',
       auOpacity: 0.72, auBlur: 92, auScale: 1.15, auSpeed: 38,
-      mBlur: 30, mOpacity: 0.07, mSaturate: 145, mBorder: 0.17, mInner: 0.11,
+      mBlur: 44, mOpacity: 0.055, mSaturate: 190, mBorder: 0.26, mInner: 0.16,
       radius: 20, border: 1, shScale: 1, depth: 1,
       tyPair: 'editorial', tyScale: 1, tyWeight: 400, tyWeightD: 600, tyTrack: 0, tyA11y: 1,
       mo: 1, moTilt: 1, moParallax: 1,

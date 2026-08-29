@@ -81,6 +81,26 @@
   --wa:            #25D366;   /* the fill: WhatsApp's own green  */
   --wa-text:       #56E08E;   /* lifted to clear AA on the ground */
 
+  /* ══ 2b. NEON ══════════════════════════════════════════════════════════
+     Light the brand emits, as opposed to the brand as a surface colour.
+
+     The owner asked for this specifically. It is worth being precise about
+     where it may go, because an unrestrained glow is the fastest way to make
+     a page about medical admissions look like a nightclub, and this site's
+     own trust register already forbids it on the part that matters:
+     "no blur, no glow, no gradient; an effect on a fact makes it look sold."
+
+     So neon is allowed on things a visitor ACTS on: the primary action, the
+     focus ring, an active control, the chat launcher. It is never allowed on
+     a seat count, a recognition status, a source line, or anything inside
+     `.doc`.
+
+     Derived from --brand and --brand-2, so a re-themed site relights itself
+     rather than staying champagne forever. */
+  --neon:          color-mix(in oklab, var(--brand) 72%, white 28%);
+  --neon-2:        color-mix(in oklab, var(--brand-2) 70%, white 30%);
+  --neon-veil:     color-mix(in oklab, var(--brand) 30%, transparent);
+
   /* Derived — do not set these directly from the panel. */
   --brand-soft:    color-mix(in oklab, var(--brand) 12%, transparent);
   --brand-line:    color-mix(in oklab, var(--brand) 34%, transparent);
@@ -124,12 +144,16 @@
      the same reason: a 0.62 white top-edge that read as a highlight on light
      is a hard bright line on dark. */
 
+  /* Deepened for the owner's "transparent glass" ask. Less body, far more
+     blur and saturation, brighter edges: a pane you can see the field
+     through, whose EDGE does the work of telling you it is there. Raising
+     transparency without raising the edge is how glass turns into a smudge. */
   --m-tint:        255 255 255;  /* glass body, as an RGB triple */
-  --m-opacity:     0.07;         /* how much body it has         */
-  --m-blur:        30px;         /* backdrop blur radius         */
-  --m-saturate:    145%;         /* colour boost behind the pane */
-  --m-border:      0.17;         /* top-edge highlight strength  */
-  --m-inner:       0.11;         /* inner sheen strength         */
+  --m-opacity:     0.055;        /* how much body it has         */
+  --m-blur:        44px;         /* backdrop blur radius         */
+  --m-saturate:    190%;         /* colour boost behind the pane */
+  --m-border:      0.26;         /* top-edge highlight strength  */
+  --m-inner:       0.16;         /* inner sheen strength         */
 
   /* Derived material surfaces. */
   --m-fill:        rgba(var(--m-tint) / var(--m-opacity));

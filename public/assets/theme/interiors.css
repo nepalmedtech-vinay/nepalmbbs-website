@@ -909,3 +909,293 @@ footer a:not([class]):hover,
     @keyframes tp-rise { from { transform: translateY(2rem); opacity: 0; } to { transform: none; opacity: 1; } }
   }
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MATERIAL, MORPHISM AND LIGHT
+   ══════════════════════════════════════════════════════════════════════════
+   The owner asked for transparent glass, button morphism, premium neon and
+   more motion. Three notes on how that is interpreted here, because "more
+   effect" and "better" are not the same request:
+
+   1. This is web glassmorphism, not Apple's Liquid Glass. Apple documents
+      that material for Apple platforms; there is no official CSS package for
+      it. What follows is an approximation built from backdrop-filter,
+      layered borders and highlight overlays, and it is labelled as one.
+
+   2. Transparency is raised at the same time as the EDGE. A pane with more
+      transparency and the same edge stops reading as glass and starts
+      reading as a smudge, because the only thing that says "there is a
+      surface here" is the way its rim catches light.
+
+   3. Neon goes on things a visitor ACTS on and nowhere near a fact. That is
+      not restraint for its own sake: trust.css's first rule is that an
+      effect on a fact makes it look sold, and a glowing seat count is
+      exactly the thing this site exists not to be.
+
+   Everything below is gated on --fx-glow, --fx-float and --mo, which are the
+   controls the appearance panel already exposes. Turning Glow to zero turns
+   all of this off, and prefers-reduced-motion collapses the movement. */
+
+
+/* ── Refraction ───────────────────────────────────────────────────────────
+   The rim already fades from lit to unlit around the corner (glass.css, and
+   the copy of it earlier in this file). This adds the second half of a real
+   edge: a bright inner top line and a dark inner bottom line, so the pane has
+   a measurable thickness rather than being a flat cut-out. */
+
+.trust-badge,
+.tab-card,
+.cbar-block,
+.college-card,
+.why-card,
+.faq-item,
+.life-card,
+.guide-card,
+.off-card,
+.vid-card,
+.test-card,
+.counsel-card,
+.trust-in {
+  box-shadow:
+    var(--sd-2),
+    inset 0 1px 0 rgba(255 255 255 / var(--m-inner)),
+    inset 0 -1px 0 rgba(0 0 0 / calc(var(--m-inner) * 0.55));
+  backdrop-filter: var(--m-filter);
+  -webkit-backdrop-filter: var(--m-filter);
+}
+
+/* Blur is not free, and it is not always wanted. Anyone who has asked their
+   system to reduce transparency gets a solid pane instead — the layout is
+   identical, only the material changes. */
+@media (prefers-reduced-transparency: reduce) {
+  .trust-badge, .tab-card, .cbar-block, .college-card, .why-card, .faq-item,
+  .life-card, .guide-card, .off-card, .vid-card, .test-card, .counsel-card,
+  .trust-in, .tp-sheet {
+    background: var(--m-fill-solid) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+
+/* ── Button morphism ──────────────────────────────────────────────────────
+   The primary action was a flat champagne fill. It is now a lit pill: the
+   fill, a rim that catches light along its top edge, and the ambient the
+   button would cast if it were emitting. Pressing it drops the ambient and
+   sinks it one pixel, so the light responds to the press rather than the
+   colour merely changing.
+
+   Applied to the actions a visitor takes, not to every button on the site. */
+
+.gl-btn--primary,
+.btn-primary,
+.college-enquire,
+.calc-btn,
+.sbtn,
+.a-btn {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(148deg, var(--brand-lift), var(--brand));
+  color: var(--brand-ink);
+  border: 0;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.42),
+    inset 0 -1px 0 rgba(0 0 0 / 0.18),
+    var(--sd-2),
+    0 8px 30px color-mix(in oklab, var(--neon) calc(30% * var(--fx-glow)), transparent);
+  transition:
+    transform var(--d-2) var(--ea-spring),
+    box-shadow var(--d-2) var(--ea-out);
+}
+
+.gl-btn--primary:hover,
+.btn-primary:hover,
+.college-enquire:hover,
+.calc-btn:hover,
+.sbtn:hover,
+.a-btn:hover {
+  transform: translate3d(0, calc(-2px * var(--fx-float)), 0);
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.55),
+    inset 0 -1px 0 rgba(0 0 0 / 0.18),
+    var(--sd-3),
+    0 14px 44px color-mix(in oklab, var(--neon) calc(46% * var(--fx-glow)), transparent);
+}
+
+/* Pressed: the light goes out before the button moves. */
+.gl-btn--primary:active,
+.btn-primary:active,
+.college-enquire:active,
+.calc-btn:active,
+.sbtn:active,
+.a-btn:active {
+  transform: translate3d(0, 1px, 0);
+  box-shadow:
+    inset 0 2px 5px rgba(0 0 0 / 0.28),
+    0 2px 10px color-mix(in oklab, var(--neon) calc(14% * var(--fx-glow)), transparent);
+}
+
+/* The secondary action is the glass version of the same shape: no fill, the
+   rim doing all the work. This is the morphic pair — same geometry, same
+   light model, one emits and one refracts. */
+.gl-btn--ghost,
+.btn-glass,
+.college-link,
+.nav-cta {
+  position: relative;
+  isolation: isolate;
+  background: var(--m-fill);
+  backdrop-filter: var(--m-filter);
+  -webkit-backdrop-filter: var(--m-filter);
+  border: 1px solid var(--m-hairline);
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / calc(var(--m-inner) * 1.4)),
+    var(--sd-1);
+  transition:
+    transform var(--d-2) var(--ea-spring),
+    border-color var(--d-2) var(--ea-out),
+    box-shadow var(--d-2) var(--ea-out);
+}
+
+.gl-btn--ghost:hover,
+.btn-glass:hover,
+.college-link:hover,
+.nav-cta:hover {
+  transform: translate3d(0, calc(-2px * var(--fx-float)), 0);
+  border-color: color-mix(in oklab, var(--neon) 46%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / calc(var(--m-inner) * 2)),
+    0 10px 34px color-mix(in oklab, var(--neon) calc(20% * var(--fx-glow)), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gl-btn--primary, .btn-primary, .college-enquire, .calc-btn, .sbtn, .a-btn,
+  .gl-btn--ghost, .btn-glass, .college-link, .nav-cta { transition: none; }
+  .gl-btn--primary:hover, .btn-primary:hover, .college-enquire:hover,
+  .calc-btn:hover, .sbtn:hover, .a-btn:hover,
+  .gl-btn--ghost:hover, .btn-glass:hover, .college-link:hover,
+  .nav-cta:hover { transform: none; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .gl-btn--ghost, .btn-glass, .college-link, .nav-cta {
+    background: var(--m-fill-solid);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+
+/* ── Where the light actually falls ───────────────────────────────────────
+   Four places, each one something a visitor acts on. */
+
+/* The floating actions, which are the things on the page most obviously
+   asking to be pressed.
+
+   Targeted at the BUTTONS, not their wrapper. The first version of this rule
+   named `.wa-float`, which is a 302x96 positioning wrapper rather than the
+   round button inside it, so the `0 0 0 1px` ring drew a large empty
+   rectangle across the bottom-right of every page. Caught by looking at the
+   render; nothing in the CSS says which of these class names is a wrapper. */
+.wa-chat-btn,
+.wa-call-btn-f,
+.chat-toggle {
+  box-shadow:
+    var(--sd-3),
+    0 0 0 1px color-mix(in oklab, var(--neon) 22%, transparent),
+    0 10px 34px color-mix(in oklab, var(--neon) calc(26% * var(--fx-glow)), transparent);
+}
+
+/* The language switch's active state, and the appearance control when open:
+   both are "this is the state you are in" rather than decoration. */
+.lbtn.on,
+.theme-toggle[aria-expanded='true'] {
+  box-shadow: 0 0 18px color-mix(in oklab, var(--neon) calc(30% * var(--fx-glow)), transparent);
+}
+
+/* Focus. Still an outline, for the reason recorded earlier in this file — a
+   box-shadow ring can be clobbered by a component's own shadow and an
+   outline cannot — with the neon carried as a companion glow rather than as
+   the indicator itself, so the indicator survives even if the glow is off. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--neon) 78%, transparent);
+  outline-offset: var(--focus-off, 2px);
+  box-shadow: 0 0 22px color-mix(in oklab, var(--neon) calc(34% * var(--fx-glow)), transparent);
+}
+
+
+/* ══ Motion, where the site actually is ═══════════════════════════════════
+   Same story as the material. motion.css builds a complete scroll-driven
+   system — m-rise, m-scale, m-focus, m-para, m-stagger, all on
+   animation-timeline so the compositor drives them off the scroll offset
+   rather than a main-thread listener. Coverage, measured:
+
+       m-rise    3 files    m-focus   2 files    m-para   0 files
+       m-scale   1 file     m-stagger 2 files
+
+   and two of those files are the home hero and the standalone preview. The
+   other 41 routes have no scroll motion at all.
+
+   What they DO have is `.rev`, on 63 elements. That was the legacy reveal:
+   opacity 0 until reveal.js added `.vis`. bridge.css neutralises it with
+   `opacity: 1 !important` and explains why — "with the old observer gone it
+   would leave content permanently invisible". The observer is in fact still
+   loaded, but the neutralisation is the right instinct and it is kept: a
+   reveal that can strand content is worse than no reveal.
+
+   So `.rev` becomes scroll-driven rather than being replaced. 63 elements
+   gain motion with no markup change, and the failure mode is designed out
+   rather than guarded against: the opacity-0 start exists ONLY inside
+   `@supports (animation-timeline: view())`, so a browser that cannot animate
+   it never hides it, and `both` fill means a finished animation holds at
+   opacity 1. There is no code path where content is invisible and stays
+   that way. */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rev {
+      animation: rev-in linear both;
+      animation-timeline: view();
+      /* Ends at `entry 100%` — fully in view — and not at a percentage of
+         cover, for the reason motion.css already records: a cover-based
+         range leaves anything on screen at load stuck part-way along its own
+         timeline, permanently half-faded until the visitor scrolls. */
+      animation-range: entry 0% entry 100%;
+      opacity: 1;              /* the resting state, if the animation never runs */
+      transform: none;
+    }
+
+    @keyframes rev-in {
+      from { opacity: 0; transform: translate3d(0, calc(20px * var(--mo)), 0); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* A row of siblings arrives as a cascade rather than as a block. The
+       offset is per-child and capped, so a long list does not end with an
+       element waiting a second and a half for its turn. */
+    .stage-row > .stage,
+    .trust-grid > .trust-badge,
+    .tabs-grid > .tab-card {
+      animation: rev-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 92%;
+    }
+    .stage-row > .stage:nth-child(2),
+    .trust-grid > .trust-badge:nth-child(2),
+    .tabs-grid > .tab-card:nth-child(2) { animation-range: entry 4% entry 96%; }
+    .stage-row > .stage:nth-child(3),
+    .trust-grid > .trust-badge:nth-child(3),
+    .tabs-grid > .tab-card:nth-child(3) { animation-range: entry 8% entry 100%; }
+  }
+}
+
+/* The scroll progress rail already exists in the layout and motion.css drives
+   it; it was simply invisible against the ground. Given the brand's light so
+   it reads as a progress indicator rather than a hairline. */
+.m-progress {
+  background: linear-gradient(90deg,
+      color-mix(in oklab, var(--neon) 55%, transparent),
+      var(--neon));
+  box-shadow: 0 0 12px color-mix(in oklab, var(--neon) calc(50% * var(--fx-glow)), transparent);
+}
