@@ -21,7 +21,47 @@ async function submitLead(src){
   if(!/^\d{10}$/.test(phone)){toast('Enter a valid 10-digit phone number.','err');return;}
   const btn=document.getElementById(h?'hf-btn':'cf-btn');
   btn.disabled=true;btn.textContent='Submitting...';
-  const ok=await sbW('/rest/v1/leads',{student_name:name,contact_number:phone,neet_score:neet?parseInt(neet):null,city:city||null,stage:'new',notes:`Cat:${cat||'—'}|State:${state||'—'}|Attempt:${attempt||'—'}|PCB:${pcb||'—'}|Bio:${bio||'—'}|Mode:${mode}|Lang:${curLang}|Src:nepalmbbs.in`});
+  // The three structured fields go in as columns AND stay in the notes line.
+  //
+  // Columns, because the admission category is the axis the automation rules
+  // key on, and until 0006 added `admission_category` it existed only inside
+  // this pipe-delimited string — so a rule for OBC applicants would have had
+  // to substring-match a free-text blob. That is not a thing to build
+  // automation on.
+  //
+  // And still in notes, because notes is the historical record of what was
+  // actually submitted, every older row has it in that shape, and a counsellor
+  // reading the queue sees one line rather than hunting six fields. Writing
+  // both costs nothing and keeps the old rows and the new ones comparable.
+  //
+  // The insert is tried WITH the new columns and retried without them.
+  //
+  // This is not defensive padding, it is the difference between a working
+  // form and a broken one. PostgREST does not ignore a column the table does
+  // not have: it refuses the whole insert with PGRST204. So sending
+  // admission_category before 0006 has been applied would fail every
+  // submission on the site's main conversion path, and it would fail silently
+  // from the visitor's side as "Error submitting".
+  //
+  // The migration and the deploy are separate acts performed by the owner, in
+  // an order nobody here controls. The form has to work in both orders.
+  const base = {
+    student_name:name,
+    contact_number:phone,
+    neet_score:neet?parseInt(neet):null,
+    city:city||null,
+    stage:'new',
+    notes:`Cat:${cat||'—'}|State:${state||'—'}|Attempt:${attempt||'—'}|PCB:${pcb||'—'}|Bio:${bio||'—'}|Mode:${mode}|Lang:${curLang}|Src:nepalmbbs.in`
+  };
+  let ok = await sbW('/rest/v1/leads', Object.assign({
+    admission_category:cat||null,
+    state_name:state||null,
+    neet_attempt:attempt||null
+  }, base));
+  // Retry without them. The enquiry still lands, the category is still in
+  // notes, and the only thing lost is the column the automation would have
+  // keyed on — which does not exist yet anyway.
+  if(!ok) ok = await sbW('/rest/v1/leads', base);
   if(ok){
     document.getElementById(h?'hform-area':'cform-area').style.display='none';
     document.getElementById(h?'hform-success':'cform-success').style.display='block';

@@ -116,8 +116,68 @@
 
     <!-- COLLEGES ADMIN -->
     <div class="a-pane" id="ap-colleges">
+
+      {/* Media and notices. These write to college_media and college_notices,
+          which are read by live.js in the visitor's browser — so a save here
+          is visible on the site immediately, with no rebuild and no deploy.
+
+          Deliberately separate from the College Cards block below it, which
+          writes to site_colleges and only takes effect at the next build.
+          That is not an inconsistency to tidy up later: facts go through a
+          build so the verify suite sees them, and photos and notices do not.
+          The two blocks say so on the page, so whoever uses this knows which
+          kind of change they just made. */}
       <div class="a-sect">
-        <div class="a-label">🏥 College Cards Management</div>
+        <div class="a-label">📸 Photos &amp; video — live, no rebuild</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px">
+          Appears on the college's own page within seconds of saving. Paste an
+          image URL or a video link.
+        </p>
+        <select class="a-inp" id="a-media-college"><option value="">Select a college…</option></select>
+        <div class="a-row" style="margin-top:8px">
+          <select class="a-inp" id="a-media-kind">
+            <option value="photo">Photo</option>
+            <option value="video">Video link</option>
+          </select>
+          <input type="text" class="a-inp" id="a-media-url" placeholder="https://… image or video URL">
+        </div>
+        <div class="a-row" style="margin-top:8px">
+          <input type="text" class="a-inp" id="a-media-caption" placeholder="Caption (also used as the image's alt text)">
+          <input type="text" class="a-inp" id="a-media-credit" placeholder="Credit — who supplied it">
+        </div>
+        <div class="a-btns">
+          <button class="a-btn a-btn-primary" data-act="click" data-do='[["addCollegeMedia"]]'>Save — goes live now</button>
+          <button class="a-btn a-btn-sec" data-act="click" data-do='[["loadCollegeMedia"]]'>Refresh list</button>
+        </div>
+        <div id="a-media-list" style="margin-top:12px"></div>
+      </div>
+
+      <div class="a-sect">
+        <div class="a-label">📢 Notices — live, no rebuild</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px">
+          Leave the college blank for a notice on every page. An end date is
+          optional; without one the notice runs until you unpublish it.
+        </p>
+        <select class="a-inp" id="a-notice-college"><option value="">Site-wide (all pages)</option></select>
+        <input type="text" class="a-inp" id="a-notice-title" placeholder="Notice title" style="margin-top:8px">
+        <textarea class="a-inp" id="a-notice-body" placeholder="Body (optional)" style="margin-top:8px"></textarea>
+        <div class="a-row" style="margin-top:8px">
+          <select class="a-inp" id="a-notice-level">
+            <option value="info">Information</option>
+            <option value="provisional">Provisional — may change</option>
+            <option value="caution">Caution — act carefully</option>
+          </select>
+          <input type="date" class="a-inp" id="a-notice-ends" title="Stops showing after this date">
+        </div>
+        <div class="a-btns">
+          <button class="a-btn a-btn-primary" data-act="click" data-do='[["addCollegeNotice"]]'>Publish — goes live now</button>
+          <button class="a-btn a-btn-sec" data-act="click" data-do='[["loadCollegeNotices"]]'>Refresh list</button>
+        </div>
+        <div id="a-notice-list" style="margin-top:12px"></div>
+      </div>
+
+      <div class="a-sect">
+        <div class="a-label">🏥 College Cards Management — takes effect at the next build</div>
         <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Add or update college details. Fee amounts are hidden from public view — available on contact only.</p>
         <div class="a-row">
           <div>

@@ -132,7 +132,16 @@ const canonical = new URL(path, SITE).href;
 {/* The skip link needs a landmark to land on, and a page with a nav on every
     route needs a main region regardless. Bare pages (the console, the portal)
     bring their own <main id="main">, so wrapping here would nest two. */}
-{bare ? <slot /> : <main id="main"><slot /></main>}
+{bare ? <slot /> : (
+  <main id="main">
+    {/* Live notices, filled by live.js from Supabase at runtime. `hidden`
+        until there is something in it, so an empty container never reserves
+        space or shifts the layout after paint. A page with no notice looks
+        exactly as it does today. */}
+    <div id="live-notices" class="live-notices container" hidden></div>
+    <slot />
+  </main>
+)}
 
 {!bare && <><Ticker /><ContactBar /><Footer /><WhatsAppFloat /><ChatWidget /><AdminPanel /></>}
 
@@ -158,6 +167,7 @@ const canonical = new URL(path, SITE).href;
     <script is:inline defer src="/assets/js/leads.js"></script>
     <script is:inline defer src="/assets/js/reveal.js"></script>
     <script is:inline defer src="/assets/js/chatbot.js"></script>
+    <script is:inline defer src="/assets/js/live.js"></script>
     <script is:inline defer src="/assets/js/colleges.js"></script>
     <script is:inline defer src="/assets/js/admin.js"></script>
     <script is:inline defer src="/assets/js/effects.js"></script>

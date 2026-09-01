@@ -22,6 +22,34 @@ leaving it as a silent TODO, and give each item a path to being resolved.
   component and the dead `step('hero', ...)` call together. Full verify
   suite re-run after the change; see `QA_REPORT.md`.
 
+## Open — found 2026-08-29 (chunk 9)
+
+- **Two allow-lists exist for the same thing and nothing keeps them in sync.**
+  `public/assets/js/actions.js` holds an `ALLOW` object that the dispatcher
+  checks at runtime; `tools/action-allowlist.json` is what
+  `compare-verify.mjs` checks the markup against. Adding a handler name to
+  only the JSON passes that test and does nothing in the browser. It cost a
+  failing `csp-verify` this chunk (`want [["addCollegeMedia"]] got []`).
+  `tools/dehandler.py` writes the JSON, so the fix is either to generate
+  `ALLOW` from it or to have a test assert the two sets are equal.
+
+- **`0006` is written and not applied**, and needs a manual step that is not
+  SQL: a PUBLIC `media` storage bucket plus its policy. Until both are done,
+  the runtime CMS finds no tables and stays hidden. That is by design and
+  verified, but it means the feature is inert until the owner acts.
+
+- **College media is URL-only.** The admin panel takes a link; there is no
+  upload to the `media` bucket yet. The schema supports `storage_path`
+  already, so this is the client half of a job whose contract exists.
+
+- **`automation_rules` has no authoring UI.** The engine and the table are in
+  0006; nothing can write a rule except SQL.
+
+- **The lead form writes the category twice**, as a column and inside the
+  `notes` blob. Deliberate for now, so old and new rows stay comparable and
+  the counsellor queue keeps its single-line summary. Worth revisiting once
+  every live row has the column.
+
 ## Open — found 2026-08-29 (chunk 8, second pass)
 
 - **The z-index token scale is not what the site uses.** `engine.css` defines

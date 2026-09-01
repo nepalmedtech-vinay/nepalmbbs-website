@@ -1199,3 +1199,114 @@ footer a:not([class]):hover,
       var(--neon));
   box-shadow: 0 0 12px color-mix(in oklab, var(--neon) calc(50% * var(--fx-glow)), transparent);
 }
+
+
+/* ══ Live content ═════════════════════════════════════════════════════════
+   Notices and media that live.js fetches at runtime. Both hosts ship
+   `hidden` and are revealed only once they hold something, so a page with no
+   notice is byte-for-byte the page it was before — no reserved space, no
+   layout shift after paint, no empty box.
+
+   The notice takes the evidence register's three levels rather than a fourth
+   colour system, so a caution here reads the same as a caution anywhere else
+   on the site. */
+
+.live-notices { display: grid; gap: var(--s-3); margin: var(--s-5) auto 0; }
+
+.live-notice {
+  border-left: 3px solid var(--ev-provisional);
+  background: var(--ev-provisional-bg);
+  padding: var(--s-3) var(--s-4);
+  border-radius: 0 var(--r-xs) var(--r-xs) 0;
+  max-width: var(--measure);
+}
+.live-notice--info      { border-left-color: var(--brand); background: var(--brand-soft); }
+.live-notice--caution   { border-left-color: var(--ev-caution); background: var(--ev-caution-bg); }
+
+.live-notice-title {
+  display: block;
+  font-weight: var(--w-semi, 600);
+  color: var(--g-ink);
+  font-size: var(--t-sm);
+}
+.live-notice-body {
+  margin: var(--s-2) 0 0;
+  font-size: var(--t-sm);
+  line-height: var(--lh-body);
+  color: var(--g-ink-2);
+  text-wrap: pretty;
+}
+.live-notice-link {
+  display: inline-block;
+  margin-top: var(--s-2);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--brand-text);
+}
+
+/* Media sits in the document register's panel, so it belongs with the record
+   rather than floating beside it — but the photographs themselves get no
+   glow and no tilt. trust.css's rule applies to the whole panel: an effect on
+   a fact makes it look sold, and a campus photograph beside a seat count is
+   close enough to a fact to deserve the same restraint. */
+.live-media-panel { margin-top: var(--s-5); }
+
+.live-media {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--s-4);
+}
+
+.live-media-item { margin: 0; }
+
+.live-media-img {
+  display: block;
+  width: 100%;
+  /* Reserved, so an image arriving late pushes nothing. The ratio is fixed
+     rather than intrinsic because the height has to be known before the file
+     is. */
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--r-xs);
+  border: 1px solid var(--doc-border);
+  background: var(--doc-bg-alt);
+}
+
+.live-media-video {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-xs);
+  border: 1px dashed var(--doc-border);
+  background: var(--doc-bg-alt);
+  color: var(--brand-text);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  text-align: center;
+  padding: var(--s-4);
+}
+
+.live-media-cap {
+  display: block;
+  margin-top: var(--s-2);
+  font-size: var(--t-xs);
+  line-height: var(--lh-body);
+  color: var(--doc-text-mute, var(--g-ink-3));
+}
+/* Where the picture came from, on its own line. The site names a source for
+   every fact; a photograph is not exempt. */
+.live-media-credit { display: block; color: var(--g-ink-4); }
+
+/* Rows in the admin's live-content lists. */
+.a-live-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--m-hairline);
+  font-size: var(--t-sm);
+}
+.a-live-row strong { display: block; color: var(--g-ink); }
+.a-live-row span { display: block; font-size: var(--t-xs); color: var(--g-ink-3); word-break: break-all; }

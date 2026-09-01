@@ -74,7 +74,13 @@ const site = [
   `script-src 'self' ${inline.join(' ')} https://www.googletagmanager.com`,
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `font-src 'self' https://fonts.gstatic.com`,
-  `img-src 'self' data: https://images.unsplash.com https://img.youtube.com https://i.ytimg.com https://www.googletagmanager.com`,
+  // The Supabase origin is on img-src as well as connect-src. live.js reads
+  // college photos from the public `media` storage bucket, and connect-src
+  // only covers the fetch that lists them — the <img> that renders one is an
+  // image load and is refused separately. Without this every uploaded photo
+  // is blocked with the list request succeeding, which looks like "the CMS
+  // saved nothing" rather than like a CSP refusal.
+  `img-src 'self' data: https://fpzgcijbryvddtpegcmm.supabase.co https://images.unsplash.com https://img.youtube.com https://i.ytimg.com https://www.googletagmanager.com`,
   `connect-src 'self' https://fpzgcijbryvddtpegcmm.supabase.co https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`,
   `frame-src https://www.youtube.com https://www.youtube-nocookie.com`,
   `upgrade-insecure-requests`,

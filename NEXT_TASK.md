@@ -3,96 +3,86 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
-## Status as of 2026-08-29 (end of chunk 8)
+## Status as of 2026-08-29 (end of chunk 9)
 
-**Recreate the tag before running anything**, or `npm run verify` dies in
-`build-verify` and silently skips six of its eight suites (see
-`TECHNICAL_DEBT.md`):
+**Recreate the tag before running the gate**, or `npm run verify` dies in
+`build-verify` and silently skips six of its eight suites:
 
 ```bash
 git tag phase1-static-rollback d48a4c6
 ```
 
-All eight suites then pass: build-verify 98/98, csp 11/11 (2949 handlers),
-console 34/34, auth 12/12, a11y 32/32, compare 13/13, assistant 18/18, and
-**audit 43 routes + the assistant with 0 low-contrast and 0 mobile overflow**.
+## ⚠️ Two things the owner must do, or half of chunk 9 is inert
 
-The honest score is **89/100** — `SELF_AUDIT.md`. Do not raise a number there
-because a suite went green.
+1. **Apply `supabase/migrations/0006_live_content_and_automation.sql`.** It is
+   written, reviewed against the real schema, and deliberately **not run** —
+   applying migrations is the owner's step per `docs/GOLIVE.md`. Read its
+   BEFORE RUNNING block first; it lists the two schema facts that were checked
+   the hard way.
 
-## The site is now champagne on deep slate, and the visitor can change it
+2. **Create a PUBLIC storage bucket named `media`** in the Supabase dashboard,
+   and add the one storage policy at the bottom of 0006. This is not SQL and
+   the migration cannot do it. Do NOT reuse the `documents` bucket — that one
+   is private and holds student records.
 
-The owner picked the palette from three options and then asked for two
-corrections: not "complete dark", and theme/colour/style customisable.
+Until both are done the site behaves exactly as it does today: `live.js` finds
+no tables, both hosts stay hidden, and the statically rendered pages stand on
+their own. Nothing breaks. Verified against a 404 response.
 
-- The ground is `#1C232E`, not the `#0A0E13` tried first. At near-black every
-  glass pane collapses to the same flat grey because there is nothing for it
-  to be lighter *than*.
-- **The customiser now has a button in the navbar.** This is the single most
-  useful thing in the chunk and it was already built: the theme engine, seven
-  presets (four light, two dark, one dimmed), two brand colour pickers, type
-  pairing, corner radius, depth, glass and motion sliders, an offline
-  colour-theory generator and a live contrast checker have existed since
-  Phase 3/4 — but `runtime.js` mounts the panel only when a `#theme-toggle`
-  element is present and **no live page had one**. Verified: the panel opens,
-  and clicking Dawn switches the ground to `#F4F6FB` live.
+## The site now has two content paths, and that is the design
 
-So the site is not locked to dark. Anyone can switch it, and the choice
-persists per browser.
+- **Build time** — `site_colleges`, merged by `src/lib/colleges.js`. Facts go
+  here: a seat count should pass the verify suite before a family reads it.
+- **Runtime** — `college_media`, `college_notices`, read by `live.js`. The
+  owner saves in the admin panel and it is on the site in seconds.
 
-## The lesson from chunk 8, and it is the same one as chunk 7
+**Nothing in the runtime path can change a seat count.** If a future change
+makes that possible, stop and reconsider rather than treating it as a
+convenience. The admin panel labels which block is which.
 
-**A component that names a token survives a palette inversion untouched. A
-component that names a colour has to be found and fixed by hand.**
+## The lesson from chunk 9, and it is the third time
 
-The inversion broke exactly and only the second kind. `bridge.css` needed
-three literal hexes changed and nothing else. `engine.js` did the rest on its
-own — detecting dark from luminance, flipping the hairline, re-solving the
-whole ink ramp against contrast targets. Meanwhile `sections.css` needed
-sixteen blocks rewritten because it pinned `#ffffff` and `#111827`, and two
-links in `guidelines.astro` could not be themed at all because their colour
-was **inline**.
+**Almost everything the owner asked for already existed and reached almost
+nothing.** `glass.css` had the full premium material; it was on the home hero
+and `/preview`. `motion.css` had a complete scroll-driven system; 41 routes had
+no scroll motion. The appearance panel had 65 controls and no button.
 
-A second, sharper pattern, which caught three separate tokens: **a colour
-solved against the standard pane fails when it lands on a tint of itself.**
-`--wa-text` on a 12% green button, the evidence colours on 14% tints of
-themselves, the chat restart button on a 12% brand tint — each passed its own
-solve and failed the rendered page. Solve against the surface actually
-painted, not the nearest convenient approximation.
+So before building a feature this project asks for, **grep for it first.** The
+answer three times running has been that it is already written and unwired.
+
+A second, sharper one from this chunk: **verify the schema before writing
+against it.** Three separate near-misses, each of which would have shipped
+looking fine:
+
+- `img-src` lacked the Supabase origin, so photos would be CSP-refused while
+  the fetch listing them succeeded.
+- `tasks.application_id` is NOT NULL and there is no `related_lead_id`; the
+  first draft of the automation inserted three columns that do not exist.
+- **PostgREST refuses unknown columns with PGRST204 rather than ignoring
+  them**, so writing `admission_category` before 0006 is applied would have
+  broken every enquiry on the site's main conversion path. The insert now
+  retries without them.
 
 ## 🎯 The next chunk
 
-1. **The remaining content routes' interiors** — `/why-nepal`, `/faq`,
+1. **File upload for college photos.** `live.js` and the admin panel currently
+   take a URL. Uploading to the `media` bucket is the missing half, and it is
+   the difference between "paste a link" and a CMS.
+2. **The automation UI.** `automation_rules` exists in 0006 and there is no
+   screen to write a rule. The engine runs; nothing can author for it yet.
+3. **The remaining content routes' interiors** — `/why-nepal`, `/faq`,
    `/guidelines`, `/videos`, `/life-in-nepal`, `/neet-calculator`,
-   `/counseling`. `/faq` and `/neet-calculator` still centre their section
-   header over left-aligned content; `/admission-process` had the same
-   mismatch and the fix was one class.
-2. **Retire `sections.css`.** It is still 104 `!important` declarations
-   fighting the token system, and it is now the main reason a theme change
-   needs a hand-audit. Sixteen blocks were converted this chunk; the rest is
-   a bounded, mechanical, high-value job.
-3. **`text-wrap: balance`** is still only partly applied.
-4. **The assistant can go further.** It now answers comparisons ("IOM vs
-   KMC"), aggregate questions over the college set ("which college has the
-   most seats", "how many government colleges", "colleges in Pokhara"), a
-   NEET-score question (by restating the rule and refusing to invent a
-   cut-off), and one-step follow-ups ("what about its seats?"). Still
-   deterministic, still zero running cost, still every answer sourced —
-   the owner asked for maximum capability *without any cost*, and an LLM
-   would mean an API key, a Netlify Function and a per-message charge.
-   `getBotReply()` remains the seam if that ever changes.
+   `/counseling`. `/faq` and `/neet-calculator` still centre their header over
+   left-aligned content; the fix is one class.
+4. **Retire `sections.css`.** Still 104 `!important` fighting the token system.
 
 Constraints that still hold:
 
-- `npm run csp` after touching any inline `<script>`.
-- **Never rebuild while a suite is running.** One audit run was invalidated
-  this chunk by exactly that, and `dist/` is what they read.
-- Screenshot with `reducedMotion: 'reduce'`, or scroll-driven reveals render
-  at opacity 0 and the page looks broken when it is not.
-- Focus indicators are **outlines, not box-shadows**. A box-shadow can be
-  clobbered by a component's own shadow; an outline cannot. Rebuilding the
-  ring as a box-shadow inside a `:where()` removed keyboard focus from the
-  nav links entirely, and only `a11y-verify` caught it.
+- `npm run csp` after touching any inline `<script>` **or the CSP generator**.
+- **Never rebuild while a suite is running.** `dist/` is what they read.
+- Screenshot with `reducedMotion: 'reduce'`.
+- Focus indicators are **outlines, not box-shadows**.
+- Neon goes on things a visitor acts on, never on a fact.
 - No new typeface.
 
 ## Blocked on the owner, not on work

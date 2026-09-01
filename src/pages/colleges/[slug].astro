@@ -63,6 +63,14 @@ const schema = {
     <EvidenceBadges college={c} />
   </div>
 
+  {/* Both filled by live.js at runtime, both `hidden` until they have
+      something. This is the dynamic half of the college page: photos, video
+      and notices the owner changes without a redeploy. The Record panel below
+      is the other half and stays build-time, because a seat count is a fact
+      and should pass through the verify suite before a family reads it. */}
+  <div id="live-notices" class="live-notices" data-college={c.slug} hidden></div>
+  <div id="live-media" class="doc live-media-panel" data-college={c.slug} hidden></div>
+
   <div class="doc rev" style="margin-top:28px">
     <div class="doc-head">
       <h2 class="doc-title">Record</h2>

@@ -5,6 +5,112 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-08-29 — Chunk 9: the site becomes dynamic, and the customiser goes back behind the gate
+
+Owner asked for four things: better colour and glass, button morphism and
+neon, more motion, and a college-wise CMS with automation. Plus one
+correction: customisation should be theirs alone.
+
+### The correction first
+
+Chunk 8 exposed the appearance panel to every visitor. That was wrong and it
+is reversed. The panel edits the site's palette, type and motion, which are
+brand decisions, not per-visitor preferences. It now follows the rule
+`chrome.js` already implements for the admin button rather than inventing a
+second one: shown on an existing staff session, or from `#admin`. Hidden in
+CSS as well as from the script, and `tabindex="-1"` until shown.
+
+A cascade collision is worth recording: the first attempt set
+`.theme-toggle { display: none }` while the existing block below it still set
+`display: inline-flex`, so the gate silently did nothing and measured
+`display=flex visible=true` for a public visitor. Verified both states after
+fixing.
+
+### Material, morphism, neon: two of three were coverage problems
+
+The same finding as the previous two chunks. `glass.css` builds a full premium
+material — masked gradient rim, inner thickness, pointer specular, sheen — and
+it reached the home hero and `/preview` and nothing else. `motion.css` builds a
+full scroll-driven system on `animation-timeline`, measured at m-rise in 3
+files, m-focus 2, m-scale 1, m-para 0, two of which are those same two pages.
+**41 routes had no scroll motion at all.**
+
+So the work was mostly application, not invention. Transparency went up
+(0.07 to 0.055) and the edge went up with it (blur 30 to 44, saturation 145 to
+190, rim 0.17 to 0.26) — raising transparency alone makes a smudge, because
+the rim is the only thing that says a surface is there.
+
+`.rev`, on 63 elements, was the lever for motion. `bridge.css` neutralises it
+to `opacity: 1 !important` because the legacy version could strand content
+invisible. Rather than replace it, it became scroll-driven with the failure
+mode designed out: the opacity-0 start exists only inside
+`@supports (animation-timeline: view())`, so a browser that cannot animate it
+never hides it. Verified by scrolling every `.rev` into view on three routes
+in both motion modes: 17 elements, 0 stuck.
+
+**Neon, and where it is refused.** The owner asked for it and the taste skill
+bans it by default, which its own rules resolve: a brief-explicit request
+overrides. It goes on things a visitor acts on and never on a fact, because
+`trust.css`'s first rule is that an effect on a fact makes it look sold. A
+glowing seat count is the precise thing this site exists not to be.
+
+### Dynamic: two content paths, deliberately
+
+The owner chose live updates over build-time. The site now has two paths and
+the split is the design:
+
+- **Build time.** `site_colleges` merged by `src/lib/colleges.js`. Facts live
+  here: a seat count should pass the verify suite before a family reads it.
+- **Runtime.** `college_media` and `college_notices`, read by `live.js` in the
+  browser. A notice that counselling moved is worthless if it waits for a
+  deploy; a photo is not a claim needing review.
+
+Nothing in the runtime path can change a seat count. The admin panel labels
+which block is which, because the person clicking Save needs to know.
+
+`live.js` fails silently and totally: if Supabase is unreachable, slow, or the
+tables do not exist yet, both hosts stay `hidden` and the statically rendered
+page stands alone. Verified across four cases including hostile input — a
+`javascript:` link was dropped and `<img onerror>` rendered as literal text,
+because everything goes in through `textContent` and `setAttribute`.
+
+### Three things that would each have shipped broken
+
+1. **`img-src` did not include Supabase.** `connect-src` did, so the fetch
+   listing photos would have succeeded while every `<img>` was refused by CSP.
+   That fails as "the CMS saved nothing" rather than as a CSP error.
+
+2. **`tasks.application_id` is NOT NULL** and there is no `related_lead_id` or
+   `notes` column. The first draft of `run_automation` inserted four columns,
+   three of which do not exist. Inside the exception block it would not have
+   broken the enquiry form; it would have logged an error on every submission
+   and the automation would simply never have worked.
+
+3. **PostgREST does not ignore unknown columns.** I wrote a comment claiming
+   it does. It returns PGRST204 and refuses the whole insert — so writing
+   `admission_category` before 0006 is applied would have failed **every
+   enquiry on the site's main conversion path**, silently, as "Error
+   submitting". The insert now tries with the columns and retries without.
+   Verified in both orders: form succeeds either way.
+
+### The category did not exist
+
+The owner asked for automation "according to admission categories". There is
+no category column. `leads.js` packs it into free text as
+`Cat:obc|State:MH|Attempt:1|...`, so any rule keyed on it would be
+substring-matching a notes blob. 0006 adds it as a real column and `leads.js`
+writes both — the column for the rules, the notes line for the historical
+record and for the counsellor reading one line rather than six fields.
+
+### What is written but not applied
+
+`supabase/migrations/0006_live_content_and_automation.sql` is complete and
+**not run**. Applying it is the owner's step per `docs/GOLIVE.md`, and it needs
+one thing that is not SQL: a public `media` storage bucket. Everything shipped
+here degrades correctly until then.
+
+---
+
 ## 2026-08-29 — Chunk 8: the palette inverts, and the customiser gets a button
 
 The owner asked for a more premium look in the glass style, picked

@@ -27,6 +27,19 @@
 
   var ALLOW = {
     addCollegeAdmin: 1,
+    // Live content, added with the runtime CMS. Two allow-lists exist and
+    // both have to know a name: this one, which the dispatcher actually
+    // checks at runtime, and tools/action-allowlist.json, which
+    // compare-verify checks the markup against. Adding a name to only the
+    // JSON passes that test and silently does nothing in the browser —
+    // csp-verify is what catches it, reporting `want [["addCollegeMedia"]]
+    // got []`.
+    addCollegeMedia: 1,
+    addCollegeNotice: 1,
+    deleteCollegeMedia: 1,
+    deleteCollegeNotice: 1,
+    loadCollegeMedia: 1,
+    loadCollegeNotices: 1,
     addFAQ: 1,
     addTestimonial: 1,
     addTicker: 1,

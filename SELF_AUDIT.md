@@ -8,12 +8,21 @@ specific.
 Scored against the master brief's own weighting. Re-score at each milestone;
 do not raise a number because the build passes.
 
-_Last scored: 2026-08-29, after chunk 8 (palette inversion, footer and trust
-row, the theme customiser exposed, the assistant extended)._
+_Last scored: 2026-08-29, after chunk 9 (material and motion applied
+site-wide, neon, the runtime CMS, and the customiser moved back behind the
+admin gate)._
 
 | Category | Weight | Score | Why not higher |
 |---|---:|---:|---|
-| Visual design | 20 | 18 | Raised to 18 in chunk 8: the whole palette moved to champagne-on-slate, the
+| Visual design | 20 | 19 | Raised to 19 in chunk 9, and the reason is coverage rather than new effects:
+glass.css's premium material and motion.css's scroll-driven system both
+existed and reached the home hero and /preview only, so 41 routes had no
+scroll motion and almost no surface had the real material. Both now apply
+site-wide, transparency and the rim went up together, the primary and
+secondary actions became a morphic pair, and champagne is used as light on
+things a visitor acts on. Not 20 because seven content routes still carry
+inherited interiors and sections.css is still a 104-!important override
+layer. Chunk 8 had raised this to 18: the whole palette moved to champagne-on-slate, the
 footer stopped being a four-column link farm, the trust row became one
 credential panel instead of six floating cards, and glass.css's premium
 material — a masked lit rim, inner thickness, hover lift — finally reaches
@@ -31,13 +40,20 @@ code change now can, and so can any visitor who prefers a light page. Chunk
 7's note stands too, and one of its reasons is a correction rather than an addition: "every route clears the header" was **false at desktop** on all 36 inner routes — 9px of the first line was under the navbar at every width above 48rem, and this file had been claiming otherwise since the mobile fix. Now measured clear at 1440, 1024 and 390. The home map also answers its own question without a pointer, which is what makes it usable on a phone at all. Not higher because there is still no deadline centre, and the admission journey remains a narrative page rather than a stage-by-stage flow. |
 | Motion | 10 | 8 | The Phase 3/4 motion system is genuinely good and honours `prefers-reduced-motion` (verified by the a11y suite, not assumed). Untouched this session. |
 | Content | 10 | 10 | The owner supplied the Commission's own MECEE-BL 2026 matrix and all 27 seat figures now come from it — **four were overstated, Institute of Medicine by 4.5× (9 against an actual 2)**. The transcription sums to the document's own stated total of 734, which is the check that it is faithful. Every claim on the site now traces to a named source with a date, fees and deadlines are refused by policy rather than guessed, and the two conflicts this log had been carrying (KMC 43-vs-33, whether PoAHS runs MBBS at all) were both settled by the document. |
-| Admissions journey | 10 | 7 | Enquiry → application → counsellor queue → student portal works end to end and is automated. Raised from 6: `/documents` now sets out every required document, which stage it is needed at, and the practical mistake attached to each — with the Commission's requirement and our own guidance visibly separated so our advice cannot borrow their authority. Not higher because there are still no per-stage deadlines (needs the Commission's real dates) and no application status the student drives themselves beyond a read-only portal. |
+| Admissions journey | 10 | 8 | Raised to 8: the site gained a runtime content path, so college photos,
+videos and notices can be published without a redeploy, and the admission
+category became a real column instead of a substring inside a notes blob —
+which is what makes rules keyed on it possible at all. Held below 9 because
+migration 0006 is written and NOT applied, the media bucket does not exist
+yet, and there is no UI to author an automation rule: the engine runs and
+nothing can write for it. Enquiry → application → counsellor queue → student
+portal works end to end and is automated. Raised from 6: `/documents` now sets out every required document, which stage it is needed at, and the practical mistake attached to each — with the Commission's requirement and our own guidance visibly separated so our advice cannot borrow their authority. Not higher because there are still no per-stage deadlines (needs the Commission's real dates) and no application status the student drives themselves beyond a read-only portal. |
 | Trust | 10 | 10 | Every assistant answer names its source and check date; fees and dates are refused by policy rather than guessed; a freshness audit fails on the calendar with nobody touching the repo. The seat figure on each college page now states which category and which round it is, and that a first-matching allocation is not a standing number — the label is on the page, not only in this file. |
 | Accessibility | 10 | 9 | 0 low-contrast across 43 routes **and** the assistant, with 0 elements skipped — and that zero now means something, because fixing the checker's blind spots took it from a false 0 to 87 real failures and back to a measured 0. Chunk 7 also gave **seven routes their first `<h1>`** (`/counseling` opened on an `<h2>`, `/life-in-nepal` on an `<h3>`); all 42 now have exactly one. Held at 9 rather than raised: `a11y-verify` passed 32/32 both before and after, so this is a gap the suite never measured — and the two reasons it is not 10 are unchanged, the audit still cannot see the admin panel's own screens and the enquiry modal was fixed by reading it rather than measuring it. |
 | Performance | 5 | 4 | Median page 284 kB, no layout overflow, the knowledge payload is fetched on first chat open rather than shipped to all 43 pages. Not scored higher without a real Core Web Vitals run on production hardware — the sandbox has no GPU and its numbers are not the user's numbers. |
 | SEO | 5 | 4 | Unique titles and descriptions, sitemap, structured data, `/privacy` indexed and `/404` correctly not. Not higher because there is no content architecture around the search intents the brief lists — no "MBBS fees Nepal" page, because we decline to publish fees. |
 | Engineering | 5 | 4 | The gate is real, and the map's silent `.filter()` is now a build failure that names the college it cannot place — a whole class of invisible data loss closed. Against it, and the reason this did not rise: **`npm run verify` aborts before six of its eight suites in a fresh clone** and says nothing about it (`build-verify.mjs` throws on a missing tag instead of recording a failed check), so the gate's exit code has not meant what a reader assumes for some time. `interiors.css` is also a *second* large override layer alongside `chrome.css`, and two generations of `cbar-*` classes still coexist. |
-| **Total** | **100** | **89** | |
+| **Total** | **100** | **91** | |
 
 **80 is "incomplete" on the brief's own scale**, which is one band up from
 where this started ("below 80 = continue redesign"). The remaining gap is
@@ -55,7 +71,7 @@ labour, and it resolved in one message.
 
 What is left, and who it belongs to:
 
-- **Visual 18/20 and UX 14/15 are mine.** Chunk 7 designed the interiors of
+- **Visual 19/20 and UX 14/15 are mine.** Chunk 7 designed the interiors of
   the four pages `NEXT_TASK.md` named and stopped there, honestly rather than
   by running out of steam: the footer, the trust row and seven content routes
   are the same inherited layout they always were, and the footer and trust row
@@ -76,7 +92,7 @@ What is left, and who it belongs to:
   a migration rather than completing it, and two generations of `cbar-*`
   classes still coexist.
 
-Realistically that is 89 → 91 by working, and the last nine points need
+Realistically that is 91 → 93 by working, and the last nine points need
 either the Commission's calendar, production hardware, or a decision only
 the owner can make. I will keep saying which is which rather than quietly
 awarding them.

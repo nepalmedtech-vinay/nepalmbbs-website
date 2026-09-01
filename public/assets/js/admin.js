@@ -481,3 +481,176 @@ async function exportCSV(){
 
 
 // ═══ GLASS TAP GLOW — COMPREHENSIVE ═══
+
+/* ── Live content: college media and notices ────────────────────────────────
+   These write to college_media and college_notices, which live.js reads in
+   the visitor's browser. A save here is on the site immediately — no rebuild,
+   no deploy.
+
+   That is the opposite of the College Cards block, which writes site_colleges
+   and only lands at the next build. Both are correct: a seat count should
+   pass the verify suite before a family reads it, and a notice that
+   counselling has moved should not wait for a deploy. The admin panel labels
+   which is which, because the person clicking Save needs to know.
+
+   Everything is rendered with textContent and createElement. The values are
+   typed by staff, which is a smaller threat than the open internet but not
+   zero: a compromised staff account should not become stored XSS on the
+   college pages that read these rows back. */
+
+function collegeOptions(sel, firstLabel) {
+  const el = document.getElementById(sel);
+  if (!el) return;
+  const keep = el.value;
+  el.textContent = '';
+  const first = document.createElement('option');
+  first.value = ''; first.textContent = firstLabel;
+  el.appendChild(first);
+  (window.__adminColleges || []).forEach(function (c) {
+    const o = document.createElement('option');
+    o.value = c.slug; o.textContent = c.name;
+    el.appendChild(o);
+  });
+  el.value = keep;
+}
+
+/* The college list comes from the page the panel is open on, which already
+   ships all 27 in its own markup, so this needs no extra request. */
+function ensureCollegeList() {
+  if (window.__adminColleges) return Promise.resolve();
+  return sbR('/rest/v1/site_colleges?select=slug,name').then(function (rows) {
+    if (rows && rows.length) { window.__adminColleges = rows; return; }
+    // site_colleges is an override layer and is usually empty. Fall back to
+    // the links the colleges index renders, which are the committed 27.
+    return fetch('/colleges/').then(function (r) { return r.text(); }).then(function (html) {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const seen = {};
+      window.__adminColleges = [...doc.querySelectorAll('a[href^="/colleges/"]')]
+        .map(function (a) {
+          const slug = a.getAttribute('href').replace(/^\/colleges\//, '').replace(/\/$/, '');
+          return { slug: slug, name: (a.textContent || slug).trim() };
+        })
+        .filter(function (c) {
+          if (!c.slug || c.slug === 'compare' || seen[c.slug]) return false;
+          seen[c.slug] = 1; return true;
+        });
+    }).catch(function () { window.__adminColleges = []; });
+  });
+}
+
+function liveRow(host, label, sub, onDelete) {
+  const row = document.createElement('div');
+  row.className = 'a-live-row';
+  const txt = document.createElement('div');
+  const b = document.createElement('strong'); b.textContent = label;
+  txt.appendChild(b);
+  if (sub) { const s = document.createElement('span'); s.textContent = sub; txt.appendChild(s); }
+  row.appendChild(txt);
+  const del = document.createElement('button');
+  del.className = 'a-btn a-btn-danger';
+  del.type = 'button';
+  del.textContent = 'Delete';
+  del.addEventListener('click', onDelete);
+  row.appendChild(del);
+  host.appendChild(row);
+}
+
+async function loadCollegeMedia() {
+  await ensureCollegeList();
+  collegeOptions('a-media-college', 'Select a college…');
+  const host = document.getElementById('a-media-list');
+  if (!host) return;
+  host.textContent = '';
+  const slug = document.getElementById('a-media-college').value;
+  if (!slug) return;
+  const rows = await sbR('/rest/v1/college_media?select=id,kind,caption,external_url,storage_path' +
+    '&order=sort_order.asc&college_slug=eq.' + encodeURIComponent(slug));
+  if (!rows.length) { host.appendChild(document.createTextNode('Nothing for this college yet.')); return; }
+  rows.forEach(function (r) {
+    liveRow(host, r.caption || r.kind, r.external_url || r.storage_path || '', function () {
+      deleteCollegeMedia(r.id);
+    });
+  });
+}
+
+async function addCollegeMedia() {
+  const slug = document.getElementById('a-media-college').value;
+  const kind = document.getElementById('a-media-kind').value;
+  const url = document.getElementById('a-media-url').value.trim();
+  if (!slug) { toast('Choose a college first.', 'err'); return; }
+  // Same rule live.js enforces when reading. Refusing it here means a bad URL
+  // never reaches the table, rather than being filtered out on every page load.
+  if (!/^https?:\/\//i.test(url)) { toast('Enter a full http(s) URL.', 'err'); return; }
+  const ok = await sbW('/rest/v1/college_media', {
+    college_slug: slug,
+    kind: kind,
+    external_url: url,
+    caption: document.getElementById('a-media-caption').value.trim() || null,
+    credit: document.getElementById('a-media-credit').value.trim() || null,
+  });
+  if (ok) {
+    toast('Saved. It is live on the college page now.', 'ok');
+    document.getElementById('a-media-url').value = '';
+    document.getElementById('a-media-caption').value = '';
+    document.getElementById('a-media-credit').value = '';
+    loadCollegeMedia();
+  } else toast('Could not save. Check you are signed in as staff.', 'err');
+}
+
+async function deleteCollegeMedia(id) {
+  const ok = await sbW('/rest/v1/college_media?id=eq.' + encodeURIComponent(id), null, 'DELETE');
+  if (ok) { toast('Removed.', 'ok'); loadCollegeMedia(); }
+  else toast('Could not remove.', 'err');
+}
+
+async function loadCollegeNotices() {
+  await ensureCollegeList();
+  collegeOptions('a-notice-college', 'Site-wide (all pages)');
+  const host = document.getElementById('a-notice-list');
+  if (!host) return;
+  host.textContent = '';
+  // Staff read everything, including drafts and expired notices — that is
+  // what the staff policy is for, and you cannot edit what you cannot see.
+  const rows = await sbR('/rest/v1/college_notices?select=id,title,college_slug,level,ends_at,published&order=created_at.desc&limit=30');
+  if (!rows.length) { host.appendChild(document.createTextNode('No notices yet.')); return; }
+  rows.forEach(function (r) {
+    const where = r.college_slug || 'site-wide';
+    const when = r.ends_at ? ' · until ' + String(r.ends_at).slice(0, 10) : '';
+    const state = r.published ? '' : ' · unpublished';
+    liveRow(host, r.title, where + ' · ' + r.level + when + state, function () {
+      deleteCollegeNotice(r.id);
+    });
+  });
+}
+
+async function addCollegeNotice() {
+  const title = document.getElementById('a-notice-title').value.trim();
+  if (!title) { toast('A notice needs a title.', 'err'); return; }
+  const ends = document.getElementById('a-notice-ends').value;
+  const ok = await sbW('/rest/v1/college_notices', {
+    college_slug: document.getElementById('a-notice-college').value || null,
+    title: title,
+    body: document.getElementById('a-notice-body').value.trim() || null,
+    level: document.getElementById('a-notice-level').value,
+    ends_at: ends ? new Date(ends + 'T23:59:59').toISOString() : null,
+  });
+  if (ok) {
+    toast('Published. It is on the site now.', 'ok');
+    document.getElementById('a-notice-title').value = '';
+    document.getElementById('a-notice-body').value = '';
+    loadCollegeNotices();
+  } else toast('Could not publish. Check you are signed in as staff.', 'err');
+}
+
+async function deleteCollegeNotice(id) {
+  const ok = await sbW('/rest/v1/college_notices?id=eq.' + encodeURIComponent(id), null, 'DELETE');
+  if (ok) { toast('Removed.', 'ok'); loadCollegeNotices(); }
+  else toast('Could not remove.', 'err');
+}
+
+// Re-list when the college selector changes, so the panel always shows what
+// belongs to the college on screen.
+document.addEventListener('DOMContentLoaded', function () {
+  const m = document.getElementById('a-media-college');
+  if (m) m.addEventListener('change', loadCollegeMedia);
+});
