@@ -1,0 +1,102 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be committed to version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# iOS/macOS
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*.xcconfig
+**/ios/**/*.xcworkspace
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vscode
+**/ios/**/Flutter/.last_build_id
+**/ios/**/Flutter/Flutter.podspec
+**/ios/**/Flutter/flutter_export_environment.sh
+**/ios/**/Flutter/flutter_export_environment.sh.bak
+**/ios/**/local.properties
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/flutter_export_environment.sh.bak
+**/ios/Podfile.lock
+**/ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+**/macos/**/*.mode1v3
+**/macos/**/*.mode2v3
+**/macos/**/*.moved-aside
+**/macos/**/*.pbxuser
+**/macos/**/*.perspectivev3
+**/macos/**/*.xcconfig
+**/macos/**/*.xcworkspace
+**/macos/**/.sconsign.dblite
+**/macos/**/.tags*
+**/macos/**/.vscode
+**/macos/**/Flutter/.last_build_id
+**/macos/**/Flutter/Flutter.podspec
+**/macos/**/Flutter/flutter_export_environment.sh
+**/macos/**/Flutter/flutter_export_environment.sh.bak
+**/macos/**/local.properties
+**/macos/Podfile.lock
+**/macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+# Android/Java
+**/android/**/gradlew
+**/android/**/gradlew.bat
+**/android/**/local.properties
+**/android/**/*lock.json
+**/android/**/*ProGuard_Android.txt
+**/android/**/*.jks
+**/android/**/*.keystore
+**/android/**/.gradle
+**/android/**/captures/
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+
+# Coverage
+coverage/
+
+# Exceptions to above rules.
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+/build/
+/build_web/
+/dist/
+pubspec.lock
