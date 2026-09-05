@@ -71,8 +71,11 @@
 .xm-table .xm-row-paper td { background: var(--g-lift, #f4f6fa); font-weight: 700; }
 .xm-table td.xm-wrap { white-space: normal; min-width: 220px; }
 .xm-rowbtn {
-  appearance: none; background: none; border: 0; padding: 0; font: inherit;
+  appearance: none; background: none; border: 0; font: inherit;
   color: var(--brand-deep, #0f5c4a); font-weight: 600; cursor: pointer; text-align: left;
+  /* A link-styled button in a table row is still a tap target on a phone. Its
+     text is one line tall; the box it is tapped in must not be. */
+  display: inline-flex; align-items: center; min-height: 32px; padding: 4px 0;
 }
 .xm-rowbtn:hover { text-decoration: underline; }
 

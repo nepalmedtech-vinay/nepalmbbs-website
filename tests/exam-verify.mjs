@@ -613,8 +613,14 @@ check('the send dialog names the student and pre-writes the message',
   sendText.includes('Aarav Sharma') && draft.includes('60 out of 120') &&
   draft.includes('50%') && /^Good (Morning|Afternoon|Evening) (Sir|Ma'am)/.test(draft),
   draft.split('\n')[0]);
-check('both parents are offered, each with its number on screen',
-  sendText.includes('+919812345678') && sendText.includes('+919812345679'));
+/* Both parents, each with the number the console will actually use — including
+   the mother's, corrected moments ago. A dialog still offering the old number
+   is exactly the wrong-recipient failure this screen exists to prevent. */
+check('both parents are offered, each with the number now on file',
+  sendText.includes('+919812345678') && sendText.includes('+919999888877') &&
+  !sendText.includes('+919812345679'),
+  sendText.includes('+919999888877') ? 'corrected number carried through'
+                                     : 'still offering the old number');
 
 /* Refuses to send with nothing chosen, and refuses with the box unticked. */
 await p2.click('#x-send-body .gl-btn--primary');
