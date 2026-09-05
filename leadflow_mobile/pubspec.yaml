@@ -1,5 +1,5 @@
 name: leadflow
-description: "LeadFlow - Premium Lead Management System"
+description: "LeadFlow - Premium MBBS Admissions Lead Management System"
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -13,14 +13,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   riverpod: ^2.4.0
   flutter_riverpod: ^2.4.0
-  dio: ^5.3.1
-  socket_io_client: ^2.0.0
   google_fonts: ^6.1.0
   flutter_animate: ^4.2.0
   lottie: ^2.4.0
   uuid: ^4.0.0
   intl: ^0.19.0
   logger: ^2.1.0
+  dio: ^5.3.1
 
 dev_dependencies:
   flutter_test:
