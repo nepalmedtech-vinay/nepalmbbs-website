@@ -1,0 +1,30 @@
+name: leadflow
+description: "LeadFlow - Premium MBBS Admissions Lead Management System"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  riverpod: ^2.4.0
+  flutter_riverpod: ^2.4.0
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.2.0
+  lottie: ^2.4.0
+  uuid: ^4.0.0
+  intl: ^0.19.0
+  logger: ^2.1.0
+  dio: ^5.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
