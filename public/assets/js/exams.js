@@ -958,8 +958,10 @@
       var edit = el('button', 'gl-btn gl-btn--quiet', 'Correct');
       edit.type = 'button';
       edit.addEventListener('click', function (ev) {
+        // The row is a <label>; without this the click also toggles whatever
+        // control the label owns.
         ev.preventDefault();
-        correctGuardian(g, phone, right);
+        correctGuardian(g, row, phone, right);
       });
       right.appendChild(edit);
     }
@@ -967,29 +969,78 @@
     return row;
   }
 
-  async function correctGuardian(g, phoneNode, statusNode) {
-    var next = prompt('Number for ' + (g.full_name || g.relation) +
-      '\n\nOn file: ' + (g.phone_raw || 'nothing') +
-      '\n\nEnter it with the country code, e.g. +919812345678.', g.phone_e164 || g.phone_raw || '');
-    if (next === null) return;
-    var norm = ExamMapping.normalisePhone(next);
-    if (norm.status === 'suspect' &&
-        !confirm('That number does not look like an Indian or Nepali mobile — ' + norm.note +
-                 '\n\nSave it anyway?')) return;
-    try {
-      await ExamApi.updateGuardian(g.id, {
-        phone_raw: norm.raw, phone_e164: norm.e164, phone_status: norm.status
-      });
-      g.phone_raw = norm.raw; g.phone_e164 = norm.e164; g.phone_status = norm.status;
-      phoneNode.textContent = norm.e164 || norm.raw || 'no number on file';
-      var pill = statusNode.querySelector('.xm-pill');
-      if (pill) {
-        pill.textContent = norm.status;
-        pill.className = 'xm-pill ' + (norm.status === 'valid' ? 'xm-pill--good'
-          : norm.status === 'suspect' ? 'xm-pill--warn' : 'xm-pill--mute');
-      }
-      toast('Number updated.');
-    } catch (e) { toast(e.message, true); }
+  /* Correcting a parent's number is a core flow, not an edge case, so it is an
+     inline form rather than a browser prompt(): the person doing it needs to
+     see what is on file, what the new value normalises to, and why it is being
+     called suspect, all at once and all still on screen. */
+  function correctGuardian(g, row, phoneNode, statusNode) {
+    if (row.querySelector('.x-edit')) return;
+    var box = el('div', 'x-edit xm-fix');
+    box.style.gridColumn = '1 / -1';
+    box.style.marginTop = '10px';
+
+    var input = el('input', 'cx-input');
+    input.type = 'tel';
+    input.id = 'x-guardian-' + g.id;
+    input.value = g.phone_e164 || g.phone_raw || '';
+    input.placeholder = '+919812345678';
+    var label = el('label', null, 'Number for ' + (g.full_name || g.relation));
+    label.setAttribute('for', input.id);
+    label.appendChild(el('small', null, 'On file: ' + (g.phone_raw || 'nothing') +
+      '. Enter it with the country code.'));
+
+    var note = el('p', 'xm-count');
+    var save = el('button', 'gl-btn gl-btn--primary', 'Save');
+    save.type = 'button';
+    var cancel = el('button', 'gl-btn gl-btn--quiet', 'Cancel');
+    cancel.type = 'button';
+
+    function preview() {
+      var n = ExamMapping.normalisePhone(input.value);
+      note.textContent = n.status === 'valid'
+        ? 'Will be dialled as ' + n.e164 + '.'
+        : n.status === 'missing'
+          ? 'No number — this parent will not be contactable.'
+          : 'Saved as written and flagged: ' + n.note;
+      note.className = 'xm-count ' + (n.status === 'valid' ? 'xm-good' : 'xm-warn');
+      return n;
+    }
+    input.addEventListener('input', preview);
+    preview();
+
+    save.addEventListener('click', async function () {
+      var norm = preview();
+      save.disabled = true;
+      try {
+        await ExamApi.updateGuardian(g.id, {
+          phone_raw: norm.raw, phone_e164: norm.e164, phone_status: norm.status
+        });
+        g.phone_raw = norm.raw; g.phone_e164 = norm.e164; g.phone_status = norm.status;
+        phoneNode.textContent = norm.e164 || norm.raw || 'no number on file';
+        row.setAttribute('data-status', norm.status);
+        var pill = statusNode.querySelector('.xm-pill');
+        if (pill) {
+          pill.textContent = norm.status;
+          pill.className = 'xm-pill ' + (norm.status === 'valid' ? 'xm-pill--good'
+            : norm.status === 'suspect' ? 'xm-pill--warn' : 'xm-pill--mute');
+        }
+        box.remove();
+        toast(norm.status === 'valid' ? 'Number updated.'
+          : 'Saved, and still flagged — check it before sending.');
+      } catch (e) { toast(e.message, true); save.disabled = false; }
+    });
+    cancel.addEventListener('click', function () { box.remove(); });
+
+    var wrap = el('div');
+    wrap.appendChild(label);
+    wrap.appendChild(input);
+    wrap.appendChild(note);
+    var bar = el('div', 'xm-bar');
+    bar.style.margin = '0';
+    bar.appendChild(save); bar.appendChild(cancel);
+    box.appendChild(wrap); box.appendChild(bar);
+    row.appendChild(box);
+    input.focus();
   }
 
   async function loadStudentExam(examId) {

@@ -152,6 +152,12 @@
   letter-spacing: 0.02em; color: var(--g-ink, #1d2430);
 }
 .xm-recipient-rel { font-size: var(--t-xs, 0.78rem); color: var(--g-ink-3, #5b6676); }
+/* The inline number editor drops below its row rather than replacing it, so
+   what is on file stays readable while the correction is typed. */
+.xm-recipient { flex-wrap: wrap; }
+.x-edit { display: grid; gap: 10px; border-top: 1px solid var(--g-line, #e2e6ee);
+          padding-top: 12px; }
+@media (min-width: 620px) { .x-edit { grid-template-columns: 1fr auto; align-items: end; } }
 
 .xm-compose { width: 100%; min-height: 190px; resize: vertical; font: inherit;
               line-height: 1.55; padding: 12px 14px;

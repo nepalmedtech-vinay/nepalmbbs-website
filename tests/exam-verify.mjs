@@ -243,6 +243,34 @@ check('a ten-digit number is dialled as +91 but still marked suspect',
   second.suspect.phone_status === 'suspect',
   JSON.stringify(second.suspect));
 
+/* Two conditions the fixture does not contain, injected into the sheet the
+   same way a real one would contain them: the same roll number twice, and a
+   mark above its subject's maximum. */
+const damaged = await page.evaluate(() => {
+  const sheet = JSON.parse(JSON.stringify(window.__sheet));
+  sheet.rows[6][2] = sheet.rows[5][2];        // second student takes the first's roll number
+  sheet.rows[7][5] = 25;                      // ANA is out of 20
+  sheet.rows[8][5] = 'x';                     // and this one is not a number at all
+  const out = window.ExamMapping.buildPayload(sheet, window.__map, {});
+  const kinds = {};
+  out.issues.forEach((i) => { kinds[i.kind] = (kinds[i.kind] || 0) + 1; });
+  const over = out.issues.find((i) => i.kind === 'above_maximum');
+  const dup = out.issues.find((i) => i.kind === 'duplicate_code');
+  return { kinds, over, dup, students: out.counts.students,
+           anyMarkOver20: out.payload.students.some((st) => st.marks.some(
+             (m) => m.subject === 'ANA' && m.obtained > 20)) };
+});
+check('the same roll number twice is refused, and the row is not imported',
+  damaged.kinds.duplicate_code === 1 && damaged.students === 5 &&
+  damaged.dup.first_row === 6,
+  `${damaged.students} students imported, first seen on row ${damaged.dup && damaged.dup.first_row}`);
+check('a mark above its maximum is reported and never carried through',
+  damaged.kinds.above_maximum === 1 && damaged.over.value === 25 &&
+  damaged.over.max_marks === 20 && damaged.anyMarkOver20 === false,
+  JSON.stringify(damaged.over && { value: damaged.over.value, max: damaged.over.max_marks }));
+check('a mark that is not a number is reported, not coerced',
+  damaged.kinds.not_a_number === 1, JSON.stringify(damaged.kinds.not_a_number));
+
 /* ── phone rules, case by case ──────────────────────────────────────────── */
 const phones = await page.evaluate(() => {
   const n = window.ExamMapping.normalisePhone;
@@ -437,6 +465,7 @@ const REPORT = {
 
 const queued = [];
 const sent = [];
+const guardianPatches = [];
 const J = (route, body, status = 200) => route.fulfill({
   status, contentType: 'application/json', body: JSON.stringify(body),
   headers: { 'access-control-allow-origin': '*' } });
@@ -489,6 +518,13 @@ await ctx2.route('**/rest/v1/**', (route) => {
   }
   if (url.includes('/parent_messages')) {
     if (method === 'POST') { queued.push(post); return J(route, [{ id: 'msg' + queued.length }]); }
+    return J(route, []);
+  }
+  if (url.includes('/guardians?')) {
+    if (method === 'PATCH') {
+      guardianPatches.push(JSON.parse(route.request().postData() || '{}'));
+      return J(route, [{ id: MOTHER }]);
+    }
     return J(route, []);
   }
   if (url.includes('/ai_usage')) return J(route, []);
@@ -551,6 +587,23 @@ check('a suspect number shows both the dialled and the written form',
   detail.includes('+919812345679') && detail.includes('9812345679') &&
   detail.includes('suspect'));
 
+/* Correcting a parent's number, inline, without leaving the student. */
+await p2.click('#x-student-detail .xm-recipient >> nth=1 >> button');
+await p2.waitForSelector('#x-student-detail .x-edit input', { timeout: 5000 });
+const beforeSave = await p2.textContent('#x-student-detail .x-edit .xm-count');
+check('the editor says what a number will be dialled as before it is saved',
+  /dialled as \+919812345679/.test(beforeSave), beforeSave);
+await p2.fill('#x-student-detail .x-edit input', '+919999888877');
+await p2.click('#x-student-detail .x-edit .gl-btn--primary');
+await p2.waitForFunction(() => !document.querySelector('#x-student-detail .x-edit'),
+  null, { timeout: 5000 });
+check('saving a corrected number writes the normalised value and its status',
+  guardianPatches.length === 1 && guardianPatches[0].phone_e164 === '+919999888877' &&
+  guardianPatches[0].phone_status === 'valid',
+  JSON.stringify(guardianPatches[0]));
+check('the row updates to the new number without a reload',
+  (await p2.textContent('#x-student-detail')).includes('+919999888877'));
+
 await p2.click('#x-panel-students .xm-bar .gl-btn--primary');   // Send to parent
 await p2.waitForSelector('#x-send[open]', { timeout: 8000 });
 const sendText = await p2.textContent('#x-send-body');
@@ -600,6 +653,29 @@ check('with no credentials it says prepared, never sent',
 
 check('the console threw nothing while doing all that',
   consoleErrors2.length === 0, consoleErrors2.slice(0, 2).join(' | '));
+
+/* Mobile: a coordinator opens this on a phone on result day. The tables are
+   allowed to scroll inside themselves; the page is not allowed to scroll
+   sideways, and nothing may be tapped that is smaller than a fingertip. */
+await p2.setViewportSize({ width: 390, height: 844 });
+await p2.click('#x-send-close');
+await p2.click('#x-tab-overview');
+await p2.waitForTimeout(400);
+const mobile = await p2.evaluate(() => {
+  const small = [...document.querySelectorAll('button, a[href], select, input[type=checkbox]')]
+    .filter((el) => el.offsetParent !== null)
+    .map((el) => el.getBoundingClientRect())
+    .filter((b) => b.width > 0 && b.height > 0 && b.height < 28);
+  return {
+    overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    small: small.length,
+  };
+});
+check('the console does not scroll sideways at 390px',
+  mobile.overflow <= 1, `${mobile.overflow}px of overflow`);
+check('no visible control is under 28px tall at 390px',
+  mobile.small === 0, `${mobile.small} too small`);
+
 await ctx2.close();
 
 await browser.close();
