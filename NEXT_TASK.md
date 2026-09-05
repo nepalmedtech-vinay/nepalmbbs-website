@@ -16,10 +16,18 @@ What is verified, and by what:
 
 | Suite | Covers | Result |
 |---|---|---|
-| `./supabase/test/run.sh` | RLS, import, amend, ranks, tenancy, deletes | 12 new assertions, all pass |
-| `node tests/exam-verify.mjs` | parse → map → validate → render → flyer, in a browser | 34/34 (35/35 with `EXAM_SHEET`) |
-| `node tests/a11y-verify.mjs` | now includes `/staff/exams` | see below |
+| `./supabase/test/run.sh` | RLS, import, amend, ranks, tenancy, deletes | 24 assertions (12 new), all pass |
+| `node tests/exam-verify.mjs` | parse → map → validate → render → flyer → the console's send flow | 59/59 (60/60 with `EXAM_SHEET`) |
+| `node tests/csp-verify.mjs` | delegated handlers across every route | 11/11 · 46 routes · 2949 handlers |
+| `node tests/a11y-verify.mjs` | now includes `/staff/exams` | 38/38 |
+| `node tests/audit.mjs` | contrast and mobile overflow, `/staff/exams` included | 0 low-contrast, 0 overflow, 0 skipped |
+| `node tests/auth-verify.mjs` | the session layer, unchanged by this work | 12/12 |
 | `node tools/gen-csp.mjs --check` | the CSP is still current | passes — no inline script was added |
+
+Three of those checks found real faults on their first run and are worth
+keeping for that reason: a11y found two `h1`s on the new page, the 390px
+check found a 22px tap target, and the import-by-module check found a
+syntax error `node --check` had accepted.
 
 **`npm run verify` still fails on `build-verify` for a reason that predates
 this work**: it reads the `phase1-static-rollback` tag and `git push
