@@ -400,6 +400,197 @@ if (process.env.EXAM_SHEET && fs.existsSync(process.env.EXAM_SHEET)) {
            : out.reason);
 }
 
+/* ── 4. the console itself, against a mocked PostgREST ──────────────────
+   exams.js is the largest file in this feature and nothing above touches it.
+   What is worth driving here is the path that ends with a child's marks
+   leaving the building: sign in, pick an exam, open a student, open the send
+   dialog, and check that the number the console is about to use is the number
+   on the record — and that it is on screen where a person will read it. */
+const ctx2 = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
+const INST = '11111111-1111-1111-1111-111111111111';
+const EXAM = '22222222-2222-2222-2222-222222222222';
+const STUD = '33333333-3333-3333-3333-333333333333';
+const FATHER = '44444444-4444-4444-4444-444444444444';
+const MOTHER = '55555555-5555-5555-5555-555555555555';
+
+const REPORT = {
+  institution: { id: INST, name: 'Test Medical College', address: 'Bharatpur-05 Chitwan' },
+  student: { id: STUD, name: 'Aarav Sharma', code: 'MBBS1800', serial_no: 1,
+             batch: { name: '2025', course: 'MBBS', year_label: 'MBBS 1st Year' } },
+  exam: { id: EXAM, name: '2nd Internal Assessment', held_label: '2083/04/15' },
+  guardians: [
+    { id: FATHER, relation: 'father', name: 'Rajesh Sharma',
+      phone_raw: '+919812345678', phone_e164: '+919812345678', phone_status: 'valid' },
+    { id: MOTHER, relation: 'mother', name: 'Meena Sharma',
+      phone_raw: '9812345679', phone_e164: '+919812345679', phone_status: 'suspect' }],
+  papers: [{ id: 'p1', name: 'IBMS-MSK', position: 0, max_marks: 120, pass_marks: 60,
+             obtained: 60, percentage: 50, passed: true,
+             subjects: [{ id: 'x1', name: 'ANA', position: 0, max_marks: 20, obtained: 8,
+                          is_absent: false, percentage: 40, batch_avg: 9.4 }] }],
+  totals: { obtained: 60, max_marks: 120, percentage: 50, rank: 2, cohort_size: 6 },
+  grade: { grade: 'B', label: 'Satisfactory' },
+  cohort: { avg_percentage: 47.5, students: 6 },
+  progress: { direction: 'first-exam' },
+  strengths: [], attention: [{ subject: 'ANA', percentage: 40, obtained: 8, max_marks: 20 }],
+  absences: [], history: [], computed_at: '2026-09-05T09:00:00Z',
+};
+
+const queued = [];
+const sent = [];
+const J = (route, body, status = 200) => route.fulfill({
+  status, contentType: 'application/json', body: JSON.stringify(body),
+  headers: { 'access-control-allow-origin': '*' } });
+
+await ctx2.route('**/rest/v1/**', (route) => {
+  const url = route.request().url();
+  const method = route.request().method();
+  const post = method === 'POST' ? JSON.parse(route.request().postData() || '{}') : {};
+  if (url.includes('/staff?')) return J(route, [{ id: 's1', email: 'c@x.in',
+    full_name: 'Coordinator', role: 'admin' }]);
+  if (url.includes('/institutions?')) return J(route, [{ id: INST, name: 'Test Medical College',
+    short_name: null, address: 'Bharatpur-05 Chitwan', logo_path: null, accent_color: null }]);
+  if (url.includes('/batches?')) return J(route, [{ id: 'b1', name: '2025', course: 'MBBS',
+    year_label: 'MBBS 1st Year' }]);
+  if (url.includes('/exams?')) return J(route, [{ id: EXAM, name: '2nd Internal Assessment',
+    batch_id: 'b1', exam_kind: 'internal', sequence_no: 2, created_at: '2026-09-01' }]);
+  if (url.includes('/report_templates?')) return J(route, [{ id: 't1', institution_id: null,
+    key: 'ivory', name: 'Ivory — formal', is_default: true, spec: {} }]);
+  if (url.includes('/rpc/exam_dashboard')) return J(route, { students: 6, batches: 1, exams: 1,
+    avg_percentage: 47.5, reports_generated: 0, messages: null,
+    data_health: { students_without_valid_parent: 1, declared_mismatches: 0, amended_marks: 0 },
+    exams_list: [{ exam_id: EXAM, name: '2nd Internal Assessment', batch_id: 'b1',
+                   sequence_no: 2, students: 6, avg_percentage: 47.5 }] });
+  if (url.includes('/rpc/exam_cohort')) return J(route, {
+    exam: { id: EXAM, name: '2nd Internal Assessment' },
+    summary: { students: 6, avg_percentage: 47.5, top_percentage: 80, low_percentage: 12 },
+    subjects: [{ subject_id: 'x1', subject_name: 'ANA', max_marks: 20, avg_obtained: 9.4,
+                 avg_percentage: 47, sat_count: 5, absent_count: 1 }],
+    students: [{ student_id: STUD, name: 'Aarav Sharma', code: 'MBBS1800', rank: 2,
+                 obtained: 60, max_marks: 120, percentage: 50, cohort_size: 6, grade: 'B',
+                 delta_percentage: null, direction: 'first-exam', absent_subjects: 0,
+                 has_valid_parent: true, last_message: null, report_versions: 0 }] });
+  if (url.includes('/rpc/exam_report')) return J(route, REPORT);
+  if (url.includes('/students?')) return J(route, [{ id: STUD, full_name: 'Aarav Sharma',
+    student_code: 'MBBS1800', serial_no: 1, category: 'FOREIGNER', photo_path: null,
+    institution_id: INST, batches: { id: 'b1', name: '2025', course: 'MBBS',
+    year_label: 'MBBS 1st Year' }, guardians: REPORT.guardians.map((g) => ({
+      id: g.id, relation: g.relation, full_name: g.name, phone_raw: g.phone_raw,
+      phone_e164: g.phone_e164, phone_status: g.phone_status })) }]);
+  if (url.includes('/report_cards')) {
+    return method === 'POST'
+      ? J(route, [{ id: 'rc1', version: 1, image_path: post.image_path }])
+      : J(route, []);
+  }
+  if (url.includes('/parent_messages')) {
+    if (method === 'POST') { queued.push(post); return J(route, [{ id: 'msg' + queued.length }]); }
+    return J(route, []);
+  }
+  if (url.includes('/ai_usage')) return J(route, []);
+  return J(route, []);
+});
+await ctx2.route('**/auth/v1/**', (route) => J(route, { access_token: 'JWT', refresh_token: 'R',
+  expires_in: 3600, user: { id: 's1', email: 'c@x.in' } }));
+await ctx2.route('**/storage/v1/**', (route) => J(route, { Key: 'report-cards/x.png' }));
+// Registration order matters: Playwright tries the most recently added route
+// first, so the catch-all goes on before the specific one or it swallows it.
+await ctx2.route('**/functions/v1/**', (route) => J(route, { result: {}, provider: 'none' }));
+await ctx2.route('**/functions/v1/whatsapp-send', (route) => {
+  sent.push(JSON.parse(route.request().postData() || '{}'));
+  // The no-credentials path, which is what a first deploy actually hits.
+  return J(route, { status: 'prepared', sent: false, media_url: 'https://example.test/x.png',
+    wa_link: 'https://wa.me/919812345678?text=hi',
+    note: 'No WhatsApp Business credentials are configured, so nothing was sent.' });
+});
+
+const p2 = await ctx2.newPage();
+const consoleErrors2 = [];
+p2.on('pageerror', (e) => consoleErrors2.push('uncaught: ' + e.message));
+await p2.goto(`http://localhost:${PORT}/staff/exams`, { waitUntil: 'load' });
+
+await p2.fill('#x-email', 'c@x.in');
+await p2.fill('#x-pass', 'pw');
+await p2.click('#x-gate-btn');
+await p2.waitForSelector('#x-console:not([hidden])', { timeout: 8000 });
+check('signing in reveals the console and names the college',
+  (await p2.textContent('#x-who')).includes('Coordinator') &&
+  (await p2.inputValue('#x-institution')) === INST);
+
+await p2.waitForSelector('#x-overview .cx-stat', { timeout: 8000 });
+const overview = await p2.textContent('#x-overview');
+check('the overview shows the counts and the data-health finding',
+  overview.includes('47.5') && /no parent number this system can dial/.test(overview),
+  overview.replace(/\s+/g, ' ').slice(0, 90));
+
+await p2.click('#x-tab-exams');
+await p2.selectOption('#x-exam-select', EXAM);
+await p2.waitForSelector('#x-cohort table', { timeout: 8000 });
+check('the cohort table ranks the students',
+  (await p2.textContent('#x-cohort')).includes('Aarav Sharma'));
+
+await p2.click('#x-cohort .xm-rowbtn');
+await p2.waitForSelector('#x-student-exam-body table', { timeout: 8000 });
+const detail = await p2.textContent('#x-student-detail');
+check('the student profile shows the marks and both parents',
+  detail.includes('MBBS1800') && detail.includes('Rajesh Sharma') &&
+  detail.includes('Meena Sharma') && detail.includes('+919812345678'));
+/* The number, as written on the sheet, has to be visible next to the
+   normalised one — a coordinator checking a suspect number needs to see what
+   the college actually wrote. */
+check('a suspect number shows both the dialled and the written form',
+  detail.includes('+919812345679') && detail.includes('9812345679') &&
+  detail.includes('suspect'));
+
+await p2.click('#x-panel-students .xm-bar .gl-btn--primary');   // Send to parent
+await p2.waitForSelector('#x-send[open]', { timeout: 8000 });
+const sendText = await p2.textContent('#x-send-body');
+// The composed message lives in a textarea's value, not its text node.
+const draft = await p2.inputValue('#x-message');
+check('the send dialog names the student and pre-writes the message',
+  sendText.includes('Aarav Sharma') && draft.includes('60 out of 120') &&
+  draft.includes('50%') && /^Good (Morning|Afternoon|Evening) (Sir|Ma'am)/.test(draft),
+  draft.split('\n')[0]);
+check('both parents are offered, each with its number on screen',
+  sendText.includes('+919812345678') && sendText.includes('+919812345679'));
+
+/* Refuses to send with nothing chosen, and refuses with the box unticked. */
+await p2.click('#x-send-body .gl-btn--primary');
+await p2.waitForTimeout(200);
+check('refuses to send with no recipient chosen', queued.length === 0);
+await p2.check('#x-send-body .x-recipient-check >> nth=0');
+await p2.click('#x-send-body .gl-btn--primary');
+await p2.waitForTimeout(200);
+check('refuses to send until the number has been confirmed', queued.length === 0);
+
+await p2.check('#x-confirm');
+await p2.click('#x-send-body .gl-btn--primary');
+try {
+  await p2.waitForFunction(
+    () => document.querySelectorAll('#x-send-body a[href^="https://wa.me"]').length > 0,
+    null, { timeout: 20000 });
+} catch (e) {
+  // A timeout here says nothing on its own; what the dialog ended up showing does.
+  check('the send flow completes', false,
+    (await p2.textContent('#x-send-body')).replace(/\s+/g, ' ').slice(-200));
+}
+
+check('sends exactly one message, to the parent that was ticked',
+  queued.length === 1 && queued[0].guardian_id === FATHER &&
+  queued[0].to_phone === '+919812345678' && queued[0].recipient_relation === 'father',
+  JSON.stringify(queued[0] && { to: queued[0].to_phone, rel: queued[0].recipient_relation }));
+check('the message carries the report card it was generated with',
+  queued.length === 1 && queued[0].report_card_id === 'rc1' &&
+  typeof queued[0].media_path === 'string' && queued[0].media_path.length > 0);
+check('the send goes through the edge function, not a bare link',
+  sent.length === 1 && sent[0].message_id === 'msg1', JSON.stringify(sent[0]));
+const after = await p2.textContent('#x-send-body');
+check('with no credentials it says prepared, never sent',
+  /nothing was sent/i.test(after) && !/\bSent to\b/.test(after),
+  after.replace(/\s+/g, ' ').slice(-110));
+
+check('the console threw nothing while doing all that',
+  consoleErrors2.length === 0, consoleErrors2.slice(0, 2).join(' | '));
+await ctx2.close();
+
 await browser.close();
 server.close();
 
