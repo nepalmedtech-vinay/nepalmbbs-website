@@ -1,0 +1,172 @@
+---
+import GlassLayout from '../../layouts/GlassLayout.astro';
+---
+<GlassLayout
+  title="Exam Intelligence — NepalMBBS.in"
+  description="Internal console."
+  path="/staff/exams"
+  bare={true}
+>
+<link rel="stylesheet" href="/assets/css/console.css">
+<link rel="stylesheet" href="/assets/css/exams.css">
+<meta name="robots" content="noindex, nofollow">
+
+<main class="cx" id="main">
+  <!-- Same gate as /staff, and the same caveat: this is not the security
+       boundary. Every table behind it refuses a non-member regardless of what
+       this screen shows. -->
+  <section id="x-gate" class="gl cx-card" hidden style="max-width:420px;margin:8vh auto 0">
+    <h1>Exam intelligence</h1>
+    <p class="cx-sub">Sign in with your NepalMBBS staff account.</p>
+    <div id="x-gate-err" class="cx-error" hidden style="margin-bottom:14px"></div>
+    <form id="x-gate-form">
+      <div class="cx-field">
+        <label for="x-email">Email</label>
+        <input id="x-email" class="cx-input" type="email" autocomplete="username" required>
+      </div>
+      <div class="cx-field">
+        <label for="x-pass">Password</label>
+        <input id="x-pass" class="cx-input" type="password" autocomplete="current-password" required>
+      </div>
+      <button id="x-gate-btn" type="submit" class="gl-btn gl-btn--primary" style="width:100%">Sign in</button>
+    </form>
+  </section>
+
+  <div id="x-console" hidden>
+    <div class="cx-head">
+      <div class="cx-title">
+        <span class="gl-eyebrow">NepalMBBS.in</span>
+        <h1>Exam intelligence</h1>
+        <p>Signed in as <span id="x-who"></span></p>
+      </div>
+      <div class="cx-actions">
+        <label class="cx-field" style="margin:0">
+          <span class="gl-eyebrow">College</span>
+          <select id="x-institution" class="cx-input"></select>
+        </label>
+        <button id="x-signout" type="button" class="gl-btn gl-btn--quiet">Sign out</button>
+      </div>
+    </div>
+
+    <div id="x-toast" role="status" aria-live="polite" hidden style="margin-bottom:16px"></div>
+
+    <div class="xm-tabs" role="tablist" aria-label="Sections">
+      <button id="x-tab-overview"  class="xm-tab" type="button" role="tab" aria-selected="true"  aria-controls="x-panel-overview">Overview</button>
+      <button id="x-tab-import"    class="xm-tab" type="button" role="tab" aria-selected="false" aria-controls="x-panel-import">Import results</button>
+      <button id="x-tab-exams"     class="xm-tab" type="button" role="tab" aria-selected="false" aria-controls="x-panel-exams">Exams</button>
+      <button id="x-tab-students"  class="xm-tab" type="button" role="tab" aria-selected="false" aria-controls="x-panel-students">Students</button>
+      <button id="x-tab-templates" class="xm-tab" type="button" role="tab" aria-selected="false" aria-controls="x-panel-templates">Report card</button>
+    </div>
+
+    <section id="x-panel-overview" class="xm-panel" role="tabpanel" aria-labelledby="x-tab-overview">
+      <div id="x-overview"></div>
+      <section class="gl cx-card" style="margin-top:18px">
+        <h3>Model usage</h3>
+        <p class="cx-sub">
+          What the router actually spent in the last seven days. One task goes to one
+          model; the rest is cache.
+        </p>
+        <div id="x-ai-usage"></div>
+      </section>
+    </section>
+
+    <section id="x-panel-import" class="xm-panel" role="tabpanel" aria-labelledby="x-tab-import" hidden>
+      <div class="xm-steps">
+        <span class="xm-step" id="x-step-file"   data-state="active">1 · Choose the file</span>
+        <span class="xm-step" id="x-step-map">2 · Check what was read</span>
+        <span class="xm-step" id="x-step-check">3 · Fix what is wrong</span>
+        <span class="xm-step" id="x-step-commit">4 · Import</span>
+      </div>
+
+      <div id="x-drop" class="xm-drop">
+        <p><strong>Drop a result sheet here</strong></p>
+        <p class="cx-sub">
+          .xlsx, .csv or .tsv. Nothing is written until you have seen what was read and
+          what is wrong with it. Marks are never altered to make an import succeed.
+        </p>
+        <label for="x-file" class="gl-eyebrow">Result sheet</label>
+        <input id="x-file" type="file" accept=".xlsx,.csv,.tsv,.txt">
+      </div>
+
+      <div id="x-import-body" style="margin-top:20px"></div>
+    </section>
+
+    <section id="x-panel-exams" class="xm-panel" role="tabpanel" aria-labelledby="x-tab-exams" hidden>
+      <div class="xm-bar">
+        <label for="x-exam-select" class="gl-eyebrow">Exam</label>
+        <select id="x-exam-select" class="cx-input" style="min-width:min(360px,80vw)"></select>
+      </div>
+      <div id="x-cohort"></div>
+    </section>
+
+    <section id="x-panel-students" class="xm-panel" role="tabpanel" aria-labelledby="x-tab-students" hidden>
+      <div class="xm-grid xm-grid--side">
+        <div class="gl cx-card">
+          <label for="x-student-search" class="gl-eyebrow">Find a student</label>
+          <input id="x-student-search" class="cx-input" type="search"
+                 placeholder="Name or roll number" autocomplete="off">
+          <div id="x-student-list" style="margin-top:12px"></div>
+        </div>
+        <div id="x-student-detail"></div>
+      </div>
+    </section>
+
+    <section id="x-panel-templates" class="xm-panel" role="tabpanel" aria-labelledby="x-tab-templates" hidden>
+      <div class="xm-bar">
+        <label for="x-studio-template" class="gl-eyebrow">Template</label>
+        <select id="x-studio-template" class="cx-input"></select>
+      </div>
+      <div class="gl cx-card">
+        <div id="x-studio"></div>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="x-card" class="cx-drawer">
+    <div class="cx-drawer-inner">
+      <div class="cx-head">
+        <div class="cx-title"><h2 id="x-card-title">Report card</h2></div>
+        <div class="cx-actions xm-noprint">
+          <label for="x-card-mode" class="gl-eyebrow">View</label>
+          <select id="x-card-mode" class="cx-input">
+            <option value="flyer">Flyer — what the parent sees</option>
+            <option value="document">Document — for printing</option>
+          </select>
+          <label for="x-template" class="gl-eyebrow">Template</label>
+          <select id="x-template" class="cx-input"></select>
+          <button id="x-card-close" type="button" class="gl-btn gl-btn--quiet">Close</button>
+        </div>
+      </div>
+      <div class="cx-field xm-noprint">
+        <label for="x-remarks">Coordinator’s remarks (optional)</label>
+        <input id="x-remarks" class="cx-input" type="text"
+               placeholder="Appears on the printed card">
+      </div>
+      <div id="x-card-preview" class="xm-preview"></div>
+      <div class="xm-bar xm-noprint" style="margin-top:14px">
+        <button id="x-card-download" type="button" class="gl-btn">Download the image</button>
+        <button id="x-card-print" type="button" class="gl-btn">Print / save as PDF</button>
+        <button id="x-card-store" type="button" class="gl-btn gl-btn--quiet">Store this version</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="x-send" class="cx-drawer">
+    <div class="cx-drawer-inner">
+      <div class="cx-head">
+        <div class="cx-title"><h2 id="x-send-title">Send to a parent</h2></div>
+        <div class="cx-actions">
+          <button id="x-send-close" type="button" class="gl-btn gl-btn--quiet">Close</button>
+        </div>
+      </div>
+      <div id="x-send-body"></div>
+    </div>
+  </dialog>
+</main>
+
+<script is:inline src="/assets/js/xlsx-parse.js"></script>
+<script is:inline src="/assets/js/exam-mapping.js"></script>
+<script is:inline src="/assets/js/exam-api.js"></script>
+<script is:inline src="/assets/js/report-card.js"></script>
+<script is:inline src="/assets/js/exams.js"></script>
+</GlassLayout>
