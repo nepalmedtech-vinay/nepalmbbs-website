@@ -26,7 +26,6 @@ dependencies:
   google_fonts: ^6.1.0
 
   # Material & Design
-  flutter_material_color_picker: ^1.2.7
   uuid: ^4.0.0
 
   # Real-time Communication
