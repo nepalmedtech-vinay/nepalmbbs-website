@@ -295,6 +295,7 @@ const flyer = await page.evaluate(async () => {
     computed_at: '2026-09-05T09:00:00Z',
   };
   const model = window.ReportCard.buildModel(report);
+  window.__model = model;
   const canvas = await window.ReportCard.toCanvas(model, null, {});
   const ctx = canvas.getContext('2d');
   const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
@@ -340,6 +341,41 @@ check('the standard message states only figures from the payload',
 check('suggestions are produced without a model',
   flyer.suggestions.length > 0 && flyer.suggestions.some((s) => s.includes('BIO')),
   flyer.suggestions.join(' | ').slice(0, 100));
+
+/* Branding: a supplied logo and photo have to reach the pixels, not just the
+   function signature. Rendered twice — once bare, once with a magenta square
+   as both — and the colour has to appear only in the second. */
+const branded = await page.evaluate(async () => {
+  const swatch = document.createElement('canvas');
+  swatch.width = swatch.height = 40;
+  const sctx = swatch.getContext('2d');
+  sctx.fillStyle = '#ff00ff';
+  sctx.fillRect(0, 0, 40, 40);
+  const src = swatch.toDataURL('image/png');
+
+  const model = window.__model;
+  const countMagenta = (canvas) => {
+    const d = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+    let n = 0;
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i] > 200 && d[i + 1] < 60 && d[i + 2] > 200) n++;
+    }
+    return n;
+  };
+  const bare = await window.ReportCard.toCanvas(model, null, {});
+  const withArt = await window.ReportCard.toCanvas(model, null, { logo: src, photo: src });
+  // A card whose template turns the photo block off must not draw one.
+  const noPhoto = await window.ReportCard.toCanvas(
+    model, { spec: { blocks: { photo: false } } }, { logo: src, photo: src });
+  return { bare: countMagenta(bare), withArt: countMagenta(withArt),
+           noPhoto: countMagenta(noPhoto) };
+});
+check('a supplied logo and photo are drawn onto the flyer',
+  branded.bare === 0 && branded.withArt > 5000,
+  `bare ${branded.bare} px, branded ${branded.withArt} px`);
+check('a template with the photo block off draws the logo only',
+  branded.noPhoto > 0 && branded.noPhoto < branded.withArt,
+  `${branded.noPhoto} px vs ${branded.withArt} px`);
 
 check('nothing threw an uncaught exception while doing all of that',
   consoleErrors.length === 0, consoleErrors.slice(0, 2).join(' | '));

@@ -367,6 +367,14 @@
     /* header band */
     var headH = s.header.showAddress && m.institution.address ? 232 : 200;
     rect(0, 0, W, headH, accent);
+    if (!dry && s.header.showLogo && assets && assets.logoImg) {
+      // Fitted into a fixed box and left-aligned, so a tall logo and a wide one
+      // both sit on the same baseline as the college name.
+      var img = assets.logoImg;
+      var boxH = 84, scale = Math.min(boxH / img.height, 190 / img.width);
+      ctx.drawImage(img, PAD, (headH - img.height * scale) / 2,
+                    img.width * scale, img.height * scale);
+    }
     set(font(21, 600), 'rgba(255,255,255,0.82)');
     fill('STATEMENT OF INTERNAL ASSESSMENT', W / 2, 62, 'center');
     set(font(46, 700, s.typography.display || SERIF), '#ffffff');
@@ -384,7 +392,12 @@
     y = headH + 40;
 
     /* identity */
+    var photo = s.blocks.photo && assets && assets.photoImg ? assets.photoImg : null;
+    var nameWidth = W - PAD * 2 - (photo ? 130 : 0);
     set(font(40, 700, s.typography.display || SERIF), p.ink);
+    if (!dry && ctx.measureText(m.student.name).width > nameWidth) {
+      set(font(32, 700, s.typography.display || SERIF), p.ink);
+    }
     fill(m.student.name, PAD, y + 12);
     y += 46;
     set(font(24, 400), p.muted);
@@ -392,6 +405,23 @@
                   [m.student.batch.course, m.student.batch.year_label].filter(Boolean).join(' '),
                   m.student.batch.name ? 'Batch ' + m.student.batch.name : ''].filter(Boolean);
     fill(idBits.join('   ·   '), PAD, y + 10);
+    if (photo && !dry) {
+      // Cropped to fill a passport-shaped box rather than stretched: a squashed
+      // face on a document a parent keeps is worse than a tight crop.
+      var bw2 = 104, bh2 = 128, px = W - PAD - bw2, py = y - 78;
+      var sc = Math.max(bw2 / photo.width, bh2 / photo.height);
+      var sw = bw2 / sc, sh = bh2 / sc;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(px, py, bw2, bh2);
+      ctx.clip();
+      ctx.drawImage(photo, (photo.width - sw) / 2, (photo.height - sh) / 2, sw, sh,
+                    px, py, bw2, bh2);
+      ctx.restore();
+      ctx.strokeStyle = p.line; ctx.lineWidth = 2;
+      ctx.strokeRect(px, py, bw2, bh2);
+      if (y + 10 < py + bh2) y = py + bh2 - 36;
+    }
     y += 46;
 
     /* stat strip */
@@ -524,8 +554,25 @@
     return y + 104;
   }
 
+  /* A blob URL from a same-origin fetch does not taint the canvas, so the
+     flyer can still be read back as a PNG. A logo that fails to load is not an
+     error: the card is drawn without it rather than not drawn. */
+  function loadImage(src) {
+    return new Promise(function (resolve) {
+      if (!src) return resolve(null);
+      var img = new Image();
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { resolve(null); };
+      img.src = src;
+    });
+  }
+
   async function toCanvas(m, template, assets) {
     if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) {} }
+    assets = Object.assign({}, assets);
+    var loaded = await Promise.all([loadImage(assets.logo), loadImage(assets.photo)]);
+    assets.logoImg = loaded[0];
+    assets.photoImg = loaded[1];
     var probe = document.createElement('canvas').getContext('2d');
     var height = drawFlyer(m, template, assets, probe, false);   // measure with a real ctx
     var canvas = document.createElement('canvas');

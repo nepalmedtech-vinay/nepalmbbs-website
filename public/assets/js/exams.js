@@ -1166,7 +1166,7 @@
     var stored = await ExamApi.upload('report-cards', path, blob, 'image/png');
     var rows = await ExamApi.saveReportCard({
       student_id: S.student.id, exam_id: S.exam,
-      template_id: tpl && tpl.institution_id ? tpl.id : (tpl ? tpl.id : null),
+      template_id: tpl ? tpl.id : null,
       version: version, payload: S.report, image_path: stored
     });
     return { card: rows[0], blob: blob, canvas: canvas, path: stored };
