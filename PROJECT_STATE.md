@@ -1,8 +1,8 @@
 # PROJECT_STATE.md
 
-_Last updated: 2026-08-27, by an autonomous Claude Code session on
-`redesign/premium-ecosystem`. Read this file first in any new session before
-doing implementation work._
+_Last updated: 2026-09-05, by an autonomous Claude Code session on
+`claude/exam-intelligence-report-card-tetbx6`. Read this file first in any
+new session before doing implementation work._
 
 ## What this project actually is
 
@@ -111,3 +111,76 @@ suggesting a deploy or a database migration.
   (§4 of that file) but do not treat its architecture section as current.
 - `docs/SECURITY-PHASE0.md` — the admin-password fix and the RLS warning
   that later phases acted on.
+
+
+---
+
+## The exam-intelligence module (added 2026-09-05)
+
+A second product on the same platform, for the colleges rather than for the
+applicants: take a college's result spreadsheet, hold it, and get a report
+card to each student's parents.
+
+It is deliberately **not** a separate app. It uses the same Supabase project,
+the same `staff` table and `is_staff()` helper, the same `auth.js` session, the
+same token system, and the same console shell as `/staff`.
+
+### Shape
+
+```
+Institution → Batch → Exam → Paper → Subject → Mark
+                              │        └── Student ──── Guardian
+                              └── ReportCard → ParentMessage → MessageEvent
+```
+
+`supabase/migrations/0006_exam_intelligence.sql` — 19 tables, 6 views, 7
+functions. Access is by membership of an institution (`institution_members`),
+checked by `in_institution()` the way every other policy checks `is_staff()`.
+There is no anon policy anywhere in the file: these are minors' academic
+records and their parents' phone numbers.
+
+### Where the arithmetic lives
+
+In SQL, entirely. `v_paper_totals`, `v_exam_totals`, `v_exam_ranks`,
+`v_subject_stats`, `v_exam_summary` and `v_student_progress` compute totals,
+percentages, ranks (ties share a rank), subject and batch averages and
+previous-vs-current deltas; `exam_report(student, exam)` returns all of it as
+one object. The report card, the AI prompt and the WhatsApp message all read
+that same object, so a percentage cannot differ between the PDF and the text
+message. Nothing upstream calculates anything about a student's marks.
+
+### Where the keys live
+
+Three Deno edge functions in `supabase/functions/`, all authenticating the
+caller from their own Supabase JWT:
+
+- **`ai-gateway`** — one task, one model. Gemini for bulk, GPT for structured
+  analysis and the parent message, Claude for cohort synthesis; fallback only
+  on failure. Caches on a digest of the input, logs every call's tokens to
+  `ai_usage`, refuses to spend past `AI_DAILY_CALL_CAP`, and checks every
+  number in a reply against the input before accepting it.
+- **`whatsapp-send`** — takes a message id and nothing else, re-reads the
+  number from the guardian record, and refuses if it no longer matches.
+  Without credentials it returns `prepared`, never `sent`.
+- **`whatsapp-webhook`** — HMAC-verified delivery receipts.
+
+Configuration and deploy: `docs/EXAM-INTELLIGENCE.md`.
+
+### The browser half
+
+`/staff/exams` (`src/pages/staff/exams.astro`), built from four scripts that do
+one thing each: `xlsx-parse.js` (a zip/XML reader, no dependency),
+`exam-mapping.js` (column detection and validation, pure functions),
+`exam-api.js` (every request), `report-card.js` (view model → HTML card and
+canvas flyer), and `exams.js` (the console).
+
+The flyer is the deliverable a parent actually sees: a PNG sent as a WhatsApp
+image with the greeting as its caption, so nothing has to be opened.
+
+### Verification
+
+`supabase/test/run.sh` grew a fifth file (12 assertions covering import,
+range refusal, conflict-vs-amend, ranks, absences, tenancy and delete
+permissions) and `tests/exam-verify.mjs` runs the whole browser pipeline over a
+generated spreadsheet — 34 checks, plus one more when `EXAM_SHEET` points at a
+real sheet.

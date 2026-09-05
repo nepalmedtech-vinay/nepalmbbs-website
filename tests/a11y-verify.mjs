@@ -55,7 +55,7 @@ async function ctxFor(opts = {}) {
 }
 
 /* ── every interactive control must be reachable and show focus ───────── */
-for (const route of ['/', '/colleges', '/neet-calculator', '/portal', '/staff']) {
+for (const route of ['/', '/colleges', '/neet-calculator', '/portal', '/staff', '/staff/exams']) {
   const ctx = await ctxFor();
   const page = await ctx.newPage();
   await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'load' });
@@ -172,7 +172,7 @@ for (const route of ['/', '/colleges', '/neet-calculator', '/portal', '/staff'])
 }
 
 /* ── document structure ───────────────────────────────────────────────── */
-for (const route of ['/', '/colleges', '/staff', '/portal']) {
+for (const route of ['/', '/colleges', '/staff', '/staff/exams', '/portal']) {
   const ctx = await ctxFor();
   const page = await ctx.newPage();
   await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'load' });

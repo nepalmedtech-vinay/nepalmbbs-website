@@ -16,7 +16,9 @@ import GlassLayout from '../../layouts/GlassLayout.astro';
        boundary. Every table behind it refuses a non-member regardless of what
        this screen shows. -->
   <section id="x-gate" class="gl cx-card" hidden style="max-width:420px;margin:8vh auto 0">
-    <h1>Exam intelligence</h1>
+    <!-- h2, not h1: the console's own heading below is this document's h1,
+         and two of them is the thing a11y-verify caught here. -->
+    <h2>Exam intelligence</h2>
     <p class="cx-sub">Sign in with your NepalMBBS staff account.</p>
     <div id="x-gate-err" class="cx-error" hidden style="margin-bottom:14px"></div>
     <form id="x-gate-form">

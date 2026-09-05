@@ -155,3 +155,46 @@ from source.
 - 🟡 Left 7 blank `established` fields blank on purpose (aggregator-only
   sourcing), plus KMC's seat conflict and NAIHS's ambiguous year.
   See `NEXT_TASK.md`.
+
+## 2026-09-05 — Exam intelligence, report cards, parent communication
+
+A second product on the same platform, from a real result sheet the owner
+supplied. Full rationale in `DECISION_LOG.md`; runbook in
+`docs/EXAM-INTELLIGENCE.md`.
+
+- ✅ **Audited before building.** Four of the things the brief asked to
+  "create" already existed — the Supabase project, `staff` + `is_staff()`,
+  `auth.js`, and the console shell. Extended them; duplicated nothing.
+- ✅ **Migration `0006`**: 19 tables, 6 views, 7 functions. Every figure a
+  report card or a message shows is computed in SQL; no model does
+  arithmetic on a student's marks.
+- ✅ **Zero-dependency `.xlsx`/`.csv` reader** — the CSP allows no CDN and
+  the build has no bundler, so an inflate-and-parse of 244 lines beat
+  vendoring a library or loosening `script-src`.
+- ✅ **The mapper reads the real sheet's awkward shape**: three title rows,
+  a merged paper-group row, spacer columns, per-paper Total/Result, and two
+  columns both headed "Cell Number" told apart only by position.
+- ✅ **Refused to guess where guessing is cheap.** Four subjects in the
+  supplied file carry no maximum; the import blocks and asks rather than
+  splitting the paper's 80 marks four ways. A parent's number is never
+  repaired, only flagged.
+- ✅ **Report card as an image.** The parent sees the card in the WhatsApp
+  chat with the greeting as its caption — nothing to open. The same view
+  model prints as a document for the office.
+- ✅ **One task, one model**, with caching, per-call token logging, a daily
+  cap, and a deterministic fallback that says it was computed, not written.
+- ✅ **Caught a leak in my own code before it shipped**: `exam_report()` ran
+  with definer rights over two independent ids and never checked that the
+  student belonged to the exam's college — a member of one college could
+  have read another's student and their parents' numbers. Fixed, and now
+  asserted in `supabase/test/04_assert_exams.sql`.
+- ✅ **Caught that `node --check` accepts a broken ES module**, which had
+  hidden a real syntax error in `whatsapp-webhook`. The suite parse-checks
+  by importing instead.
+- ✅ **a11y-verify now covers `/staff/exams`**, and immediately found two
+  `h1`s on it. Fixed.
+- 🟡 **Automatic WhatsApp sending is gated on an approved Meta template**,
+  not on code. Without one the console prepares rather than sends, and says
+  so. See `TECHNICAL_DEBT.md`.
+- 🟡 **The edge functions are parse-checked but never executed here** — no
+  Deno in this sandbox. A first deploy should be watched.

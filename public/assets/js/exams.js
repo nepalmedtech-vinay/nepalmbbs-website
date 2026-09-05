@@ -476,6 +476,10 @@
       return 'Row ' + i.row + ' (' + i.name + '): ' + i.subject + ' is ' + i.value +
         ' out of ' + i.max_marks + '. Correct the sheet; this is not imported.';
     },
+    total_not_a_number: function (i) {
+      return 'Row ' + i.row + ' (' + i.name + '): the ' + i.paper + ' total reads "' + i.value +
+        '". The subject marks are used instead.';
+    },
     total_mismatch: function (i) {
       return 'Row ' + i.row + ' (' + i.name + '): the sheet says ' + i.paper + ' totals ' +
         i.declared + ', but its own subject marks add up to ' + i.computed + '.';

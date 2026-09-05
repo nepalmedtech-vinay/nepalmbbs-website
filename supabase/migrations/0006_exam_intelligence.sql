@@ -540,6 +540,15 @@ begin
   if not (public.is_staff() and public.in_institution(v_inst)) then
     raise exception 'not permitted';
   end if;
+  -- The student has to belong to the same institution as the exam. Without
+  -- this the function is definer-rights over two independent ids: a member of
+  -- one college could pass one of their own exams with someone else's student
+  -- and read that student's name and their parents' phone numbers, none of
+  -- which any policy would have shown them.
+  if not exists (select 1 from public.students
+                  where id = p_student and institution_id = v_inst) then
+    raise exception 'not permitted';
+  end if;
 
   select jsonb_strip_nulls(jsonb_build_object(
     'institution', (select to_jsonb(i) - 'created_by'

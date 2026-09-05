@@ -310,6 +310,42 @@ begin
   raise notice '✅ tenancy: a signed-in counselor of another college sees no students, marks or numbers';
 end $$;
 
+-- exam_report() runs with definer rights over two independent ids. A member of
+-- one college pairing one of their own exams with somebody else's student must
+-- not get that student's name or their parents' numbers back.
+do $$
+declare v_exam uuid; v_other uuid; v_inst2 uuid;
+begin
+  perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+  select id into v_exam from public.exams where name = '2nd Internal Assessment';
+
+  -- A second college, with a student of its own, belonging to someone else.
+  perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c3', false);
+  perform public.import_exam_batch($j$
+  {
+    "institution": {"name": "Other Medical College"},
+    "batch": {"name": "2025", "course": "MBBS", "year_label": "MBBS 1st Year"},
+    "exam": {"name": "1st Internal Assessment", "sequence_no": 1},
+    "papers": [{"name": "Basic Sciences", "max_marks": 20, "pass_marks": 10,
+                "subjects": [{"name": "ANA", "max_marks": 20}]}],
+    "students": [{"student_code": "O001", "full_name": "Someone Else",
+                  "guardians": [{"relation": "mother", "full_name": "Their Mother",
+                                 "phone_raw": "+919800000099", "phone_e164": "+919800000099",
+                                 "phone_status": "valid"}],
+                  "marks": [{"paper":"Basic Sciences","subject":"ANA","obtained":11}]}]
+  }$j$::jsonb);
+  select id into v_other from public.students where student_code = 'O001';
+
+  perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+  begin
+    perform public.exam_report(v_other, v_exam);
+    raise exception 'exam_report returned another college''s student';
+  exception when others then
+    if sqlerrm not like '%not permitted%' then raise; end if;
+  end;
+  raise notice '✅ tenancy: exam_report refuses a student who is not in the exam''s own college';
+end $$;
+
 do $$
 declare n int;
 begin

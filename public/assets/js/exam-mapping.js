@@ -451,9 +451,12 @@
           marks.push({ paper: p.name, subject: s.name, obtained: num, is_absent: false });
         });
 
-        var declaredTotal = p.totalCol === undefined ? null : Number(clean(row[p.totalCol]));
+        // Number('') is 0, so a blank total cell would otherwise be read as a
+        // declared zero and reported as a mismatch against every real sum.
+        var totalText = p.totalCol === undefined ? '' : clean(row[p.totalCol]);
+        var declaredTotal = totalText === '' ? null : Number(totalText);
         var declaredResult = p.resultCol === undefined ? null : clean(row[p.resultCol]) || null;
-        if (p.totalCol !== undefined && isFinite(declaredTotal)) {
+        if (declaredTotal !== null && isFinite(declaredTotal)) {
           if (counted === p.subjects.length && Math.abs(declaredTotal - computed) >= 0.005) {
             // The sheet's own total disagreeing with the sum of its own columns
             // is the single most useful thing this validator finds: it means a
@@ -464,6 +467,9 @@
           }
           paperResults.push({ paper: p.name, declared_total: declaredTotal,
                               declared_result: declaredResult });
+        } else if (totalText !== '' && !isFinite(declaredTotal)) {
+          issue('warning', 'total_not_a_number',
+                { row: line, name: name, student_code: code, paper: p.name, value: totalText });
         } else if (declaredResult) {
           paperResults.push({ paper: p.name, declared_total: null, declared_result: declaredResult });
         }

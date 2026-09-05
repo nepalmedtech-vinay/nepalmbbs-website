@@ -5,6 +5,107 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-09-05 — Exam intelligence, report cards and parent communication
+
+The owner supplied a real result sheet (`MBBS 1st year 2nd internal
+Assessment`, Chitwan Medical College, 41 students) and asked for a
+production system around it: import, validate, analyse, report card,
+WhatsApp the parent, track. What follows are the calls made without
+asking.
+
+**Reused, not rebuilt.** The audit came first and found the platform
+already had four of the things the brief asked to "create": a Supabase
+project with an RLS-first schema, a `staff` table with `is_staff()` /
+`is_admin()`, a real auth layer (`auth.js`), and a console shell with its
+own stylesheet (`console.css`). Migration `0006` extends 0001–0002's
+pattern rather than starting a second schema, and `/staff/exams` is the
+same shell as `/staff`. Nothing was duplicated.
+
+**Every figure is computed in SQL, not by a model.** Totals, percentages,
+grades, ranks, subject and batch averages and previous-vs-current deltas
+come out of six views and `exam_report()`. This is not a performance
+choice. A language model that writes "improved from 54% to 68%" when the
+figure is 58 is indistinguishable, in a WhatsApp message to a parent, from
+one that is right. The model is given figures and asked for prose about
+them; `ai-gateway` then extracts every number from what comes back and
+requires it to appear in the input, discarding the answer if it does not.
+
+**A subject with no maximum blocks the import.** The supplied sheet has a
+paper, `Com Med-II`, worth 80 marks across four subjects — `HP&E`,
+`FH&N`, `E&OH`, `MS&A` — none of which states its own maximum. Splitting
+80 evenly across four is the obvious move and is wrong: the observed
+marks (up to 22.5, 12.5, 16 and 8) cannot come from four equal papers.
+There is no way to derive the answer from the file, so the import stops
+and asks, quoting the highest mark seen in each column as a hint. Four of
+the file's thirteen subjects are unusable until a person supplies them —
+which is the honest state of that file, not a defect in the reader.
+
+**A mark that disagrees is a conflict, not an overwrite.** Re-importing a
+corrected sheet is the normal case and the dangerous one. Strict mode
+writes only where nothing is on file and reports the rest; an amend needs
+a written reason, files the old value in `mark_revisions` with a name and
+a timestamp, and still reports what it did. A mark above its maximum is
+refused outright rather than clamped. Deletes on marks and students are
+admin-only.
+
+**A parent's number is never repaired.** The file contains
+`+9109960943724`, `+9183800898754`, `6919027143406` and bare ten-digit
+numbers. A ten-digit Indian mobile is normalised to `+91…` so it can be
+dialled, but stays flagged `suspect` because the country code was assumed
+rather than read; anything that fits no Indian or Nepali pattern is kept
+exactly as written and flagged. The console shows the number at a size
+meant to be read and will not send until the coordinator ticks that they
+have read it, and `whatsapp-send` re-checks it against the guardian record
+on the server immediately before sending. Sending a child's marks to the
+wrong parent is the worst thing this feature can do, so it is guarded
+three times.
+
+**The parent gets an image, not a link.** The owner was explicit: the
+report card must be visible in the chat, with the greeting, without the
+parent opening anything. So the card is drawn on a canvas and sent as an
+image with the message as its caption. The same view model renders as
+HTML for the office's own copy and for Print → Save as PDF, so the filed
+card and the sent card are the same card. An SVG/foreignObject rasterise
+would have been less code and drops webfonts and taints the canvas in
+some browsers — a flyer that silently comes out blank would reach a
+parent before anyone noticed.
+
+**No npm dependency was added.** The CSP carries no CDN and the build has
+no bundler, so SheetJS would have meant vendoring a large unreviewed file
+or loosening `script-src`. An `.xlsx` is a zip of XML, the browser can
+inflate a raw deflate stream itself and `DOMParser` reads the XML;
+`xlsx-parse.js` is 244 lines and does only what this needs. The same
+reasoning kept a charting library out — six exam percentages need a line
+and a scale.
+
+**One task, one model.** The brief asked for a router across Gemini, GPT
+and Claude and explicitly not to call all three for everything. Bulk work
+routes to Gemini, structured analysis and the parent message to GPT,
+cohort synthesis to Claude, with fallback only on failure, a cache keyed
+on the input digest, per-call token logging and a daily cap read from the
+environment. When every provider fails or the cap is spent, each task
+falls back to a summary computed from the payload, and the screen says it
+was computed rather than written. A free tier is not an unlimited tier.
+
+**The test fixture is generated, not committed.** The supplied file holds
+41 real students' marks and their parents' mobile numbers. That does not
+belong in a repository, and a redacted binary would still be unreviewable
+in a diff. `tests/lib/xlsx-fixture.mjs` writes a real zip from readable
+source, with invented people, reproducing every awkward feature of the
+original: merged paper headings, spacer columns, two identically-headed
+"Cell Number" columns, an absent candidate, a mistyped total, three
+unusable numbers, and the four subjects with no maximum. `EXAM_SHEET=…`
+runs the same checks against a real sheet without committing it.
+
+**Provider keys are Supabase Function secrets.** None is in this
+repository, in `.env.example`, or in anything the browser downloads —
+`tests/exam-verify.mjs` greps the client bundle for four key shapes to
+keep it that way. A key pasted into a chat window should be treated as
+public and rotated; `docs/EXAM-INTELLIGENCE.md` says so where someone
+setting one up will read it.
+
+---
+
 ## 2026-08-28 — Chunk 6: the assistant becomes data-driven and sourced
 
 The owner asked for maximum automation, corporate content, and for me to

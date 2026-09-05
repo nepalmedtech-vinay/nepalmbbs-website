@@ -175,3 +175,57 @@ candidate for the same fault.
   reference per `docs/DEPLOYMENT.md` — intentional, not debt, noted here
   only so a future session doesn't delete it by mistake thinking it's
   dead weight.
+
+
+---
+
+## Exam intelligence (2026-09-05)
+
+Known and deliberate. None of these is a bug; each is work not done, and
+saying which is which is the point of this file.
+
+1. **Automatic WhatsApp sending needs an approved template.** WhatsApp only
+   accepts a free-form message inside a 24-hour window opened by the parent
+   writing first — which never happens on a result day. `whatsapp-send`
+   supports templates (`WHATSAPP_TEMPLATE_NAME`) and reports error `131047` in
+   plain words when there is none. Until a template is approved by Meta, the
+   realistic mode is `prepared`: correct parent, correct card, correct wording,
+   attached by hand. This is a business gate, not a coding one.
+
+2. **Sending is one student at a time.** The data and every guard are already
+   per-student; a cohort queue is the obvious next feature. Whoever builds it
+   must keep the recipient check — that check is the feature, not overhead.
+
+3. **`students.photo_path` has no uploader.** The column, the private bucket
+   and the report-card slot all exist; nothing puts a photo in.
+
+4. **PDF is Print → Save as PDF.** Good enough for a coordinator, not for a
+   college that wants a filed PDF per student. That is a server-side render and
+   belongs in a fourth edge function, not a browser library.
+
+5. **`exam.sequence_no` is inferred from an ordinal in the title.** "2nd
+   internal Assessment" gives 2. A title with no ordinal leaves it blank and
+   the coordinator sets it in the import form. It matters: it is what orders
+   exams for the previous-vs-current comparison, and two exams with no sequence
+   fall back to creation order.
+
+6. **`ai_cache` has no eviction.** It grows one row per distinct
+   (task, input) and nothing prunes it. A monthly `delete from ai_cache where
+   created_at < now() - interval '90 days'` is all it needs; there is no cron
+   in this project yet to hang it on.
+
+7. **The flyer's height is content-dependent.** Thirteen subjects across three
+   papers comes out around 1080×1700. WhatsApp shows that in full on tap and
+   crops the chat thumbnail. A sheet with thirty subjects would come out
+   taller still; if that turns up, the fix is a two-column subject table in
+   `drawFlyer`, not a smaller font.
+
+8. **`node --check` cannot be trusted on ES modules.** It wraps the file as
+   CommonJS and accepted a genuine syntax error in `whatsapp-webhook`.
+   `tests/exam-verify.mjs` parse-checks the edge functions by importing them
+   instead. Do not "simplify" that back to `--check`.
+
+9. **No Deno toolchain in this sandbox**, so the edge functions are
+   parse-checked but never executed here. Their logic is covered by review and
+   by the database tests behind them; a first deploy should be watched.
+
