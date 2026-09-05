@@ -40,6 +40,7 @@ psql -q -f "$DIR/../migrations/0002_admission_platform.sql" >/dev/null 2>&1
 psql -q -f "$DIR/../migrations/0003_abuse_and_storage.sql" >/dev/null 2>&1
 psql -q -f "$DIR/../migrations/0004_lead_intake.sql" >/dev/null 2>&1
 psql -q -f "$DIR/../migrations/0005_revoke_internal_functions.sql" >/dev/null 2>&1
+psql -q -f "$DIR/../migrations/0006_exam_intelligence.sql" >/dev/null
 echo "migrations applied"
 
 open=$(psql -At -c "select count(*) from pg_tables where schemaname='public' and not rowsecurity")
@@ -48,3 +49,4 @@ open=$(psql -At -c "select count(*) from pg_tables where schemaname='public' and
 psql -q -f "$DIR/01_assert_security.sql"
 psql -q -f "$DIR/02_assert_abuse.sql"
 psql -q -f "$DIR/03_assert_intake.sql"
+psql -q -f "$DIR/04_assert_exams.sql"
