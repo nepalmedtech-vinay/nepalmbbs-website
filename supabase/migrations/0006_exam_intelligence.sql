@@ -1072,7 +1072,45 @@ begin
         'sequence_no', s.sequence_no, 'students', s.students,
         'avg_percentage', s.avg_percentage)
         order by coalesce(s.sequence_no, 0) desc)
-      from public.v_exam_summary s where s.institution_id = p_institution), '[]'::jsonb)
+      from public.v_exam_summary s where s.institution_id = p_institution), '[]'::jsonb),
+
+    -- The most recent exam, read three ways: who is at the top, who needs
+    -- somebody's attention, and which way the batch as a whole moved. All of
+    -- it is a sort over figures already computed; none of it is a judgement.
+    'latest', (
+      with latest as (
+        select e.id, e.name
+          from public.exams e
+          join public.v_exam_summary s on s.exam_id = e.id
+         where e.institution_id = p_institution and s.students > 0
+         order by coalesce(e.sequence_no, 0) desc, e.created_at desc
+         limit 1),
+      ranked as (
+        select st.id, st.full_name, st.student_code, r.percentage, r.rank, r.cohort_size,
+               pg.delta_percentage
+          from latest l
+          join public.v_exam_ranks r on r.exam_id = l.id
+          join public.students st on st.id = r.student_id
+          left join public.v_student_progress pg
+                 on pg.exam_id = l.id and pg.student_id = st.id)
+      select jsonb_build_object(
+        'exam_id', (select id from latest),
+        'exam', (select name from latest),
+        'top', coalesce((select jsonb_agg(jsonb_build_object(
+            'student_id', id, 'name', full_name, 'code', student_code,
+            'percentage', percentage, 'rank', rank) order by rank)
+          from (select * from ranked order by rank limit 5) t), '[]'::jsonb),
+        'attention', coalesce((select jsonb_agg(jsonb_build_object(
+            'student_id', id, 'name', full_name, 'code', student_code,
+            'percentage', percentage, 'rank', rank,
+            'delta_percentage', delta_percentage) order by percentage)
+          from (select * from ranked order by percentage limit 5) t), '[]'::jsonb),
+        'improved', (select count(*) from ranked where delta_percentage >= 2),
+        'declined', (select count(*) from ranked where delta_percentage <= -2),
+        'steady',   (select count(*) from ranked
+                      where delta_percentage > -2 and delta_percentage < 2),
+        'first_exam', (select count(*) from ranked where delta_percentage is null))
+    )
   ) into v_out;
   return v_out;
 end;

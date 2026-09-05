@@ -232,6 +232,47 @@
       cols.appendChild(comms);
       host.appendChild(cols);
 
+      /* the latest exam, read three ways */
+      var L = d.latest || {};
+      if (L.exam_id) {
+        var latest = el('section', 'gl cx-card');
+        latest.style.marginTop = '18px';
+        latest.appendChild(el('h3', null, L.exam));
+        var move = el('p', 'cx-sub');
+        move.textContent = L.improved + ' improved, ' + L.steady + ' steady, ' +
+          L.declined + ' declined' +
+          (L.first_exam ? ', ' + L.first_exam + ' sitting a first exam' : '') +
+          ' — measured against each student\u2019s own previous exam, not against each other.';
+        latest.appendChild(move);
+
+        var two = el('div', 'xm-grid xm-grid--2');
+        [['Top of the exam', L.top || [], 'xm-pill--good'],
+         ['Needing attention', L.attention || [], 'xm-pill--bad']].forEach(function (pair) {
+          var col = el('section');
+          col.appendChild(el('h4', null, pair[0]));
+          if (!pair[1].length) { col.appendChild(el('p', 'xm-empty', 'Nothing to show.')); }
+          var wrap = el('div', 'cx-docs');
+          pair[1].forEach(function (r) {
+            var b = el('button', 'cx-item');
+            b.type = 'button';
+            b.appendChild(el('span', 'cx-item-name', r.name));
+            var meta = el('span', 'cx-item-meta');
+            meta.textContent = r.code + ' · rank ' + r.rank +
+              (r.delta_percentage === null || r.delta_percentage === undefined ? ''
+                : ' · ' + (r.delta_percentage > 0 ? '+' : '') + r.delta_percentage);
+            b.appendChild(meta);
+            var pill = el('span', 'xm-pill ' + band(r.percentage), pct(r.percentage));
+            b.appendChild(pill);
+            b.addEventListener('click', function () { openStudent(r.student_id, L.exam_id); });
+            wrap.appendChild(b);
+          });
+          col.appendChild(wrap);
+          two.appendChild(col);
+        });
+        latest.appendChild(two);
+        host.appendChild(latest);
+      }
+
       /* exams list */
       var list = el('section', 'gl cx-card');
       list.style.marginTop = '18px';

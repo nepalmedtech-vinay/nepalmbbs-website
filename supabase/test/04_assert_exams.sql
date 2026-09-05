@@ -387,7 +387,20 @@ begin
   if (d->'data_health'->>'amended_marks')::int <> 1 then
     raise exception 'data health missed the amendment: %', d->'data_health';
   end if;
-  raise notice '✅ dashboard: 3 students, 2 exams, 1 unreachable parent and 1 amended mark all counted';
+  -- Top and bottom of the latest exam, and which way each student moved.
+  if (d->'latest'->>'exam') <> '2nd Internal Assessment' then
+    raise exception 'latest exam came out %', d->'latest'->>'exam';
+  end if;
+  if (d->'latest'->'top'->0->>'name') <> 'Chandni Iyer'
+     or (d->'latest'->'attention'->0->>'name') <> 'Bikash Thapa' then
+    raise exception 'top/attention came out %', d->'latest';
+  end if;
+  -- T001 +10 and T003 +5 improved; T002 went 25 -> 24, which is steady.
+  if (d->'latest'->>'improved')::int <> 2 or (d->'latest'->>'steady')::int <> 1
+     or (d->'latest'->>'declined')::int <> 0 then
+    raise exception 'movement counts came out %', d->'latest';
+  end if;
+  raise notice '✅ dashboard: 3 students, 2 exams, 1 unreachable parent, 1 amended mark, top/attention and movement all counted';
 end $$;
 
 -- ── 7. history is not deletable by a counselor ───────────────────────────

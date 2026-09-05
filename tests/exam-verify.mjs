@@ -459,7 +459,13 @@ await ctx2.route('**/rest/v1/**', (route) => {
     avg_percentage: 47.5, reports_generated: 0, messages: null,
     data_health: { students_without_valid_parent: 1, declared_mismatches: 0, amended_marks: 0 },
     exams_list: [{ exam_id: EXAM, name: '2nd Internal Assessment', batch_id: 'b1',
-                   sequence_no: 2, students: 6, avg_percentage: 47.5 }] });
+                   sequence_no: 2, students: 6, avg_percentage: 47.5 }],
+    latest: { exam_id: EXAM, exam: '2nd Internal Assessment',
+              improved: 3, declined: 1, steady: 2, first_exam: 0,
+              top: [{ student_id: STUD, name: 'Aarav Sharma', code: 'MBBS1800',
+                      percentage: 50, rank: 2 }],
+              attention: [{ student_id: 'other', name: 'Chirag Patel', code: 'MBBS1802',
+                            percentage: 12, rank: 6, delta_percentage: -8 }] } });
   if (url.includes('/rpc/exam_cohort')) return J(route, {
     exam: { id: EXAM, name: '2nd Internal Assessment' },
     summary: { students: 6, avg_percentage: 47.5, top_percentage: 80, low_percentage: 12 },
@@ -520,6 +526,11 @@ const overview = await p2.textContent('#x-overview');
 check('the overview shows the counts and the data-health finding',
   overview.includes('47.5') && /no parent number this system can dial/.test(overview),
   overview.replace(/\s+/g, ' ').slice(0, 90));
+
+check('the overview names the top of the latest exam and who needs attention',
+  overview.includes('Top of the exam') && overview.includes('Needing attention') &&
+  overview.includes('Chirag Patel') && overview.includes('3 improved'),
+  overview.includes('Chirag Patel') ? 'both lists rendered' : 'missing');
 
 await p2.click('#x-tab-exams');
 await p2.selectOption('#x-exam-select', EXAM);
