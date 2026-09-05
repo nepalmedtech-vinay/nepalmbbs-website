@@ -1,0 +1,75 @@
+name: Build LeadFlow APK
+
+on:
+  push:
+    branches:
+      - claude/mobile-7yihji
+    paths:
+      - 'leadflow_mobile/**'
+      - '.github/workflows/build-apk.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+
+      - name: Get dependencies
+        working-directory: leadflow_mobile
+        run: flutter pub get
+
+      - name: Build APK
+        working-directory: leadflow_mobile
+        run: flutter build apk --release
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: leadflow_mobile/build/app/outputs/flutter-app.apk
+          tag_name: v1.0.0-leadflow
+          name: 'LeadFlow Mobile App v1.0.0'
+          body: |
+            🎉 **LeadFlow Mobile App - Ready to Download!**
+
+            ### 📥 Installation Guide:
+            1. Download `leadflow-mobile.apk` (below)
+            2. Open Settings → Security → Unknown Sources → ON
+            3. Tap downloaded APK file → Install ✅
+
+            ### ✨ Features:
+            - ✅ Premium Material 3 Design
+            - ✅ Cinematic Animations
+            - ✅ Real-time Lead Management
+            - ✅ Call Cockpit Screen
+            - ✅ Lead Scoring Algorithm
+            - ✅ WhatsApp Integration Ready
+            - ✅ Dark Mode Support
+
+            ### 📱 Requirements:
+            - Android 5.0+ (API 21+)
+            - 60-80 MB storage
+            - Internet connection
+
+            **Built automatically from branch:** claude/mobile-7yihji
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Summary
+        run: |
+          echo "## ✅ APK Build Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🎉 LeadFlow Mobile App has been built and released!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📥 **Download:** [GitHub Releases](https://github.com/${{ github.repository }}/releases)" >> $GITHUB_STEP_SUMMARY
