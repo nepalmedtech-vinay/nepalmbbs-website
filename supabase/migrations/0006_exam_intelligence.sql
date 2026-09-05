@@ -1330,6 +1330,22 @@ grant select on public.v_paper_totals, public.v_exam_totals, public.v_exam_ranks
   to authenticated;
 
 
+-- The gateway counts cache reuse so "caching is on" is a number somebody can
+-- check rather than a claim in a commit message. It runs as the service role,
+-- which is the only thing that touches ai_cache at all.
+create or replace function public.bump_ai_cache(p_key text)
+returns void
+language sql
+volatile
+security definer
+set search_path = public, pg_temp
+as $$
+  update public.ai_cache set hits = hits + 1 where key = p_key;
+$$;
+
+revoke all on function public.bump_ai_cache(text) from public, anon, authenticated;
+
+
 -- ══ 12. Storage ══════════════════════════════════════════════════════════
 -- Three private buckets. The report-card flyer is private because it carries a
 -- named student's marks; WhatsApp receives it through a short-lived signed URL
