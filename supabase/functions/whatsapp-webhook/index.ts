@@ -4,7 +4,8 @@
 // really came from Meta, and move the matching parent_messages row along.
 //
 // This function is public by necessity — Meta cannot present a Supabase JWT —
-// so deploy it with --no-verify-jwt and let the signature be the gate. Every
+// so it runs with JWT verification off (`--no-verify-jwt` on the CLI,
+// verify_jwt:false on the API) and the HMAC signature is the gate. Every
 // request whose HMAC does not check out is rejected before its body is read for
 // anything. Without WHATSAPP_APP_SECRET set, the function refuses every POST
 // rather than accepting unsigned status updates.

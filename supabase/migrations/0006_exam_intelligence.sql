@@ -513,8 +513,12 @@ as $$
     '{"grade": null, "label": null}'::jsonb);
 $$;
 
-revoke all on function public.grade_for(uuid, numeric) from public, anon;
-grant execute on function public.grade_for(uuid, numeric) to authenticated;
+-- Not granted to `authenticated`. It is called only from exam_report() and
+-- exam_cohort(), both of which are SECURITY DEFINER and so run as the owner.
+-- Exposing it over /rest/v1/rpc would let any signed-in user read any
+-- college's grade bands by passing that college's id, which is a small leak
+-- with no purpose — Supabase's own linter flags exactly this shape.
+revoke all on function public.grade_for(uuid, numeric) from public, anon, authenticated;
 
 
 -- ══ 7. exam_report() — the single source of every figure on a report card ═

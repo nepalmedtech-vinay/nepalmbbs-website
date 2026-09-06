@@ -30,19 +30,34 @@ college.
 
 ---
 
-## 2. Applying the migration
+## 2. The migration — already applied
 
-`0006` depends on `0001` (the `staff` table and `is_staff()`). Apply it the same
-way as the others — Supabase SQL editor, or the CLI:
+**`0006` is live on `fpzgcijbryvddtpegcmm` as of 2026-09-06.** It went on in
+nine ordered pieces (`exam_intelligence_01_tables` …
+`exam_intelligence_09_revoke_grade_for` in the migration history) rather than as
+one statement, because RLS had to be switched on immediately after the tables
+were created rather than several statements later.
+
+Verified on the live project after applying:
+
+| | |
+|---|---|
+| public tables with RLS off | **0** (of 36) |
+| policies on the 19 new tables | 44 |
+| policies on `ai_cache` | 0 — deny-all by design, service role only |
+| functions / views | 9 / 6 |
+| storage buckets, any public | 3 / **0** |
+| stock report-card templates | 3 |
+
+It creates no institution: the first import does that and makes the importer an
+admin of it.
+
+To re-apply from scratch elsewhere, the file is still one transaction:
 
 ```bash
 supabase db push                     # or paste 0006 into the SQL editor
+./supabase/test/run.sh               # throwaway Postgres, ~30s, 13 assertions
 ```
-
-It creates three private storage buckets (`branding`, `student-photos`,
-`report-cards`) and three stock report-card templates. It does **not** create
-any institution: the first import does that and makes the importer an admin of
-it.
 
 To test it without touching the project:
 
@@ -58,6 +73,10 @@ To test it without touching the project:
 repository, in `.env.example`, or in anything the browser downloads.** The
 console calls `ai-gateway` and `whatsapp-send` with the counselor's own Supabase
 JWT; those functions hold the keys.
+
+**No key is set yet.** Until one is, `ai-gateway` answers every request with
+its deterministic summary and says on screen that it was computed rather than
+written — which is correct behaviour, not an outage.
 
 ```bash
 # Gemini — the cheap/bulk leg of the router
@@ -107,7 +126,17 @@ it does not silently stop working.
 
 ---
 
-## 4. Deploying the functions
+## 4. The functions — already deployed
+
+All three are ACTIVE on the project as of 2026-09-06:
+
+| Function | JWT verification | Notes |
+|---|---|---|
+| `ai-gateway` | on | falls back to a computed summary until a key is set |
+| `whatsapp-send` | on | returns `prepared`, never `sent`, until credentials are set |
+| `whatsapp-webhook` | **off** | the HMAC is the gate; refuses every POST until `WHATSAPP_APP_SECRET` is set |
+
+To redeploy after a change:
 
 ```bash
 supabase functions deploy ai-gateway

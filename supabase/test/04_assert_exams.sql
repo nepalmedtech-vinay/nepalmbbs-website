@@ -358,6 +358,28 @@ begin
   raise notice '✅ tenancy: anon — the key that ships in the page — sees nothing at all';
 end $$;
 
+-- grade_for() is not callable directly, and the two functions that use it
+-- still return grades. If the revoke ever goes too far, this is what says so.
+do $$
+declare c jsonb; v_exam uuid;
+begin
+  perform pg_temp.act('00000000-0000-0000-0000-0000000000c1');
+  begin
+    perform public.grade_for('00000000-0000-0000-0000-000000000000'::uuid, 75);
+    raise exception 'grade_for is still callable by a signed-in user';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+
+  perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c1', false);
+  select id into v_exam from public.exams where name = '2nd Internal Assessment';
+  select public.exam_cohort(v_exam) into c;
+  if (c->'students'->0->>'grade') is null then
+    raise exception 'exam_cohort lost its grades: %', c->'students'->0;
+  end if;
+  raise notice '✅ grade_for: not callable directly, still feeding exam_cohort and exam_report';
+end $$;
+
 -- ── 6. cohort drill-down and dashboard ───────────────────────────────────
 do $$
 declare c jsonb; d jsonb; v_exam uuid; v_inst uuid;

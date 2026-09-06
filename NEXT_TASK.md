@@ -16,7 +16,7 @@ What is verified, and by what:
 
 | Suite | Covers | Result |
 |---|---|---|
-| `./supabase/test/run.sh` | RLS, import, amend, ranks, tenancy, deletes | 24 assertions (12 new), all pass |
+| `./supabase/test/run.sh` | RLS, import, amend, ranks, tenancy, deletes, grants | 25 assertions (13 new), all pass |
 | `node tests/exam-verify.mjs` | parse → map → validate → render → flyer → the console's send flow | 59/59 (60/60 with `EXAM_SHEET`) |
 | `node tests/csp-verify.mjs` | delegated handlers across every route | 11/11 · 46 routes · 2949 handlers |
 | `node tests/a11y-verify.mjs` | now includes `/staff/exams` | 38/38 |
@@ -35,21 +35,38 @@ this work**: it reads the `phase1-static-rollback` tag and `git push
 clone has always failed there. It is one push by the owner away from
 green; see `CLAUDE.md` → Environment.
 
-## What the owner has to do before this is live
+## Applied and deployed on 2026-09-06
 
-Nothing in this list is code. All of it is in `docs/EXAM-INTELLIGENCE.md`.
+**Migration `0006` is live** on `fpzgcijbryvddtpegcmm`, applied in nine ordered
+pieces so RLS went on immediately after the tables rather than several
+statements later. Verified afterwards: 0 of 36 public tables without RLS, 44
+policies on the 19 new tables, `ai_cache` deny-all, 3 buckets and none public,
+3 stock templates. Supabase's own security advisor is clean apart from
+intentional and pre-existing entries — and it caught one real thing, now fixed:
+`grade_for` had been granted to `authenticated` and so exposed at
+`/rest/v1/rpc/grade_for`, where any signed-in user could read any college's
+grade bands. It is revoked, and `04_assert_exams.sql` now asserts both that it
+is uncallable and that its two callers still return grades.
 
-1. **Apply `0006`** to the Supabase project (`supabase db push`, or paste
-   it into the SQL editor). Until then the console signs in and finds no
-   institution.
-2. **Set at least one model key** as a Supabase Function secret:
-   `supabase secrets set GOOGLE_API_KEY='…'`. With one key the router
-   works and logs that the others were unconfigured; with none, every
-   analysis falls back to a computed summary and says so.
-   **A key that has been pasted into a chat window should be rotated
-   before use.**
-3. **Deploy the three functions**, the webhook with `--no-verify-jwt`.
-4. **Decide about WhatsApp.** Without credentials the console prepares
+**All three edge functions are ACTIVE**, the webhook with JWT verification off
+(its HMAC is the gate). The deployed source was read back and compared against
+the repo.
+
+**They have not been invoked yet**: this sandbox's network policy answers 403
+to CONNECT for `supabase.co`, so the live smoke test is outstanding. The first
+person to open `/staff/exams` performs it.
+
+## What the owner still has to do
+
+Neither item is code. Both are in `docs/EXAM-INTELLIGENCE.md`.
+
+1. **Set at least one model key** as a Supabase Function secret:
+   `supabase secrets set GOOGLE_API_KEY='…'`. With one key the router works and
+   logs that the others were unconfigured; with none — the state today — every
+   analysis falls back to a computed summary and says so on screen.
+   **A key that has been pasted into a chat window should be rotated before
+   use.**
+2. **Decide about WhatsApp.** Without credentials the console prepares
    every message — correct parent, correct card, correct wording — and the
    coordinator attaches and sends by hand. With Cloud API credentials it
    sends, but a result-day message goes to parents who have not written
