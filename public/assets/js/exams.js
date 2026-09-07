@@ -723,6 +723,10 @@
       an.type = 'button';
       an.addEventListener('click', function () { cohortAnalysis(c); });
       bar.appendChild(an);
+      var bulk = el('button', 'gl-btn gl-btn--primary', 'Send to all parents');
+      bulk.type = 'button';
+      bulk.addEventListener('click', openCohortSend);
+      bar.appendChild(bulk);
       host.appendChild(bar);
       var anHost = el('div'); anHost.id = 'x-cohort-analysis';
       host.appendChild(anHost);
@@ -1241,25 +1245,34 @@
     renderCardPreview();
   }
 
-  async function generateAndStore() {
+  /* What the open student screen is currently showing, as the context the card
+     generator wants. A batch builds the same shape per student instead. */
+  function currentCtx() {
+    return {
+      student: S.student, examId: S.exam, report: S.report, model: S.model,
+      remarks: ($('x-remarks') || {}).value ? $('x-remarks').value.trim() : ''
+    };
+  }
+
+  async function generateAndStore(ctx) {
     // One image per send, stored once and reused for both parents. The version
     // number goes up rather than the file being replaced, so a message sent
     // last week still points at the card that was actually sent.
     var tpl = currentTemplate();
-    var assets = { logo: S.assets.logo, photo: null, remarks: $('x-remarks').value.trim() };
-    if (S.student.photo_path) {
-      assets.photo = await objectUrl(S.student.photo_path).catch(function () { return null; });
+    var assets = { logo: S.assets.logo, photo: null, remarks: ctx.remarks || '' };
+    if (ctx.student.photo_path) {
+      assets.photo = await objectUrl(ctx.student.photo_path).catch(function () { return null; });
     }
-    var canvas = await ReportCard.toCanvas(S.model, tpl, assets);
+    var canvas = await ReportCard.toCanvas(ctx.model, tpl, assets);
     var blob = await ReportCard.toBlob(canvas);
-    var existing = await ExamApi.reportCards(S.student.id, S.exam);
+    var existing = await ExamApi.reportCards(ctx.student.id, ctx.examId);
     var version = existing.length ? existing[0].version + 1 : 1;
-    var path = S.institution.id + '/' + S.exam + '/' + S.student.id + '-v' + version + '.png';
+    var path = S.institution.id + '/' + ctx.examId + '/' + ctx.student.id + '-v' + version + '.png';
     var stored = await ExamApi.upload('report-cards', path, blob, 'image/png');
     var rows = await ExamApi.saveReportCard({
-      student_id: S.student.id, exam_id: S.exam,
+      student_id: ctx.student.id, exam_id: ctx.examId,
       template_id: tpl ? tpl.id : null,
-      version: version, payload: S.report, image_path: stored
+      version: version, payload: ctx.report, image_path: stored
     });
     return { card: rows[0], blob: blob, canvas: canvas, path: stored };
   }
@@ -1389,7 +1402,7 @@
     var out = S.sendResult;
     busy(out, 'Generating the report card…');
     try {
-      var made = await generateAndStore();
+      var made = await generateAndStore(currentCtx());
       clear(out);
       for (var i = 0; i < checked.length; i++) {
         var g = guardians.filter(function (x) { return x.id === checked[i].value; })[0];
@@ -1445,6 +1458,294 @@
       toast('Done. The result of each send is recorded against the student.');
     } catch (e) { fail(out, e); }
     button.disabled = false;
+  }
+
+  /* ── cohort send ─────────────────────────────────────────────────────
+     Forty students on a result day. Everything the single-student path guards
+     against is worse in bulk, so this screen is built around one idea: the
+     coordinator approves a list of names and numbers, not a count.
+
+     Three rules it will not bend on.
+     - A suspect number is excluded by default and can only be added by ticking
+       a second box that says how many there are. A country code this system
+       assumed is exactly where a wrong recipient comes from, and "send to all"
+       is where nobody checks.
+     - A student with no reachable parent is listed as skipped, with the
+       reason, rather than quietly dropped from the count.
+     - Every message still goes through queueMessage → whatsapp-send, so the
+       server re-checks each number against the guardian record immediately
+       before sending. Batching changes the UI, not the guarantee. */
+
+  var RECIPIENT_RULES = [
+    ['first', 'One parent each — the first reachable'],
+    ['father', 'Fathers only'],
+    ['mother', 'Mothers only'],
+    ['both', 'Both parents']
+  ];
+
+  function pickRecipients(guardians, rule, includeSuspect) {
+    var usable = guardians.filter(function (g) {
+      if (g.phone_status === 'missing') return false;
+      if (g.phone_status === 'suspect' && !includeSuspect) return false;
+      return !!(g.phone_e164 || g.phone_raw);
+    });
+    if (rule === 'both') return usable;
+    if (rule === 'father' || rule === 'mother') {
+      return usable.filter(function (g) { return g.relation === rule; });
+    }
+    // 'first': father, then mother, then any other guardian on file.
+    var order = ['father', 'mother', 'guardian'];
+    for (var i = 0; i < order.length; i++) {
+      var hit = usable.filter(function (g) { return g.relation === order[i]; })[0];
+      if (hit) return [hit];
+    }
+    return usable.slice(0, 1);
+  }
+
+  function skipReason(guardians, rule, includeSuspect) {
+    if (!guardians.length) return 'no parent on file';
+    var suspect = guardians.filter(function (g) { return g.phone_status === 'suspect'; });
+    var missing = guardians.filter(function (g) { return g.phone_status === 'missing'; });
+    if (!includeSuspect && suspect.length && suspect.length + missing.length === guardians.length) {
+      return 'only unverified number(s) — tick the box below to include them';
+    }
+    if (rule === 'father' || rule === 'mother') {
+      return 'no usable ' + rule + '’s number';
+    }
+    return 'no usable number';
+  }
+
+  async function openCohortSend() {
+    if (!S.cohort || !S.exam) { toast('Open an exam first.', true); return; }
+    var students = (S.cohort.students || []);
+    if (!students.length) { toast('That exam has no students.', true); return; }
+
+    var host = $('x-send-body');
+    $('x-send-title').textContent = 'Send ' + ((S.cohort.exam || {}).name || 'this exam') +
+      ' to parents';
+    clear(host);
+    busy(host, 'Reading the parents on file…');
+    $('x-send').showModal();
+
+    var guardians;
+    try {
+      guardians = await ExamApi.guardiansFor(students.map(function (r) { return r.student_id; }));
+    } catch (e) { fail(host, e); return; }
+
+    var byStudent = {};
+    guardians.forEach(function (g) {
+      (byStudent[g.student_id] = byStudent[g.student_id] || []).push(g);
+    });
+
+    clear(host);
+    var intro = el('p', 'cx-sub');
+    intro.textContent = 'Each parent receives their own child’s report card and a message ' +
+      'written from that child’s marks. Read the list before approving it — this is the ' +
+      'only screen that shows every number at once.';
+    host.appendChild(intro);
+
+    var bar = el('div', 'xm-bar');
+    var ruleLabel = el('label', 'gl-eyebrow', 'Send to');
+    ruleLabel.setAttribute('for', 'x-bulk-rule');
+    var rule = el('select', 'cx-input');
+    rule.id = 'x-bulk-rule';
+    RECIPIENT_RULES.forEach(function (r) { rule.appendChild(new Option(r[1], r[0])); });
+    bar.appendChild(ruleLabel); bar.appendChild(rule);
+    host.appendChild(bar);
+
+    var suspectWrap = el('label', 'cx-row');
+    suspectWrap.style.gap = '8px';
+    var suspectBox = el('input');
+    suspectBox.type = 'checkbox'; suspectBox.id = 'x-bulk-suspect';
+    var suspectText = el('span');
+    suspectWrap.appendChild(suspectBox); suspectWrap.appendChild(suspectText);
+    host.appendChild(suspectWrap);
+
+    var summary = el('p', 'cx-sub');
+    host.appendChild(summary);
+
+    var tableWrap = el('div', 'xm-scroll xm-manifest');
+    host.appendChild(tableWrap);
+
+    var confirmWrap = el('label', 'cx-row');
+    confirmWrap.style.gap = '8px';
+    var confirmBox = el('input');
+    confirmBox.type = 'checkbox'; confirmBox.id = 'x-bulk-confirm';
+    var confirmText = el('span');
+    confirmWrap.appendChild(confirmBox); confirmWrap.appendChild(confirmText);
+    host.appendChild(confirmWrap);
+
+    var actions = el('div', 'xm-bar');
+    var go = el('button', 'gl-btn gl-btn--primary', 'Send');
+    go.type = 'button';
+    var stop = el('button', 'gl-btn gl-btn--quiet', 'Stop');
+    stop.type = 'button'; stop.hidden = true;
+    actions.appendChild(go); actions.appendChild(stop);
+    host.appendChild(actions);
+
+    var progress = el('div');
+    progress.style.marginTop = '14px';
+    host.appendChild(progress);
+
+    var plan = [];
+
+    function rebuild() {
+      var includeSuspect = suspectBox.checked;
+      var chosen = rule.value;
+      plan = students.map(function (r) {
+        var gs = byStudent[r.student_id] || [];
+        var picked = pickRecipients(gs, chosen, includeSuspect);
+        return {
+          student_id: r.student_id, name: r.name, code: r.code,
+          percentage: r.percentage,
+          recipients: picked,
+          skip: picked.length ? null : skipReason(gs, chosen, includeSuspect)
+        };
+      });
+
+      var sending = plan.filter(function (p) { return !p.skip; });
+      var messages = sending.reduce(function (a, p) { return a + p.recipients.length; }, 0);
+      var skipped = plan.length - sending.length;
+      var suspectCount = 0;
+      Object.keys(byStudent).forEach(function (k) {
+        byStudent[k].forEach(function (g) { if (g.phone_status === 'suspect') suspectCount++; });
+      });
+
+      suspectText.textContent = suspectCount
+        ? 'Also include ' + suspectCount + ' unverified number(s) — these had a country code ' +
+          'assumed or did not match a known format. Check each one first.'
+        : 'No unverified numbers in this batch.';
+      suspectBox.disabled = !suspectCount;
+
+      summary.textContent = messages + ' message(s) to ' + sending.length + ' of ' +
+        plan.length + ' students. ' + skipped + ' skipped.';
+
+      clear(tableWrap);
+      var t = el('table', 'xm-table');
+      var th = el('thead'), thr = el('tr');
+      ['Student', 'Roll', '%', 'Goes to', 'Number'].forEach(function (h, i) {
+        thr.appendChild(el('th', i === 2 ? 'xm-num' : null, h));
+      });
+      th.appendChild(thr); t.appendChild(th);
+      var tb = el('tbody');
+      plan.forEach(function (p) {
+        if (p.skip) {
+          var tr = el('tr');
+          tr.appendChild(el('td', null, p.name));
+          tr.appendChild(el('td', null, p.code));
+          tr.appendChild(el('td', 'xm-num', pct(p.percentage)));
+          var td = el('td', 'xm-wrap');
+          td.colSpan = 2;
+          td.appendChild(el('span', 'xm-pill xm-pill--bad', 'skipped'));
+          td.appendChild(document.createTextNode('  ' + p.skip));
+          tr.appendChild(td);
+          tb.appendChild(tr);
+          return;
+        }
+        p.recipients.forEach(function (g, i) {
+          var tr = el('tr');
+          tr.appendChild(el('td', null, i === 0 ? p.name : ''));
+          tr.appendChild(el('td', null, i === 0 ? p.code : ''));
+          tr.appendChild(el('td', 'xm-num', i === 0 ? pct(p.percentage) : ''));
+          tr.appendChild(el('td', null,
+            (g.full_name || g.relation) + ' (' + g.relation + ')'));
+          var num = el('td', 'xm-recipient-phone', g.phone_e164 || g.phone_raw);
+          if (g.phone_status === 'suspect') {
+            num.appendChild(el('span', 'xm-pill xm-pill--warn', ' unverified'));
+          }
+          tr.appendChild(num);
+          tb.appendChild(tr);
+        });
+      });
+      t.appendChild(tb); tableWrap.appendChild(t);
+
+      confirmText.textContent = 'I have read every number above and they belong to these ' +
+        'students’ parents.';
+      go.textContent = messages ? 'Send ' + messages + ' message(s)' : 'Nothing to send';
+      go.disabled = !messages;
+      confirmBox.checked = false;
+    }
+
+    rule.addEventListener('change', rebuild);
+    suspectBox.addEventListener('change', rebuild);
+    rebuild();
+
+    var aborted = false;
+    stop.addEventListener('click', function () {
+      aborted = true;
+      stop.disabled = true;
+      stop.textContent = 'Stopping after this one…';
+    });
+
+    go.addEventListener('click', async function () {
+      if (!confirmBox.checked) { toast('Confirm the list first.', true); return; }
+      go.disabled = true; rule.disabled = true; suspectBox.disabled = true;
+      stop.hidden = false; aborted = false;
+      clear(progress);
+
+      var sending = plan.filter(function (p) { return !p.skip; });
+      var done = 0, sent = 0, prepared = 0, failed = 0;
+      var line = el('p', 'xm-busy');
+      progress.appendChild(line);
+      var log = el('div', 'xm-issues');
+      progress.appendChild(log);
+
+      for (var i = 0; i < sending.length; i++) {
+        if (aborted) break;
+        var row = sending[i];
+        line.textContent = 'Student ' + (i + 1) + ' of ' + sending.length + ' — ' + row.name;
+        try {
+          // The card is generated once per student and shared by both parents.
+          var student = await ExamApi.student(row.student_id);
+          var report = await ExamApi.report(row.student_id, S.exam);
+          var model = ReportCard.buildModel(report);
+          var made = await generateAndStore({
+            student: student, examId: S.exam, report: report, model: model, remarks: ''
+          });
+
+          for (var r = 0; r < row.recipients.length; r++) {
+            var g = row.recipients[r];
+            var body = ReportCard.parentMessage(model, g, new Date());
+            var queued = await ExamApi.queueMessage({
+              report_card_id: made.card.id, student_id: row.student_id, exam_id: S.exam,
+              guardian_id: g.id, recipient_name: g.full_name, recipient_relation: g.relation,
+              to_phone: g.phone_e164 || g.phone_raw, channel: 'whatsapp',
+              body: body, media_path: made.path, status: 'queued'
+            });
+            var res = await ExamApi.sendMessage(queued[0].id);
+            if (res.sent) sent++; else prepared++;
+            log.appendChild(resultLine(row.name, g, res.sent ? 'sent' : 'prepared', null));
+          }
+        } catch (e) {
+          failed++;
+          log.appendChild(resultLine(row.name, null, 'failed', e.message));
+        }
+        done++;
+        // A short gap between students: a provider that rate-limits a burst
+        // would otherwise turn one slow batch into forty failures.
+        await new Promise(function (r2) { setTimeout(r2, 250); });
+      }
+
+      line.className = '';
+      line.textContent = (aborted ? 'Stopped after ' : 'Finished ') + done + ' of ' +
+        sending.length + ' students — ' + sent + ' sent, ' + prepared +
+        ' prepared for manual sending, ' + failed + ' failed. Every one is recorded ' +
+        'against its student.';
+      stop.hidden = true;
+      rule.disabled = false;
+      go.textContent = 'Done';
+      if (S.exam) loadCohort(S.exam);
+    });
+  }
+
+  function resultLine(name, guardian, status, error) {
+    var cls = status === 'failed' ? 'xm-issue--error' : 'xm-issue--warning';
+    var n = el('div', 'xm-issue ' + cls);
+    n.appendChild(el('b', null, status === 'failed' ? '!' : status === 'sent' ? '✓' : '·'));
+    var text = name + ' → ' + (guardian ? (guardian.full_name || guardian.relation) + ' ' +
+      (guardian.phone_e164 || guardian.phone_raw) : '') + ' — ' + status;
+    n.appendChild(el('span', null, error ? text + ': ' + error : text));
+    return n;
   }
 
   /* ── template studio ─────────────────────────────────────────────────── */
@@ -1648,7 +1949,7 @@
     });
     $('x-card-store').addEventListener('click', async function () {
       try {
-        var made = await generateAndStore();
+        var made = await generateAndStore(currentCtx());
         toast('Report card v' + made.card.version + ' stored.');
       } catch (e) { toast(e.message, true); }
     });

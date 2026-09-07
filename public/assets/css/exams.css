@@ -162,6 +162,13 @@
           padding-top: 12px; }
 @media (min-width: 620px) { .x-edit { grid-template-columns: 1fr auto; align-items: end; } }
 
+/* The batch manifest. Capped in height and scrolled so a forty-row list cannot
+   push the confirm box off screen — approving a list you had to scroll past is
+   not approving it. */
+.xm-manifest { max-height: 46vh; overflow-y: auto; margin: 12px 0;
+               border: 1px solid var(--g-line, #e2e6ee); border-radius: var(--r-sm, 10px); }
+.xm-manifest .xm-table th { top: 0; }
+
 .xm-compose { width: 100%; min-height: 190px; resize: vertical; font: inherit;
               line-height: 1.55; padding: 12px 14px;
               border: 1px solid var(--g-line, #d8dee8); border-radius: var(--r-sm, 10px);

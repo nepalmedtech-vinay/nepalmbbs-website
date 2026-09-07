@@ -122,6 +122,17 @@
                   'guardians(id,relation,full_name,phone_raw,phone_e164,phone_status)' +
                   '&id=eq.' + studentId).then(function (rows) { return rows[0] || null; });
     },
+    /* Every parent for a whole cohort in one request. A batch send needs the
+       numbers to build its manifest, and forty round trips to learn them would
+       be forty chances to half-load the list the coordinator is about to
+       approve. */
+    guardiansFor: function (studentIds) {
+      if (!studentIds || !studentIds.length) return Promise.resolve([]);
+      var list = studentIds.map(function (id) { return '"' + id + '"'; }).join(',');
+      return rest('guardians?select=id,student_id,relation,full_name,phone_raw,phone_e164,' +
+                  'phone_status&student_id=in.(' + encodeURIComponent(list) + ')' +
+                  '&order=relation');
+    },
     updateGuardian: function (guardianId, patch) {
       return rest('guardians?id=eq.' + guardianId,
         { method: 'PATCH', body: patch, prefer: 'return=representation' });

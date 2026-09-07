@@ -503,7 +503,11 @@ await ctx2.route('**/rest/v1/**', (route) => {
     students: [{ student_id: STUD, name: 'Aarav Sharma', code: 'MBBS1800', rank: 2,
                  obtained: 60, max_marks: 120, percentage: 50, cohort_size: 6, grade: 'B',
                  delta_percentage: null, direction: 'first-exam', absent_subjects: 0,
-                 has_valid_parent: true, last_message: null, report_versions: 0 }] });
+                 has_valid_parent: true, last_message: null, report_versions: 0 },
+               { student_id: 'stud2', name: 'Unreachable Student', code: 'MBBS1801', rank: 3,
+                 obtained: 40, max_marks: 120, percentage: 33, cohort_size: 6, grade: 'D',
+                 delta_percentage: null, direction: 'first-exam', absent_subjects: 0,
+                 has_valid_parent: false, last_message: null, report_versions: 0 }] });
   if (url.includes('/rpc/exam_report')) return J(route, REPORT);
   if (url.includes('/students?')) return J(route, [{ id: STUD, full_name: 'Aarav Sharma',
     student_code: 'MBBS1800', serial_no: 1, category: 'FOREIGNER', photo_path: null,
@@ -519,6 +523,16 @@ await ctx2.route('**/rest/v1/**', (route) => {
   if (url.includes('/parent_messages')) {
     if (method === 'POST') { queued.push(post); return J(route, [{ id: 'msg' + queued.length }]); }
     return J(route, []);
+  }
+  if (url.includes('/guardians?') && url.includes('student_id=in.')) {
+    // The batch manifest reads every parent in the cohort in one request.
+    return J(route, [
+      { id: FATHER, student_id: STUD, relation: 'father', full_name: 'Rajesh Sharma',
+        phone_raw: '+919812345678', phone_e164: '+919812345678', phone_status: 'valid' },
+      { id: MOTHER, student_id: STUD, relation: 'mother', full_name: 'Meena Sharma',
+        phone_raw: '9812345679', phone_e164: '+919812345679', phone_status: 'suspect' },
+      { id: 'g3', student_id: 'stud2', relation: 'father', full_name: 'No Number',
+        phone_raw: null, phone_e164: null, phone_status: 'missing' }]);
   }
   if (url.includes('/guardians?')) {
     if (method === 'PATCH') {
@@ -586,6 +600,53 @@ check('the student profile shows the marks and both parents',
 check('a suspect number shows both the dialled and the written form',
   detail.includes('+919812345679') && detail.includes('9812345679') &&
   detail.includes('suspect'));
+
+/* ── the batch send ──────────────────────────────────────────────────────
+   The screen that decides forty messages at once. What matters is what it
+   refuses to do by default: an unverified number is left out, a student with
+   no reachable parent is shown as skipped rather than dropped from the count,
+   and the button names the number of messages rather than saying "send all". */
+// The batch button lives on the Exams tab; the student detail above left us on
+// Students, and a click on a hidden panel is not a click.
+await p2.click('#x-tab-exams');
+await p2.waitForSelector('#x-cohort .xm-bar .gl-btn--primary', { timeout: 8000 });
+await p2.click('#x-cohort .xm-bar .gl-btn--primary');   // Send to all parents
+await p2.waitForSelector('#x-send .xm-manifest table', { timeout: 8000 });
+const manifest = await p2.evaluate(() => ({
+  text: document.querySelector('#x-send-body').textContent,
+  button: document.querySelector('#x-send-body .gl-btn--primary').textContent,
+  suspectDisabled: document.querySelector('#x-bulk-suspect').disabled,
+}));
+check('the batch excludes an unverified number by default',
+  manifest.text.includes('+919812345678') && !manifest.text.includes('+919812345679'),
+  manifest.button);
+check('a student with no reachable parent is listed as skipped, not dropped',
+  manifest.text.includes('Unreachable Student') && manifest.text.includes('skipped') &&
+  /no usable number|no parent on file/.test(manifest.text));
+check('the button names the message count rather than saying "all"',
+  /Send 1 message/.test(manifest.button) && !/all/i.test(manifest.button),
+  manifest.button);
+check('it offers to include the unverified number, and says how many',
+  !manifest.suspectDisabled && /include 1 unverified/i.test(manifest.text));
+
+// Ticking that box brings the second number in and the count goes up.
+await p2.check('#x-bulk-suspect');
+await p2.selectOption('#x-bulk-rule', 'both');
+await p2.waitForFunction(
+  () => /Send 2 message/.test(document.querySelector('#x-send-body .gl-btn--primary').textContent),
+  null, { timeout: 5000 });
+const withSuspect = await p2.textContent('#x-send-body');
+check('including unverified numbers adds them, still labelled unverified',
+  withSuspect.includes('+919812345679') && withSuspect.includes('unverified'));
+
+/* And it will not run until the list is confirmed. */
+const queuedBefore = queued.length;
+await p2.click('#x-send-body .gl-btn--primary');
+await p2.waitForTimeout(300);
+check('the batch refuses to run until the list is confirmed',
+  queued.length === queuedBefore, `${queued.length - queuedBefore} sent`);
+await p2.click('#x-send-close');
+await p2.click('#x-tab-students');
 
 /* Correcting a parent's number, inline, without leaving the student. */
 await p2.click('#x-student-detail .xm-recipient >> nth=1 >> button');
