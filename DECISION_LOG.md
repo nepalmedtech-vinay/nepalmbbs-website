@@ -418,3 +418,53 @@ data (higher value per the brief's zero-fabrication standard, but is
 research work, not code, and should probably run as its own longer task
 rather than be rushed inside a coding session). Left for `NEXT_TASK.md`
 to record once Phase 0's verify run finishes and a decision is made.
+
+## 2026-09-08 — Cinematic-premium brief: palette promotion, two bug fixes, imagery conflict left open
+
+**Decision: promoted the codebase's own existing "Porcelain" preset colours
+to the site default**, rather than inventing a new palette from scratch, in
+response to a request for a more explicitly "corporate/professional" look.
+`engine.js` already shipped four curated alternate themes
+(`porcelain`, `monsoon`, `saffron`) alongside the default `dawn`; Porcelain's
+blue/bronze pair (`#1F5F8B`/`#B4632F`) was already built, already
+contrast-solved by `engine.js`'s own dynamic solver, and already described
+in its own `hint` field as "near-white, minimal colour" — a lower-risk move
+than hand-picking new hex values, and it kept Dawn's fuller glass/glow/
+motion settings rather than adopting Porcelain's quieter ones (the ask was
+for more motion, not less). `--sh-radius` moved 22px→18px and `--dp` 1→1.05
+alongside it — sharper corners and slightly deeper shadow, both small,
+both reversible via the admin panel's existing theme controls.
+
+**Decision: did not add stock or generated campus photography**, despite
+the cinematic brief's hero/campus sections assuming it. This is not a new
+call — it is enforcing the Phase 2 decision already recorded in
+`PROJECT_STATE.md` ("replaced stock-photo 'campuses' with honest
+non-photographic treatments") and stated directly in the homepage's own
+copy ("no stock photographs standing in for a campus"). Fabricating or
+substituting generic photography would have reversed a decision that isn't
+this session's to reverse, the same standing `DECISION_LOG.md` already
+holds for the fee-calculator question below. Recorded as an open question
+in `DESIGN_AUDIT.md` §7 for the owner, not resolved unilaterally in either
+direction — the hero was instead built from the site's own data/motion
+language (the map's graticule motif) as the non-photographic alternative.
+
+**Decision: fixed two accessibility bugs found while testing Phase 3, not
+originally in scope, rather than only reporting them.** Both were small
+(one-line), both were genuine regressions for real users (no focus
+indicator at all on two elements; `prefers-reduced-motion` silently
+defeated sitewide by the theme engine's own inline-style application), and
+both had an unambiguous correct fix already proven elsewhere in the same
+codebase (the pattern three other correct uses of `--focus-ring` already
+established; a `matchMedia` check added to `engine.js`'s `apply()`). Judged
+this the same class of decision as the earlier `@keyframes fade` fix for
+the invisible map — a found, verified, narrowly-scoped bug, not a
+redesign — rather than something requiring a check-in first.
+
+**Decision: the "Universal Design OS" and follow-on skills-library work is
+account/workstation-level tooling, committed to this repo only because it
+is the writable location this session has access to.** Explicitly not a
+NepalMBBS feature or dependency — `.claude/skills/README.md` states this
+and gives the reuse path (copy the folder into a future project, or
+install the packaged `.skill` file at the account level). Recorded here so
+a future session reading `git log` on commits like `a5d2433`/`2419f98`/
+`a1368b5` does not mistake workstation tooling for site work.
