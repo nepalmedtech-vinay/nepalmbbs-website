@@ -65,6 +65,16 @@ const stats = [
     </span>
   </div>
 
+  {/* The genuine-WebGL upgrade: the same three shapes (stethoscope, pulse
+      trace, cross) as real 3D geometry — a tube swept along a curve, an
+      extruded bevelled cross — physically lit and glass-materialled, not
+      the flat SVGs above redrawn as sprites. The 2D field above is not a
+      fallback bolted on after this; it is the pre-existing, already-
+      finished layer this mounts in front of on top of, exactly like the
+      site's WebGL aurora background already does elsewhere — a visitor who
+      gets neither WebGL nor motion still gets a finished-looking hero. */}
+  <canvas id="gh-medical-3d" class="gh-medical-3d" aria-hidden="true"></canvas>
+
   <div class="wrap gh-in">
    <div class="gh-copy">
     <span class="gl-eyebrow gh-in-1">NMC India recognised · MEC Nepal process</span>
@@ -210,4 +220,67 @@ const stats = [
         rotateY(calc(var(--ry, 18deg) * var(--mo)));
     }
   }
+
+  /* The WebGL canvas sits over the same field area the 2D icons occupy.
+     Hidden until the scene actually mounts (`.is-ready`, added by the
+     script below only after a real WebGL context was created) — an
+     `opacity` cross-fade, not `display`, so the swap from flat SVG to real
+     3D is not an abrupt pop. The 2D icons are hidden once the 3D layer is
+     ready rather than removed, so a WebGL context lost mid-session
+     (`.gh-medical-3d.is-ready` removed by the mount script's own listener)
+     has something to fall back to instantly. */
+  .gh-medical-3d {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity var(--d-5, 720ms) var(--ea-out, ease);
+    pointer-events: none;
+  }
+  .gh-medical-3d.is-ready { opacity: 1; }
+  /* Toggled on .gh-field directly by the mount script below, not via a CSS
+     sibling combinator — .gh-field comes BEFORE .gh-medical-3d in the DOM,
+     and `~`/`+` only ever select LATER siblings, so a combinator here
+     would silently never match. */
+  .gh-field.gh-field--3d-active .gh-icon { opacity: 0; transition: opacity var(--d-4, 420ms) var(--ea-out, ease); }
 </style>
+
+<script>
+  const canvas = document.getElementById('gh-medical-3d');
+  const field = document.querySelector('.gh-field');
+  const fine = matchMedia('(min-width: 62rem)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Desktop + motion-on + WebGL-capable only, exactly the gate this site's
+  // other WebGL layer (aurora-gl.js) already uses. A *dynamic* import,
+  // deliberately — three is not a small dependency, and a static top-level
+  // import would fetch and parse it for every visitor regardless of this
+  // gate, including phones that will never see the canvas.
+  if (canvas && field && fine && !reduce) {
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
+    idle(async () => {
+      try {
+        const { mountMedicalIconsScene } = await import('../lib/medical-icons-scene.js');
+        const handle = mountMedicalIconsScene(canvas);
+        if (handle) {
+          canvas.classList.add('is-ready');
+          field.classList.add('gh-field--3d-active');
+          // A lost context (GPU memory pressure, driver reset) is real on
+          // real hardware. Fall back to the already-correct 2D field rather
+          // than attempting to silently recreate the context.
+          canvas.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            handle.stop();
+            canvas.classList.remove('is-ready');
+            field.classList.remove('gh-field--3d-active');
+          }, { once: true });
+        }
+      } catch (e) {
+        // Import failure (blocked request, unsupported browser quirk) —
+        // the 2D field is already the correct, finished hero on its own.
+      }
+    });
+  }
+</script>

@@ -30,7 +30,8 @@
   "homepage": "https://github.com/nepalmedtech-vinay/nepalmbbs-website#readme",
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
-    "astro": "^7.2.7"
+    "astro": "^7.2.7",
+    "three": "^0.186.0"
   },
   "private": true,
   "type": "module",
