@@ -468,3 +468,34 @@ and gives the reuse path (copy the folder into a future project, or
 install the packaged `.skill` file at the account level). Recorded here so
 a future session reading `git log` on commits like `a5d2433`/`2419f98`/
 `a1368b5` does not mistake workstation tooling for site work.
+
+**2026-09-08 — hero icon field: two contrast regressions found and fixed,
+then the icons themselves redesigned on owner feedback.** After the
+light-palette revert (`73df424`) and the genuine-WebGL medical-icons pass
+(`27208f4`/`5c1538d`), `audit.mjs` caught two real AA failures neither
+present before that work:
+
+1. `.gl-crystal-face`'s gradient (`--brand-lift -> --brand -> --brand-deep`)
+   put white label text over `--brand-lift` at ~3.84:1. Same fault
+   `chrome.css`'s "Brand fills under white text" section already
+   documents and fixed for every other primary action — this component
+   was added after that sweep and never got it. Fixed in `premium.css` by
+   dropping `--brand-lift` from the gradient (`7498369`), same remedy
+   `chrome.css` already proved safe.
+2. `.test-stars`'s hardcoded `#9a6400` (pre-token-system leftover, same
+   class of debt as the Sora/Inter font rules `chrome.css` already maps)
+   measured 3.95:1 over the translucent testimonial card. Darkened to
+   `#7b5000` in `base.css` (`8a8f9e0`).
+
+Separately, the owner reviewed a recorded motion preview of the WebGL
+hero and judged the three medical icons too large and too saturated —
+"cheap" rather than premium — and asked for a proper medical + medicine +
+biology set, not one shape per category, with an explicit requirement
+that the colour never read as a solid block over the copy. Addressed in
+`cf6c280`: both the CSS/SVG fallback and the WebGL scene were resized
+(~40% smaller), the stethoscope redrawn as a closed loop (matching the
+🩺 emoji's grammar instead of an open squiggle), colour mixed toward
+white before reaching any material, and two shapes added — a capsule
+(medicine) and a DNA double helix (biology) — alongside the existing
+stethoscope, pulse trace, and cross. `audit.mjs` confirmed 0 low-contrast
+elements after all three changes.
