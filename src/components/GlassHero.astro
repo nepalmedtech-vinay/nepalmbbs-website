@@ -19,11 +19,17 @@ const stats = [
 <section class="gh">
   {/* The field: architectural grid + one slow radial light + a graticule
       motif borrowed from the map section below (same fine-line, degree-
-      tick language) + a handful of drifting marks previewing the map's
-      dots. Entirely decorative, aria-hidden, and — per the brief's own
-      instruction — the motion here is meant to register subconsciously,
-      not be watched: one very slow (26s+) drift, nothing that resolves
-      into a shape someone would try to read. */}
+      tick language) + three real medical icons drifting slowly — a
+      stethoscope, a pulse/ECG trace, and a caduceus-free medical cross,
+      standing in for "campus photography" the same way the map does:
+      honest about what it is (a decorative field, aria-hidden) rather
+      than an abstract shape with no connection to the actual subject.
+      Replaces an earlier Three.js glass-cluster pass that was visually
+      impressive but generic — it could have sat in front of any brief,
+      not specifically a medical one, and needed WebGL for something three
+      static icons don't. Motion stays the same register as before: one
+      very slow (26s+) drift, nothing that resolves into something a
+      visitor would stop to watch. */}
   <div class="gh-field" aria-hidden="true">
     <div class="gh-grid"></div>
     <div class="gh-glow"></div>
@@ -32,20 +38,32 @@ const stats = [
       <line x1="0" y1="74" x2="100" y2="74" />
       <line x1="82" y1="0" x2="82" y2="100" />
     </svg>
-    <span class="gh-mark" style="--mx:12%; --my:22%; --md:34s"></span>
-    <span class="gh-mark" style="--mx:88%; --my:64%; --md:41s"></span>
-    <span class="gh-mark" style="--mx:74%; --my:18%; --md:29s"></span>
-  </div>
 
-  {/* A real 3D object, not a CSS approximation of one — a physically-lit
-      glass cluster (Three.js MeshPhysicalMaterial, transmission + IOR, an
-      actual environment map for real reflections) rendered in-browser.
-      Desktop + no-reduced-motion + WebGL-capable only (crystal-scene.js
-      feature-detects and quietly no-ops otherwise); the CSS field above is
-      not a fallback bolted on after, it is the pre-existing decorative
-      layer this sits in front of, so a visitor who gets neither still gets
-      a finished-looking hero. */}
-  <canvas id="gh-crystal" class="gh-crystal" aria-hidden="true"></canvas>
+    {/* Positioned to clear both the copy column's text measure and the
+       ledger's fixed 17rem right column (see .gh-in's grid-template-columns
+       below) — the first pass placed two of these directly under the
+       ledger cards, effectively invisible. All three now sit in the gap
+       between the lead paragraph's capped measure and the ledger, or below
+       the CTA row, not behind either. */}
+    <span class="gh-icon" style="--mx:6%; --my:10%; --md:36s; --sz:58px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4.5 3v6.5a3.5 3.5 0 0 0 7 0V3M11.5 3v6.5a3.5 3.5 0 0 0 3.5 3.5M15 13v3.5a4.5 4.5 0 1 1-9 0V15"/>
+        <circle cx="19" cy="6" r="2.2"/>
+      </svg>
+    </span>
+
+    <span class="gh-icon" style="--mx:63%; --my:46%; --md:44s; --sz:68px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="2,12 6,12 8.5,5 12,19 14.5,12 17,12 19,7 21,12"/>
+      </svg>
+    </span>
+
+    <span class="gh-icon" style="--mx:24%; --my:80%; --md:31s; --sz:46px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v18M3 12h18"/>
+      </svg>
+    </span>
+  </div>
 
   <div class="wrap gh-in">
    <div class="gh-copy">
@@ -132,50 +150,30 @@ const stats = [
     font-size: var(--t-xs); color: var(--g-ink-3);
   }
 
-  /* Boxed to the hero's own right column (the same 17rem the stat chips
-     use, per .gh-in's grid-template-columns above), starting below the
-     nav's real height rather than bleeding into it — the first version of
-     this sat at top:-3rem and 80vw wide, which collided with the nav bar
-     and ran under the headline. z-index 0 relative to .gh-in's 1 keeps the
-     real headline and chips readable in front of it regardless. */
-  .gh-crystal {
-    display: none;
+  /* The three medical icons. Positioned in percentage coordinates within
+     .gh-field (same --mx/--my convention the old decorative dots used),
+     sized individually via --sz so the stethoscope/pulse/cross don't all
+     read as the same visual weight. Coloured from the brand token, at low
+     opacity — evidence that this is a considered medical platform, not a
+     literal illustration competing with the headline for attention. */
+  .gh-icon {
     position: absolute;
-    top: 5.5rem;
-    right: -1rem;
-    width: min(30rem, 46vw);
-    height: min(28rem, 40vh);
-    z-index: 0;
-    pointer-events: none;
+    left: var(--mx);
+    top: var(--my);
+    width: var(--sz, 60px);
+    height: var(--sz, 60px);
+    color: var(--brand);
+    opacity: 0.16;
+    transform: translate3d(0, 0, 0);
   }
-  @media (min-width: 62rem) {
-    .gh-crystal.is-ready { display: block; }
+  .gh-icon svg { width: 100%; height: 100%; display: block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .gh-icon {
+      animation: gh-icon-drift var(--md, 36s) ease-in-out infinite alternate;
+    }
   }
-  @media (min-width: 76rem) {
-    .gh-crystal { top: 3rem; right: -2rem; width: min(26rem, 30vw); height: min(30rem, 42vh); }
+  @keyframes gh-icon-drift {
+    from { transform: translate3d(0, 0, 0) rotate(0deg); }
+    to   { transform: translate3d(calc(-16px * var(--mo)), calc(12px * var(--mo)), 0) rotate(calc(3deg * var(--mo))); }
   }
 </style>
-
-<script>
-  const canvas = document.getElementById('gh-crystal');
-  const fine = matchMedia('(min-width: 62rem)').matches;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // A *dynamic* import, deliberately — Three.js is ~130KB gzipped, and a
-  // static top-level `import` fetches and parses that regardless of the
-  // gate below, which would mean every phone visitor pays for a scene they
-  // never see. Gating first and importing only inside it means the bundle
-  // is requested exactly for the visitors who can use it: desktop,
-  // motion-on, WebGL-capable. Idle-mounted on top of that, same discipline
-  // aurora-gl.js already uses — nothing about the hero's readability
-  // depends on this, so it never competes with first paint or the load
-  // choreography's own timing.
-  if (canvas && fine && !reduce) {
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
-    idle(async () => {
-      const { mountCrystalScene } = await import('../lib/crystal-scene.js');
-      const ok = mountCrystalScene(canvas);
-      if (ok) canvas.classList.add('is-ready');
-    });
-  }
-</script>

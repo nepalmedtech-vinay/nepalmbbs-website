@@ -92,27 +92,26 @@
      "Quick Looks". Each is a complete, checked theme — not a colour swap. */
 
   var PRESETS = {
-    // Renamed from "dawn" 2026-09-08 when the default moved off light
-    // corporate blue/bronze, in two steps: first to a dark navy + olive
-    // look, then deepened again to near-black + blue/teal after the owner
-    // sent a reference (a clear-glass card on true black) and asked for
-    // its colour/motion/3D *ideas* adapted with judgement, not copied
-    // outright — their own words: "medicine category style," not a
-    // fintech card. Blue + a healing teal-green stays disciplined to two
-    // hues on purpose, where the reference itself runs four+ neon accents.
+    // Renamed from "dawn" 2026-09-08, then moved twice in one session: light
+    // corporate blue/bronze -> dark navy+olive -> near-black blue/teal
+    // (chasing a "clear-glass card on true black" reference the owner sent)
+    // -> back to light on the owner's explicit follow-up. "Medicine category
+    // style" turned out to mean the blue + healing-teal HUE the dark pass
+    // picked, not a dark GROUND — a clinical admissions platform reads as
+    // trustworthy on a clean light ground, not a dramatic dark one. Brand
+    // hue is unchanged from the dark version for exactly that reason.
     meridian: {
-      label: 'Meridian', hint: 'Near-black ground, blue + teal crystal glass — the default',
-      brand: '#2464E0', brand2: '#20B78E', ink: '#F2F5F9', base: '#07090D',
-      au1: '#2464E0', au2: '#5C93F0', au3: '#20B78E', au4: '#167A5C',
-      auOpacity: 0.64, auBlur: 90, auScale: 1.1, auSpeed: 36,
-      mBlur: 34, mOpacity: 0.5, mSaturate: 165, mBorder: 0.5, mInner: 0.38,
-      radius: 20, border: 1, shScale: 1, depth: 1.25,
+      label: 'Meridian', hint: 'Clinical light ground, blue + healing teal — the default',
+      brand: '#2464E0', brand2: '#20B78E', ink: '#10192B', base: '#F6F9FC',
+      au1: '#C9DCF8', au2: '#DCE7FA', au3: '#C7EDDF', au4: '#DBF1E7',
+      auOpacity: 0.55, auBlur: 88, auScale: 1.05, auSpeed: 36,
+      mBlur: 28, mOpacity: 0.62, mSaturate: 170, mBorder: 0.6, mInner: 0.4,
+      radius: 18, border: 1, shScale: 1, depth: 1.1,
       tyPair: 'editorial', tyScale: 1, tyWeight: 400, tyWeightD: 600, tyTrack: 0, tyA11y: 1,
-      // Motion and pointer-tilt pushed above neutral for the "cinematic" and
-      // "3D feel" asks specifically — moTilt is the pointer-reactive pane
-      // tilt (premium.js/motion.js), the most direct lever for "3D" that
-      // already exists in this system.
-      mo: 1.1, moTilt: 1.25, moParallax: 1.15,
+      // Motion/pointer-tilt still lifted a little above neutral — the
+      // "considered, not flat" read the cinematic brief asked for doesn't
+      // depend on a dark ground, only the ground colour does.
+      mo: 1.05, moTilt: 1.1, moParallax: 1.05,
       fxGlow: 1, fxFloat: 1, fxSheen: 1, fxGrain: 0.03, sp: 1,
     },
     porcelain: {

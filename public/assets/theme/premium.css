@@ -1589,32 +1589,17 @@ input:not(:placeholder-shown):invalid {
 }
 .gh-lines line { stroke: currentColor; stroke-width: 0.15; vector-effect: non-scaling-stroke; }
 
-.gh-mark {
-  position: absolute;
-  left: var(--mx);
-  top: var(--my);
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--brand);
-  opacity: 0.28;
-  box-shadow: 0 0 12px 2px color-mix(in oklab, var(--brand) 40%, transparent);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .gh-mark {
-    animation: gh-mark-drift var(--md, 32s) ease-in-out infinite alternate;
-  }
-}
-@keyframes gh-mark-drift {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(calc(-14px * var(--mo)), calc(10px * var(--mo)), 0); }
-}
+/* .gh-mark (a plain drifting dot) is retired — GlassHero.astro now draws
+   three real medical icons (.gh-icon, styled in that component's own
+   <style> block) in the same field instead. Left this selector's rule out
+   entirely rather than leaving dead CSS pointing at a class the markup no
+   longer emits. */
 
 @media (max-width: 48rem) {
-  /* The field is a desktop flourish. At phone width the grid and lines
-     compete with the text for the same cramped space more than they add
-     depth, so only the softest layer (the glow) survives. */
-  .gh-grid, .gh-lines, .gh-mark { display: none; }
+  /* The field is a desktop flourish. At phone width the grid, lines and
+     icons compete with the text for the same cramped space more than they
+     add depth, so only the softest layer (the glow) survives. */
+  .gh-grid, .gh-lines, .gh-icon { display: none; }
 }
 
 /* ── Choreography ──────────────────────────────────────────────────────

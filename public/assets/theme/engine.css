@@ -7,15 +7,20 @@
    deploy — the same way the LeadFlow app's Customize screen works, extended
    with the material controls a glass system needs.
 
-   The values below are the DEFAULT theme ("Meridian" — renamed from "Dawn"
-   2026-09-08, when the default moved from a light corporate ground to this
-   dark navy + olive one at the owner's explicit direction: a light ground
-   was reading as a bordered card, not as glass, and the drama the owner
-   wanted only shows up against a dark ground — proven by "Nocturne", an
-   existing alternate preset that already did this correctly). theme/engine.js
-   overwrites any of these from the saved settings, so treat this file as the
-   fallback that must always look finished on its own — if the network is
-   down and no saved theme arrives, this is what a visitor sees.
+   The values below are the DEFAULT theme ("Meridian"). 2026-09-08, second
+   correction of the day: the ground moved light -> dark navy -> near-black
+   (chasing a "clear-glass card on true black" reference the owner sent),
+   then back to light again on the owner's explicit follow-up instruction —
+   a medical admissions platform reads as clinical and trustworthy on a
+   light, clean ground; "medicine category style" turned out to mean the
+   blue+teal HUE the dark pass already picked, not a dark GROUND. Brand
+   colour is unchanged from the dark version for exactly that reason — only
+   the ground, ink ramp, aurora tints and material direction flip back to
+   light. theme/engine.js overwrites any of these from the saved settings,
+   so treat this file as the fallback that must always look finished on its
+   own — if the network is down and no saved theme arrives, this is what a
+   visitor sees. See `DECISION_LOG.md`'s 2026-09-08 entries for the fuller
+   account of why this moved twice in one session.
 
    Rules for anything added here:
      1. If a designer would want to change it, it is a token.
@@ -27,31 +32,31 @@
         focus ring, the aurora and the glass tint together. */
 
 :root {
-  /* Native form controls and the OS-drawn scrollbar default to light
-     regardless of the tokens above — nothing else here reaches them. Never
-     flipped before because the default theme was light; it needs saying now. */
-  color-scheme: dark;
+  /* Flipped back to light with the rest of §1 below — a dark ground reads
+     wrong for a platform whose whole trust proposition is clinical
+     transparency, not drama. */
+  color-scheme: light;
 
   /* ══ 1. GROUND ═════════════════════════════════════════════════════════
-     Deep navy, close to black. A dark ground is what makes a glass system
-     read as glass at all — colour and light show up as visible refraction
-     through a frosted pane, which a near-white ground cannot produce (a
-     translucent white pane over a white page is just a paler box). */
+     Clean, cool near-white — a clinical ground, not a card. The faint blue
+     tint (rather than a neutral grey-white) ties the ground itself to the
+     brand hue below, the same way the dark version tied its near-black
+     ground to the same blue via the aurora field. */
 
-  --g-base:        #07090D;   /* page ground                    */
-  --g-base-2:      #10141C;   /* secondary bands                */
-  --g-ink:         #F2F5F9;   /* primary text                   */
-  /* 2026-09-08, third move: navy deepened to a near-true black — closer to
-     the reference the owner sent (a clear-glass card on black), and reads
-     more like a clinical/premium ground than a navy tint did. The ramp
-     below is the same solved-not-chosen approach, recomputed for this base:
-     see engine.js's fadeToContrast(). Do not hand-pick a value here that
-     "looks about right" — the original light pair shipped with roughly 890
-     pieces of text below WCAG AA before this ramp existed. */
-  --brand-text:    #588BEB;   /* brand as TEXT — 4.5:1+ on the deepest glass */
-  --g-ink-2:       #B0B4B8;   /* secondary text        — 7.0:1 on the deepest pane */
-  --g-ink-3:       #8C9094;   /* tertiary / captions   — 4.5:1 on the deepest pane */
-  --g-ink-4:       #6F7276;   /* placeholder, disabled — 3.0:1, never body copy */
+  --g-base:        #F6F9FC;   /* page ground                    */
+  --g-base-2:      #EAF1F8;   /* secondary bands                */
+  --g-ink:         #10192B;   /* primary text                   */
+  /* The ramp is solved, not chosen. engine.js recomputes these per theme by
+     fading ink toward the ground until it hits a contrast target against
+     the deepest surface text actually sits on; these are that solve for
+     the default light pair, so the paint before JS runs matches the paint
+     after it. Do not hand-pick a value here that "looks about right" — an
+     earlier, hand-picked ramp shipped with roughly 890 pieces of text below
+     WCAG AA before this solved approach existed. */
+  --brand-text:    #1949B0;   /* brand as TEXT — 4.5:1+ on the deepest glass */
+  --g-ink-2:       #4C5568;   /* secondary text        — 7.0:1 on base */
+  --g-ink-3:       #69728A;   /* tertiary / captions   — 4.5:1 on base */
+  --g-ink-4:       #8890A0;   /* placeholder, disabled — 3.0:1, never body copy */
 
   /* ══ 2. BRAND ══════════════════════════════════════════════════════════
      One brand hue and one counter-hue. Everything tinted downstream derives
@@ -82,18 +87,18 @@
      without it, frosted panels sit on flat grey and the whole material
      reads as a cheap overlay rather than as glass. */
 
-  /* Blue-to-teal, both against the near-black ground — two tints of each
-     hue so the four blobs read as one considered field rather than four
-     unrelated colours (a wider neon set was tried and dropped: right for
-     the reference's fintech card, wrong register for a medical admissions
-     platform). */
-  --au-1:          #2464E0;   /* royal blue  */
-  --au-2:          #5C93F0;   /* sky blue    */
-  --au-3:          #20B78E;   /* teal-green  */
-  --au-4:          #167A5C;   /* deep teal   */
-  --au-opacity:    0.64;      /* 0 disables the field entirely  */
-  --au-scale:      1.1;       /* blob size multiplier           */
-  --au-blur:       90px;      /* softness                       */
+  /* Same blue-to-teal hue pair as the dark version, at roughly half the
+     saturation — light tints of the brand hues rather than the hues at
+     full chroma. At full strength on a light ground the field stops being
+     a ground and becomes the subject; desaturated, the panes still have
+     real colour to refract without the page reading as a colour block. */
+  --au-1:          #C9DCF8;   /* pale royal blue */
+  --au-2:          #DCE7FA;   /* pale sky blue   */
+  --au-3:          #C7EDDF;   /* pale teal-green */
+  --au-4:          #DBF1E7;   /* pale mint       */
+  --au-opacity:    0.55;      /* 0 disables the field entirely  */
+  --au-scale:      1.05;      /* blob size multiplier           */
+  --au-blur:       88px;      /* softness                       */
   --au-speed:      36s;       /* one full drift cycle           */
 
   /* ══ 4. MATERIAL ═══════════════════════════════════════════════════════
@@ -102,16 +107,12 @@
      panel exposes all of them because the right value is a taste call, not
      a constant. */
 
-  /* On a dark ground the pane must be a LIGHTER DARK, not a light pane —
-     engine.js's apply() computes this at runtime as base lifted 10% toward
-     white; "35 41 52" is that same computation done once by hand, so the
-     pre-JS paint isn't a flash of white glass on a black page. */
-  --m-tint:        32 34 37;     /* glass body, as an RGB triple */
-  --m-opacity:     0.5;          /* how much body it has         */
-  --m-blur:        34px;         /* backdrop blur radius         */
-  --m-saturate:    165%;         /* colour boost behind the pane */
-  --m-border:      0.5;          /* top-edge highlight strength  */
-  --m-inner:       0.38;         /* inner sheen strength         */
+  --m-tint:        255 255 255;  /* glass body, as an RGB triple */
+  --m-opacity:     0.62;         /* how much body it has         */
+  --m-blur:        28px;         /* backdrop blur radius         */
+  --m-saturate:    170%;         /* colour boost behind the pane */
+  --m-border:      0.6;          /* top-edge highlight strength  */
+  --m-inner:       0.4;          /* inner sheen strength         */
 
   /* Derived material surfaces. */
   --m-fill:        rgba(var(--m-tint) / var(--m-opacity));
@@ -120,7 +121,7 @@
   --m-filter:      blur(var(--m-blur)) saturate(var(--m-saturate));
   --m-edge-top:    rgba(255 255 255 / var(--m-border));
   --m-edge-bottom: rgba(255 255 255 / calc(var(--m-border) * 0.28));
-  --m-hairline:    rgba(255 255 255 / 0.10);
+  --m-hairline:    rgba(16 25 43 / 0.08);
 
   /* ══ 5. SHAPE ══════════════════════════════════════════════════════════ */
 
@@ -140,16 +141,12 @@
      of the difference between a card that floats and one that looks stuck
      on with tape. --dp scales them all at once.
 
-     On a dark ground shadows go to pure black rather than the ink colour —
-     deriving them from ink makes them LIGHT in dark mode, which reads as a
-     glow (lit from underneath), not a shadow. engine.js computes this as
-     '0 0 0' whenever the ground is dark; this static value matches that.
-     --dp itself is also higher here (depth 1.25 × the 1.6 dark-mode
-     multiplier engine.js applies) — a stronger cast is part of the "3D,
-     not flat" read the owner asked for. */
+     Shadows carry the ink colour rather than pure black — engine.js
+     computes this as the ink RGB whenever the ground is light, which this
+     static value matches for the pre-JS paint. */
 
-  --dp:            2;
-  --dp-hue:        0 0 0;
+  --dp:            1.1;
+  --dp-hue:        16 25 43;
 
   --sd-1: 0 1px 2px rgba(var(--dp-hue) / calc(0.05 * var(--dp)));
   --sd-2: 0 2px 6px rgba(var(--dp-hue) / calc(0.06 * var(--dp))),
