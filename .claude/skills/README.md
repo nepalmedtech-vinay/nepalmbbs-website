@@ -23,3 +23,14 @@ methodology documents with no scripts, network calls, or credential access.
   — copy this folder into any future project's `.claude/skills/` to reuse
   it, or see `premium-design-os/PREMIUM_DESIGN_OS.md` for the account-level
   install path via a packaged `.skill` file.
+
+- `creative-technology-lab/` — the heavy tier downstream of
+  `premium-design-os`'s CSS-first gate: GSAP, Lenis, SVG/Canvas, WebGL/
+  Three.js, and shader-based refraction. An orchestrator/router (which of
+  the five fits a given requirement, and whether they combine) plus
+  mandatory QA gates (performance, accessibility, fallback, cleanup) —
+  the failure modes at this tier (a memory leak, a broken keyboard scroll,
+  a dropped-frame WebGL scene) don't show up in a static screenshot the
+  way a layout bug does, so the gates ask for a profile, not just a
+  render. Not NepalMBBS-specific, reusable the same way as
+  `premium-design-os` above.
