@@ -39,27 +39,56 @@ const stats = [
       <line x1="82" y1="0" x2="82" y2="100" />
     </svg>
 
-    {/* Positioned to clear both the copy column's text measure and the
-       ledger's fixed 17rem right column (see .gh-in's grid-template-columns
-       below) — the first pass placed two of these directly under the
-       ledger cards, effectively invisible. All three now sit in the gap
-       between the lead paragraph's capped measure and the ledger, or below
-       the CTA row, not behind either. */}
-    <span class="gh-icon" style="--mx:6%; --my:10%; --md:36s; --sz:58px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4.5 3v6.5a3.5 3.5 0 0 0 7 0V3M11.5 3v6.5a3.5 3.5 0 0 0 3.5 3.5M15 13v3.5a4.5 4.5 0 1 1-9 0V15"/>
-        <circle cx="19" cy="6" r="2.2"/>
+    {/* Five icons now, not three — a proper medical + medicine + biology
+       set (stethoscope, ECG pulse, capsule, DNA helix, cross) rather than
+       one shape standing in for the whole vocabulary. Positioned to clear
+       both the copy column's text measure and the ledger's fixed 17rem
+       right column (see .gh-in's grid-template-columns below) — the first
+       pass placed two of these directly under the ledger cards, effectively
+       invisible. All five sit in the gap between the lead paragraph's
+       capped measure and the ledger, or below the CTA row, not behind
+       either.
+
+       Sized down and lightened from the first pass, which read as heavy,
+       oversaturated shapes competing with the headline — a decorative
+       field has to lose that fight on purpose. Small (22-34px), low
+       opacity (0.12), alternating --brand/--brand-2 so no single icon
+       reads as a solid block of colour sitting over the copy. */}
+    <span class="gh-icon" style="--mx:6%; --my:10%; --md:36s; --sz:32px; --ic:1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="5" cy="3.2" r="1"/>
+        <circle cx="9.4" cy="3.2" r="1"/>
+        <path d="M5 4.2v2.3a2.7 2.7 0 0 0 2.7 2.7 2.7 2.7 0 0 0 2.7-2.7V4.2"/>
+        <path d="M7.7 9.2v3.6a5.6 5.6 0 0 0 5.6 5.6h.2a5.6 5.6 0 0 0 5.6-5.6v-1.3"/>
+        <circle cx="19.1" cy="10.3" r="2.1"/>
       </svg>
     </span>
 
-    <span class="gh-icon" style="--mx:63%; --my:46%; --md:44s; --sz:68px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <span class="gh-icon" style="--mx:63%; --my:44%; --md:44s; --sz:36px; --ic:2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="2,12 6,12 8.5,5 12,19 14.5,12 17,12 19,7 21,12"/>
       </svg>
     </span>
 
-    <span class="gh-icon" style="--mx:24%; --my:80%; --md:31s; --sz:46px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <span class="gh-icon" style="--mx:70%; --my:8%; --md:39s; --sz:26px; --ic:1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2.5" y="8" width="19" height="8" rx="4" transform="rotate(-35 12 12)"/>
+        <line x1="12" y1="6.4" x2="12" y2="17.6" transform="rotate(-35 12 12)"/>
+      </svg>
+    </span>
+
+    <span class="gh-icon" style="--mx:8%; --my:58%; --md:41s; --sz:30px; --ic:2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 2c0 4 10 4 10 8s-10 4-10 8"/>
+        <path d="M17 2c0 4-10 4-10 8s10 4 10 8"/>
+        <line x1="8.3" y1="5" x2="15.7" y2="5"/>
+        <line x1="7" y1="10" x2="17" y2="10"/>
+        <line x1="8.3" y1="15" x2="15.7" y2="15"/>
+      </svg>
+    </span>
+
+    <span class="gh-icon" style="--mx:24%; --my:80%; --md:31s; --sz:22px; --ic:1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 3v18M3 12h18"/>
       </svg>
     </span>
@@ -160,16 +189,19 @@ const stats = [
     font-size: var(--t-xs); color: var(--g-ink-3);
   }
 
-  /* The three medical icons. Positioned in percentage coordinates within
-     .gh-field (same --mx/--my convention the old decorative dots used),
-     sized individually via --sz so the stethoscope/pulse/cross don't all
-     read as the same visual weight. Coloured from the brand token, at low
-     opacity — evidence that this is a considered medical platform, not a
-     literal illustration competing with the headline for attention.
+  /* Five medical/medicine/biology icons — stethoscope, ECG pulse, capsule,
+     DNA helix, cross. Positioned in percentage coordinates within .gh-field
+     (same --mx/--my convention the old decorative dots used), sized small
+     via --sz (22-36px — a watermark scale, not an illustration scale) so
+     none of them reads as heavy enough to compete with the headline.
+     Colour alternates --brand/--brand-2 via --ic (set inline per icon) at
+     low opacity, softened further with white — the brief was explicit that
+     the colour must never "block a view": nothing here should read as a
+     solid tinted shape sitting over copy, only as a faint tinted line.
 
      The tumble is real CSS 3D (perspective on the field + rotateX/rotateY/
-     translateZ per icon), not a WebGL scene — three flat SVGs do not need
-     a renderer to read as objects turning in space; `perspective` on the
+     translateZ per icon), not a WebGL scene — flat SVGs do not need a
+     renderer to read as objects turning in space; `perspective` on the
      shared parent is what gives each child's rotation actual depth instead
      of looking like a 2D squash. This is deliberately the lighter tool: the
      earlier pass reached for Three.js for the same "3D, floating" brief
@@ -182,33 +214,37 @@ const stats = [
     position: absolute;
     left: var(--mx);
     top: var(--my);
-    width: var(--sz, 60px);
-    height: var(--sz, 60px);
-    color: var(--brand);
-    opacity: 0.18;
+    width: var(--sz, 30px);
+    height: var(--sz, 30px);
+    opacity: 0.13;
     transform-style: preserve-3d;
     transform: translate3d(0, 0, 0) rotateX(0) rotateY(0);
-    filter: drop-shadow(0 6px 10px color-mix(in oklab, var(--brand) 22%, transparent));
+    filter: drop-shadow(0 4px 7px color-mix(in oklab, var(--brand) 16%, transparent));
   }
   .gh-icon svg { width: 100%; height: 100%; display: block; }
+  /* CSS has no ternary, so the brand/brand-2 alternation from --ic is
+     resolved with two plain overrides instead of the (invalid) inline
+     expression above. */
+  .gh-icon { color: color-mix(in oklab, var(--brand) 70%, white 30%); }
+  .gh-icon[style*="--ic:2"] { color: color-mix(in oklab, var(--brand-2) 70%, white 30%); }
   @media (prefers-reduced-motion: no-preference) {
     .gh-icon {
       animation: gh-icon-tumble var(--md, 36s) ease-in-out infinite alternate;
     }
   }
-  /* Each icon gets its own rotation axis and direction so the three don't
-     read as one motion copy-pasted — the stethoscope tips toward the
-     viewer, the pulse trace rolls sideways, the cross turns the other way. */
-  .gh-icon:nth-of-type(1) {
-    --rx: 22deg; --ry: -16deg; --tz: 26px;
-  }
+  /* Each icon gets its own rotation axis and direction so the five don't
+     read as one motion copy-pasted. */
+  .gh-icon:nth-of-type(1) { --rx: 22deg; --ry: -16deg; --tz: 20px; }
   .gh-icon:nth-of-type(2) {
-    --rx: -14deg; --ry: 24deg; --tz: 34px;
+    --rx: -14deg; --ry: 24deg; --tz: 26px;
     animation-direction: alternate-reverse;
   }
-  .gh-icon:nth-of-type(3) {
-    --rx: 18deg; --ry: 20deg; --tz: 18px;
+  .gh-icon:nth-of-type(3) { --rx: -18deg; --ry: 12deg; --tz: 16px; }
+  .gh-icon:nth-of-type(4) {
+    --rx: 16deg; --ry: -22deg; --tz: 22px;
+    animation-direction: alternate-reverse;
   }
+  .gh-icon:nth-of-type(5) { --rx: 18deg; --ry: 20deg; --tz: 14px; }
   @keyframes gh-icon-tumble {
     from {
       transform: translate3d(0, 0, 0) rotateX(0) rotateY(0);
