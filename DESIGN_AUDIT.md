@@ -247,14 +247,27 @@ interpolation for a mask reveal, if that specific effect is wanted.
 
 ## 7. Imagery — the central conflict with this brief
 
-**There is no photography anywhere on the public site**, and this is
-not an oversight — it is a recorded Phase 2 decision
-(`PROJECT_STATE.md`: "replaced stock-photo 'campuses' with honest
-non-photographic treatments"). The homepage's own lead paragraph states
-the policy as a trust claim to the visitor: *"No stock photographs
-standing in for a campus."* `src/data/colleges.json` has no image field
-for any of the 27 colleges — there is no real, sourced photography to
-draw from even if the policy were reversed.
+**Correction (2026-09-08, later in the session that wrote this audit):**
+the claim below that there is *no* photography anywhere was wrong — a
+grep this audit should have run first turns up 7 hotlinked Unsplash
+stock images across `/why-nepal` (6) and `/life-in-nepal` (1), allowed
+by `netlify.toml`'s own `img-src` CSP entry for `images.unsplash.com`.
+The owner reviewed this and decided to keep them: they are generic,
+decorative/atmospheric imagery (mountains, a study-mood shot), not a
+claim about any specific college, and the owner wants the finished site
+to read as image-forward and dynamic rather than austere. What remains
+true, and is the actual policy: **no photo may claim to depict a named
+college's real campus unless it is that college's own, sourced
+photograph** — `src/data/colleges.json` still has no image field for any
+of the 27 colleges, and nothing here changes `PROJECT_STATE.md`'s
+recorded Phase 2 decision *for campus imagery specifically* ("replaced
+stock-photo 'campuses' with honest non-photographic treatments") or the
+homepage's own trust claim, *"No stock photographs standing in for a
+campus."* A path for real per-college photography now exists
+(`supabase/migrations/0006`, the admin panel's College Photos uploader,
+`college-photo.js`) — a staff member uploads a real photo and it appears
+on that college's own page; nothing is invented or substituted in its
+place.
 
 This brief's §5 (hero), §15 (campus visualization), and §19 (image
 treatment) all assume photography is available and central to the

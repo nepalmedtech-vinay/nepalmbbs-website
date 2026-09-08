@@ -1,5 +1,6 @@
 ---
 import GlassLayout from '../layouts/GlassLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
 ---
 <GlassLayout
   title="NEET Score Eligibility Calculator for MBBS in Nepal | NepalMBBS.in"
@@ -8,7 +9,7 @@ import GlassLayout from '../layouts/GlassLayout.astro';
 >
 <div class="tab-pane on" id="pane-calculator">
 <div class="container">
-  <div class="tc rev"><div class="eyebrow">Free Tool</div><div class="sec-title">NEET Eligibility Checker</div><div class="sec-sub" style="margin:0 auto">General indicative guidance only. Always verify with official NMC India and MEC Nepal sources before any decision.</div></div>
+  <PageHeader eyebrow="Free Tool" center lead="General indicative guidance only. Always verify with official NMC India and MEC Nepal sources before any decision.">NEET Eligibility Checker</PageHeader>
   <div class="calc-wrap rev">
     <h3>Check Your General Eligibility</h3>
     <p>Enter your details for an indicative overview — not official admission advice.</p>

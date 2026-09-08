@@ -1,5 +1,6 @@
 ---
 import GlassLayout from '../layouts/GlassLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
 ---
 <GlassLayout
   title="Official NMC & MEC Nepal Guidelines for MBBS Admission | NepalMBBS.in"
@@ -8,7 +9,7 @@ import GlassLayout from '../layouts/GlassLayout.astro';
 >
 <div class="tab-pane on" id="pane-guidelines">
 <div class="container">
-  <div class="rev"><div class="eyebrow">Official Documentation</div><div class="sec-title">Official Guidelines — NMC India & Nepal NMC</div><div class="sec-sub">Key regulations from official government sources only. For full documents, use the official links provided.</div></div>
+  <PageHeader eyebrow="Official Documentation" lead="Key regulations from official government sources only. For full documents, use the official links provided.">Official Guidelines — NMC India &amp; Nepal NMC</PageHeader>
   <div style="margin-top:28px">
     <div class="guide-tabs">
       <button class="g-tab on" data-act="click" data-do='[["switchGuide","@el","gp-india"]]'>🇮🇳 NMC India Guidelines</button>
