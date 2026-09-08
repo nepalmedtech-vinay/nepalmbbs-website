@@ -1,0 +1,1259 @@
+/* NepalMBBS.in — theme/premium.css
+   The finishing layer: interiors.
+
+   Why this file exists
+   --------------------
+   engine/glass/motion built a material system, and chrome.css finished the
+   dark→light migration for the site chrome. Neither touched the *interiors* —
+   the layouts inside each page — which were still the ones this site was
+   built with in Phase 1:
+
+     · a centred header over left-aligned content, so every page has two
+       competing axes
+     · body copy capped at one 66ch column on a 1280px container, leaving
+       roughly 45% of a desktop screen doing nothing
+     · the same three-equal-cards row on most pages
+     · nine identical section-nav cards, the ninth orphaned on its own row
+     · six identical trust badges
+     · emoji standing in for data marks in a comparison table
+
+   None of that is broken. All of it is generic, and generic is what an
+   institution cannot afford when its entire product is being believed.
+
+   What it does instead
+   --------------------
+   One idea, applied everywhere: this site is a **register**. It publishes
+   sourced records about an admission process, and it should look like a
+   reference work rather than a landing page — an editorial spine on the left,
+   evidence on the right, hairlines instead of boxes, figures in tabular
+   numerals, and one accent used as a rule and a mark rather than as a fill.
+
+   Rules for anything added here
+   -----------------------------
+   1. Read tokens; never a literal. Changing --brand must still re-skin this
+      layer along with everything else, and the admin panel must keep working.
+   2. Motion is gated. Every animation sits behind --mo (so the panel's motion
+      slider and prefers-reduced-motion both stop it) and, where it is
+      scroll-driven, behind @supports so a browser without scroll timelines
+      gets the finished layout rather than a blank one.
+   3. !important only where the legacy sheets already used it. This file loads
+      last, so plain rules beat plain rules; escalating anywhere else just
+      makes the next edit harder.
+   4. Nothing here may hide content if JS never runs. Every reveal starts from
+      a visible state in the no-support path.
+
+   Load order: last, after chrome.css. */
+
+
+/* ══ 1. FOUNDATION ═══════════════════════════════════════════════════════
+   Tokens this layer adds. They derive from the existing ones, so the panel
+   still drives them. */
+
+:root {
+  /* Hairlines. The whole layer is built from these rather than from borders:
+     a 1px ink-tinted rule reads as a printed rule, a 1px grey border reads as
+     a div. */
+  --pr-hair:        color-mix(in oklab, var(--g-ink) 9%,  transparent);
+  --pr-hair-soft:   color-mix(in oklab, var(--g-ink) 5.5%, transparent);
+  --pr-hair-strong: color-mix(in oklab, var(--g-ink) 15%, transparent);
+
+  /* Surfaces that are not glass. Glass is for things that float; a record
+     sits on the page. */
+  --pr-paper:      color-mix(in oklab, #fff 82%, var(--g-base));
+  --pr-paper-2:    color-mix(in oklab, #fff 55%, var(--g-base));
+  --pr-sunk:       color-mix(in oklab, var(--g-ink) 3.5%, transparent);
+
+  /* The editorial grid. One rail width, used by every page that opts in, so
+     headings line up down the whole site rather than per page. */
+  --pr-rail:       19rem;
+  --pr-gap:        clamp(2rem, 1rem + 3vw, 4.5rem);
+  --pr-measure:    68ch;
+
+  /* Optical sizing for Fraunces. The face has an opsz axis; without it a
+     72px headline renders with the stroke contrast of 16px body copy, which
+     is most of why large serif type can look cheap on screen. */
+  --pr-opsz-display: 'opsz' 120, 'SOFT' 0, 'WONK' 0;
+  --pr-opsz-title:   'opsz' 48,  'SOFT' 0, 'WONK' 0;
+}
+
+/* Figures are data. Tabular everywhere they carry meaning, so a column of
+   numbers lines up and a counter does not jitter as it counts. */
+table, .doc-value, .doc-kicker, .cs-val, .gh-stat b, .stat-box strong,
+.hstat strong, .cbar-number, time, .pr-fig, .doc-step::before {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Orphans. A single word alone on the last line of a heading is the cheapest
+   thing a page can do, and it happens on every narrow column here. */
+h1, h2, h3, .sec-title, .doc-title, .doc-step-title, .card-title,
+.college-name, .faq-q { text-wrap: balance; }
+p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
+
+/* Anchors land under a fixed header otherwise. */
+:target, [id] { scroll-margin-top: calc(var(--nav-h, 69px) + var(--s-5)); }
+
+/* Selection carries the brand rather than the browser's blue. */
+::selection { background: color-mix(in oklab, var(--brand) 22%, transparent); color: var(--g-ink); }
+
+/* One focus ring for the whole site. The legacy sheets each had their own,
+   and several had none — a11y-verify checks every tab stop. */
+:where(a, button, [tabindex], input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: var(--focus-off);
+  border-radius: var(--r-xs);
+}
+
+/* The aurora is a ground, and a ground should not stop. It was fading out
+   below the first screen, leaving content pages on flat grey from the fold
+   down — which is why the material read as glass at the top of a page and as
+   paper everywhere else. */
+.au { opacity: calc(var(--au-opacity) * 0.9); }
+
+
+/* ══ 2. EDITORIAL SECTION HEADERS ════════════════════════════════════════
+   `.tc` centred a header over left-aligned content on eleven pages. Two axes
+   in one column is the single most templated thing on this site.
+
+   Left is not simply "not centred": it puts the eyebrow, the heading and the
+   standfirst on the same optical spine as the records beneath them, which is
+   how a reference work is set. */
+
+.tc { text-align: left; }
+.tc .eyebrow { justify-content: flex-start; }
+.tc .eyebrow::before { display: inline-block; }
+.tc .sec-sub { margin-inline: 0; }
+
+/* The eyebrow becomes a ruled label: a short brand rule, then small caps.
+   Same information, one register up. */
+.eyebrow, .gl-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-feature-settings: 'ss01' 1;
+}
+.eyebrow::before, .gl-eyebrow::before {
+  content: '';
+  width: var(--s-6);
+  height: 1px;
+  flex: none;
+  background: linear-gradient(90deg, var(--brand), color-mix(in oklab, var(--brand) 12%, transparent));
+  border-radius: 1px;
+}
+
+/* Display type gets its optical size and a tighter measure. */
+.sec-title {
+  font-variation-settings: var(--pr-opsz-title);
+  max-width: 22ch;
+}
+.gl-display { font-variation-settings: var(--pr-opsz-display); }
+
+.sec-sub { max-width: 58ch; }
+
+/* A section header block, used by the pages that opt into the rail below.
+   The hairline under it is what separates one record from the next without
+   drawing a box around either. */
+.pr-head {
+  padding-bottom: var(--s-5);
+  border-bottom: 1px solid var(--pr-hair);
+  margin-bottom: var(--s-6);
+}
+
+
+/* ══ 3. THE EDITORIAL RAIL ═══════════════════════════════════════════════
+   The fix for the empty right-hand half of every content page.
+
+   Below 62rem it is one column, exactly as now. Above it, the heading block
+   becomes a sticky rail on the left and the records run beside it — so the
+   heading is still visible while you read the thing it names, and the page
+   uses its width without stretching body copy past a readable measure.
+
+   Opt-in by class, not automatic: several pages (the calculator, the compare
+   grid) are already two-dimensional and would fight it. */
+
+@media (min-width: 62rem) {
+  .pr-rail {
+    display: grid;
+    grid-template-columns: var(--pr-rail) minmax(0, 1fr);
+    gap: var(--pr-gap);
+    align-items: start;
+  }
+  .pr-rail > .pr-rail-head {
+    position: sticky;
+    top: calc(var(--nav-h, 69px) + var(--s-5));
+  }
+  .pr-rail > .pr-rail-head .sec-title { max-width: none; }
+  .pr-rail > .pr-rail-head .sec-sub { font-size: var(--t-body); max-width: none; }
+  .pr-rail > .pr-rail-head .pr-head { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+}
+
+/* The rail's own footnote — where a source line goes, set apart from the
+   heading by a rule rather than by distance. */
+.pr-rail-meta {
+  margin-top: var(--s-5);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--pr-hair);
+  font-size: var(--t-xs);
+  line-height: var(--lh-body);
+  color: var(--g-ink-3);
+}
+.pr-rail-meta a { color: var(--brand-text); text-underline-offset: 2px; }
+
+
+/* ══ 4. SECTION INDEX (was: nine identical cards) ════════════════════════
+   The nine section cards were an 8-column row with the ninth orphaned onto a
+   line of its own — the layout tells you the ninth item matters less, which
+   is not true and not intended.
+
+   Three columns of three is not just tidier: it lets each card become a row
+   of a printed index — ordinal, mark, name, and a rule between — instead of a
+   pill. The markup keeps its nine anchors and its data-en/data-hi labels;
+   build-verify counts them and i18n reads them. */
+
+.tabs-section {
+  padding-block: var(--s-7) !important;
+  position: static !important;   /* it was sticky under a fixed nav */
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+.tabs-container { max-width: var(--container); padding-inline: var(--gutter); }
+
+.tabs-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-bottom: var(--s-5);
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--g-ink-3);
+}
+.tabs-label::before {
+  content: '';
+  width: var(--s-6); height: 1px; flex: none;
+  background: linear-gradient(90deg, var(--brand), color-mix(in oklab, var(--brand) 12%, transparent));
+}
+
+.tabs-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  border-top: 1px solid var(--pr-hair);
+  border-left: 1px solid var(--pr-hair);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--pr-paper-2);
+  box-shadow: var(--sd-2);
+}
+
+/* Each card is a row of the index. counter-increment gives it its ordinal
+   without nine hand-typed numbers in the markup. */
+.tabs-grid { counter-reset: pr-idx; }
+
+.tab-card {
+  counter-increment: pr-idx;
+  position: relative;
+  display: grid !important;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center !important;
+  gap: var(--s-3) !important;
+  padding: var(--s-4) var(--s-5) !important;
+  border: 0 !important;
+  border-right: 1px solid var(--pr-hair) !important;
+  border-bottom: 1px solid var(--pr-hair) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  text-align: left !important;
+  color: var(--g-ink) !important;
+  overflow: hidden !important;
+  transition: background var(--d-3) var(--ea-out), color var(--d-2) var(--ea-out) !important;
+  transform: none !important;
+}
+
+/* The ordinal. Small, tabular, in the tertiary ink — a reference mark, not a
+   decoration. */
+.tab-card::before {
+  content: counter(pr-idx, decimal-leading-zero);
+  position: static !important;
+  inset: auto !important;
+  width: auto !important;
+  height: auto !important;
+  background: none !important;
+  border-radius: 0 !important;
+  font-family: var(--ty-body);
+  font-size: var(--t-label);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  color: var(--g-ink-4);
+  transition: color var(--d-2) var(--ea-out);
+}
+
+/* The wash that arrives under the pointer. A background tint rather than a
+   lift, because these are rows: lifting one out of a ruled table breaks the
+   table. */
+.tab-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    color-mix(in oklab, var(--brand) 9%, transparent),
+    color-mix(in oklab, var(--brand) 2%, transparent) 62%,
+    transparent);
+  opacity: 0;
+  transition: opacity var(--d-3) var(--ea-out);
+  pointer-events: none;
+}
+.tab-card:hover::after, .tab-card:focus-visible::after { opacity: 1; }
+
+/* The left edge lights instead. One rule, drawn on demand. */
+.tab-card .tab-svg {
+  position: relative;
+  z-index: 1;
+  width: 20px; height: 20px;
+  opacity: 1 !important;
+  color: var(--g-ink-3);
+  filter: none !important;
+  transition: color var(--d-2) var(--ea-out), transform var(--d-3) var(--ea-spring);
+}
+.tab-card:hover .tab-svg { color: var(--brand); transform: none !important; }
+
+.tab-card .tab-label {
+  position: relative;
+  z-index: 1;
+  font-family: var(--ty-body);
+  font-size: var(--t-sm) !important;
+  font-weight: 500 !important;
+  line-height: 1.3;
+  letter-spacing: 0 !important;
+  color: var(--g-ink) !important;
+  text-align: left;
+}
+/* Belt and braces for a label that still carries a <br>: in a row it would
+   break a name in an odd place. The markup no longer has any — the space is
+   real there, because a hidden <br> leaves no space behind it. */
+.tab-card .tab-label br { display: none; }
+
+/* The chevron. Present at rest at low opacity so the row reads as a link
+   before you touch it, and travels on hover. */
+.tab-card .pr-go {
+  position: relative;
+  z-index: 1;
+  font-size: var(--t-sm);
+  color: var(--g-ink-4);
+  transform: translate3d(calc(-3px * var(--mo)), 0, 0);
+  opacity: 0.5;
+  transition: transform var(--d-3) var(--ea-spring), opacity var(--d-2) var(--ea-out), color var(--d-2) var(--ea-out);
+}
+.tab-card:hover .pr-go, .tab-card:focus-visible .pr-go {
+  opacity: 1; color: var(--brand); transform: translate3d(0, 0, 0);
+}
+.tab-card:hover::before { color: var(--brand-text); }
+.tab-card:active { transform: none !important; box-shadow: none !important; }
+
+/* The current page's row, marked. "No indication of current page" was true of
+   this grid on all nine of the pages it links to. */
+.tab-card.on {
+  background: color-mix(in oklab, var(--brand) 7%, transparent) !important;
+  color: var(--g-ink) !important;
+  box-shadow: inset 3px 0 0 var(--brand) !important;
+  transform: none !important;
+}
+.tab-card.on .tab-label { color: var(--g-ink) !important; font-weight: 600 !important; }
+.tab-card.on .tab-svg { color: var(--brand) !important; filter: none !important; }
+.tab-card.on::before { color: var(--brand-text); }
+
+@media (max-width: 52rem) {
+  .tabs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 34rem) {
+  .tabs-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .tab-card { padding: var(--s-3) var(--s-4) !important; }
+}
+
+
+/* ══ 5. CREDENTIAL RAIL (was: six identical badges) ══════════════════════
+   Six equal boxes said "we have six logos". A rail of ruled entries under a
+   single label says "these are the bodies this site cites", which is the
+   actual claim — and it is the claim the whole site rests on, so it should
+   look like a masthead credit rather than a badge wall. */
+
+.trust-section { padding-block: var(--s-7) !important; }
+.trust-in { max-width: var(--container); padding-inline: var(--gutter); }
+
+.trust-title {
+  text-align: left !important;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  margin-bottom: var(--s-5) !important;
+  font-size: var(--t-label) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase;
+  color: var(--g-ink-3) !important;
+}
+.trust-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--pr-hair);
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  max-width: none !important;
+  border-top: 1px solid var(--pr-hair);
+  border-bottom: 1px solid var(--pr-hair);
+}
+
+.trust-badge {
+  position: relative;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: var(--s-3) !important;
+  padding: var(--s-4) var(--s-4) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-right: 1px solid var(--pr-hair) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: background var(--d-3) var(--ea-out) !important;
+}
+.trust-grid > .trust-badge:last-child { border-right: 0 !important; }
+.trust-badge::before { display: none !important; }
+.trust-badge:hover {
+  background: color-mix(in oklab, var(--brand) 6%, transparent) !important;
+  border-color: var(--pr-hair) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.trust-badge:active { transform: none !important; }
+
+.trust-badge-icon {
+  flex: none;
+  width: 30px !important;
+  height: 30px !important;
+  display: grid;
+  place-items: center;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: var(--r-xs) !important;
+  filter: grayscale(1) opacity(0.62);
+  transition: filter var(--d-3) var(--ea-out);
+}
+.trust-badge:hover .trust-badge-icon { filter: none; }
+
+.trust-badge-name {
+  font-size: var(--t-xs) !important;
+  font-weight: 500 !important;
+  color: var(--g-ink-2) !important;
+  text-align: left !important;
+  letter-spacing: 0.01em;
+}
+.trust-badge:hover .trust-badge-name { color: var(--g-ink) !important; }
+
+@media (max-width: 60rem) {
+  .trust-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .trust-grid > .trust-badge:nth-child(3n) { border-right: 0 !important; }
+  .trust-grid > .trust-badge:nth-child(-n+3) { border-bottom: 1px solid var(--pr-hair) !important; }
+}
+@media (max-width: 34rem) {
+  .trust-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .trust-grid > .trust-badge:nth-child(2n) { border-right: 0 !important; }
+  .trust-grid > .trust-badge:nth-child(3n) { border-right: 1px solid var(--pr-hair) !important; }
+  .trust-grid > .trust-badge:nth-last-child(-n+2) { border-bottom: 0 !important; }
+  .trust-grid > .trust-badge { border-bottom: 1px solid var(--pr-hair) !important; }
+}
+
+
+/* ══ 6. FIGURES ══════════════════════════════════════════════════════════
+   The hero's three statistics were three equal cards — the pattern the whole
+   web uses for "we have numbers". Rules between figures say the same thing
+   and let the numbers themselves carry the weight, which is the point of
+   having counted them. */
+
+.gh-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 !important;
+  margin-top: var(--s-7) !important;
+  border-top: 1px solid var(--pr-hair-strong);
+}
+.gh-stat {
+  background: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: var(--s-5) var(--s-5) var(--s-4) 0 !important;
+  border-right: 1px solid var(--pr-hair);
+}
+.gh-stat::before, .gh-stat::after { display: none !important; }
+.gh-stat:last-child { border-right: 0; }
+.gh-stat + .gh-stat { padding-left: var(--s-5) !important; }
+.gh-stat b {
+  font-variation-settings: var(--pr-opsz-title);
+  letter-spacing: -0.02em;
+}
+.gh-stat dd, .gh-stat span {
+  max-width: 24ch;
+  font-size: var(--t-xs);
+  line-height: var(--lh-body);
+  color: var(--g-ink-3);
+}
+
+/* Above 76rem the figures stack beside the headline instead of sitting under
+   it, so the rules between them turn from vertical to horizontal. */
+@media (min-width: 76rem) {
+  .gh-stat {
+    border-right: 0;
+    border-bottom: 1px solid var(--pr-hair);
+    padding: var(--s-4) 0 !important;
+  }
+  .gh-stat:first-child { border-top: 1px solid var(--pr-hair-strong); }
+  .gh-stat:last-child { border-bottom: 0; }
+  .gh-stat + .gh-stat { padding-left: 0 !important; }
+  .gh-stat b { font-size: clamp(1.8rem, 1.4rem + 1vw, 2.3rem); }
+  .gh-stat dd, .gh-stat span { max-width: none; }
+}
+
+/* At phone width three columns of figures is three columns of two-word
+   fragments. One per line, ruled, is the same information and reads. */
+@media (max-width: 40rem) {
+  .gh-stats { grid-template-columns: minmax(0, 1fr); }
+  .gh-stat {
+    border-right: 0;
+    border-bottom: 1px solid var(--pr-hair);
+    padding: var(--s-4) 0 !important;
+  }
+  .gh-stat:last-child { border-bottom: 0; }
+  .gh-stat + .gh-stat { padding-left: 0 !important; }
+}
+
+/* The legacy figure boxes, same treatment: no box, a rule and a number. */
+.stat-box {
+  background: none !important;
+  border: 0 !important;
+  border-top: 1px solid var(--pr-hair-strong) !important;
+  border-radius: 0 !important;
+  padding: var(--s-4) var(--s-4) var(--s-4) 0 !important;
+  text-align: left !important;
+}
+.stat-box strong {
+  font-family: var(--ty-display) !important;
+  font-variation-settings: var(--pr-opsz-title);
+  font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.3rem) !important;
+  font-weight: var(--ty-weight-d) !important;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  /* It was gradient-clipped text, which the contrast pass cannot measure and
+     which reads as thin at any size. */
+  background: none !important;
+  -webkit-text-fill-color: var(--g-ink) !important;
+  color: var(--g-ink) !important;
+}
+.stat-box span {
+  font-size: var(--t-xs) !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  color: var(--g-ink-3) !important;
+}
+
+
+/* ══ 7. THE RECORD ═══════════════════════════════════════════════════════
+   `.doc` is this site's best idea — a sourced block with a head, a body and
+   a source line. It was styled as a plain bordered panel. Here it becomes
+   the thing it already is: an entry in a register. */
+
+.doc {
+  position: relative;
+  background: var(--pr-paper) !important;
+  border: 0 !important;
+  border-radius: var(--r-md) !important;
+  box-shadow: 0 0 0 1px var(--pr-hair), var(--sd-2) !important;
+  overflow: hidden;
+  transition: box-shadow var(--d-4) var(--ea-out);
+}
+.doc:hover { box-shadow: 0 0 0 1px var(--pr-hair-strong), var(--sd-3) !important; }
+.doc + .doc { margin-top: var(--s-5) !important; }
+
+.doc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-5) !important;
+  background: linear-gradient(180deg, var(--pr-sunk), transparent) !important;
+  border-bottom: 1px solid var(--pr-hair) !important;
+}
+.doc-title {
+  font-family: var(--ty-display) !important;
+  font-variation-settings: var(--pr-opsz-title);
+  font-size: var(--t-h3) !important;
+  font-weight: var(--ty-weight-d) !important;
+  line-height: var(--lh-snug);
+  letter-spacing: -0.015em;
+  color: var(--g-ink) !important;
+  margin: 0;
+}
+/* The count beside a heading: a figure, so it is set as one. */
+.doc-kicker {
+  flex: none;
+  font-size: var(--t-label) !important;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--g-ink-3) !important;
+  padding: 3px var(--s-3);
+  border: 1px solid var(--pr-hair);
+  border-radius: var(--r-pill);
+  background: color-mix(in oklab, #fff 60%, transparent);
+}
+
+.doc-body { padding: var(--s-5) !important; }
+
+/* The source line. This is the site's signature — every claim carries where
+   it came from — so it gets a real footnote treatment rather than small grey
+   text: a rule above it and the brand mark that the eyebrow uses. */
+.doc-source {
+  margin: 0 !important;
+  padding: var(--s-4) var(--s-5) !important;
+  border-top: 1px solid var(--pr-hair) !important;
+  background: var(--pr-sunk) !important;
+  font-size: var(--t-xs) !important;
+  line-height: var(--lh-body) !important;
+  color: var(--g-ink-3) !important;
+}
+.doc-source a { color: var(--brand-text) !important; text-underline-offset: 2px; }
+
+/* Notices. Two registers — a plain note and a caution — separated by the
+   colour of one edge rather than by two different boxes. */
+.doc-note {
+  position: relative;
+  padding: var(--s-4) var(--s-5) !important;
+  border: 0 !important;
+  border-left: 2px solid var(--brand) !important;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0 !important;
+  background: color-mix(in oklab, var(--brand) 5%, var(--pr-paper)) !important;
+  font-size: var(--t-sm);
+  line-height: var(--lh-prose);
+  color: var(--g-ink-2);
+}
+.doc-note strong { color: var(--g-ink); font-weight: 600; }
+.doc-note--caution {
+  border-left-color: var(--brand-2) !important;
+  background: color-mix(in oklab, var(--brand-2) 6%, var(--pr-paper)) !important;
+}
+
+/* Label/value rows — the register's own table. */
+.doc-row {
+  border-bottom: 1px solid var(--pr-hair-soft) !important;
+  transition: background var(--d-2) var(--ea-out);
+}
+.doc-row:hover { background: var(--pr-sunk); }
+.doc-label {
+  font-size: var(--t-label) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--g-ink-3) !important;
+}
+.doc-value { color: var(--g-ink) !important; }
+
+
+/* ══ 8. THE SPINE (admission sequence) ═══════════════════════════════════
+   A numbered process already had a rule down its left edge. What it did not
+   have was any sense of progress: six identical steps, no indication of where
+   you are in them.
+
+   The spine now fills as you scroll, driven by the scroll timeline rather
+   than by a listener, and each step's ordinal sits on a filled mark so the
+   sequence reads as a sequence at a glance. */
+
+.doc-steps { position: relative; }
+
+.doc-step {
+  padding: var(--s-5) 0 var(--s-5) calc(var(--s-8) + var(--s-2)) !important;
+  border-bottom: 1px solid var(--pr-hair-soft) !important;
+  transition: background var(--d-3) var(--ea-out);
+}
+.doc-step:hover { background: linear-gradient(90deg, var(--pr-sunk), transparent 70%); }
+
+/* The ordinal becomes a mark: a ring at rest, filled on hover. */
+.doc-step::before {
+  top: var(--s-5) !important;
+  width: 2.15rem !important;
+  height: 2.15rem;
+  display: grid;
+  place-items: center;
+  font-family: var(--ty-body) !important;
+  font-size: var(--t-xs) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  color: var(--brand-text) !important;
+  background: color-mix(in oklab, var(--brand) 8%, var(--pr-paper));
+  border: 1px solid color-mix(in oklab, var(--brand) 30%, transparent);
+  border-radius: var(--r-pill);
+  transition: background var(--d-3) var(--ea-out), color var(--d-3) var(--ea-out),
+              border-color var(--d-3) var(--ea-out), transform var(--d-3) var(--ea-spring);
+}
+.doc-step:hover::before {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--brand-ink) !important;
+  transform: scale(calc(1 + 0.06 * var(--mo)));
+}
+
+/* The spine itself, between marks. */
+.doc-step::after {
+  left: calc(1.075rem - 0.5px) !important;
+  top: calc(var(--s-5) + 2.45rem) !important;
+  background: var(--pr-hair) !important;
+}
+
+.doc-step-title {
+  font-size: var(--t-h3) !important;
+  font-variation-settings: var(--pr-opsz-title);
+  letter-spacing: -0.012em;
+  margin-bottom: var(--s-3) !important;
+}
+.doc-step-body {
+  font-size: var(--t-body) !important;
+  color: var(--g-ink-2) !important;
+  max-width: var(--pr-measure) !important;
+}
+
+/* Inline source links inside a step: a quiet chip rather than bold blue. */
+.card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-3) !important;
+  padding: 4px var(--s-3);
+  font-size: var(--t-xs) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
+  color: var(--brand-text) !important;
+  background: color-mix(in oklab, var(--brand) 6%, transparent);
+  border: 1px solid color-mix(in oklab, var(--brand) 18%, transparent);
+  border-radius: var(--r-pill);
+  transition: background var(--d-2) var(--ea-out), border-color var(--d-2) var(--ea-out),
+              transform var(--d-2) var(--ea-spring);
+}
+.card-link:hover {
+  background: color-mix(in oklab, var(--brand) 12%, transparent);
+  border-color: color-mix(in oklab, var(--brand) 34%, transparent);
+  transform: translate3d(0, calc(-1px * var(--mo)), 0);
+  color: var(--brand-text) !important;
+}
+.card-link:active { transform: translate3d(0, 1px, 0); }
+
+
+/* ══ 9. DATA TABLES ══════════════════════════════════════════════════════
+   Zebra striping is a workaround for rows that are hard to track. Ruled rows
+   and a sticky head track better and do not pattern the page. */
+
+.compare-table, .doc-table {
+  width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0;
+  background: var(--pr-paper) !important;
+  border: 0 !important;
+  border-radius: var(--r-sm) !important;
+  box-shadow: 0 0 0 1px var(--pr-hair), var(--sd-1) !important;
+  overflow: hidden;
+}
+.compare-table th, .doc-table th {
+  padding: var(--s-3) var(--s-4) !important;
+  background: color-mix(in oklab, #fff 88%, var(--g-base)) !important;
+  border-bottom: 1px solid var(--pr-hair-strong) !important;
+  font-size: var(--t-label) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase;
+  color: var(--g-ink-3) !important;
+  text-align: left;
+}
+.compare-table td, .doc-table td {
+  padding: var(--s-4) !important;
+  border-bottom: 1px solid var(--pr-hair-soft) !important;
+  font-size: var(--t-sm) !important;
+  line-height: var(--lh-body);
+  color: var(--g-ink-2) !important;
+  background: transparent !important;
+}
+.compare-table tr:last-child td, .doc-table tr:last-child td { border-bottom: 0 !important; }
+.compare-table tbody tr, .doc-table tbody tr { transition: background var(--d-2) var(--ea-out); }
+.compare-table tbody tr:hover td, .doc-table tbody tr:hover td {
+  background: var(--pr-sunk) !important;
+}
+.compare-table td strong { color: var(--g-ink) !important; font-weight: 600; }
+
+/* A table wider than its column scrolls inside its own box rather than
+   pushing the page sideways — tests/audit.mjs measures horizontal overflow at
+   390px and a wide table is the usual cause. */
+.pr-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  padding-bottom: var(--s-2);
+}
+
+
+/* ══ 10. CARDS ═══════════════════════════════════════════════════════════
+   Every card family on the site was a border plus a shadow plus white. They
+   are unified here on one recipe — hairline ring, hue-tinted shadow, a lift
+   that is a spring rather than a linear slide, and a specular that follows
+   the pointer (premium.js writes --px/--py; without it the highlight simply
+   sits still and nothing looks wrong). */
+
+.college-card, .why-card, .life-card, .off-card, .test-card,
+.vid-card, .guide-card, .faq-item, .cx-card {
+  position: relative;
+  border: 0 !important;
+  border-radius: var(--r-md) !important;
+  background: var(--pr-paper) !important;
+  box-shadow: 0 0 0 1px var(--pr-hair), var(--sd-2) !important;
+  transition:
+    transform var(--d-4) var(--ea-out),
+    box-shadow var(--d-4) var(--ea-out) !important;
+  overflow: hidden;
+}
+
+/* The specular. Drawn on a pseudo-element so no markup changes, and kept
+   under the content by z-index rather than by opacity tricks. */
+.college-card::after, .why-card::after, .life-card::after,
+.off-card::after, .guide-card::after, .cx-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    16rem circle at var(--px, 50%) var(--py, 50%),
+    color-mix(in oklab, var(--brand) 10%, transparent), transparent 62%);
+  transition: opacity var(--d-3) var(--ea-out);
+}
+.college-card > *, .why-card > *, .life-card > *,
+.off-card > *, .guide-card > *, .cx-card > * { position: relative; z-index: 1; }
+
+@media (hover: hover) and (pointer: fine) {
+  .college-card:hover, .why-card:hover, .life-card:hover, .off-card:hover,
+  .test-card:hover, .vid-card:hover, .guide-card:hover, .cx-card:hover {
+    transform: translate3d(0, calc(-4px * var(--mo)), 0) !important;
+    box-shadow: 0 0 0 1px var(--pr-hair-strong), var(--sd-3) !important;
+  }
+  .college-card:hover::after, .why-card:hover::after, .life-card:hover::after,
+  .off-card:hover::after, .guide-card:hover::after, .cx-card:hover::after {
+    opacity: calc(1 * var(--fx-glow));
+  }
+}
+
+.college-name {
+  font-variation-settings: var(--pr-opsz-title);
+  letter-spacing: -0.012em;
+}
+
+/* Government / private and the other record marks: a hairline chip, one
+   size, one weight — they were four different pill styles. */
+.college-tag, .college-badge, .pr-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px var(--s-3);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--pr-hair-strong);
+  background: color-mix(in oklab, #fff 55%, transparent);
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--g-ink-3);
+}
+
+
+/* ══ 11. QUESTIONS ═══════════════════════════════════════════════════════
+   The FAQ stays a disclosure list — searchable prose would be worse for the
+   thing families actually do here, which is scan for their own question. It
+   is the *styling* that was generic: a plus sign in a grey circle, a heavy
+   border, no state on the row itself. */
+
+.faq-item { box-shadow: 0 0 0 1px var(--pr-hair), var(--sd-1) !important; }
+.faq-item + .faq-item { margin-top: var(--s-3); }
+
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-5) !important;
+  font-size: var(--t-body) !important;
+  font-weight: 500 !important;
+  line-height: var(--lh-snug);
+  color: var(--g-ink) !important;
+  cursor: pointer;
+  transition: background var(--d-2) var(--ea-out), color var(--d-2) var(--ea-out);
+}
+.faq-q:hover { background: var(--pr-sunk); color: var(--brand-text) !important; }
+
+/* The mark rotates from + to × instead of swapping glyphs, which is one
+   fewer thing that can end up out of step with the open state. */
+.faq-icon {
+  flex: none;
+  width: 1.6rem; height: 1.6rem;
+  display: grid; place-items: center;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--pr-hair-strong);
+  background: transparent !important;
+  font-size: var(--t-sm);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--g-ink-3) !important;
+  transition: transform var(--d-3) var(--ea-spring), border-color var(--d-2) var(--ea-out),
+              color var(--d-2) var(--ea-out), background var(--d-2) var(--ea-out);
+}
+.faq-item.on .faq-icon, .faq-q[aria-expanded="true"] .faq-icon {
+  transform: rotate(calc(45deg * var(--mo, 1)));
+  background: var(--brand) !important;
+  border-color: var(--brand);
+  color: var(--brand-ink) !important;
+}
+/* The padding has to be on the OPEN state only. base.css collapses the
+   answer with `max-height: 0` and `overflow: hidden`, and max-height caps the
+   content box — padding sits outside it. An unconditional padding-bottom here
+   therefore gave every closed answer a 24px window, through which the first
+   line of the answer was visible under every question on the page.
+
+   The max-height is raised at the same time: 360px was set against the old
+   13.5px body text, and several of these answers are longer than that at the
+   current size — an answer that stops mid-sentence is worse than one that
+   opens a fraction slower. */
+.faq-body { padding: 0 var(--s-5) !important; }
+.faq-item.on .faq-body { padding: 0 var(--s-5) var(--s-5) !important; max-height: 46rem !important; }
+.faq-body p {
+  font-size: var(--t-sm);
+  line-height: var(--lh-prose);
+  color: var(--g-ink-2);
+  max-width: var(--pr-measure);
+}
+
+
+/* ══ 12. CONTROLS ════════════════════════════════════════════════════════ */
+
+/* The legacy call-to-action, which appears on ten pages under three different
+   class names, brought onto the button system. */
+.college-enquire, .calc-btn, .btn-wa-req, .a-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: calc(2.75rem * var(--sh-scale));
+  padding: 0 var(--s-6);
+  border-radius: var(--r-pill);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  transition: transform var(--d-2) var(--ea-spring), box-shadow var(--d-3) var(--ea-out),
+              background var(--d-3) var(--ea-out);
+}
+.college-enquire:hover, .calc-btn:hover, .btn-wa-req:hover, .a-btn-primary:hover {
+  transform: translate3d(0, calc(-2px * var(--mo)), 0);
+  box-shadow: var(--sd-3), 0 0 calc(26px * var(--fx-glow)) color-mix(in oklab, var(--brand) 26%, transparent);
+}
+.college-enquire:active, .calc-btn:active, .btn-wa-req:active, .a-btn-primary:active {
+  transform: translate3d(0, 1px, 0);
+}
+
+/* The quiet link form: an arrow that travels, and an underline that draws
+   from the left rather than appearing all at once. */
+.college-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  text-decoration: none !important;
+  transition: gap var(--d-2) var(--ea-out);
+}
+.college-link::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform var(--d-3) var(--ea-out);
+}
+.college-link:hover::after { transform: scaleX(1); }
+
+/* Inputs. One field style for the whole site — the lead form, the calculator
+   and the console each had their own. */
+input:where([type="text"], [type="tel"], [type="email"], [type="number"], [type="search"], [type="password"]),
+select, textarea {
+  background: color-mix(in oklab, #fff 72%, transparent);
+  border: 1px solid var(--pr-hair-strong);
+  border-radius: var(--r-sm);
+  color: var(--g-ink);
+  font: inherit;
+  font-size: var(--t-sm);
+  transition: border-color var(--d-2) var(--ea-out), box-shadow var(--d-2) var(--ea-out),
+              background var(--d-2) var(--ea-out);
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: none;
+  border-color: var(--brand);
+  background: #fff;
+  box-shadow: var(--focus-ring);
+}
+input::placeholder, textarea::placeholder { color: var(--g-ink-4); }
+/* An invalid field says so on the field, not only in a toast — but only once
+   the visitor has actually typed something. */
+input:not(:placeholder-shown):invalid {
+  border-color: color-mix(in oklab, var(--brand-2) 62%, transparent);
+}
+
+/* The hidden-attribute bug. `.foot-contacts a { display: flex }` beat the UA
+   sheet's `[hidden] { display: none }`, so the WhatsApp-call link — which is
+   marked hidden AND aria-hidden, and which boot.js reveals only on a phone —
+   was printed as bare text in the footer of all 44 pages. */
+[hidden] { display: none !important; }
+
+
+/* ══ 13. CHROME ══════════════════════════════════════════════════════════ */
+
+/* The footer was a four-column link farm. Giving the brand column its own
+   width and ruling the columns turns it into a masthead: the navigational
+   columns stay, but they stop competing with the identity. */
+.foot-top {
+  border-top: 1px solid var(--pr-hair);
+  padding-top: var(--s-6);
+}
+.foot-logo { font-variation-settings: var(--pr-opsz-title); }
+.foot-desc { max-width: 34ch; color: var(--g-ink-3); }
+.foot-contacts a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 3px 0;
+  color: var(--g-ink-2);
+  transition: color var(--d-2) var(--ea-out), transform var(--d-2) var(--ea-out);
+}
+.foot-contacts a:hover { color: var(--brand-text); transform: translate3d(calc(2px * var(--mo)), 0, 0); }
+.foot-contacts svg { width: 15px; height: 15px; flex: none; opacity: 0.7; }
+
+.foot-col-title, .foot-h {
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--g-ink-3);
+}
+
+/* The ticker is the one always-moving element on the page. It should read as
+   a wire feed, which means quieter than the content it sits under. */
+.ticker-item { font-size: var(--t-xs); letter-spacing: 0.01em; }
+
+
+/* Two leftovers from the dark build that the light migration did not reach.
+
+   The 2px navy rules above and below the credential rail (sections.css) were
+   the seam between a dark band and the page. There is no dark band any more,
+   so they read as two stray lines drawn across a light page. */
+.trust-section {
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+}
+
+/* And the one that mattered: the home page's map — the site's only signature
+   graphic — was rendering as an empty coordinate grid.
+
+   bridge.css sets `.map-pt { opacity: 0 }` and brings the points back with
+   `animation: fade ...` once the figure scrolls into view. There is no
+   `@keyframes fade` anywhere in the codebase. The animation therefore
+   resolved to nothing, the opacity stayed at 0, and all 27 colleges were
+   invisible on every visit. Nothing reported it because an SVG that draws
+   nothing still passes a contrast pass and still has no console error.
+
+   Defining the missing keyframes is the whole fix. The name stays `fade` so
+   bridge.css keeps working unedited, and the scale is the draw-in that rule
+   was plainly written for. */
+@keyframes fade {
+  from { opacity: 0; transform: scale(calc(1 - 0.35 * var(--mo))); }
+  to   { opacity: 1; transform: none; }
+}
+.map-pt { transform-box: fill-box; transform-origin: 50% 50%; }
+
+/* And the belt to that brace: if the observer never runs — no JS, an old
+   browser, a failed request — the points are simply there. An empty map is a
+   worse failure than an unanimated one. */
+@media (prefers-reduced-motion: reduce) {
+  .map-pt { opacity: 1 !important; animation: none !important; }
+}
+/* Same guarantee where scripting is off entirely: the class that starts the
+   draw-in is added by JS, so without JS there is nothing to add it. */
+@media (scripting: none) {
+  .map-pt { opacity: 1; }
+}
+
+
+/* ══ 14. MOTION ══════════════════════════════════════════════════════════
+   Everything below is scroll-driven, so it runs on the compositor and stays
+   glued to the scroll rather than lagging a main thread that is busy.
+
+   Two gates, both required:
+     @supports  — a browser without scroll timelines gets the finished layout.
+                  The fallback is never "no content".
+     no-preference — and --mo collapses every duration to zero on top of that,
+                  so the panel's Motion slider switches this off as well.
+
+   `.rev` is the legacy reveal class, on 64 elements across the content pages.
+   It has been inert since Phase 3. This is what brings it back. */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+
+    /* The entrance. Rise plus a very short blur — blur reads as focus
+       pulling rather than as a fade, which is the difference between
+       arriving and merely appearing.
+
+       The range ends at `entry 45%`, not 100%: a section taller than the
+       viewport never reaches "fully entered" until you have scrolled past
+       most of it, and would sit half-faded the whole way down. */
+    .rev, .pr-in {
+      animation: pr-arrive linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+    @keyframes pr-arrive {
+      from {
+        opacity: 0;
+        transform: translate3d(0, calc(26px * var(--mo)), 0);
+        filter: blur(calc(3px * var(--mo)));
+      }
+      to { opacity: 1; transform: none; filter: blur(0); }
+    }
+
+    /* Cascades. Each child's range starts a little later than the last, so a
+       row arrives as a sequence rather than as a block. Nine steps is enough
+       for every grid on this site; beyond that they share the last delay
+       rather than making the ninth item wait. */
+    .tabs-grid > .tab-card,
+    .trust-grid > .trust-badge,
+    .doc-steps > .doc-step,
+    .gh-stats > .gh-stat,
+    .pr-cascade > * {
+      animation: pr-arrive linear both;
+      animation-timeline: view();
+      animation-range: entry calc(0% + var(--n, 0) * 6%) entry calc(46% + var(--n, 0) * 6%);
+    }
+    /* Set in CSS rather than by JS so the cascade survives a JS failure and
+       needs no per-element inline style. */
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(1) { --n: 0; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(2) { --n: 1; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(3) { --n: 2; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(4) { --n: 3; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(5) { --n: 4; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(6) { --n: 5; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(7) { --n: 6; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(8) { --n: 7; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(n+9) { --n: 8; }
+
+    /* The spine fills as the sequence is read. Drawn over the hairline rather
+       than replacing it, so the unfilled part of the process stays visible —
+       the point is where you are in it, not where you have been. */
+    .doc-steps::before {
+      content: '';
+      position: absolute;
+      left: calc(1.075rem - 0.5px);
+      top: 2.6rem;
+      bottom: 2.6rem;
+      width: 1px;
+      background: linear-gradient(180deg, var(--brand), color-mix(in oklab, var(--brand) 25%, transparent));
+      transform-origin: 50% 0;
+      animation: pr-spine linear both;
+      animation-timeline: view();
+      animation-range: cover 12% cover 82%;
+      pointer-events: none;
+    }
+    @keyframes pr-spine { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+    /* The rail's heading drifts a little slower than the records beside it.
+       Small — 12px over a whole section — and it is what makes a two-column
+       page feel like one object rather than two columns. */
+    @media (min-width: 62rem) {
+      .pr-rail > .pr-rail-head {
+        animation: pr-drift linear both;
+        animation-timeline: view();
+        animation-range: cover;
+      }
+      @keyframes pr-drift {
+        from { transform: translate3d(0, calc(10px * var(--mo-parallax)), 0); }
+        to   { transform: translate3d(0, calc(-10px * var(--mo-parallax)), 0); }
+      }
+    }
+  }
+}
+
+/* Press. Not scroll-driven, so it lives outside the @supports block — and it
+   is the one piece of motion that has to work everywhere, because it is the
+   only feedback a touch device gets that a tap landed. */
+@media (prefers-reduced-motion: no-preference) {
+  .gl-btn:active, .college-enquire:active, .card-link:active,
+  .trust-badge:active, .cbar-btn:active, .nl-btn:active {
+    transition-duration: var(--d-1);
+  }
+}
+
+/* Smooth in-page scrolling, honoured only when motion is welcome. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+/* Reduced motion: state, never movement. --mo is already 0 at the root, which
+   collapses every duration derived from it; this closes the two cases that do
+   not read --mo. */
+@media (prefers-reduced-motion: reduce) {
+  .rev, .pr-in, .doc-steps::before,
+  .tabs-grid > .tab-card, .trust-grid > .trust-badge,
+  .doc-steps > .doc-step, .gh-stats > .gh-stat, .pr-cascade > * {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .doc-steps::before { display: none; }
+}
+
+
+/* ══ 15. PRINT ═══════════════════════════════════════════════════════════
+   A document checklist and a process sequence are things people print and
+   carry to a counselling desk. They should print as a document. */
+
+@media print {
+  .au, .grain, .m-progress-rail, .ticker, .cbar, #wa-float-wrap,
+  #chat-wrap, .tabs-section, #admin-overlay, .tp-sheet { display: none !important; }
+  body { background: #fff !important; }
+  .doc, .compare-table, .doc-table, .college-card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    break-inside: avoid;
+  }
+  .doc-step { break-inside: avoid; }
+  a[href^="http"]::after { content: ' (' attr(href) ')'; font-size: 0.85em; color: #555; }
+}

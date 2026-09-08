@@ -18,6 +18,7 @@ const stats = [
 ---
 <section class="gh">
   <div class="wrap gh-in">
+   <div class="gh-copy">
     <span class="gl-eyebrow m-focus">NMC India recognised · MEC Nepal process</span>
 
     <h1 class="gl-display gh-h1">
@@ -35,21 +36,43 @@ const stats = [
       <a href="/counseling" class="gl-btn gl-btn--primary m-magnet" data-pull="0.22">Book free counseling</a>
       <a href="/colleges" class="gl-btn gl-btn--ghost">See all {colleges.length} colleges</a>
     </div>
+   </div>
 
-    <div class="gh-stats m-stagger">
+    {/* The ledger. Below 76rem it is the row of three figures it has always
+        been; above it, it moves alongside the headline as a stacked column of
+        rules — which is what the empty right-hand third of a 1440px screen
+        was for, and it is filled with counted evidence rather than with a
+        stock photograph the site has said it will not use. */}
+    <dl class="gh-stats m-stagger">
       {stats.map((s) => (
-        <div class="gh-stat gl gl--soft">
-          <b data-count={s.n}>0</b>
-          <span>{s.l}</span>
+        <div class="gh-stat">
+          <dt><b data-count={s.n}>0</b></dt>
+          <dd>{s.l}</dd>
         </div>
       ))}
-    </div>
+    </dl>
   </div>
 </section>
 
 <style is:global>
   .gh { padding-block: clamp(3rem, 1.5rem + 7vw, 7rem) var(--s-section); }
   .gh-in { max-width: 62rem; }
+  .gh-copy { min-width: 0; }
+
+  @media (min-width: 76rem) {
+    .gh-in {
+      max-width: min(var(--container), 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 17rem;
+      column-gap: clamp(2.5rem, 1rem + 4vw, 5.5rem);
+      align-items: start;
+    }
+    .gh-stats {
+      grid-template-columns: minmax(0, 1fr) !important;
+      margin-top: var(--s-3) !important;
+      border-top: 0 !important;
+    }
+  }
   .gh-h1 { margin: var(--s-5) 0 var(--s-5); }
   .gh-h1 em { font-style: italic; }
   .gh-cta { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-6); }
@@ -58,14 +81,15 @@ const stats = [
     display: grid; gap: var(--s-4); margin-top: var(--s-8);
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   }
-  .gh-stat { padding: var(--s-5); }
+  .gh-stat { padding: var(--s-5); margin: 0; }
+  .gh-stat dt, .gh-stat dd { margin: 0; }
   .gh-stat b {
     display: block; font-family: var(--ty-display);
     font-size: clamp(2rem, 1.4rem + 2.2vw, 2.9rem); font-weight: var(--ty-weight-d);
     line-height: 1; letter-spacing: var(--ty-tight);
     font-variant-numeric: tabular-nums; color: var(--g-ink);
   }
-  .gh-stat span {
+  .gh-stat dd {
     display: block; margin-top: var(--s-2);
     font-size: var(--t-xs); color: var(--g-ink-3);
   }

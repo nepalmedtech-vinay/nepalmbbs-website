@@ -254,8 +254,15 @@ footer  { background: var(--m-fill-soft);
 
 /* .rev was the legacy reveal: opacity 0 until JS added .vis. With the old
    observer gone it would leave content permanently invisible, so it is
-   neutralised here and the scroll-driven classes do the work instead. */
-.rev { opacity: 1 !important; transform: none !important; }
+   neutralised here and the scroll-driven classes do the work instead.
+
+   The !important is deliberately NOT here any more. It was doing one useful
+   job — guaranteeing the content is visible — and one harmful one: an
+   important declaration beats a CSS animation, so nothing could ever animate
+   these 64 elements again. The plain declaration still wins over base.css by
+   order, so the guarantee holds, and premium.css can now give them a
+   scroll-driven entrance that is itself gated on @supports. */
+.rev { opacity: 1; transform: none; }
 
 
 /* ══ Components the alias layer cannot reach ═════════════════════════
