@@ -40,6 +40,7 @@
     closeModal: 1,
     convertCurr: 1,
     deleteCollege: 1,
+    deleteCollegePhoto: 1,
     deleteFAQ: 1,
     deleteTest: 1,
     deleteVideo: 1,
@@ -48,6 +49,7 @@
     enquireCollege: 1,
     exportCSV: 1,
     loadAdminColleges: 1,
+    loadCollegePhotoPreview: 1,
     loadDashboard: 1,
     loadLeadsTable: 1,
     openAdmin: 1,
@@ -74,7 +76,8 @@
     toggleFeature: 1,
     toggleMenu: 1,
     updateCities: 1,
-    updateLeadStage: 1
+    updateLeadStage: 1,
+    uploadCollegePhoto: 1
   };
 
   function run(el) {
