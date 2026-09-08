@@ -35,6 +35,9 @@ Before designing anything, classify the project and route:
 | Dashboard, admin panel, CRM, SaaS app shell, internal tool, multi-step product flow | Use §2 below. `taste-skill`'s design-system table (official packages per brief) still applies — reuse it rather than re-deriving. |
 | Education / healthcare / civic / regulated platform | Trust-first constraints override aesthetic preference (same rule `taste-skill` §0.A.6 states) — restrained motion, high contrast, no invented statistics, plain language. Route to product-UI (§2) or marketing (taste-skill) depending on which surface you're building. |
 | Mixed (marketing site + app behind login) | Route each surface separately. A cinematic marketing hero and a dense admin table are not the same design problem and should not share a motion/density budget. |
+| Native or cross-platform mobile app (iOS/Android/React Native/Flutter) — not a responsive website | Invoke `native-app-design` instead. This file's tokens/CSS-shaped guidance is web-specific; native has its own motion physics and platform conventions. |
+| Any of the above needs motion/graphics CSS genuinely cannot produce (complex scroll-scrubbed timelines, true 3D, particle systems, real refraction, Lottie/video/sound) | Finish routing above first, build the CSS-first version, and only then invoke `creative-technology-lab` for the specific gap — it is downstream of this gate, not a replacement for it. |
+| The brief calls for a distinctive visual identity beyond an off-the-shelf icon library — custom iconography, illustration, or wordmark treatment | Invoke `brand-identity-lab` alongside whichever row above applies. Check its own "does this actually need custom work" gate first — most "make it feel unique" asks are a typography/spacing/motion problem, not an illustration one. |
 
 State the routing decision in one line before proceeding, the same way
 `taste-skill` states its "Design Read" — e.g. *"Routing as: product UI

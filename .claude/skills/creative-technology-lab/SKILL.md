@@ -1,6 +1,6 @@
 ---
 name: creative-technology-lab
-description: Orchestrator for advanced creative-technology implementation — GSAP, Lenis, SVG/Canvas, WebGL/Three.js, and shader-based refraction — for the specific effects CSS genuinely cannot produce. Routes a creative requirement to the right tool (or combination), and enforces the QA gates every one of them must clear before shipping (performance budget, accessibility fallback, cleanup, device-tier gating). Use only after premium-design-os's CSS-first gate has been checked and found insufficient — this skill is the "yes, this genuinely needs it" tier, not a default.
+description: Orchestrator for advanced creative-technology implementation — GSAP, Lenis, SVG/Canvas, WebGL/Three.js, shader-based refraction, Lottie/video, and sound design — for the specific effects CSS genuinely cannot produce. Routes a creative requirement to the right tool (or combination), and enforces the QA gates every one of them must clear before shipping (performance budget, accessibility fallback, cleanup, device-tier gating). Use only after premium-design-os's CSS-first gate has been checked and found insufficient — this skill is the "yes, this genuinely needs it" tier, not a default.
 license: Internal — author's own project conventions, not third-party.
 ---
 
@@ -31,6 +31,9 @@ carries mandatory QA gates (§6) that CSS-tier work does not need.
 | A particle system, a large number (200+) of objects, or per-pixel effects where DOM node count would tank performance | Canvas (2D context) | `references/SVG_CANVAS.md` |
 | A genuinely 3D object, scene, or camera move; a particle system needing GPU parallelism at scale | WebGL via Three.js | `references/WEBGL_THREEJS.md` |
 | Light actually bending through/around a shape — true refraction, not a blur — the "Liquid Glass" class of effect | A fragment shader | `references/SHADER_REFRACTION.md` — read this before reaching for it; `backdrop-filter` (see `taste-skill` Appendix C) covers most of what people mean by "glass" without a shader at all |
+| A hand-animated illustration/icon sequence too complex for CSS/SVG (an actual After Effects export) | Lottie | `references/LOTTIE_VIDEO.md` |
+| Real captured footage as a background/hero element — not movement for its own sake | `<video>`, disciplined | `references/LOTTIE_VIDEO.md` |
+| Audio feedback on interaction — rare, and almost never the right call | Web Audio API, opt-in only | `references/SOUND_DESIGN.md` — read the first paragraph before reaching for this row at all |
 
 Multiple rows can combine — the common real pairing is **Lenis driving scroll
 feel + GSAP ScrollTrigger reading that same scroll position** (§2 in

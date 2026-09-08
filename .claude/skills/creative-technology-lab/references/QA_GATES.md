@@ -23,6 +23,22 @@ don't show up in a static screenshot the way a layout bug does.
       every route or every device (mobile, reduced-motion) that loads the
       page
 
+## 1.5 Lottie / video / sound — their own failure mode
+
+These three don't leak memory the way a Three.js scene does, but they fail
+in their own specific way: **unwanted autoplay and unmutable audio.**
+
+- [ ] No video autoplays with sound
+- [ ] Every video has `muted autoplay loop playsinline` if it autoplays at
+      all, and a correct poster frame
+- [ ] Any sound effect is opt-in, never plays before a user gesture, and has
+      a persistent, visible mute control if it exists at all
+- [ ] Lottie/video/sound respects `prefers-reduced-motion` — no autoplaying
+      loop a reduced-motion user can't stop
+- [ ] File sizes checked against actual displayed size, not source/export
+      resolution (a 4K video behind a 600px section, a needlessly detailed
+      Lottie JSON)
+
 ## 2. Accessibility
 
 - [ ] `prefers-reduced-motion: reduce` verified to actually stop continuous/
