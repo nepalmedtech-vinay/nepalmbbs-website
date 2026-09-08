@@ -139,6 +139,20 @@ candidate for the same fault.
   and most of the CSS describes the other. The dead half should be deleted
   per-family with a visual diff, as Phase 1 originally planned.
 
+## Newly identified this session (Phase 4 — college photos) — not yet fixed
+
+- **The admin panel's "🏥 Colleges" tab writes to a `site_colleges`
+  Supabase table that has never existed on the live project.** `admin.js`'s
+  own error strings say so ("Ensure site_colleges table exists in
+  Supabase"), and nothing on the public site reads from it —
+  `src/data/colleges.json` (27 records, build-time) is what every college
+  page and the `/colleges` listing actually render from. Found while
+  building the college-photo upload feature (this session), which was
+  deliberately kept independent of this broken table rather than built on
+  top of it — see `PageHeader`/`college-photo.js` additions and
+  `supabase/migrations/0006`. Fixing or removing the `site_colleges` UI is
+  a separate task from what was asked here.
+
 ## Newly identified this session (chunk 3 — content sourcing) — not yet fixed
 
 - **`WebFetch` is blocked by this sandbox's network egress policy for

@@ -60,6 +60,15 @@ const schema = {
     <a href="/colleges" class="college-link" style="display:inline-block;margin-bottom:18px">← All Nepal medical colleges</a>
     <div class="eyebrow">{isGovt ? 'Government college' : 'Private college'} · MEC Nepal 2025-26</div>
     <h1 class="sec-title" style="margin-bottom:14px">{c.name}</h1>
+
+    {/* Empty and hidden until college-photo.js finds a real, staff-uploaded
+        photo for this slug in Supabase Storage (migrations/0006). No photo
+        exists for any college yet — this renders nothing today, on every
+        college page, until one is actually uploaded through the admin panel.
+        Never a stock image: absence here means "no photo yet," not "insert
+        one," and the page is already correct without this element. */}
+    <div class="cph" id="college-photo" data-college-slug={c.slug} hidden></div>
+
     <EvidenceBadges college={c} />
   </div>
 

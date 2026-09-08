@@ -73,6 +73,40 @@ async function sbWDetail(path, data, method='POST'){
 }
 
 // =====================================================
+// SUPABASE STORAGE — college photos
+// =====================================================
+// Same idea as sbR/sbW above but for the Storage REST API rather than
+// PostgREST, since object upload/list/delete are shaped differently (raw
+// file bytes, a bucket in the path, no `Prefer` header). Used by
+// college-photo.js (public, read-only, anon key) and admin.js's college
+// photo uploader (writes, so it needs Auth.headers(), not the anon key).
+
+// Deterministic — no request, just the public URL a bucket:true object is
+// always served from. Never used to decide whether to render anything: the
+// caller lists the object first and only builds this URL for a name Storage
+// actually returned, so a mistyped filename can never produce a broken
+// <img>.
+function sbPublicUrl(bucket, path){
+  return SB + '/storage/v1/object/public/' + bucket + '/' + path;
+}
+
+// One prefix, newest first, capped at one — every caller wants "the current
+// cover photo for this college", never a gallery. sbHeaders() already picks
+// the signed-in staff JWT when there is one and the anon key otherwise, so
+// this works unauthenticated on a public college page and authenticated in
+// the admin panel with no caller-side branching.
+async function sbStorageList(bucket, prefix){
+  try{
+    const r = await fetch(SB + '/storage/v1/object/list/' + bucket, {
+      method: 'POST',
+      headers: sbHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ prefix, limit: 1, sortBy: { column: 'name', order: 'desc' } })
+    });
+    return r.ok ? await r.json() : [];
+  }catch(e){ return []; }
+}
+
+// =====================================================
 // ANALYTICS (GA4)
 // =====================================================
 // Only a GA4 Measurement ID is accepted — never arbitrary HTML from the database.

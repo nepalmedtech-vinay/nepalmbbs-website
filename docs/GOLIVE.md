@@ -39,7 +39,7 @@ housekeeping. Either way run it — do not assume which.
 ```
 
 The URI is in Supabase under Project Settings → Database → Connection string
-→ URI. It applies all four migrations in order and then runs eight checks
+→ URI. It applies all six migrations in order and then runs eight checks
 against the result — that the public cannot read leads, that the public can
 still submit one, that the documents bucket is private, that rate limiting is
 armed, that a new application starts its own follow-up. It prints what it
@@ -63,6 +63,8 @@ one file at a time, reading the result of each before starting the next:
 | `0002_admission_platform.sql` | applications, documents, notes, tasks, sequences, the portal function | Additive; drops nothing |
 | `0003_abuse_and_storage.sql` | rate limits, CHECK constraints, the private documents bucket | Additive |
 | `0004_lead_intake.sql` | lead → application conversion; seeded sequences | Additive |
+| `0005_revoke_internal_functions.sql` | closes an RPC-exposure gap the Supabase linter found in 0001-0004's own trigger functions | Additive |
+| `0006_college_photos_storage.sql` | public-read `college-photos` storage bucket, staff-write/admin-delete — plumbing only, adds no photo | Additive |
 
 Each file ends with an **AFTER RUNNING** block. Run those checks. They are
 short and they are the difference between "it applied" and "it works".

@@ -1752,3 +1752,21 @@ input:not(:placeholder-shown):invalid {
    footnote, e.g. admission-process.astro) directly rather than through
    `PageHeader.astro`, which stops at three. */
 .ph-in-4 { animation-delay: calc(460ms * var(--mo)); }
+
+
+/* ══ 21. COLLEGE PHOTO — appears only once a real one exists ═════════════
+   Phase 4's photo-upload plumbing (supabase/migrations/0006,
+   college-photo.js). `[hidden]` covers the "no photo yet" state — this
+   only styles the frame for the day a college actually has one. */
+.cph {
+  margin: var(--s-5) 0 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--sd-2);
+}
+.cph img {
+  display: block;
+  width: 100%;
+  max-height: 26rem;
+  object-fit: cover;
+}

@@ -13,6 +13,7 @@
   "closeModal",
   "convertCurr",
   "deleteCollege",
+  "deleteCollegePhoto",
   "deleteFAQ",
   "deleteTest",
   "deleteVideo",
@@ -21,6 +22,7 @@
   "enquireCollege",
   "exportCSV",
   "loadAdminColleges",
+  "loadCollegePhotoPreview",
   "loadDashboard",
   "loadLeadsTable",
   "openAdmin",
@@ -47,5 +49,6 @@
   "toggleFeature",
   "toggleMenu",
   "updateCities",
-  "updateLeadStage"
+  "updateLeadStage",
+  "uploadCollegePhoto"
 ]

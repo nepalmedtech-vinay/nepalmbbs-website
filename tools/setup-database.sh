@@ -38,7 +38,7 @@ echo "   tables without row-level security: ${open_tables:-unknown}"
 
 echo
 echo "── applying migrations ────────────────────────────────────"
-for f in 0001_security_baseline 0002_admission_platform 0003_abuse_and_storage 0004_lead_intake; do
+for f in 0001_security_baseline 0002_admission_platform 0003_abuse_and_storage 0004_lead_intake 0005_revoke_internal_functions 0006_college_photos_storage; do
   printf '   %s ... ' "$f"
   if run -f "$DIR/supabase/migrations/$f.sql" >/dev/null; then echo "ok"; else echo "FAILED"; exit 1; fi
 done
