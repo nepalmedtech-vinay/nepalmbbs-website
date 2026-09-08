@@ -37,6 +37,16 @@ const stats = [
     <span class="gh-mark" style="--mx:74%; --my:18%; --md:29s"></span>
   </div>
 
+  {/* A real 3D object, not a CSS approximation of one — a physically-lit
+      glass cluster (Three.js MeshPhysicalMaterial, transmission + IOR, an
+      actual environment map for real reflections) rendered in-browser.
+      Desktop + no-reduced-motion + WebGL-capable only (crystal-scene.js
+      feature-detects and quietly no-ops otherwise); the CSS field above is
+      not a fallback bolted on after, it is the pre-existing decorative
+      layer this sits in front of, so a visitor who gets neither still gets
+      a finished-looking hero. */}
+  <canvas id="gh-crystal" class="gh-crystal" aria-hidden="true"></canvas>
+
   <div class="wrap gh-in">
    <div class="gh-copy">
     <span class="gl-eyebrow gh-in-1">NMC India recognised · MEC Nepal process</span>
@@ -60,16 +70,22 @@ const stats = [
     </div>
    </div>
 
-    {/* The ledger. Below 76rem it is the row of three figures it has always
-        been; above it, it moves alongside the headline as a stacked column of
-        rules — which is what the empty right-hand third of a 1440px screen
-        was for, and it is filled with counted evidence rather than with a
-        stock photograph the site has said it will not use. */}
+    {/* The ledger, as floating dimensional glass rather than a flat list —
+        the owner asked for real 3D, not a colour swap. Each figure is a
+        genuine `.gl--live` pane (glass.css's existing pointer-tilt +
+        moving specular system, already built, previously only used on a
+        couple of cards) inside a wrapper that carries its own slow float;
+        splitting the two keeps the continuous float animation and the
+        pointer-driven tilt on separate transforms so they don't fight for
+        the same CSS property. Still counted evidence, not a stock image —
+        the glass is real, the numbers are still colleges.json's. */}
     <dl class="gh-stats gh-in-6">
-      {stats.map((s) => (
-        <div class="gh-stat">
-          <dt><b data-count={s.n}>0</b></dt>
-          <dd>{s.l}</dd>
+      {stats.map((s, i) => (
+        <div class="gh-stat-float" style={`--fi:${i}`}>
+          <div class="gh-stat gl gl--live">
+            <dt><b data-count={s.n}>0</b></dt>
+            <dd>{s.l}</dd>
+          </div>
         </div>
       ))}
     </dl>
@@ -115,4 +131,51 @@ const stats = [
     display: block; margin-top: var(--s-2);
     font-size: var(--t-xs); color: var(--g-ink-3);
   }
+
+  /* Boxed to the hero's own right column (the same 17rem the stat chips
+     use, per .gh-in's grid-template-columns above), starting below the
+     nav's real height rather than bleeding into it — the first version of
+     this sat at top:-3rem and 80vw wide, which collided with the nav bar
+     and ran under the headline. z-index 0 relative to .gh-in's 1 keeps the
+     real headline and chips readable in front of it regardless. */
+  .gh-crystal {
+    display: none;
+    position: absolute;
+    top: 5.5rem;
+    right: -1rem;
+    width: min(30rem, 46vw);
+    height: min(28rem, 40vh);
+    z-index: 0;
+    pointer-events: none;
+  }
+  @media (min-width: 62rem) {
+    .gh-crystal.is-ready { display: block; }
+  }
+  @media (min-width: 76rem) {
+    .gh-crystal { top: 3rem; right: -2rem; width: min(26rem, 30vw); height: min(30rem, 42vh); }
+  }
 </style>
+
+<script>
+  const canvas = document.getElementById('gh-crystal');
+  const fine = matchMedia('(min-width: 62rem)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // A *dynamic* import, deliberately — Three.js is ~130KB gzipped, and a
+  // static top-level `import` fetches and parses that regardless of the
+  // gate below, which would mean every phone visitor pays for a scene they
+  // never see. Gating first and importing only inside it means the bundle
+  // is requested exactly for the visitors who can use it: desktop,
+  // motion-on, WebGL-capable. Idle-mounted on top of that, same discipline
+  // aurora-gl.js already uses — nothing about the hero's readability
+  // depends on this, so it never competes with first paint or the load
+  // choreography's own timing.
+  if (canvas && fine && !reduce) {
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
+    idle(async () => {
+      const { mountCrystalScene } = await import('../lib/crystal-scene.js');
+      const ok = mountCrystalScene(canvas);
+      if (ok) canvas.classList.add('is-ready');
+    });
+  }
+</script>

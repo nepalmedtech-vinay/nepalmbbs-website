@@ -92,17 +92,18 @@
      "Quick Looks". Each is a complete, checked theme — not a colour swap. */
 
   var PRESETS = {
-    // Renamed from "dawn" 2026-09-08 when the default moved from light
-    // corporate blue/bronze to this dark navy + olive look, at the owner's
-    // explicit direction (their words: "olive green, light navy blue...
-    // follow iOS style... 3D feel, cinematic motion"). A light ground
-    // cannot produce the crystal/refraction drama a glass system is meant
-    // to show — proved by "nocturne" below, an existing dark preset that
-    // already did this correctly and is what this was benchmarked against.
+    // Renamed from "dawn" 2026-09-08 when the default moved off light
+    // corporate blue/bronze, in two steps: first to a dark navy + olive
+    // look, then deepened again to near-black + blue/teal after the owner
+    // sent a reference (a clear-glass card on true black) and asked for
+    // its colour/motion/3D *ideas* adapted with judgement, not copied
+    // outright — their own words: "medicine category style," not a
+    // fintech card. Blue + a healing teal-green stays disciplined to two
+    // hues on purpose, where the reference itself runs four+ neon accents.
     meridian: {
-      label: 'Meridian', hint: 'Deep navy ground, blue + olive crystal glass — the default',
-      brand: '#2F63D6', brand2: '#8A9A52', ink: '#EEF2F7', base: '#0B111D',
-      au1: '#3D74E0', au2: '#6C93EE', au3: '#8A9A52', au4: '#5E6E3C',
+      label: 'Meridian', hint: 'Near-black ground, blue + teal crystal glass — the default',
+      brand: '#2464E0', brand2: '#20B78E', ink: '#F2F5F9', base: '#07090D',
+      au1: '#2464E0', au2: '#5C93F0', au3: '#20B78E', au4: '#167A5C',
       auOpacity: 0.64, auBlur: 90, auScale: 1.1, auSpeed: 36,
       mBlur: 34, mOpacity: 0.5, mSaturate: 165, mBorder: 0.5, mInner: 0.38,
       radius: 20, border: 1, shScale: 1, depth: 1.25,

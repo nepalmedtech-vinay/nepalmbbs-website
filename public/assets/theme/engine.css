@@ -38,34 +38,36 @@
      through a frosted pane, which a near-white ground cannot produce (a
      translucent white pane over a white page is just a paler box). */
 
-  --g-base:        #0B111D;   /* page ground                    */
-  --g-base-2:      #121A2B;   /* secondary bands                */
-  --g-ink:         #EEF2F7;   /* primary text                   */
-  /* The ramp is solved, not chosen — see engine.js's fadeToContrast(). These
-     three are that solve for #EEF2F7 ink on #0B111D base (against the
-     "deepest" glass-pane surface, which is what nearly all text actually
-     sits on), computed with the same oklab mix the JS uses, so the paint
-     before JS runs matches the paint after it. Do not hand-pick a value here
-     that "looks about right" — the previous light pair shipped with roughly
-     890 pieces of text below WCAG AA before this ramp existed. */
-  --brand-text:    #6C95E6;   /* brand as TEXT — 4.5:1+ on the deepest glass */
-  --g-ink-2:       #B8BEC5;   /* secondary text        — 7.0:1 on the deepest pane */
-  --g-ink-3:       #9399A1;   /* tertiary / captions   — 4.5:1 on the deepest pane */
-  --g-ink-4:       #737A84;   /* placeholder, disabled — 3.0:1, never body copy */
+  --g-base:        #07090D;   /* page ground                    */
+  --g-base-2:      #10141C;   /* secondary bands                */
+  --g-ink:         #F2F5F9;   /* primary text                   */
+  /* 2026-09-08, third move: navy deepened to a near-true black — closer to
+     the reference the owner sent (a clear-glass card on black), and reads
+     more like a clinical/premium ground than a navy tint did. The ramp
+     below is the same solved-not-chosen approach, recomputed for this base:
+     see engine.js's fadeToContrast(). Do not hand-pick a value here that
+     "looks about right" — the original light pair shipped with roughly 890
+     pieces of text below WCAG AA before this ramp existed. */
+  --brand-text:    #588BEB;   /* brand as TEXT — 4.5:1+ on the deepest glass */
+  --g-ink-2:       #B0B4B8;   /* secondary text        — 7.0:1 on the deepest pane */
+  --g-ink-3:       #8C9094;   /* tertiary / captions   — 4.5:1 on the deepest pane */
+  --g-ink-4:       #6F7276;   /* placeholder, disabled — 3.0:1, never body copy */
 
   /* ══ 2. BRAND ══════════════════════════════════════════════════════════
      One brand hue and one counter-hue. Everything tinted downstream derives
      from these two, so the admin panel needs only two colour pickers to
      re-skin the entire site coherently. */
 
-  /* 2026-09-08, second move: off the light corporate blue/bronze pair to a
-     royal blue + olive green, both against the new dark ground above — the
-     owner's explicit brief ("olive green, light navy blue... follow iOS
-     style"). Deepened from the first blue tried (#3D74E0) to #2F63D6
-     specifically to clear 4.5:1 as button-fill text against white/near-white
-     — a lighter value read well but measured 4.40:1, just under AA. */
-  --brand:         #2F63D6;   /* primary action, links, focus   */
-  --brand-2:       #8A9A52;   /* counter accent, highlights     */
+  /* Clinical blue + a healing teal-green — deliberately restrained rather
+     than the neon multi-colour palette in the fintech-card reference the
+     owner sent: "take colour/motion ideas, not the context" (their words)
+     — this is a medical admissions platform, and a loud accent set reads
+     wrong for that even at high production value. Blue #2464E0 clears
+     5.3:1 as button-fill text against white; green #20B78E clears 5.9:1
+     against the deepest glass pane (its own job — it is never a button
+     fill, only glow/accent/text-on-glass). */
+  --brand:         #2464E0;   /* primary action, links, focus   */
+  --brand-2:       #20B78E;   /* counter accent, highlights     */
   --brand-ink:     #FFFFFF;   /* text on a brand fill           */
 
   /* Derived — do not set these directly from the panel. */
@@ -80,13 +82,15 @@
      without it, frosted panels sit on flat grey and the whole material
      reads as a cheap overlay rather than as glass. */
 
-  /* Blue-to-olive, both against the dark ground — the owner's palette. Two
-     tints of each hue so the four blobs read as one considered field rather
-     than four unrelated colours. */
-  --au-1:          #3D74E0;   /* royal blue  */
-  --au-2:          #6C93EE;   /* sky blue    */
-  --au-3:          #8A9A52;   /* olive       */
-  --au-4:          #5E6E3C;   /* deep olive  */
+  /* Blue-to-teal, both against the near-black ground — two tints of each
+     hue so the four blobs read as one considered field rather than four
+     unrelated colours (a wider neon set was tried and dropped: right for
+     the reference's fintech card, wrong register for a medical admissions
+     platform). */
+  --au-1:          #2464E0;   /* royal blue  */
+  --au-2:          #5C93F0;   /* sky blue    */
+  --au-3:          #20B78E;   /* teal-green  */
+  --au-4:          #167A5C;   /* deep teal   */
   --au-opacity:    0.64;      /* 0 disables the field entirely  */
   --au-scale:      1.1;       /* blob size multiplier           */
   --au-blur:       90px;      /* softness                       */
@@ -102,7 +106,7 @@
      engine.js's apply() computes this at runtime as base lifted 10% toward
      white; "35 41 52" is that same computation done once by hand, so the
      pre-JS paint isn't a flash of white glass on a black page. */
-  --m-tint:        35 41 52;     /* glass body, as an RGB triple */
+  --m-tint:        32 34 37;     /* glass body, as an RGB triple */
   --m-opacity:     0.5;          /* how much body it has         */
   --m-blur:        34px;         /* backdrop blur radius         */
   --m-saturate:    165%;         /* colour boost behind the pane */

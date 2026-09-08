@@ -491,66 +491,123 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
 
 
 /* ══ 6. FIGURES ══════════════════════════════════════════════════════════
-   The hero's three statistics were three equal cards — the pattern the whole
-   web uses for "we have numbers". Rules between figures say the same thing
-   and let the numbers themselves carry the weight, which is the point of
-   having counted them. */
+   2026-09-08: was a flat ruled ledger — ".gh-stat::before/::after {display:
+   none}" deliberately killed .gl's own rim/highlight so the figures read as
+   print, not glass. Replaced at the owner's explicit direction for real
+   dimensional glass: each figure is now a genuine `.gl--live` pane (glass.css
+   §"Interactive panes" — pointer-tilt + a moving specular highlight, built
+   earlier this session but, until now, barely used anywhere) inside a
+   wrapper that floats on its own slow cycle. Two separate transforms on two
+   elements on purpose — the float (translateY, this file) and the pointer
+   tilt (rotateX/rotateY, glass.css, driven by --gx/--gy from runtime.js) —
+   because one element can only have one `transform`, and layering both into
+   a single animation would mean re-deriving the tilt formula inside a
+   keyframe and fighting the hover transition glass.css already handles. */
 
 .gh-stats {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0 !important;
-  margin-top: var(--s-7) !important;
-  border-top: 1px solid var(--pr-hair-strong);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-5);
+  margin-top: var(--s-8) !important;
 }
+
+.gh-stat-float {
+  flex: 1 1 13rem;
+  min-width: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gh-stat-float {
+    animation: gh-stat-drift calc(7s + var(--fi, 0) * 1.1s) var(--ea-io) infinite;
+    animation-delay: calc(var(--fi, 0) * -1.8s);
+  }
+}
+@keyframes gh-stat-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, calc(-7px * var(--mo)), 0); }
+}
+
 .gh-stat {
-  background: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  padding: var(--s-5) var(--s-5) var(--s-4) 0 !important;
-  border-right: 1px solid var(--pr-hair);
+  padding: var(--s-5) !important;
+  border-radius: var(--r-xl) !important;
+  position: relative;
+  /* Alternates blue / olive / blue — a coloured rim light per chip rather
+     than one flat glow, which is what makes a cluster of panes read as
+     individually lit objects instead of three copies of the same card. */
+  --gh-glow: var(--brand);
+  box-shadow: var(--sd-3),
+    0 0 0 1px color-mix(in oklab, var(--gh-glow) 38%, transparent) inset,
+    0 0 1px 1px color-mix(in oklab, var(--gh-glow) 60%, transparent),
+    0 0 60px -8px color-mix(in oklab, var(--gh-glow) 85%, transparent),
+    0 0 120px -20px color-mix(in oklab, var(--gh-glow) 60%, transparent);
 }
-.gh-stat::before, .gh-stat::after { display: none !important; }
-.gh-stat:last-child { border-right: 0; }
-.gh-stat + .gh-stat { padding-left: var(--s-5) !important; }
+.gh-stat-float:nth-child(2) .gh-stat { --gh-glow: var(--brand-2); }
+.gh-stat:hover {
+  box-shadow: var(--sd-4),
+    0 0 0 1px color-mix(in oklab, var(--gh-glow) 55%, transparent) inset,
+    0 0 1px 1px color-mix(in oklab, var(--gh-glow) 80%, transparent),
+    0 0 76px -6px color-mix(in oklab, var(--gh-glow) 100%, transparent),
+    0 0 150px -16px color-mix(in oklab, var(--gh-glow) 75%, transparent);
+}
+
+/* A slow-rotating conic sweep behind the rim — the edge doesn't just sit
+   lit, it visibly turns, which reads as "alive" in exactly the way the
+   reference glass/credit-card renders do without needing an actual 3D
+   scene. Its own element (not the border-image trick .gl::before already
+   uses) because that one is a static two-stop gradient; this one spins. */
+.gh-stat::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute;
+  inset: -1px;
+  z-index: 2 !important;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--gh-spin, 0deg),
+    color-mix(in oklab, var(--gh-glow) 90%, transparent) 0deg,
+    transparent 70deg,
+    transparent 290deg,
+    color-mix(in oklab, var(--gh-glow) 90%, transparent) 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.85;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gh-stat::before {
+    animation: gh-stat-spin calc(9s + var(--fi, 0) * 1.4s) linear infinite;
+  }
+}
+@keyframes gh-stat-spin { to { --gh-spin: 360deg; } }
+@property --gh-spin {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
 .gh-stat b {
   font-variation-settings: var(--pr-opsz-title);
   letter-spacing: -0.02em;
+  background: linear-gradient(105deg, var(--g-ink) 30%, color-mix(in oklab, var(--gh-glow) 70%, var(--g-ink)) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
 }
 .gh-stat dd, .gh-stat span {
   max-width: 24ch;
   font-size: var(--t-xs);
   line-height: var(--lh-body);
   color: var(--g-ink-3);
+  margin-top: var(--s-2);
 }
 
-/* Above 76rem the figures stack beside the headline instead of sitting under
-   it, so the rules between them turn from vertical to horizontal. */
 @media (min-width: 76rem) {
-  .gh-stat {
-    border-right: 0;
-    border-bottom: 1px solid var(--pr-hair);
-    padding: var(--s-4) 0 !important;
-  }
-  .gh-stat:first-child { border-top: 1px solid var(--pr-hair-strong); }
-  .gh-stat:last-child { border-bottom: 0; }
-  .gh-stat + .gh-stat { padding-left: 0 !important; }
+  .gh-stats { flex-direction: column; }
   .gh-stat b { font-size: clamp(1.8rem, 1.4rem + 1vw, 2.3rem); }
   .gh-stat dd, .gh-stat span { max-width: none; }
 }
 
-/* At phone width three columns of figures is three columns of two-word
-   fragments. One per line, ruled, is the same information and reads. */
 @media (max-width: 40rem) {
-  .gh-stats { grid-template-columns: minmax(0, 1fr); }
-  .gh-stat {
-    border-right: 0;
-    border-bottom: 1px solid var(--pr-hair);
-    padding: var(--s-4) 0 !important;
-  }
-  .gh-stat:last-child { border-bottom: 0; }
-  .gh-stat + .gh-stat { padding-left: 0 !important; }
+  .gh-stats { flex-direction: column; }
 }
 
 /* The legacy figure boxes, same treatment: no box, a rule and a number. */
