@@ -346,6 +346,24 @@
       });
     });
 
+    // The OS/browser-level motion preference outranks any theme, including a
+    // custom one saved from the admin panel. Without this, the SCHEMA loop
+    // above sets --mo etc. as an INLINE style on every load (every preset
+    // names mo: 1 or similar) -- and an inline style beats the CSS media
+    // query in engine.css that is supposed to zero these out under reduced
+    // motion, because inline author styles outrank external stylesheet rules
+    // regardless of specificity. The result: prefers-reduced-motion was
+    // being silently overridden back to full motion on every page that ran
+    // this script, which is every page. Found while adding the Phase 3 hero
+    // choreography and testing it under reduced motion -- the bug is
+    // sitewide, not new to that feature.
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      set('--mo', 0);
+      set('--mo-tilt', 0);
+      set('--mo-parallax', 0);
+      set('--au-speed', '0s');
+    }
+
     // ── Mode ──────────────────────────────────────────────────────────
     // There is no dark-mode flag. The mode IS the ground colour: pick a dark
     // base and everything below follows. A separate switch would be a second

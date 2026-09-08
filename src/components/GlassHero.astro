@@ -17,23 +17,45 @@ const stats = [
 ];
 ---
 <section class="gh">
+  {/* The field: architectural grid + one slow radial light + a graticule
+      motif borrowed from the map section below (same fine-line, degree-
+      tick language) + a handful of drifting marks previewing the map's
+      dots. Entirely decorative, aria-hidden, and — per the brief's own
+      instruction — the motion here is meant to register subconsciously,
+      not be watched: one very slow (26s+) drift, nothing that resolves
+      into a shape someone would try to read. */}
+  <div class="gh-field" aria-hidden="true">
+    <div class="gh-grid"></div>
+    <div class="gh-glow"></div>
+    <svg class="gh-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <line x1="0" y1="28" x2="100" y2="28" />
+      <line x1="0" y1="74" x2="100" y2="74" />
+      <line x1="82" y1="0" x2="82" y2="100" />
+    </svg>
+    <span class="gh-mark" style="--mx:12%; --my:22%; --md:34s"></span>
+    <span class="gh-mark" style="--mx:88%; --my:64%; --md:41s"></span>
+    <span class="gh-mark" style="--mx:74%; --my:18%; --md:29s"></span>
+  </div>
+
   <div class="wrap gh-in">
    <div class="gh-copy">
-    <span class="gl-eyebrow m-focus">NMC India recognised · MEC Nepal process</span>
+    <span class="gl-eyebrow gh-in-1">NMC India recognised · MEC Nepal process</span>
 
     <h1 class="gl-display gh-h1">
-      <span class="gl-line" style="--i:0"><span>Your MBBS in Nepal,</span></span>
-      <span class="gl-line" style="--i:1"><span>decided on <em class="gl-grad">evidence</em>.</span></span>
+      <span class="gl-line" style="--i:1"><span>Your MBBS in Nepal,</span></span>
+      <span class="gl-line" style="--i:2"><span>decided on <em class="gl-grad">evidence</em>.</span></span>
     </h1>
 
-    <p class="gl-lead m-rise">
+    <p class="gl-lead gh-in-4">
       We publish what we can source and say so when we cannot. No fee figures
       that go stale, no stock photographs standing in for a campus, no promise
       the Medical Education Commission has not made.
     </p>
 
-    <div class="gh-cta m-rise">
-      <a href="/counseling" class="gl-btn gl-btn--primary m-magnet" data-pull="0.22">Book free counseling</a>
+    <div class="gh-cta gh-in-5">
+      <a href="/counseling" class="gl-crystal m-magnet" data-pull="0.22">
+        <span class="gl-crystal-face"><span class="gl-crystal-sheen"></span>Book free counseling</span>
+      </a>
       <a href="/colleges" class="gl-btn gl-btn--ghost">See all {colleges.length} colleges</a>
     </div>
    </div>
@@ -43,7 +65,7 @@ const stats = [
         rules — which is what the empty right-hand third of a 1440px screen
         was for, and it is filled with counted evidence rather than with a
         stock photograph the site has said it will not use. */}
-    <dl class="gh-stats m-stagger">
+    <dl class="gh-stats gh-in-6">
       {stats.map((s) => (
         <div class="gh-stat">
           <dt><b data-count={s.n}>0</b></dt>

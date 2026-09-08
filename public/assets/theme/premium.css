@@ -1260,3 +1260,409 @@ input:not(:placeholder-shown):invalid {
   .doc-step { break-inside: avoid; }
   a[href^="http"]::after { content: ' (' attr(href) ')'; font-size: 0.85em; color: #555; }
 }
+
+
+/* ══ 16. NAVIGATION — transparent → glass ════════════════════════════════
+   Phase 3 visual benchmark.
+
+   #navbar carried an unconditional glass fill at all times (bridge.css,
+   now removed — see the comment left in its place). There was no
+   transparent state to transition FROM, so "the nav becomes glass on
+   scroll" was never actually visible; it was glass from the first frame.
+
+   Two layers, deliberately:
+     1. A discrete JS-driven baseline (`.is-stuck`, toggled by the existing
+        listener in runtime.js — nothing new to wire up, `#navbar` just
+        needed the `.gl-nav` class runtime.js already looks for). Correct
+        in every browser, jumps rather than glides.
+     2. A scroll-timeline smooth version for browsers that support it,
+        which animation-origin priority (animation > normal author) lets
+        win over the discrete baseline without any !important anywhere.
+   Neither path is a decoration on top of the other — #2 is #1, made
+   continuous. If #2's feature isn't supported, #1 is correct on its own. */
+
+#navbar.gl-nav {
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  box-shadow: none;
+  transition: background var(--d-3) var(--ea-out),
+              border-color var(--d-3) var(--ea-out),
+              box-shadow var(--d-3) var(--ea-out);
+}
+#navbar.gl-nav.is-stuck {
+  background: rgba(var(--m-tint) / calc(var(--m-opacity) * 0.86));
+  -webkit-backdrop-filter: blur(calc(var(--m-blur) * 0.7)) saturate(var(--m-saturate));
+          backdrop-filter: blur(calc(var(--m-blur) * 0.7)) saturate(var(--m-saturate));
+  border-bottom-color: var(--m-hairline);
+  box-shadow: var(--sd-2);
+}
+
+@supports (animation-timeline: scroll(root block)) {
+  @media (prefers-reduced-motion: no-preference) {
+    #navbar.gl-nav {
+      animation: pr-nav-glass linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 110px;
+    }
+    @keyframes pr-nav-glass {
+      from {
+        background: transparent;
+        -webkit-backdrop-filter: blur(0px) saturate(100%);
+                backdrop-filter: blur(0px) saturate(100%);
+        border-bottom-color: transparent;
+        box-shadow: none;
+      }
+      to {
+        background: rgba(var(--m-tint) / calc(var(--m-opacity) * 0.86));
+        -webkit-backdrop-filter: blur(calc(var(--m-blur) * 0.7)) saturate(var(--m-saturate));
+                backdrop-filter: blur(calc(var(--m-blur) * 0.7)) saturate(var(--m-saturate));
+        border-bottom-color: var(--m-hairline);
+        box-shadow: var(--sd-2);
+      }
+    }
+  }
+}
+
+/* The hamburger bars were hard-coded white (#fff) in base.css, a leftover
+   of the original dark nav. On the light theme, both the transparent state
+   (light page showing through) and the glass state (near-white fill) put a
+   white bar on a near-white ground — the exact "text flipped, background
+   didn't" failure chrome.css's file comment already documents three other
+   instances of. Fourth one, found while this file was open for the nav. */
+.hbg span { background: var(--g-ink) !important; }
+
+
+/* ══ 17. CRYSTAL CTA ═════════════════════════════════════════════════════
+   Phase 3 visual benchmark. One reusable primary-action component, used
+   on the site's two highest-visibility conversion points (nav, hero) —
+   not a replacement for `.gl-btn` everywhere, which stays the button
+   system for every secondary action across the other 43 routes. Reads
+   only tokens (--brand, --brand-lift, --brand-deep, --sd-*, --fx-glow),
+   so the admin panel's live theme generator still re-skins it.
+
+   The difference from `.gl-btn--primary` is material, not decorative:
+   a real internal light gradient (the surface has a top and a bottom,
+   not just a fill), a fine lit ring instead of no border, and a sheen
+   drawn as its own element so the sweep can be wider and angled without
+   fighting the label text underneath it. */
+
+.gl-crystal {
+  position: relative;
+  display: inline-flex;
+  border-radius: var(--r-pill);
+  isolation: isolate;
+  text-decoration: none !important;
+  color: var(--brand-ink) !important;
+}
+
+.gl-crystal-face {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: calc(2.85rem * var(--sh-scale));
+  padding: 0 var(--s-6);
+  border-radius: inherit;
+  overflow: hidden;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  background:
+    linear-gradient(180deg, rgba(255 255 255 / 0.24) 0%, transparent 46%),
+    linear-gradient(148deg, var(--brand-lift), var(--brand) 58%, var(--brand-deep));
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.55),
+    inset 0 -1px 0 rgba(0 0 0 / 0.14),
+    0 0 0 1px color-mix(in oklab, var(--brand-lift) 55%, transparent),
+    var(--sd-2),
+    0 0 calc(22px * var(--fx-glow)) color-mix(in oklab, var(--brand) calc(26% * var(--fx-glow)), transparent);
+  transform: translate3d(0, 0, 0) scale(1);
+  transition: transform var(--d-2) var(--ea-spring),
+              box-shadow var(--d-3) var(--ea-out);
+}
+
+.gl-crystal:hover .gl-crystal-face {
+  transform: translate3d(0, -2px, 0) scale(1);
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.65),
+    inset 0 -1px 0 rgba(0 0 0 / 0.16),
+    0 0 0 1px color-mix(in oklab, var(--brand-lift) 70%, transparent),
+    var(--sd-3),
+    0 0 calc(34px * var(--fx-glow)) color-mix(in oklab, var(--brand) calc(38% * var(--fx-glow)), transparent);
+}
+.gl-crystal:active .gl-crystal-face {
+  transform: translate3d(0, 1px, 0) scale(0.983);
+  transition-duration: var(--d-1);
+}
+
+/* The sweep. A real element rather than a pseudo-element sized to the
+   label, so it can be wider than the text and cross the whole surface —
+   a light passing over glass, not a shine printed on a button. One pass
+   on hover, never a loop (a looping shine reads as an advert). */
+.gl-crystal-sheen {
+  position: absolute;
+  top: -30%;
+  bottom: -30%;
+  width: 40%;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255 255 255 / 0.6),
+    transparent);
+  transform: translate3d(-180%, 0, 0) skewX(-18deg);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gl-crystal:hover .gl-crystal-sheen {
+    animation: cx-sweep calc(0.85s * max(var(--mo), 0.001)) var(--ea-out);
+  }
+}
+@keyframes cx-sweep { to { transform: translate3d(380%, 0, 0) skewX(-18deg); } }
+
+/* Nav-specific sizing: the nav bar is 69px tall, a full .gl-crystal-face
+   at 2.85rem min-height would crowd it. */
+.nav-cta.gl-crystal .gl-crystal-face {
+  min-height: 2.4rem;
+  padding: 0 var(--s-5);
+  font-size: var(--t-xs);
+}
+
+/* base.css already hides the nav CTA below 1024px — the mobile menu's own
+   "Free Counseling ->" link (MobileMenu.astro) covers that action there.
+   That rule sits inside a media query in an earlier sheet; this file loads
+   last and .gl-crystal's own unconditional `display: inline-flex` above
+   otherwise wins regardless of the media query, at equal specificity, by
+   source order alone — which is what let the pill render full-width and
+   overflow at 390px instead of disappearing. Restated here, in the same
+   sheet that introduced the conflict, rather than edited in base.css. */
+@media (max-width: 1024px) {
+  .nav-cta.gl-crystal { display: none; }
+}
+
+
+/* ══ 18. HERO — cinematic field + load choreography ══════════════════════
+   Phase 3 visual benchmark.
+
+   Two independent systems:
+     1. `.gh-field` — a decorative background layer behind the hero copy:
+        an architectural grid, one slow radial light, a graticule motif
+        borrowed from the map section (the same fine-line, degree-tick
+        language), and a few drifting marks that preview the map's dots.
+        All AMBIENT-tier: one very slow cycle (26s+), because the brief
+        asks for movement that "should be almost subconscious" — nothing
+        here should resolve into a shape worth watching.
+     2. The choreography (`.gh-in-1` … `.gh-in-6`) — a page-LOAD sequence,
+        not scroll-driven. `animation-timeline: view()` (used everywhere
+        else on this site) resolves near-instantly for anything already
+        in the viewport at load, which the hero always is — it cannot
+        produce a staged entrance for above-the-fold content. Plain CSS
+        `animation-delay`, `backwards` fill, is the right tool for a
+        load sequence; `.gl-line`'s existing headline reveal already uses
+        exactly this technique, so this extends the site's own pattern
+        to the rest of the hero rather than introducing a second one. */
+
+.gh { position: relative; overflow: clip; }
+
+.gh-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 96%);
+          mask-image: linear-gradient(180deg, #000 55%, transparent 96%);
+}
+.gh-in { position: relative; z-index: 1; }
+
+.gh-grid {
+  position: absolute;
+  inset: -1px;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(90deg, color-mix(in oklab, var(--g-ink) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in oklab, var(--g-ink) 6%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(120% 90% at 78% 20%, #000 0%, transparent 72%);
+          mask-image: radial-gradient(120% 90% at 78% 20%, #000 0%, transparent 72%);
+}
+
+.gh-glow {
+  position: absolute;
+  width: 46rem;
+  height: 46rem;
+  top: -14rem;
+  right: -8rem;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    color-mix(in oklab, var(--brand) 16%, transparent) 0%,
+    color-mix(in oklab, var(--brand) 5%, transparent) 46%,
+    transparent 72%);
+  filter: blur(6px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gh-glow {
+    animation: gh-drift calc(38s * max(var(--mo), 0.3)) ease-in-out infinite alternate;
+  }
+}
+@keyframes gh-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.85; }
+  to   { transform: translate3d(calc(-3% * var(--mo)), calc(4% * var(--mo)), 0) scale(1.06); opacity: 1; }
+}
+
+.gh-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--g-ink);
+  opacity: 0.07;
+}
+.gh-lines line { stroke: currentColor; stroke-width: 0.15; vector-effect: non-scaling-stroke; }
+
+.gh-mark {
+  position: absolute;
+  left: var(--mx);
+  top: var(--my);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brand);
+  opacity: 0.28;
+  box-shadow: 0 0 12px 2px color-mix(in oklab, var(--brand) 40%, transparent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gh-mark {
+    animation: gh-mark-drift var(--md, 32s) ease-in-out infinite alternate;
+  }
+}
+@keyframes gh-mark-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(calc(-14px * var(--mo)), calc(10px * var(--mo)), 0); }
+}
+
+@media (max-width: 48rem) {
+  /* The field is a desktop flourish. At phone width the grid and lines
+     compete with the text for the same cramped space more than they add
+     depth, so only the softest layer (the glow) survives. */
+  .gh-grid, .gh-lines, .gh-mark { display: none; }
+}
+
+/* ── Choreography ──────────────────────────────────────────────────────
+   One keyframe, six delays. `backwards` fill means each element sits in
+   its hidden state for the length of its own delay, then plays — which
+   is the staging itself; there is no separate "hidden until JS adds a
+   class" step, so a failure to run JS costs nothing (unlike an
+   IntersectionObserver-based reveal, this never depends on JS at all). */
+
+.gh-in-1, .gh-in-4, .gh-in-5, .gh-in-6 {
+  animation: pr-hero-in calc(0.6s * max(var(--mo), 0.001)) var(--ea-enter) backwards;
+}
+.gh-in-1 { animation-delay: calc(80ms  * var(--mo)); }
+.gh-in-4 { animation-delay: calc(520ms * var(--mo)); }
+.gh-in-5 { animation-delay: calc(700ms * var(--mo)); }
+.gh-in-6 { animation-delay: calc(880ms * var(--mo)); }
+
+@keyframes pr-hero-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, calc(16px * var(--mo)), 0);
+    filter: blur(calc(4px * var(--mo)));
+  }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* The ledger's three figures cascade individually once the block itself
+   (.gh-in-6) has started — the container's delay is their floor, each
+   child adds a little more on top, the same relationship `.gl-line`'s
+   `--i` has to the headline's base delay. */
+.gh-stats.gh-in-6 { animation: none; opacity: 1; transform: none; filter: none; }
+.gh-stats.gh-in-6 > .gh-stat {
+  animation: pr-hero-in calc(0.55s * max(var(--mo), 0.001)) var(--ea-enter) backwards;
+}
+.gh-stats.gh-in-6 > .gh-stat:nth-child(1) { animation-delay: calc(880ms  * var(--mo)); }
+.gh-stats.gh-in-6 > .gh-stat:nth-child(2) { animation-delay: calc(960ms  * var(--mo)); }
+.gh-stats.gh-in-6 > .gh-stat:nth-child(3) { animation-delay: calc(1040ms * var(--mo)); }
+
+
+/* ══ 19. MAP — path/node motion personality ═══════════════════════════════
+   Phase 3 visual benchmark.
+
+   Every other section on this site arrives the same way: rise, fade,
+   maybe a cascade. The brief specifically asks for the map to move like a
+   map — paths draw, nodes activate — rather than inheriting that generic
+   entrance. This is the one section built entirely from real data
+   (colleges.json via places.json), so it is also the one place "the site
+   is an information platform, not a brochure" should be felt in the
+   motion, not just read in the copy.
+
+   Two changes, both additive to the existing draw-in (§14's fix for the
+   missing `@keyframes fade` already makes the points visible; this
+   layers real geographic motion on top of that fix rather than
+   replacing it):
+
+     1. The graticule lines draw themselves in, left-to-right / top-to-
+        bottom, via the classic stroke-dasharray/-offset technique — a
+        coordinate grid being plotted, not faded onto the page.
+     2. Each point gets a one-time ping ring on arrival — the same visual
+        grammar as a location activating on a live tracking display —
+        instead of only scaling in. */
+
+/* pathLength="1" is set on each <line> in the markup (an SVG attribute,
+   not a CSS property — there is no such CSS property, and an earlier
+   draft of this rule wrote it as one by mistake), which normalises
+   stroke-dasharray/-offset to a 0-1 range regardless of each line's
+   actual pixel length. That is what lets one dasharray value here work
+   for both the graticule's short verticals and long horizontals. */
+.map-grid line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .map-grid line {
+      animation: pr-map-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+@keyframes pr-map-draw { to { stroke-dashoffset: 0; } }
+/* No @supports match, or motion off: the grid is simply drawn, which is
+   the same "no motion, not no content" guarantee every other reveal on
+   this site already makes. */
+@supports not (animation-timeline: view()) {
+  .map-grid line { stroke-dasharray: none; stroke-dashoffset: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-grid line { stroke-dasharray: none; stroke-dashoffset: 0; }
+}
+
+/* The ping. A ring that expands and fades once — a point activating,
+   not a point that was simply always there. Delayed per-point by the
+   same --i index the fade-in already uses, so the ping follows the
+   point's own arrival instead of firing before it's visible. */
+.map-ping {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 1.4;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .map-figure.is-drawn .map-ping {
+    animation: pr-map-ping calc(1.1s * max(var(--mo), 0.001)) var(--ea-out) both;
+    animation-delay: calc(var(--i) * 26ms + 120ms);
+  }
+}
+@keyframes pr-map-ping {
+  0%   { opacity: 0.65; transform: scale(0.7); }
+  70%  { opacity: 0.12; }
+  100% { opacity: 0; transform: scale(2.6); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-ping { display: none; }
+}

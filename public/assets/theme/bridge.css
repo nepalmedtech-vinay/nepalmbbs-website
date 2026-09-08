@@ -232,15 +232,13 @@ body, section, .tab-pane, .sec, .pane,
               color-mix(in oklab, var(--brand) calc(26% * var(--fx-glow)), transparent);
 }
 
-/* Nav and footer sit on glass. */
-/* Both states. The scrolled state carried its own dark navy fill, which is
-   what the nav actually shows most of the time. */
-#navbar, #navbar.scrolled {
-  background: rgba(var(--m-tint) / calc(var(--m-opacity) * 0.86)) !important;
-  -webkit-backdrop-filter: blur(calc(var(--m-blur) * 0.7)) saturate(var(--m-saturate));
-          backdrop-filter: blur(calc(var(--m-blur) * 0.7)) saturate(var(--m-saturate));
-  border-bottom: var(--sh-border) solid var(--m-hairline);
-}
+/* Nav and footer sit on glass.
+   The unconditional glass fill this rule used to force on #navbar at all
+   times — scrolled or not — is gone. premium.css §16 now owns the nav's
+   background across its transparent-at-top -> glass-on-scroll states; a
+   rule here that still won on !important would have made that transition
+   impossible to see. Text colour stays here, since it never depends on
+   scroll position. */
 #navbar .nl-btn, #navbar .logo { color: var(--g-ink) !important; }
 #navbar .nl-btn:hover { color: var(--brand) !important; }
 footer  { background: var(--m-fill-soft);

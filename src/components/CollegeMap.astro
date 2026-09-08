@@ -88,13 +88,13 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
         <g class="map-grid">
           {[82, 84, 86, 88].map((lon) => (
             <>
-              <line x1={x(lon)} y1={PAD - 14} x2={x(lon)} y2={H - PAD + 14} />
+              <line pathLength="1" x1={x(lon)} y1={PAD - 14} x2={x(lon)} y2={H - PAD + 14} />
               <text x={x(lon)} y={H - PAD + 30} text-anchor="middle">{lon}°E</text>
             </>
           ))}
           {[27, 28, 29].map((lat) => (
             <>
-              <line x1={PAD - 14} y1={y(lat)} x2={W - PAD + 14} y2={y(lat)} />
+              <line pathLength="1" x1={PAD - 14} y1={y(lat)} x2={W - PAD + 14} y2={y(lat)} />
               <text x={PAD - 20} y={y(lat) + 4} text-anchor="end">{lat}°N</text>
             </>
           ))}
@@ -114,6 +114,7 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
               aria-label={`${p.name}, ${p.location}, ${p.seats} seats`}
             >
               <circle class="map-halo" cx={p.cx} cy={p.cy} r={p.r * 2.6} fill="url(#mapHalo)" filter="url(#mapGlow)" />
+              <circle class="map-ping" cx={p.cx} cy={p.cy} r={p.r} />
               <circle class="map-ring" cx={p.cx} cy={p.cy} r={p.r} />
               <circle class="map-dot"  cx={p.cx} cy={p.cy} r={Math.max(2, p.r * 0.34)} />
               <circle class="map-hit"  cx={p.cx} cy={p.cy} r={Math.max(p.r + 12, 18)} />
