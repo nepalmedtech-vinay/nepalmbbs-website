@@ -155,7 +155,19 @@ const stats = [
      sized individually via --sz so the stethoscope/pulse/cross don't all
      read as the same visual weight. Coloured from the brand token, at low
      opacity — evidence that this is a considered medical platform, not a
-     literal illustration competing with the headline for attention. */
+     literal illustration competing with the headline for attention.
+
+     The tumble is real CSS 3D (perspective on the field + rotateX/rotateY/
+     translateZ per icon), not a WebGL scene — three flat SVGs do not need
+     a renderer to read as objects turning in space; `perspective` on the
+     shared parent is what gives each child's rotation actual depth instead
+     of looking like a 2D squash. This is deliberately the lighter tool: the
+     earlier pass reached for Three.js for the same "3D, floating" brief
+     and it cost a real dependency and, on a black ground, the exact look
+     the owner then asked to remove. Every icon still degrades to a flat,
+     static SVG with no `perspective`/3D support at all — nothing here can
+     render as missing or broken, only as flat instead of tumbling. */
+  .gh-field { perspective: 900px; }
   .gh-icon {
     position: absolute;
     left: var(--mx);
@@ -163,17 +175,39 @@ const stats = [
     width: var(--sz, 60px);
     height: var(--sz, 60px);
     color: var(--brand);
-    opacity: 0.16;
-    transform: translate3d(0, 0, 0);
+    opacity: 0.18;
+    transform-style: preserve-3d;
+    transform: translate3d(0, 0, 0) rotateX(0) rotateY(0);
+    filter: drop-shadow(0 6px 10px color-mix(in oklab, var(--brand) 22%, transparent));
   }
   .gh-icon svg { width: 100%; height: 100%; display: block; }
   @media (prefers-reduced-motion: no-preference) {
     .gh-icon {
-      animation: gh-icon-drift var(--md, 36s) ease-in-out infinite alternate;
+      animation: gh-icon-tumble var(--md, 36s) ease-in-out infinite alternate;
     }
   }
-  @keyframes gh-icon-drift {
-    from { transform: translate3d(0, 0, 0) rotate(0deg); }
-    to   { transform: translate3d(calc(-16px * var(--mo)), calc(12px * var(--mo)), 0) rotate(calc(3deg * var(--mo))); }
+  /* Each icon gets its own rotation axis and direction so the three don't
+     read as one motion copy-pasted — the stethoscope tips toward the
+     viewer, the pulse trace rolls sideways, the cross turns the other way. */
+  .gh-icon:nth-of-type(1) {
+    --rx: 22deg; --ry: -16deg; --tz: 26px;
+  }
+  .gh-icon:nth-of-type(2) {
+    --rx: -14deg; --ry: 24deg; --tz: 34px;
+    animation-direction: alternate-reverse;
+  }
+  .gh-icon:nth-of-type(3) {
+    --rx: 18deg; --ry: 20deg; --tz: 18px;
+  }
+  @keyframes gh-icon-tumble {
+    from {
+      transform: translate3d(0, 0, 0) rotateX(0) rotateY(0);
+    }
+    to {
+      transform:
+        translate3d(calc(-14px * var(--mo)), calc(10px * var(--mo)), calc(var(--tz, 24px) * var(--mo)))
+        rotateX(calc(var(--rx, 18deg) * var(--mo)))
+        rotateY(calc(var(--ry, 18deg) * var(--mo)));
+    }
   }
 </style>
