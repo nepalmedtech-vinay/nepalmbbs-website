@@ -93,12 +93,16 @@
 
   var PRESETS = {
     dawn: {
-      label: 'Dawn', hint: 'Jade on warm light — the default',
-      brand: '#0E7C6B', brand2: '#E2703A', ink: '#0F1420', base: '#F4F6FB',
-      au1: '#BCE4DA', au2: '#C9D3F2', au3: '#F3DCC8', au4: '#E7D2E0',
+      label: 'Dawn', hint: 'Corporate blue and bronze on near-white — the default',
+      // Was jade/orange on warm light. Moved to the Porcelain colour pair
+      // (still selectable on its own below, at its original quieter glass
+      // and motion settings) with Dawn's fuller glass, glow and motion left
+      // in place — a corporate palette, not a quieter site.
+      brand: '#1F5F8B', brand2: '#B4632F', ink: '#111722', base: '#FAFBFD',
+      au1: '#CFE3F2', au2: '#DCE4F5', au3: '#F3E3D4', au4: '#E6E9F0',
       auOpacity: 0.5, auBlur: 84, auScale: 1, auSpeed: 34,
       mBlur: 26, mOpacity: 0.62, mSaturate: 172, mBorder: 0.62, mInner: 0.42,
-      radius: 22, border: 1, shScale: 1, depth: 1,
+      radius: 18, border: 1, shScale: 1, depth: 1.05,
       tyPair: 'editorial', tyScale: 1, tyWeight: 400, tyWeightD: 600, tyTrack: 0, tyA11y: 1,
       mo: 1, moTilt: 1, moParallax: 1,
       fxGlow: 1, fxFloat: 1, fxSheen: 1, fxGrain: 0.03, sp: 1,

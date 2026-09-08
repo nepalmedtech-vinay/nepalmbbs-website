@@ -1157,6 +1157,9 @@ input:not(:placeholder-shown):invalid {
     .trust-grid > .trust-badge,
     .doc-steps > .doc-step,
     .gh-stats > .gh-stat,
+    .why-grid > .why-card,
+    .life-grid > .life-card,
+    .off-grid > .off-card,
     .pr-cascade > * {
       animation: pr-arrive linear both;
       animation-timeline: view();
@@ -1164,15 +1167,15 @@ input:not(:placeholder-shown):invalid {
     }
     /* Set in CSS rather than by JS so the cascade survives a JS failure and
        needs no per-element inline style. */
-    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(1) { --n: 0; }
-    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(2) { --n: 1; }
-    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(3) { --n: 2; }
-    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(4) { --n: 3; }
-    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(5) { --n: 4; }
-    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(6) { --n: 5; }
-    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(7) { --n: 6; }
-    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(8) { --n: 7; }
-    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .pr-cascade) > :nth-child(n+9) { --n: 8; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .why-grid, .life-grid, .off-grid, .pr-cascade) > :nth-child(1) { --n: 0; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .why-grid, .life-grid, .off-grid, .pr-cascade) > :nth-child(2) { --n: 1; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .why-grid, .life-grid, .off-grid, .pr-cascade) > :nth-child(3) { --n: 2; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .why-grid, .life-grid, .off-grid, .pr-cascade) > :nth-child(4) { --n: 3; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .why-grid, .life-grid, .off-grid, .pr-cascade) > :nth-child(5) { --n: 4; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .why-grid, .life-grid, .off-grid, .pr-cascade) > :nth-child(6) { --n: 5; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .why-grid, .life-grid, .off-grid, .pr-cascade) > :nth-child(7) { --n: 6; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .why-grid, .life-grid, .off-grid, .pr-cascade) > :nth-child(8) { --n: 7; }
+    :is(.tabs-grid, .trust-grid, .doc-steps, .gh-stats, .why-grid, .life-grid, .off-grid, .pr-cascade) > :nth-child(n+9) { --n: 8; }
 
     /* The spine fills as the sequence is read. Drawn over the hairline rather
        than replacing it, so the unfilled part of the process stays visible —
