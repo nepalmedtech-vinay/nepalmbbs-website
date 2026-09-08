@@ -214,7 +214,12 @@
   color: var(--g-ink); font: inherit; font-size: var(--t-sm);
 }
 .cx-input:focus-visible, .cx-select:focus-visible {
-  outline: var(--focus-ring); outline-offset: var(--focus-off);
+  /* --focus-ring is box-shadow-shaped (x y blur spread colour); assigning
+     it to `outline` is invalid and the whole declaration was dropped,
+     leaving every console search/filter field with no focus indicator at
+     all. Found by a11y-verify on /staff while testing unrelated Phase 3
+     work — see the same fix and fuller note on .skip-to-main in glass.css. */
+  box-shadow: var(--focus-ring);
   border-color: color-mix(in oklab, var(--brand) 46%, transparent);
 }
 .cx-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }

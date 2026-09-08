@@ -467,5 +467,12 @@ html[data-vp] .gl-nav, html[data-vp] #navbar { max-width: var(--vp-w, 390px); ma
 }
 .skip-to-main:focus-visible {
   transform: translate(-50%, 0);
-  outline: var(--focus-ring); outline-offset: var(--focus-off);
+  /* --focus-ring is a box-shadow-shaped token (x y blur spread colour) —
+     assigning it to `outline` is invalid CSS and the whole declaration is
+     dropped, leaving no focus indicator at all on the first interactive
+     element every keyboard user reaches. Found by a11y-verify while
+     testing unrelated Phase 3 work. box-shadow is the correct property
+     for this token, and is how the other two correct uses of it in this
+     codebase (this file's own .gl-btn, and premium.css) read it. */
+  box-shadow: var(--focus-ring);
 }
