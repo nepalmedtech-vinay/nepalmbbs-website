@@ -58,9 +58,20 @@
   --pr-hair-strong: color-mix(in oklab, var(--g-ink) 15%, transparent);
 
   /* Surfaces that are not glass. Glass is for things that float; a record
-     sits on the page. */
-  --pr-paper:      color-mix(in oklab, #fff 82%, var(--g-base));
-  --pr-paper-2:    color-mix(in oklab, #fff 55%, var(--g-base));
+     sits on the page.
+
+     2026-09-08: was `color-mix(#fff N%, g-base)` — mixing toward literal
+     white "lifts" the page's own ground in light mode (g-base is already
+     near-white, so the effect was subtle) but produces a near-white card
+     on ANY ground, including the dark one this site now defaults to. A
+     white "paper" card on a near-black page is the same failure mode
+     CLAUDE.md already documents for bridge.css: a light-mode assumption
+     baked into a literal colour instead of a token. Mixing toward g-ink
+     instead lifts the ground a little in whichever direction reads as
+     "elevated" for that theme — lighter on dark, darker on light — the
+     same idea --pr-sunk already uses below, just less of it. */
+  --pr-paper:      color-mix(in oklab, var(--g-ink) 8%, var(--g-base));
+  --pr-paper-2:    color-mix(in oklab, var(--g-ink) 4%, var(--g-base));
   --pr-sunk:       color-mix(in oklab, var(--g-ink) 3.5%, transparent);
 
   /* The editorial grid. One rail width, used by every page that opts in, so

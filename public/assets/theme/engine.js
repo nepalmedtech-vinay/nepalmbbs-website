@@ -92,19 +92,26 @@
      "Quick Looks". Each is a complete, checked theme — not a colour swap. */
 
   var PRESETS = {
-    dawn: {
-      label: 'Dawn', hint: 'Corporate blue and bronze on near-white — the default',
-      // Was jade/orange on warm light. Moved to the Porcelain colour pair
-      // (still selectable on its own below, at its original quieter glass
-      // and motion settings) with Dawn's fuller glass, glow and motion left
-      // in place — a corporate palette, not a quieter site.
-      brand: '#1F5F8B', brand2: '#B4632F', ink: '#111722', base: '#FAFBFD',
-      au1: '#CFE3F2', au2: '#DCE4F5', au3: '#F3E3D4', au4: '#E6E9F0',
-      auOpacity: 0.5, auBlur: 84, auScale: 1, auSpeed: 34,
-      mBlur: 26, mOpacity: 0.62, mSaturate: 172, mBorder: 0.62, mInner: 0.42,
-      radius: 18, border: 1, shScale: 1, depth: 1.05,
+    // Renamed from "dawn" 2026-09-08 when the default moved from light
+    // corporate blue/bronze to this dark navy + olive look, at the owner's
+    // explicit direction (their words: "olive green, light navy blue...
+    // follow iOS style... 3D feel, cinematic motion"). A light ground
+    // cannot produce the crystal/refraction drama a glass system is meant
+    // to show — proved by "nocturne" below, an existing dark preset that
+    // already did this correctly and is what this was benchmarked against.
+    meridian: {
+      label: 'Meridian', hint: 'Deep navy ground, blue + olive crystal glass — the default',
+      brand: '#2F63D6', brand2: '#8A9A52', ink: '#EEF2F7', base: '#0B111D',
+      au1: '#3D74E0', au2: '#6C93EE', au3: '#8A9A52', au4: '#5E6E3C',
+      auOpacity: 0.64, auBlur: 90, auScale: 1.1, auSpeed: 36,
+      mBlur: 34, mOpacity: 0.5, mSaturate: 165, mBorder: 0.5, mInner: 0.38,
+      radius: 20, border: 1, shScale: 1, depth: 1.25,
       tyPair: 'editorial', tyScale: 1, tyWeight: 400, tyWeightD: 600, tyTrack: 0, tyA11y: 1,
-      mo: 1, moTilt: 1, moParallax: 1,
+      // Motion and pointer-tilt pushed above neutral for the "cinematic" and
+      // "3D feel" asks specifically — moTilt is the pointer-reactive pane
+      // tilt (premium.js/motion.js), the most direct lever for "3D" that
+      // already exists in this system.
+      mo: 1.1, moTilt: 1.25, moParallax: 1.15,
       fxGlow: 1, fxFloat: 1, fxSheen: 1, fxGrain: 0.03, sp: 1,
     },
     porcelain: {
@@ -331,7 +338,7 @@
   }
 
   function apply(theme, target) {
-    var t = Object.assign({}, PRESETS.dawn, theme || {});
+    var t = Object.assign({}, PRESETS.meridian, theme || {});
     var el = (target || document.documentElement);
     var s = el.style;
 
@@ -470,7 +477,7 @@
     if (l) apply(l);
     var remote = await pull();
     if (remote) apply(remote);
-    else if (!l) apply(PRESETS.dawn);
+    else if (!l) apply(PRESETS.meridian);
   }
 
   /* Saved looks. Kept in the same admin_settings row family as the theme so
@@ -511,7 +518,7 @@
     SCHEMA: SCHEMA, PRESETS: PRESETS, PAIRS: PAIRS,
     apply: apply, audit: audit, contrast: contrast,
     pull: pull, push: push, init: init,
-    get: function () { return Object.assign({}, PRESETS.dawn, current || local() || {}); },
-    reset: function () { try { localStorage.removeItem(LS_KEY); } catch (e) {} apply(PRESETS.dawn); },
+    get: function () { return Object.assign({}, PRESETS.meridian, current || local() || {}); },
+    reset: function () { try { localStorage.removeItem(LS_KEY); } catch (e) {} apply(PRESETS.meridian); },
   };
 })(window);

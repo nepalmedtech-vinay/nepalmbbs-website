@@ -270,7 +270,7 @@
     });
 
     host.querySelector('#tp-reset').addEventListener('click', function () {
-      draft = Object.assign({}, Theme.PRESETS.dawn);
+      draft = Object.assign({}, Theme.PRESETS.meridian);
       Theme.apply(draft);
       rebuild();
       renderAudit();
