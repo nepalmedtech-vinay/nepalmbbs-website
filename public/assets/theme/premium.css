@@ -1438,9 +1438,15 @@ input:not(:placeholder-shown):invalid {
   font-weight: 600;
   letter-spacing: 0.005em;
   white-space: nowrap;
+  /* Was --brand-lift -> --brand -> --brand-deep. Same fault chrome.css's
+     "Brand fills under white text" section documents for every other
+     primary action: white label text over the --brand-lift end measures
+     ~3.8:1, failing AA. This component predates that sweep, so it never
+     got the same fix. Same remedy — run the gradient from --brand into
+     --brand-deep only, which chrome.css already proved holds 5.09:1. */
   background:
     linear-gradient(180deg, rgba(255 255 255 / 0.24) 0%, transparent 46%),
-    linear-gradient(148deg, var(--brand-lift), var(--brand) 58%, var(--brand-deep));
+    linear-gradient(148deg, var(--brand), var(--brand-deep));
   box-shadow:
     inset 0 1px 0 rgba(255 255 255 / 0.55),
     inset 0 -1px 0 rgba(0 0 0 / 0.14),
