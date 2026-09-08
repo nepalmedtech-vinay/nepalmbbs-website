@@ -1,5 +1,6 @@
 ---
 import GlassLayout from '../layouts/GlassLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
 import knowledge from '../data/knowledge.json';
 
 // The document list is the Commission's, not ours. It is held in
@@ -78,14 +79,12 @@ const stages = [
 <div class="tab-pane on">
 <div class="container doc-centre">
 
-  <p class="eyebrow">Document centre</p>
-  <h1 class="sec-title" style="margin-bottom:12px">What you need, and when you need it</h1>
-  <p class="sec-sub">
-    The requirement list is the Medical Education Commission&rsquo;s. The notes
-    beside each item are ours &mdash; the practical failures we have watched
-    cost applicants a week. They are marked separately so you can tell which
-    is which.
-  </p>
+  <PageHeader
+    eyebrow="Document centre"
+    lead="The requirement list is the Medical Education Commission's. The notes beside each item are ours — the practical failures we have watched cost applicants a week. They are marked separately so you can tell which is which."
+  >
+    What you need, and when you need it
+  </PageHeader>
 
   <div class="doc-note" style="margin-top:24px">
     <strong>The Commission&rsquo;s list for your intake governs.</strong> It is

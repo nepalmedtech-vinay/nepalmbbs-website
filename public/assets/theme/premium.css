@@ -1666,3 +1666,89 @@ input:not(:placeholder-shown):invalid {
 @media (prefers-reduced-motion: reduce) {
   .map-ping { display: none; }
 }
+
+
+/* ══ 20. PAGE HEADER — the hero's field/choreography, scaled down ════════
+   Phase 4 rollout of the Phase 3 benchmark to the rest of the site.
+
+   Reuses §18's exact grid/glow/lines visual language at a smaller
+   footprint (`PageHeader.astro`), and the same `pr-hero-in` load keyframe
+   with three delays instead of six — an inner-page header is three
+   elements (eyebrow, title, lead), not a hero's six. Typography is not
+   touched: `.eyebrow`/`.sec-title`/`.sec-sub` already carry the right
+   face, size and colour (chrome.css) on every route; this only adds the
+   field behind them and the entrance behind their reveal. Same rules as
+   the hero: ambient-tier motion (one slow drift, nothing to watch),
+   `--mo`-scaled, grid/lines dropped below 48rem where they would compete
+   with the text rather than add depth, and the `pr-hero-in` keyframe's
+   own `backwards` fill means an element sits in its finished, readable
+   state until its delay elapses — a failure to run this CSS costs
+   nothing. */
+
+.ph { position: relative; overflow: clip; padding-top: var(--s-2); }
+.ph-in { position: relative; z-index: 1; }
+
+.ph-field {
+  position: absolute;
+  inset: -1rem -5% -2rem;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.7;
+  -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 45%, transparent 100%);
+}
+
+.ph-grid {
+  position: absolute;
+  inset: -1px;
+  opacity: 0.4;
+  background-image:
+    linear-gradient(90deg, color-mix(in oklab, var(--g-ink) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in oklab, var(--g-ink) 6%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(90% 100% at 82% 0%, #000 0%, transparent 70%);
+          mask-image: radial-gradient(90% 100% at 82% 0%, #000 0%, transparent 70%);
+}
+
+.ph-glow {
+  position: absolute;
+  width: 26rem;
+  height: 26rem;
+  top: -13rem;
+  right: -6rem;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    color-mix(in oklab, var(--brand) 14%, transparent) 0%,
+    color-mix(in oklab, var(--brand) 4%, transparent) 46%,
+    transparent 72%);
+  filter: blur(6px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ph-glow { animation: gh-drift calc(34s * max(var(--mo), 0.3)) ease-in-out infinite alternate; }
+}
+
+.ph-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--g-ink);
+  opacity: 0.06;
+}
+.ph-lines line { stroke: currentColor; stroke-width: 0.15; vector-effect: non-scaling-stroke; }
+
+@media (max-width: 48rem) {
+  .ph-grid, .ph-lines { display: none; }
+}
+
+.ph-in-1, .ph-in-2, .ph-in-3, .ph-in-4 {
+  animation: pr-hero-in calc(0.6s * max(var(--mo), 0.001)) var(--ea-enter) backwards;
+}
+.ph-in-1 { animation-delay: calc(60ms  * var(--mo)); }
+.ph-in-2 { animation-delay: calc(200ms * var(--mo)); }
+.ph-in-3 { animation-delay: calc(340ms * var(--mo)); }
+/* Used only by pages that add a fourth staged element (a rail's own
+   footnote, e.g. admission-process.astro) directly rather than through
+   `PageHeader.astro`, which stops at three. */
+.ph-in-4 { animation-delay: calc(460ms * var(--mo)); }

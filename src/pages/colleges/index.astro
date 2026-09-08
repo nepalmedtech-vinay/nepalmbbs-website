@@ -1,5 +1,6 @@
 ---
 import GlassLayout from '../../layouts/GlassLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
 import { getColleges } from '../../lib/colleges.js';
 import { SITE } from '../../lib/routes.js';
 
@@ -37,15 +38,12 @@ const groups = [
 <div class="tab-pane on">
 <div class="container">
 
-  <div class="rev">
-    <div class="eyebrow">MEC Nepal 2025-26</div>
-    <h1 class="sec-title" style="margin-bottom:12px">Medical colleges in Nepal</h1>
-    <p class="sec-sub" style="max-width:66ch">
-      {colleges.length} colleges admitting Indian students, {totalSeats} foreign-quota
-      seats between them. Admission runs through the Medical Education Commission,
-      not through the colleges directly.
-    </p>
-  </div>
+  <PageHeader
+    eyebrow="MEC Nepal 2025-26"
+    lead={`${colleges.length} colleges admitting Indian students, ${totalSeats} foreign-quota seats between them. Admission runs through the Medical Education Commission, not through the colleges directly.`}
+  >
+    Medical colleges in Nepal
+  </PageHeader>
 
   <!-- The recognition claim is made once, here, with its source named — rather
        than as a tick against each of 27 colleges. The underlying data carries

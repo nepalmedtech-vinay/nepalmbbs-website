@@ -1,0 +1,31 @@
+---
+// Phase 4: the hero's cinematic field + load choreography (premium.css §18,
+// the Phase 3 benchmark), scaled down and reused as a shared inner-page
+// header. Typography is untouched on purpose — `.eyebrow`/`.sec-title`/
+// `.sec-sub` already carry the right face, size and colour site-wide
+// (chrome.css's own comment: `.sec-title` is the h1 on every route except
+// the home page, by design). This only adds the decorative graticule field
+// behind them and the same page-load reveal the hero uses, so an inner page
+// opens with the same visual signature as `/` without borrowing its scale.
+interface Props {
+  eyebrow: string;
+  lead?: string;
+  center?: boolean;
+}
+const { eyebrow, lead, center = false } = Astro.props;
+---
+<div class:list={['ph', { tc: center }]}>
+  <div class="ph-field" aria-hidden="true">
+    <div class="ph-grid"></div>
+    <div class="ph-glow"></div>
+    <svg class="ph-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <line x1="0" y1="52" x2="100" y2="52" />
+      <line x1="87" y1="0" x2="87" y2="100" />
+    </svg>
+  </div>
+  <div class="ph-in">
+    <p class="eyebrow ph-in-1">{eyebrow}</p>
+    <h1 class="sec-title ph-in-2"><slot /></h1>
+    {lead && <p class="sec-sub ph-in-3">{lead}</p>}
+  </div>
+</div>
