@@ -117,6 +117,28 @@
       animation-timeline: view();
       animation-range: entry calc(0% + var(--n, 0) * 7%) entry 100%;
     }
+
+    /* ── Site-wide card entrance ─────────────────────────────────────
+       Every card family on the site already shares one visual recipe
+       (premium.css §10: hairline ring, tinted shadow, pointer specular)
+       across all 44 routes — the college grid, testimonials, FAQ items,
+       guides, videos, offers, life-in-nepal cards. None of it had any
+       entrance motion: a visitor scrolling any of those pages saw
+       content simply appear, fully formed, with no sense of the page
+       being alive. Bound directly to the shared selector rather than a
+       utility class, so it applies everywhere that selector already
+       does — no per-page markup changes across 40+ files, and any new
+       page using these classes gets it automatically. Each card's
+       animation-timeline is its own view() — a grid entering row by row
+       already reads as a cascade because each row crosses the viewport
+       edge at a slightly different scroll position, with no JS timer
+       and no per-item index needed. */
+    .college-card, .why-card, .life-card, .off-card, .test-card,
+    .vid-card, .guide-card, .faq-item, .cx-card {
+      animation: m-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 65%;
+    }
   }
 }
 
