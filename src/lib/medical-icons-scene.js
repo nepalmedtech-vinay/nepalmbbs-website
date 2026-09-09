@@ -31,11 +31,13 @@
 // map and a soft key light, not the black-ground tuning an earlier pass
 // used, which is why this file is new rather than reviving the old one.
 //
-// Scaled down and desaturated from the first pass, which read as heavy,
-// oversaturated shapes competing with the hero copy for attention — the
-// owner's brief was explicit that the colour must never "block a view".
-// Every colour here is mixed toward white before it reaches the material,
-// and every object is roughly 40% smaller than the first pass.
+// Sized and coloured between two earlier passes. The first pass read as
+// heavy, oversaturated shapes competing with the hero copy for attention —
+// the owner's brief was explicit that the colour must never "block a
+// view". The correction that followed went too far the other way (very
+// small, very white-tinted) and stopped reading as motion at all on a real
+// screen. This is the middle setting: still soft glass, not solid colour,
+// but present enough that the float/rotation is actually visible.
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
@@ -45,12 +47,12 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v));
 // by colour — keeps the five objects visually consistent (same "material
 // language") and keeps this file from repeating the same six properties
 // five times.
-function crystalMaterial(color, tint = 0.32) {
+function crystalMaterial(color, tint = 0.18) {
   const c = new THREE.Color(color).lerp(new THREE.Color(0xffffff), tint);
   return new THREE.MeshPhysicalMaterial({
-    color: c, metalness: 0.04, roughness: 0.16,
-    transmission: 0.68, thickness: 0.5, ior: 1.38,
-    clearcoat: 0.5, clearcoatRoughness: 0.25,
+    color: c, metalness: 0.04, roughness: 0.14,
+    transmission: 0.55, thickness: 0.55, ior: 1.4,
+    clearcoat: 0.6, clearcoatRoughness: 0.2,
   });
 }
 
@@ -93,7 +95,7 @@ function buildStethoscope(color) {
     group.add(ring);
   });
 
-  group.scale.setScalar(0.62);
+  group.scale.setScalar(0.74);
   return group;
 }
 
@@ -111,7 +113,7 @@ function buildPulseTrace(color) {
   const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.15);
   const tube = new THREE.TubeGeometry(curve, 96, 0.034, 10, false);
   const mesh = new THREE.Mesh(tube, crystalMaterial(color));
-  mesh.scale.setScalar(0.62);
+  mesh.scale.setScalar(0.74);
   return mesh;
 }
 
@@ -119,9 +121,9 @@ function buildPulseTrace(color) {
 // "medicine" the way the stethoscope stands in for "clinical".
 function buildCapsule(color) {
   const geo = new THREE.CapsuleGeometry(0.16, 0.42, 6, 14);
-  const mesh = new THREE.Mesh(geo, crystalMaterial(color, 0.4));
+  const mesh = new THREE.Mesh(geo, crystalMaterial(color, 0.22));
   mesh.rotation.z = Math.PI / 2.6;
-  mesh.scale.setScalar(0.62);
+  mesh.scale.setScalar(0.74);
   return mesh;
 }
 
@@ -131,7 +133,7 @@ function buildCapsule(color) {
 // rather than an imported model, same as every other shape here.
 function buildDnaHelix(color) {
   const group = new THREE.Group();
-  const mat = crystalMaterial(color, 0.4);
+  const mat = crystalMaterial(color, 0.22);
   const turns = 2.1, height = 1.1, radius = 0.22, steps = 40;
 
   const strandA = [];
@@ -161,7 +163,7 @@ function buildDnaHelix(color) {
     group.add(new THREE.Mesh(new THREE.TubeGeometry(rungCurve, 4, 0.014, 5, false), mat));
   }
 
-  group.scale.setScalar(0.62);
+  group.scale.setScalar(0.74);
   return group;
 }
 
@@ -179,8 +181,8 @@ function buildCross(color) {
     bevelSize: 0.04, bevelSegments: 4, curveSegments: 2,
   });
   geo.center();
-  const mesh = new THREE.Mesh(geo, crystalMaterial(color, 0.4));
-  mesh.scale.setScalar(0.62);
+  const mesh = new THREE.Mesh(geo, crystalMaterial(color, 0.22));
+  mesh.scale.setScalar(0.74);
   return mesh;
 }
 

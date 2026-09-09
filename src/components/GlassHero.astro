@@ -39,22 +39,23 @@ const stats = [
       <line x1="82" y1="0" x2="82" y2="100" />
     </svg>
 
-    {/* Five icons now, not three — a proper medical + medicine + biology
-       set (stethoscope, ECG pulse, capsule, DNA helix, cross) rather than
-       one shape standing in for the whole vocabulary. Positioned to clear
-       both the copy column's text measure and the ledger's fixed 17rem
-       right column (see .gh-in's grid-template-columns below) — the first
-       pass placed two of these directly under the ledger cards, effectively
-       invisible. All five sit in the gap between the lead paragraph's
-       capped measure and the ledger, or below the CTA row, not behind
-       either.
+    {/* Five icons — a proper medical + medicine + biology set (stethoscope,
+       ECG pulse, capsule, DNA helix, cross) rather than one shape standing
+       in for the whole vocabulary. Positioned to clear both the copy
+       column's text measure and the ledger's fixed 17rem right column (see
+       .gh-in's grid-template-columns below) — the first pass placed two of
+       these directly under the ledger cards, effectively invisible. All
+       five sit in the gap between the lead paragraph's capped measure and
+       the ledger, or below the CTA row, not behind either.
 
-       Sized down and lightened from the first pass, which read as heavy,
-       oversaturated shapes competing with the headline — a decorative
-       field has to lose that fight on purpose. Small (22-34px), low
-       opacity (0.12), alternating --brand/--brand-2 so no single icon
-       reads as a solid block of colour sitting over the copy. */}
-    <span class="gh-icon" style="--mx:6%; --my:10%; --md:36s; --sz:32px; --ic:1">
+       Sized and coloured a second time in this pass: the first redesign
+       (46-68px, full brand saturation) read as heavy shapes competing with
+       the headline, so it went down to 22-34px at 0.12 opacity — which
+       overcorrected into not registering as motion at all on a real
+       screen. This is the middle setting: present enough to read as
+       "something is moving back there" without being mistaken for
+       decoration competing with the copy. */}
+    <span class="gh-icon" style="--mx:6%; --my:10%; --md:36s; --sz:44px; --ic:1">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="5" cy="3.2" r="1"/>
         <circle cx="9.4" cy="3.2" r="1"/>
@@ -64,20 +65,20 @@ const stats = [
       </svg>
     </span>
 
-    <span class="gh-icon" style="--mx:63%; --my:44%; --md:44s; --sz:36px; --ic:2">
+    <span class="gh-icon" style="--mx:63%; --my:44%; --md:44s; --sz:50px; --ic:2">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="2,12 6,12 8.5,5 12,19 14.5,12 17,12 19,7 21,12"/>
       </svg>
     </span>
 
-    <span class="gh-icon" style="--mx:70%; --my:8%; --md:39s; --sz:26px; --ic:1">
+    <span class="gh-icon" style="--mx:70%; --my:8%; --md:39s; --sz:36px; --ic:1">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2.5" y="8" width="19" height="8" rx="4" transform="rotate(-35 12 12)"/>
         <line x1="12" y1="6.4" x2="12" y2="17.6" transform="rotate(-35 12 12)"/>
       </svg>
     </span>
 
-    <span class="gh-icon" style="--mx:8%; --my:58%; --md:41s; --sz:30px; --ic:2">
+    <span class="gh-icon" style="--mx:8%; --my:58%; --md:41s; --sz:40px; --ic:2">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
         <path d="M7 2c0 4 10 4 10 8s-10 4-10 8"/>
         <path d="M17 2c0 4-10 4-10 8s10 4 10 8"/>
@@ -87,7 +88,7 @@ const stats = [
       </svg>
     </span>
 
-    <span class="gh-icon" style="--mx:24%; --my:80%; --md:31s; --sz:22px; --ic:1">
+    <span class="gh-icon" style="--mx:24%; --my:80%; --md:31s; --sz:30px; --ic:1">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 3v18M3 12h18"/>
       </svg>
@@ -216,17 +217,17 @@ const stats = [
     top: var(--my);
     width: var(--sz, 30px);
     height: var(--sz, 30px);
-    opacity: 0.13;
+    opacity: 0.26;
     transform-style: preserve-3d;
     transform: translate3d(0, 0, 0) rotateX(0) rotateY(0);
-    filter: drop-shadow(0 4px 7px color-mix(in oklab, var(--brand) 16%, transparent));
+    filter: drop-shadow(0 4px 8px color-mix(in oklab, var(--brand) 22%, transparent));
   }
   .gh-icon svg { width: 100%; height: 100%; display: block; }
   /* CSS has no ternary, so the brand/brand-2 alternation from --ic is
      resolved with two plain overrides instead of the (invalid) inline
      expression above. */
-  .gh-icon { color: color-mix(in oklab, var(--brand) 70%, white 30%); }
-  .gh-icon[style*="--ic:2"] { color: color-mix(in oklab, var(--brand-2) 70%, white 30%); }
+  .gh-icon { color: color-mix(in oklab, var(--brand) 85%, white 15%); }
+  .gh-icon[style*="--ic:2"] { color: color-mix(in oklab, var(--brand-2) 85%, white 15%); }
   @media (prefers-reduced-motion: no-preference) {
     .gh-icon {
       animation: gh-icon-tumble var(--md, 36s) ease-in-out infinite alternate;
