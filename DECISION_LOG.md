@@ -817,3 +817,28 @@ instead of a third-party hotlink — sidesteps the verification problem
 entirely rather than another guess.
 
 `audit.mjs`: 0 low-contrast elements, 0 pages overflowing.
+
+**2026-09-09 — same navy-blue crystal hover extended to the Guidelines
+tabs.** Owner asked for the Guidelines page's three `.g-tab` buttons
+(NMC India / Nepal NMC / All Official Resources) to get the identical
+treatment already built for the footer's link-tabs: tinted-glass rest
+state, solid `sky -> navy-accent` gradient fill with white text on
+hover/focus, and the `cx-sweep` crystal shine reused (not redefined) a
+third time. Added as a page-scoped `<style>` block in
+`guidelines.astro` rather than a global rule, since `.g-tab` is used
+on no other page.
+
+One thing to guard against going in: `.g-tab.on` (the active tab) is
+already brand-blue filled via a `chrome.css` rule from an earlier
+round. Wrote the new hover rule as `.g-tab:not(.on):hover` specifically
+so hovering the already-active tab does not fight that existing fill.
+Verified both states via `getComputedStyle`: a non-active tab resolves
+to `linear-gradient(148deg, rgb(91,155,213), rgb(23,63,115))` (sky ->
+navy-accent) with white text on hover, and the active tab's hover
+computed style is untouched — still its own
+`linear-gradient(148deg, var(--brand), var(--brand-deep))`. Screenshot
+confirms the fill visually; console output during the check showed
+only the sandbox's usual blocked-image `ERR_CONNECTION_RESET`/
+`ERR_TUNNEL_CONNECTION_FAILED` noise, no real JS errors.
+
+`npm run build`: 44 pages, clean. `console-verify.mjs`: 34/34 passed.
