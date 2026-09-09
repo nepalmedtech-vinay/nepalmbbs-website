@@ -11,8 +11,19 @@ interface Props {
   eyebrow: string;
   lead?: string;
   center?: boolean;
+  // Opt-in genuine WebGL layer — the same medical-icons-scene the homepage
+  // hero uses, reused as-is rather than duplicated, since it already reads
+  // its colours from the live theme and has nothing hero-specific baked
+  // in. Deliberately NOT on by default: this scene is real geometry, real
+  // lighting, real glass material, and mounting it on all 40 pages that
+  // use this component would cost every one of those page loads a WebGL
+  // context and a Three.js fetch for a decorative flourish most visitors
+  // never asked for. Reserved for the handful of highest-traffic decision
+  // pages (colleges list, why-nepal, counseling) where the site's motion
+  // signature earns a second appearance beyond the homepage.
+  threeD?: boolean;
 }
-const { eyebrow, lead, center = false } = Astro.props;
+const { eyebrow, lead, center = false, threeD = false } = Astro.props;
 ---
 <div class:list={['ph', { tc: center }]}>
   <div class="ph-field" aria-hidden="true">
@@ -23,9 +34,65 @@ const { eyebrow, lead, center = false } = Astro.props;
       <line x1="87" y1="0" x2="87" y2="100" />
     </svg>
   </div>
+  {threeD && <canvas class="ph-3d" aria-hidden="true"></canvas>}
   <div class="ph-in">
     <p class="eyebrow ph-in-1">{eyebrow}</p>
     <h1 class="sec-title ph-in-2"><slot /></h1>
     {lead && <p class="sec-sub ph-in-3">{lead}</p>}
   </div>
 </div>
+
+{threeD && (
+  <style>
+    .ph-3d {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 720ms ease;
+      pointer-events: none;
+    }
+    .ph-3d.is-ready { opacity: 0.8; }
+    /* Same reasoning as the hero: hide the flatter CSS field once the real
+       scene is up rather than removing it, so a lost WebGL context has
+       something to fall back to instantly. */
+    .ph.ph--3d-active .ph-field { opacity: 0; transition: opacity 420ms ease; }
+  </style>
+)}
+
+{threeD && (
+  <script>
+    // PageHeader renders once per page (it is the page's own H1 header),
+    // so a plain query is enough — no need to scope past a script tag's
+    // own siblings. Same gate as the hero's: desktop + motion-on + WebGL-
+    // capable only, dynamic import so visitors who never see the canvas
+    // never fetch Three.js.
+    const canvas = document.querySelector('.ph-3d');
+    const fine = matchMedia('(min-width: 62rem)').matches;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (canvas && fine && !reduce) {
+      const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
+      idle(async () => {
+        try {
+          const { mountMedicalIconsScene } = await import('../lib/medical-icons-scene.js');
+          const handle = mountMedicalIconsScene(canvas);
+          if (handle) {
+            canvas.classList.add('is-ready');
+            canvas.closest('.ph')?.classList.add('ph--3d-active');
+            canvas.addEventListener('webglcontextlost', (e) => {
+              e.preventDefault();
+              handle.stop();
+              canvas.classList.remove('is-ready');
+              canvas.closest('.ph')?.classList.remove('ph--3d-active');
+            }, { once: true });
+          }
+        } catch (e) {
+          // Import failure — the CSS field underneath is already correct.
+        }
+      });
+    }
+  </script>
+)}
