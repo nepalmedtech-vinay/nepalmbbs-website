@@ -171,9 +171,8 @@
 
 <script>
   const canvas = document.querySelector('.foot-3d');
-  const fine = matchMedia('(min-width: 62rem)').matches;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (canvas && fine && !reduce) {
+  if (canvas && !reduce) {
     const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
     idle(async () => {
       try {
