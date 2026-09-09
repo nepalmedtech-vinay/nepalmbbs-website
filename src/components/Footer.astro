@@ -1,10 +1,15 @@
 ---
-// Lifted verbatim from the single-page build (Phase 2).
+// Lifted verbatim from the single-page build (Phase 2). Had zero motion —
+// the last thing on every one of the 44 routes was a flat, static block.
+// `.m-rise` on the footer itself; `.m-stagger` on the four-column row so
+// they cascade rather than arrive as one flat pop, using motion.css's
+// --n-indexed animation-range, no JS timer.
 ---
-<footer>
+<footer class="m-rise">
+<canvas class="foot-3d" aria-hidden="true"></canvas>
 <div class="foot-inner">
-  <div class="foot-top">
-    <div>
+  <div class="foot-top m-stagger">
+    <div style="--n:0">
       <a href="/" class="foot-logo">Nepal<span>MBBS</span>.in</a>
       <p class="foot-desc" id="footer-desc">Official guidance platform for NEET qualified Indian students exploring MBBS in Nepal. All information sourced exclusively from NMC India and MEC Nepal official sources.</p>
       {/* Emoji were doing the work of icons here — 📞📲💬✉️ as list markers.
@@ -38,7 +43,7 @@
         </a>
       </div>
     </div>
-    <div class="foot-col"><h2 class="foot-h">Navigate</h2>
+    <div class="foot-col" style="--n:1"><h2 class="foot-h">Navigate</h2>
       <a data-act="click" data-do='[["switchTab","process"]]'>Admission Process</a>
       <a data-act="click" data-do='[["switchTab","why"]]'>Why Nepal</a>
       <a data-act="click" data-do='[["switchTab","calculator"]]'>NEET Calculator</a>
@@ -47,7 +52,7 @@
       <a data-act="click" data-do='[["switchTab","faq"]]'>FAQ</a>
       <a data-act="click" data-do='[["switchTab","counsel"]]'>Free Counseling</a>
     </div>
-    <div class="foot-col"><h2 class="foot-h">Official Sites</h2>
+    <div class="foot-col" style="--n:2"><h2 class="foot-h">Official Sites</h2>
       <a href="https://nmc.org.in" target="_blank" rel="noopener">NMC India ↗</a>
       <a href="https://mec.gov.np" target="_blank" rel="noopener">MEC Nepal ↗</a>
       <a href="https://nmc.org.np" target="_blank" rel="noopener">Nepal NMC ↗</a>
@@ -55,7 +60,7 @@
       <a href="https://natboard.edu.in" target="_blank" rel="noopener">NBE India ↗</a>
       <a href="https://wdoms.org" target="_blank" rel="noopener">WDOMS ↗</a>
     </div>
-    <div class="foot-col"><h2 class="foot-h">Contact</h2>
+    <div class="foot-col" style="--n:3"><h2 class="foot-h">Contact</h2>
       <a id="footer-calendly" href="https://calendly.com/nepalmedtech/30min" target="_blank" rel="noopener">Book Free Session ↗</a>
       <a id="footer-wa" href="https://wa.me/917080800888" target="_blank" rel="noopener">WhatsApp ↗</a>
       <a href="https://drive.google.com/drive/folders/1W-q-NqJwrkJ1K8EirJvphAwW-xsMF4cQ" target="_blank" rel="noopener">Video Library ↗</a>
@@ -72,4 +77,118 @@
   </div>
 </div>
 </footer>
+
+<style>
+  /* The footer's own WebGL layer — the same medical-icons scene the hero
+     and four page headers already use, recoloured navy + light blue (a
+     third accent pair used only here, on the owner's explicit ask — an
+     olive-green first pass was replaced with this after the owner asked
+     for blue specifically) via mountMedicalIconsScene's colorVars
+     parameter rather than a duplicated scene file. Sits behind the whole
+     footer, so it needs `footer` to actually establish a stacking/
+     clipping context — it did not have `position: relative` before,
+     since it never needed one. */
+  footer { position: relative; overflow: hidden; }
+  .foot-inner { position: relative; z-index: 1; }
+  .foot-3d {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 900ms ease;
+    pointer-events: none;
+  }
+  .foot-3d.is-ready { opacity: 0.55; }
+
+  /* Footer links as small crystal-glass tabs — the same internal-light-
+     gradient/lit-ring/tinted-shadow material the Book free counseling
+     button uses elsewhere, scaled down to text-link size and tinted with
+     this section's navy/light-blue pair instead of the site's default
+     brand blue. Filled solid navy with white text on hover/focus,
+     matching the FAQ page's hover language in this section's own colour,
+     with the light-blue accent as the lit-ring/glow detail. */
+  .foot-contacts a, .foot-col a {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--r-sm);
+    padding: 0.4em 0.65em;
+    margin-inline: -0.65em;
+    background:
+      linear-gradient(180deg, rgba(255 255 255 / 0.35) 0%, transparent 55%),
+      color-mix(in oklab, var(--sky) 10%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgba(255 255 255 / 0.4),
+      0 0 0 1px var(--navy-accent-line);
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+    transition: background var(--d-2, 200ms) var(--ea-out, ease),
+                color var(--d-2, 200ms) var(--ea-out, ease),
+                box-shadow var(--d-2, 200ms) var(--ea-out, ease),
+                transform var(--d-2, 200ms) var(--ea-out, ease);
+  }
+  .foot-contacts a:hover, .foot-contacts a:focus-visible,
+  .foot-col a:hover, .foot-col a:focus-visible {
+    background: linear-gradient(148deg, var(--sky), var(--navy-accent)) !important;
+    color: var(--navy-accent-ink) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255 255 255 / 0.35),
+      0 0 0 1px color-mix(in oklab, var(--sky) 55%, transparent),
+      0 6px 18px color-mix(in oklab, var(--navy-accent) 30%, transparent) !important;
+    transform: translate3d(2px, -1px, 0);
+  }
+  .foot-contacts a:hover svg, .foot-contacts a:focus-visible svg {
+    color: var(--navy-accent-ink) !important;
+    opacity: 1 !important;
+  }
+
+  /* The crystal shine — a real element rather than a pseudo-element sized
+     to the text, same as `.gl-crystal-sheen` on the Book free counseling
+     button, and reusing that button's own `cx-sweep` keyframe rather than
+     defining a second copy of the same animation. One pass on hover,
+     never a loop — a looping shine reads as an advert, not a material. */
+  .foot-contacts a::after, .foot-col a::after {
+    content: '';
+    position: absolute;
+    top: -40%;
+    bottom: -40%;
+    width: 45%;
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(255 255 255 / 0.75),
+      transparent);
+    transform: translate3d(-180%, 0, 0) skewX(-18deg);
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .foot-contacts a:hover::after, .foot-contacts a:focus-visible::after,
+    .foot-col a:hover::after, .foot-col a:focus-visible::after {
+      animation: cx-sweep calc(0.85s * max(var(--mo), 0.001)) var(--ea-out, ease);
+    }
+  }
+</style>
+
+<script>
+  const canvas = document.querySelector('.foot-3d');
+  const fine = matchMedia('(min-width: 62rem)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (canvas && fine && !reduce) {
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
+    idle(async () => {
+      try {
+        const { mountMedicalIconsScene } = await import('../lib/medical-icons-scene.js');
+        const handle = mountMedicalIconsScene(canvas, { brand: '--navy-accent', brand2: '--sky', transmission: 0.12, tint: 0.04 });
+        if (handle) {
+          canvas.classList.add('is-ready');
+          canvas.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            handle.stop();
+            canvas.classList.remove('is-ready');
+          }, { once: true });
+        }
+      } catch (e) {}
+    });
+  }
+</script>
 <!-- FLOATING WA BUTTONS -->

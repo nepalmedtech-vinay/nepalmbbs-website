@@ -293,7 +293,7 @@ section.hero.sliding .hero-content{
 .test-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;transition:all .3s;position:relative}
 .test-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px);border-color:transparent}
 .test-quote-icon{font-size:36px;color:var(--blue);opacity:.2;font-family:Georgia,serif;line-height:1;margin-bottom:8px}
-.test-stars{color:#9a6400;font-size:14px;margin-bottom:12px;letter-spacing:2px}
+.test-stars{color:#7b5000;font-size:14px;margin-bottom:12px;letter-spacing:2px}
 .test-text{font-size:13.5px;color:var(--text);line-height:1.78;margin-bottom:18px;font-style:italic}
 .test-author{display:flex;align-items:center;gap:12px}
 .test-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--m-fill),var(--blue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;font-family:'Sora',sans-serif;flex-shrink:0}

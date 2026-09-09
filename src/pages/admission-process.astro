@@ -1,5 +1,66 @@
 ---
 import GlassLayout from '../layouts/GlassLayout.astro';
+
+// The six steps of the Commission's sequence. They were six hand-written
+// <li> blocks with inline styles; holding them as data means the markup below
+// is one shape repeated, and a seventh step is a line here rather than a
+// paragraph of copied HTML.
+//
+// Nothing about the content changed in the premium pass. Every claim and
+// every source link is the one that was already on the page.
+const steps = [
+  {
+    title: 'NEET score and eligibility',
+    body: 'Per NMC India FMGL Regulations 2021, minimum 50th percentile NEET (General/OBC) or 40th percentile (SC/ST) required to practice in India after foreign MBBS. Verify current rules at NMC before applying.',
+    href: 'https://nmc.org.in',
+    source: 'NMC India',
+  },
+  {
+    title: 'College selection via MEC Nepal',
+    body: 'All Nepal MBBS admissions are regulated by the Medical Education Commission (MEC Nepal). Select only MEC-approved colleges that are also NMC India recognised. Verify both lists before deciding.',
+    href: 'https://mec.gov.np',
+    source: 'MEC Nepal',
+  },
+  {
+    title: 'Documents and application',
+    body: 'Required: 10th and 12th marksheets (notarised), NEET scorecard, valid passport, medical fitness certificate, character certificate. Apply via the MEC Nepal official portal only.',
+    href: 'https://entrance.mec.gov.np',
+    source: 'MECEE Portal',
+  },
+  {
+    title: 'Seat confirmation and fee payment',
+    body: 'MEC Nepal runs transparent seat-matching. Pay fees ONLY directly to the college — never to agents. Verify the official MEC fee ceiling at mec.gov.np before any payment.',
+    href: 'https://mec.gov.np/en/feeStructure',
+    source: 'Official fee structure',
+  },
+  {
+    title: 'Travel to Nepal — no visa required',
+    body: 'Indian citizens do not need a visa for Nepal under the India–Nepal bilateral open border agreement. A valid Indian passport or Aadhaar card is sufficient. Direct buses and flights are available.',
+    href: '/life-in-nepal',
+    source: 'Life in Nepal',
+  },
+  {
+    title: 'MBBS → NExT / FMGE → India practice',
+    body: '5.5 years total. After graduation: clear NExT or FMGE (by NBE India) and complete a one-year supervised internship in India, then receive the licence to practice medicine in India.',
+    href: 'https://natboard.edu.in',
+    source: 'NBE India',
+  },
+];
+
+// The comparison. `mark` is what the cell asserts, not decoration: 'yes' is a
+// positive finding, 'flat' is a neutral fact, and the emoji that used to carry
+// this ( ✅ inside table text ) rendered differently on every platform and was
+// read aloud as "white heavy check mark" by a screen reader.
+const comparison = [
+  { factor: 'NEET requirement',      nepal: ['yes',  'Yes — 50th percentile minimum'], india: ['yes',  'Yes — varies by college'] },
+  { factor: 'Medium of instruction', nepal: ['yes',  'English'],                       india: ['yes',  'English'] },
+  { factor: 'Duration',              nepal: ['flat', '5.5 years, including internship'], india: ['flat', '5.5 years, including internship'] },
+  { factor: 'NMC India recognition', nepal: ['yes',  'Select colleges — verify each'],  india: ['yes',  'All NMC approved'] },
+  { factor: 'Visa required',         nepal: ['yes',  'No visa for Indian citizens'],    india: ['flat', 'Not applicable — same country'] },
+  { factor: 'Language barrier',      nepal: ['yes',  'Hindi widely understood'],        india: ['yes',  'None'] },
+  { factor: 'After graduation',      nepal: ['flat', 'NExT or FMGE, then a one-year India internship'], india: ['flat', 'Direct India practice'] },
+  { factor: 'Typical cost',          nepal: ['flat', 'Contact for the official MEC fee structure'],     india: ['flat', '₹50L–1.5Cr+, varies'] },
+];
 ---
 <GlassLayout
   title="MBBS in Nepal Admission Process 2025 — MEC Nepal Step by Step | NepalMBBS.in"
@@ -8,37 +69,170 @@ import GlassLayout from '../layouts/GlassLayout.astro';
 >
 <div class="tab-pane on" id="pane-process">
 <div class="container">
-  <div class="tc rev"><div class="eyebrow">Step by Step</div><div class="sec-title">From NEET to Nepal MBBS</div><div class="sec-sub">Complete official roadmap — every step verified from NMC India and MEC Nepal sources.</div></div>
-  <ol class="doc-steps">
-    <li class="doc-step"><h3 class="doc-step-title">NEET Score & Eligibility</h3><p class="doc-step-body">Per NMC India FMGL Regulations 2021, minimum 50th percentile NEET (General/OBC) or 40th percentile (SC/ST) required to practice in India after foreign MBBS. Verify current rules at NMC before applying.</p><p class="doc-step-body" style="margin-top:var(--s-2)"><a href="https://nmc.org.in" target="_blank" rel="noopener" class="card-link">NMC India ↗</a></p></li>
-    <li class="doc-step"><h3 class="doc-step-title">College Selection via MEC Nepal</h3><p class="doc-step-body">All Nepal MBBS admissions are regulated by the Medical Education Commission (MEC Nepal). Select only MEC-approved colleges that are also NMC India recognised. Verify both lists before deciding.</p><p class="doc-step-body" style="margin-top:var(--s-2)"><a href="https://mec.gov.np" target="_blank" rel="noopener" class="card-link">MEC Nepal ↗</a></p></li>
-    <li class="doc-step"><h3 class="doc-step-title">Documents & Application</h3><p class="doc-step-body">Required: 10th+12th marksheets (notarised), NEET scorecard, valid passport, medical fitness certificate, character certificate. Apply via MEC Nepal official portal only.</p><p class="doc-step-body" style="margin-top:var(--s-2)"><a href="https://entrance.mec.gov.np" target="_blank" rel="noopener" class="card-link">MECEE Portal ↗</a></p></li>
-    <li class="doc-step"><h3 class="doc-step-title">Seat Confirmation & Fee Payment</h3><p class="doc-step-body">MEC Nepal runs transparent seat-matching. Pay fees ONLY directly to the college — never to agents. Verify official MEC fee ceiling at mec.gov.np before any payment.</p><p class="doc-step-body" style="margin-top:var(--s-2)"><a href="https://mec.gov.np/en/feeStructure" target="_blank" rel="noopener" class="card-link">Official Fee Structure ↗</a></p></li>
-    <li class="doc-step"><h3 class="doc-step-title">Travel to Nepal — no visa required</h3><p class="doc-step-body">Indian citizens don't need a visa for Nepal under the India-Nepal bilateral open border agreement. Valid Indian passport or Aadhaar card is sufficient. Direct buses and flights available.</p><p class="doc-step-body" style="margin-top:var(--s-2)"><a data-act="click" data-do='[["switchTab","lifestyle"]]' class="card-link" style="cursor:pointer">Life in Nepal ↗</a></p></li>
-    <li class="doc-step"><h3 class="doc-step-title">MBBS → NExT / FMGE → India Practice</h3><p class="doc-step-body">5.5 years total. After graduation: clear NExT or FMGE (by NBE India) + complete 1 year supervised internship in India → receive licence to practice medicine in India.</p><p class="doc-step-body" style="margin-top:var(--s-2)"><a href="https://natboard.edu.in" target="_blank" rel="noopener" class="card-link">NBE India ↗</a></p></li>
-  </ol>
-  <!-- COLLEGE COMPARISON -->
-  <div style="margin-top:60px" class="rev">
-    <div class="eyebrow">Quick Comparison</div>
-    <div class="sec-title">Nepal MBBS vs India Private MBBS</div>
-    <div class="sec-sub">Factual comparison to help informed decision-making. Individual factors may vary.</div>
-    <div style="overflow-x:auto;margin-top:24px">
-    <table class="compare-table">
-      <thead><tr><th>Factor</th><th>Nepal MBBS</th><th>India Private MBBS</th></tr></thead>
-      <tbody>
-        <tr><td><strong>NEET Requirement</strong></td><td>✅ Yes (50th percentile min)</td><td>✅ Yes (varies by college)</td></tr>
-        <tr><td><strong>Medium of Instruction</strong></td><td>✅ English</td><td>✅ English</td></tr>
-        <tr><td><strong>Duration</strong></td><td>5.5 years (incl. internship)</td><td>5.5 years (incl. internship)</td></tr>
-        <tr><td><strong>NMC India Recognition</strong></td><td>✅ Select colleges (verify)</td><td>✅ All NMC approved</td></tr>
-        <tr><td><strong>Visa Required</strong></td><td>✅ No visa for Indians</td><td>N/A (same country)</td></tr>
-        <tr><td><strong>Language Barrier</strong></td><td>✅ Hindi widely understood</td><td>✅ None</td></tr>
-        <tr><td><strong>After Graduation</strong></td><td>NExT/FMGE + 1yr India intern</td><td>Direct India practice</td></tr>
-        <tr><td><strong>Typical Cost</strong></td><td>Contact for official MEC fees</td><td>₹50L–1.5Cr+ (varies)</td></tr>
-      </tbody>
-    </table>
+
+  {/* The editorial rail. Below 62rem this is exactly the single column it
+      was; above it the heading becomes a sticky spine and the sequence runs
+      beside it, which is what the 45% of empty desktop width was for. */}
+  <section class="pr-rail">
+    <div class="pr-rail-head ph">
+      <div class="ph-field" aria-hidden="true">
+        <div class="ph-grid"></div>
+        <div class="ph-glow"></div>
+        <svg class="ph-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <line x1="0" y1="52" x2="100" y2="52" />
+          <line x1="87" y1="0" x2="87" y2="100" />
+        </svg>
+      </div>
+      <canvas class="ph-3d" aria-hidden="true"></canvas>
+      <div class="ph-in">
+        <p class="eyebrow ph-in-1">Step by step</p>
+        <h1 class="sec-title ph-in-2">From NEET to Nepal MBBS</h1>
+        <p class="sec-sub ph-in-3">
+          The complete official roadmap. Every step below is verified against
+          NMC India and MEC Nepal sources, and each one carries the link it was
+          verified from.
+        </p>
+        <p class="pr-rail-meta ph-in-4">
+          Where a rule can change between intakes, the Commission&rsquo;s own
+          notice for your year governs over this page. Check
+          {' '}<a href="https://entrance.mec.gov.np" target="_blank" rel="noopener">entrance.mec.gov.np</a>{' '}
+          before acting on anything here.
+        </p>
+      </div>
     </div>
-    <p style="font-size:12px;color:var(--muted);margin-top:12px;font-style:italic">* Cost comparison not provided to avoid misleading figures. Contact us for current official MEC Nepal fee structure. Always verify all information at official government sources.</p>
-  </div>
+
+    <div>
+      <ol class="doc-steps">
+        {steps.map((s) => (
+          <li class="doc-step">
+            <h2 class="doc-step-title">{s.title}</h2>
+            <p class="doc-step-body">{s.body}</p>
+            <a
+              href={s.href}
+              class="card-link"
+              {...(s.href.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}
+            >{s.source} ↗</a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {/* ── Comparison ────────────────────────────────────────────────────── */}
+  <section class="pr-rail pr-compare rev">
+    <div class="pr-rail-head">
+      <p class="eyebrow">Quick comparison</p>
+      <h2 class="sec-title">Nepal MBBS vs India private MBBS</h2>
+      <p class="sec-sub">
+        A factual comparison to support an informed decision. Individual
+        factors vary by college and by year.
+      </p>
+      <p class="pr-rail-meta">
+        Cost is deliberately not compared in figures. Publishing a fee range
+        that goes stale is how families are misled, so the current official MEC
+        structure is shared during counselling instead of estimated here.
+      </p>
+    </div>
+
+    <div>
+      <table class="compare-table">
+        <caption class="pr-caption">Nepal MBBS compared with India private MBBS, factor by factor</caption>
+        <thead>
+          <tr><th scope="col">Factor</th><th scope="col">Nepal MBBS</th><th scope="col">India private MBBS</th></tr>
+        </thead>
+        <tbody>
+          {comparison.map((r) => (
+            <tr>
+              <th scope="row">{r.factor}</th>
+              <td><span class:list={['pr-mark', `is-${r.nepal[0]}`]} aria-hidden="true"></span>{r.nepal[1]}</td>
+              <td><span class:list={['pr-mark', `is-${r.india[0]}`]} aria-hidden="true"></span>{r.india[1]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
 </div>
 </div>
+
+<style>
+  /* The comparison block sits below the sequence; the rule between them is
+     what says "new section" without another centred header. */
+  .pr-compare { margin-top: var(--s-8); padding-top: var(--s-7); border-top: 1px solid var(--pr-hair); }
+
+  /* A caption is the table's accessible name. It is not decoration, so it is
+     set as a caption rather than hidden — but quietly, above the head. */
+  .pr-caption {
+    caption-side: top;
+    text-align: left;
+    padding: 0 0 var(--s-3);
+    font-size: var(--t-xs);
+    color: var(--g-ink-3);
+  }
+
+  /* The mark that replaced the emoji. A dot, not a tick: a tick asserts
+     approval and several of these rows are neutral facts. */
+  .pr-mark {
+    display: inline-block;
+    width: 6px; height: 6px;
+    margin-right: var(--s-3);
+    border-radius: 50%;
+    vertical-align: 0.18em;
+  }
+  .pr-mark.is-yes  { background: var(--brand); }
+  .pr-mark.is-flat { background: color-mix(in oklab, var(--g-ink) 22%, transparent); }
+
+  .compare-table th[scope="row"] {
+    font-weight: 600;
+    color: var(--g-ink);
+    font-size: var(--t-sm);
+    text-transform: none;
+    letter-spacing: 0;
+    background: transparent;
+  }
+
+  /* Same WebGL layer PageHeader.astro's `threeD` prop mounts — this page
+     hand-rolls its own `.ph` header (it needs a fourth staged element,
+     `.pr-rail-meta`, which PageHeader stops short of) rather than using
+     the component, so the canvas and its mount script are duplicated
+     here rather than refactoring the shared component's prop contract. */
+  .ph-3d {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 720ms ease;
+    pointer-events: none;
+  }
+  .ph-3d.is-ready { opacity: 0.8; }
+  .ph.ph--3d-active .ph-field { opacity: 0; transition: opacity 420ms ease; }
+</style>
+
+<script>
+  const canvas = document.querySelector('.ph-3d');
+  const fine = matchMedia('(min-width: 62rem)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (canvas && fine && !reduce) {
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
+    idle(async () => {
+      try {
+        const { mountMedicalIconsScene } = await import('../lib/medical-icons-scene.js');
+        const handle = mountMedicalIconsScene(canvas);
+        if (handle) {
+          canvas.classList.add('is-ready');
+          canvas.closest('.ph')?.classList.add('ph--3d-active');
+          canvas.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            handle.stop();
+            canvas.classList.remove('is-ready');
+            canvas.closest('.ph')?.classList.remove('ph--3d-active');
+          }, { once: true });
+        }
+      } catch (e) {}
+    });
+  }
+</script>
 </GlassLayout>

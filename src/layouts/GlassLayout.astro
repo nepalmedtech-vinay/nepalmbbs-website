@@ -43,7 +43,7 @@ const canonical = new URL(path, SITE).href;
 <meta name="twitter:description" content={description}>
 <meta name="twitter:image" content={ogImage}>
 
-<meta name="theme-color" content="#F4F6FB">
+<meta name="theme-color" content="#FAFBFD">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/assets/brand/icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
@@ -79,6 +79,11 @@ const canonical = new URL(path, SITE).href;
 {/* Last: finishes the dark→light migration for the site chrome (ticker,
     contact bar) that bridge.css only half-completed. See chrome.css. */}
 <link rel="stylesheet" href="/assets/theme/chrome.css">
+{/* Actually last. chrome.css finished the chrome; premium.css does the page
+    interiors — the editorial rail, the section index, the record blocks, the
+    data tables and the scroll-driven arrivals. It reads only tokens, so the
+    admin panel still re-skins everything it draws. See premium.css. */}
+<link rel="stylesheet" href="/assets/theme/premium.css">
 {/* 36 kB of base64 PNG for a decorative noise overlay, and it was
     render-blocking: nothing could paint until it arrived. media="print"
     keeps the browser from blocking on it; runtime.js flips it to "all"
@@ -156,6 +161,7 @@ const canonical = new URL(path, SITE).href;
     <script is:inline defer src="/assets/js/reveal.js"></script>
     <script is:inline defer src="/assets/js/chatbot.js"></script>
     <script is:inline defer src="/assets/js/colleges.js"></script>
+    <script is:inline defer src="/assets/js/college-photo.js"></script>
     <script is:inline defer src="/assets/js/admin.js"></script>
     <script is:inline defer src="/assets/js/effects.js"></script>
     <script is:inline defer src="/assets/js/actions.js"></script>
@@ -165,5 +171,10 @@ const canonical = new URL(path, SITE).href;
 
 <script is:inline defer src="/assets/theme/runtime.js"></script>
 <script is:inline defer src="/assets/theme/motion.js"></script>
+{/* After both, because it reads the DOM those two have already set up and
+    enhances it — a current-page mark, a pointer specular on the legacy card
+    families, and a scroll container around wide tables. Nothing on the page
+    depends on it having run. */}
+<script is:inline defer src="/assets/js/premium.js"></script>
 </body>
 </html>

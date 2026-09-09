@@ -7,10 +7,20 @@
    deploy — the same way the LeadFlow app's Customize screen works, extended
    with the material controls a glass system needs.
 
-   The values below are the DEFAULT theme ("Dawn"). theme/engine.js overwrites
-   any of them from the saved settings, so treat this file as the fallback that
-   must always look finished on its own — if the network is down and no saved
-   theme arrives, this is what a visitor sees.
+   The values below are the DEFAULT theme ("Meridian"). 2026-09-08, second
+   correction of the day: the ground moved light -> dark navy -> near-black
+   (chasing a "clear-glass card on true black" reference the owner sent),
+   then back to light again on the owner's explicit follow-up instruction —
+   a medical admissions platform reads as clinical and trustworthy on a
+   light, clean ground; "medicine category style" turned out to mean the
+   blue+teal HUE the dark pass already picked, not a dark GROUND. Brand
+   colour is unchanged from the dark version for exactly that reason — only
+   the ground, ink ramp, aurora tints and material direction flip back to
+   light. theme/engine.js overwrites any of these from the saved settings,
+   so treat this file as the fallback that must always look finished on its
+   own — if the network is down and no saved theme arrives, this is what a
+   visitor sees. See `DECISION_LOG.md`'s 2026-09-08 entries for the fuller
+   account of why this moved twice in one session.
 
    Rules for anything added here:
      1. If a designer would want to change it, it is a token.
@@ -22,31 +32,47 @@
         focus ring, the aurora and the glass tint together. */
 
 :root {
-  /* ══ 1. GROUND ═════════════════════════════════════════════════════════
-     The page's base. Deliberately light — a glass system needs light and
-     colour behind it to refract; on near-black there is nothing to frost. */
+  /* Flipped back to light with the rest of §1 below — a dark ground reads
+     wrong for a platform whose whole trust proposition is clinical
+     transparency, not drama. */
+  color-scheme: light;
 
-  --g-base:        #F4F6FB;   /* page ground                    */
-  --g-base-2:      #EBEFF8;   /* secondary bands                */
-  --g-ink:         #0F1420;   /* primary text                   */
+  /* ══ 1. GROUND ═════════════════════════════════════════════════════════
+     Clean, cool near-white — a clinical ground, not a card. The faint blue
+     tint (rather than a neutral grey-white) ties the ground itself to the
+     brand hue below, the same way the dark version tied its near-black
+     ground to the same blue via the aurora field. */
+
+  --g-base:        #F6F9FC;   /* page ground                    */
+  --g-base-2:      #EAF1F8;   /* secondary bands                */
+  --g-ink:         #10192B;   /* primary text                   */
   /* The ramp is solved, not chosen. engine.js recomputes these per theme by
-     fading ink toward the ground until it hits a contrast target against the
-     ground; these three are that solve for the default light pair, so the
-     paint before JS runs matches the paint after it.
-     Do not hand-pick a value here that "looks about right" — the previous set
-     did, and roughly 890 pieces of text on the site sat below WCAG AA. */
-  --brand-text:    #0B6154;   /* brand as TEXT — 4.5:1 on the deepest glass */
-  --g-ink-2:       #4F5460;   /* secondary text        — 7.0:1 on base */
-  --g-ink-3:       #6D717C;   /* tertiary / captions   — 4.5:1 on base */
-  --g-ink-4:       #8A8F98;   /* placeholder, disabled — 3.0:1, never body copy */
+     fading ink toward the ground until it hits a contrast target against
+     the deepest surface text actually sits on; these are that solve for
+     the default light pair, so the paint before JS runs matches the paint
+     after it. Do not hand-pick a value here that "looks about right" — an
+     earlier, hand-picked ramp shipped with roughly 890 pieces of text below
+     WCAG AA before this solved approach existed. */
+  --brand-text:    #1949B0;   /* brand as TEXT — 4.5:1+ on the deepest glass */
+  --g-ink-2:       #4C5568;   /* secondary text        — 7.0:1 on base */
+  --g-ink-3:       #69728A;   /* tertiary / captions   — 4.5:1 on base */
+  --g-ink-4:       #8890A0;   /* placeholder, disabled — 3.0:1, never body copy */
 
   /* ══ 2. BRAND ══════════════════════════════════════════════════════════
      One brand hue and one counter-hue. Everything tinted downstream derives
      from these two, so the admin panel needs only two colour pickers to
      re-skin the entire site coherently. */
 
-  --brand:         #0E7C6B;   /* primary action, links, focus   */
-  --brand-2:       #E2703A;   /* counter accent, highlights     */
+  /* Clinical blue + a healing teal-green — deliberately restrained rather
+     than the neon multi-colour palette in the fintech-card reference the
+     owner sent: "take colour/motion ideas, not the context" (their words)
+     — this is a medical admissions platform, and a loud accent set reads
+     wrong for that even at high production value. Blue #2464E0 clears
+     5.3:1 as button-fill text against white; green #20B78E clears 5.9:1
+     against the deepest glass pane (its own job — it is never a button
+     fill, only glow/accent/text-on-glass). */
+  --brand:         #2464E0;   /* primary action, links, focus   */
+  --brand-2:       #20B78E;   /* counter accent, highlights     */
   --brand-ink:     #FFFFFF;   /* text on a brand fill           */
 
   /* Derived — do not set these directly from the panel. */
@@ -55,24 +81,52 @@
   --brand-deep:    color-mix(in oklab, var(--brand) 82%, black 18%);
   --brand-lift:    color-mix(in oklab, var(--brand) 84%, white 16%);
 
+  /* A third accent, used only where a caller asks for it by name (the
+     footer's crystal treatment) rather than anywhere in the default
+     token cascade — the site's material language is deliberately a
+     two-hue system (blue/teal) everywhere else. Was an olive green in an
+     earlier pass; replaced with a navy + light-blue pair per the owner's
+     explicit request that this section read as blue, not green. White
+     text on #173F73 clears 10.5:1.
+
+     Named --navy-accent, not --navy: `--navy` is already a heavily-used
+     legacy token (~30 selectors in base.css) that bridge.css deliberately
+     remaps to `var(--g-ink)` as part of the dark->light migration. A
+     first attempt used the name --navy directly and silently inherited
+     that remap — every consumer read near-black ink instead of this
+     colour, since bridge.css loads after this file. Found the same way
+     as the color-mix() bug: by checking a computed style rather than
+     assuming the token resolved to what it was declared as. */
+  --navy-accent:      #173F73;
+  --navy-accent-ink:  #FFFFFF;
+  --navy-accent-line: color-mix(in oklab, var(--navy-accent) 34%, transparent);
+  --sky:              #5B9BD5;   /* the paired "light blue" accent */
+  /* Plain hex literals, not color-mix() expressions — see the note this
+     replaced: getComputedStyle().getPropertyValue() on a *custom*
+     property returns its declared value verbatim rather than a resolved
+     colour, so a color-mix()-based token silently fails to parse as a
+     THREE.Color. --navy-accent and --sky above are already plain hex, so
+     JS callers (medical-icons-scene.js) can read them directly. */
+
   /* ══ 3. AURORA ═════════════════════════════════════════════════════════
      The colour field behind the glass. Four blobs, each its own hue, size
      and position, drifting slowly. This is what the glass has to refract —
      without it, frosted panels sit on flat grey and the whole material
      reads as a cheap overlay rather than as glass. */
 
-  /* Desaturated on purpose. At full chroma the field stops being a ground
-     and becomes the subject — the glass then reads as a filter over a
-     rainbow rather than as a material. These are the same hues at roughly
-     half the saturation, which is where the panes start to look like glass. */
-  --au-1:          #BCE4DA;   /* jade      */
-  --au-2:          #C9D3F2;   /* periwinkle*/
-  --au-3:          #F3DCC8;   /* apricot   */
-  --au-4:          #E7D2E0;   /* blush     */
-  --au-opacity:    0.5;       /* 0 disables the field entirely  */
-  --au-scale:      1;         /* blob size multiplier           */
-  --au-blur:       84px;      /* softness                       */
-  --au-speed:      34s;       /* one full drift cycle           */
+  /* Same blue-to-teal hue pair as the dark version, at roughly half the
+     saturation — light tints of the brand hues rather than the hues at
+     full chroma. At full strength on a light ground the field stops being
+     a ground and becomes the subject; desaturated, the panes still have
+     real colour to refract without the page reading as a colour block. */
+  --au-1:          #C9DCF8;   /* pale royal blue */
+  --au-2:          #DCE7FA;   /* pale sky blue   */
+  --au-3:          #C7EDDF;   /* pale teal-green */
+  --au-4:          #DBF1E7;   /* pale mint       */
+  --au-opacity:    0.55;      /* 0 disables the field entirely  */
+  --au-scale:      1.05;      /* blob size multiplier           */
+  --au-blur:       88px;      /* softness                       */
+  --au-speed:      36s;       /* one full drift cycle           */
 
   /* ══ 4. MATERIAL ═══════════════════════════════════════════════════════
      The glass itself. These five are the controls that actually decide
@@ -82,10 +136,10 @@
 
   --m-tint:        255 255 255;  /* glass body, as an RGB triple */
   --m-opacity:     0.62;         /* how much body it has         */
-  --m-blur:        26px;         /* backdrop blur radius         */
-  --m-saturate:    172%;         /* colour boost behind the pane */
-  --m-border:      0.62;         /* top-edge highlight strength  */
-  --m-inner:       0.42;         /* inner sheen strength         */
+  --m-blur:        28px;         /* backdrop blur radius         */
+  --m-saturate:    170%;         /* colour boost behind the pane */
+  --m-border:      0.6;          /* top-edge highlight strength  */
+  --m-inner:       0.4;          /* inner sheen strength         */
 
   /* Derived material surfaces. */
   --m-fill:        rgba(var(--m-tint) / var(--m-opacity));
@@ -94,11 +148,11 @@
   --m-filter:      blur(var(--m-blur)) saturate(var(--m-saturate));
   --m-edge-top:    rgba(255 255 255 / var(--m-border));
   --m-edge-bottom: rgba(255 255 255 / calc(var(--m-border) * 0.28));
-  --m-hairline:    rgba(15 20 32 / 0.07);
+  --m-hairline:    rgba(16 25 43 / 0.08);
 
   /* ══ 5. SHAPE ══════════════════════════════════════════════════════════ */
 
-  --sh-radius:     22px;      /* base corner; components scale off it */
+  --sh-radius:     18px;      /* base corner; components scale off it */
   --sh-border:     1px;
   --sh-scale:      1;         /* component padding multiplier          */
 
@@ -112,10 +166,14 @@
   /* ══ 6. DEPTH ══════════════════════════════════════════════════════════
      Shadows carry the page's hue rather than neutral black, which is most
      of the difference between a card that floats and one that looks stuck
-     on with tape. --dp scales them all at once. */
+     on with tape. --dp scales them all at once.
 
-  --dp:            1;
-  --dp-hue:        18 26 44;
+     Shadows carry the ink colour rather than pure black — engine.js
+     computes this as the ink RGB whenever the ground is light, which this
+     static value matches for the pre-JS paint. */
+
+  --dp:            1.1;
+  --dp-hue:        16 25 43;
 
   --sd-1: 0 1px 2px rgba(var(--dp-hue) / calc(0.05 * var(--dp)));
   --sd-2: 0 2px 6px rgba(var(--dp-hue) / calc(0.06 * var(--dp))),

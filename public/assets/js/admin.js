@@ -463,6 +463,83 @@ async function deleteCollege(id){
   if(ok){toast('Deleted','ok'); await loadAdminColleges();}else toast('Error','err');
 }
 
+// =====================================================
+// ADMIN — COLLEGE PHOTOS (Phase 4, migrations/0006)
+// =====================================================
+// Separate from the site_colleges block above on purpose: this reads/writes
+// the college-photos Storage bucket directly, keyed by the same slug every
+// college page already renders from — it does not depend on the
+// disconnected site_colleges table.
+const COLLEGE_PHOTO_EXT = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp' };
+const COLLEGE_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
+
+async function uploadCollegePhoto(){
+  const sel = document.getElementById('ap-college-select');
+  const fileEl = document.getElementById('ap-college-file');
+  const slug = sel ? sel.value : '';
+  const file = fileEl && fileEl.files && fileEl.files[0];
+  if(!slug || !file){ toast('Choose a college and a file first.', 'err'); return; }
+  if(!window.Auth || !Auth.isSignedIn){ toast('Sign in first.', 'err'); return; }
+
+  const ext = COLLEGE_PHOTO_EXT[file.type];
+  if(!ext){ toast('Use a JPG, PNG or WebP file.', 'err'); return; }
+  if(file.size > COLLEGE_PHOTO_MAX_BYTES){ toast('File is larger than 5MB.', 'err'); return; }
+
+  const path = `${slug}/cover.${ext}`;
+  try{
+    const r = await fetch(`${SB}/storage/v1/object/college-photos/${path}`, {
+      method: 'POST',
+      // x-upsert lets a re-upload replace the existing cover photo instead of
+      // failing on a duplicate path — the whole point of a fixed filename.
+      headers: Object.assign(Auth.headers(), { 'Content-Type': file.type, 'x-upsert': 'true' }),
+      body: file
+    });
+    if(r.ok){
+      toast('Photo uploaded — live on the college page now.', 'ok');
+      fileEl.value = '';
+      await loadCollegePhotoPreview();
+    } else {
+      const body = await r.json().catch(()=>({}));
+      toast(body.message || 'Upload failed.', 'err');
+    }
+  }catch(e){ toast('Network problem. Please try again.', 'err'); }
+}
+
+async function loadCollegePhotoPreview(){
+  const sel = document.getElementById('ap-college-select');
+  const slug = sel ? sel.value : '';
+  const box = document.getElementById('ap-college-photo-preview');
+  if(!slug || !box) return;
+  box.innerHTML = '<p style="color:var(--muted);font-size:13px">Checking…</p>';
+  const files = await sbStorageList('college-photos', slug + '/');
+  if(Array.isArray(files) && files.length){
+    const url = sbPublicUrl('college-photos', slug + '/' + files[0].name);
+    box.innerHTML = `<img src="${url}" alt="" style="max-width:220px;border-radius:8px;display:block">`;
+  } else {
+    box.innerHTML = '<p style="color:var(--muted);font-size:13px">No photo uploaded for this college yet.</p>';
+  }
+}
+
+async function deleteCollegePhoto(){
+  const sel = document.getElementById('ap-college-select');
+  const slug = sel ? sel.value : '';
+  if(!slug) return;
+  if(!window.Auth || !Auth.isSignedIn){ toast('Sign in first.', 'err'); return; }
+  if(!confirm('Remove the current photo for this college?')) return;
+
+  const files = await sbStorageList('college-photos', slug + '/');
+  if(!Array.isArray(files) || !files.length){ toast('No photo to remove.', 'err'); return; }
+
+  try{
+    const r = await fetch(`${SB}/storage/v1/object/college-photos/${slug}/${files[0].name}`, {
+      method: 'DELETE',
+      headers: Auth.headers()
+    });
+    if(r.ok){ toast('Photo removed.', 'ok'); await loadCollegePhotoPreview(); }
+    else toast('Could not remove photo — admin role required.', 'err');
+  }catch(e){ toast('Network problem. Please try again.', 'err'); }
+}
+
 async function exportCSV(){
   const leads=await sbR('/rest/v1/leads?select=*&order=created_at.desc');
   if(!leads.length){toast('No leads to export','err');return;}

@@ -92,15 +92,26 @@
      "Quick Looks". Each is a complete, checked theme — not a colour swap. */
 
   var PRESETS = {
-    dawn: {
-      label: 'Dawn', hint: 'Jade on warm light — the default',
-      brand: '#0E7C6B', brand2: '#E2703A', ink: '#0F1420', base: '#F4F6FB',
-      au1: '#BCE4DA', au2: '#C9D3F2', au3: '#F3DCC8', au4: '#E7D2E0',
-      auOpacity: 0.5, auBlur: 84, auScale: 1, auSpeed: 34,
-      mBlur: 26, mOpacity: 0.62, mSaturate: 172, mBorder: 0.62, mInner: 0.42,
-      radius: 22, border: 1, shScale: 1, depth: 1,
+    // Renamed from "dawn" 2026-09-08, then moved twice in one session: light
+    // corporate blue/bronze -> dark navy+olive -> near-black blue/teal
+    // (chasing a "clear-glass card on true black" reference the owner sent)
+    // -> back to light on the owner's explicit follow-up. "Medicine category
+    // style" turned out to mean the blue + healing-teal HUE the dark pass
+    // picked, not a dark GROUND — a clinical admissions platform reads as
+    // trustworthy on a clean light ground, not a dramatic dark one. Brand
+    // hue is unchanged from the dark version for exactly that reason.
+    meridian: {
+      label: 'Meridian', hint: 'Clinical light ground, blue + healing teal — the default',
+      brand: '#2464E0', brand2: '#20B78E', ink: '#10192B', base: '#F6F9FC',
+      au1: '#C9DCF8', au2: '#DCE7FA', au3: '#C7EDDF', au4: '#DBF1E7',
+      auOpacity: 0.55, auBlur: 88, auScale: 1.05, auSpeed: 36,
+      mBlur: 28, mOpacity: 0.62, mSaturate: 170, mBorder: 0.6, mInner: 0.4,
+      radius: 18, border: 1, shScale: 1, depth: 1.1,
       tyPair: 'editorial', tyScale: 1, tyWeight: 400, tyWeightD: 600, tyTrack: 0, tyA11y: 1,
-      mo: 1, moTilt: 1, moParallax: 1,
+      // Motion/pointer-tilt still lifted a little above neutral — the
+      // "considered, not flat" read the cinematic brief asked for doesn't
+      // depend on a dark ground, only the ground colour does.
+      mo: 1.05, moTilt: 1.1, moParallax: 1.05,
       fxGlow: 1, fxFloat: 1, fxSheen: 1, fxGrain: 0.03, sp: 1,
     },
     porcelain: {
@@ -327,7 +338,7 @@
   }
 
   function apply(theme, target) {
-    var t = Object.assign({}, PRESETS.dawn, theme || {});
+    var t = Object.assign({}, PRESETS.meridian, theme || {});
     var el = (target || document.documentElement);
     var s = el.style;
 
@@ -341,6 +352,24 @@
         set(it.v, it.unit ? val + it.unit : val);
       });
     });
+
+    // The OS/browser-level motion preference outranks any theme, including a
+    // custom one saved from the admin panel. Without this, the SCHEMA loop
+    // above sets --mo etc. as an INLINE style on every load (every preset
+    // names mo: 1 or similar) -- and an inline style beats the CSS media
+    // query in engine.css that is supposed to zero these out under reduced
+    // motion, because inline author styles outrank external stylesheet rules
+    // regardless of specificity. The result: prefers-reduced-motion was
+    // being silently overridden back to full motion on every page that ran
+    // this script, which is every page. Found while adding the Phase 3 hero
+    // choreography and testing it under reduced motion -- the bug is
+    // sitewide, not new to that feature.
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      set('--mo', 0);
+      set('--mo-tilt', 0);
+      set('--mo-parallax', 0);
+      set('--au-speed', '0s');
+    }
 
     // ── Mode ──────────────────────────────────────────────────────────
     // There is no dark-mode flag. The mode IS the ground colour: pick a dark
@@ -448,7 +477,7 @@
     if (l) apply(l);
     var remote = await pull();
     if (remote) apply(remote);
-    else if (!l) apply(PRESETS.dawn);
+    else if (!l) apply(PRESETS.meridian);
   }
 
   /* Saved looks. Kept in the same admin_settings row family as the theme so
@@ -489,7 +518,7 @@
     SCHEMA: SCHEMA, PRESETS: PRESETS, PAIRS: PAIRS,
     apply: apply, audit: audit, contrast: contrast,
     pull: pull, push: push, init: init,
-    get: function () { return Object.assign({}, PRESETS.dawn, current || local() || {}); },
-    reset: function () { try { localStorage.removeItem(LS_KEY); } catch (e) {} apply(PRESETS.dawn); },
+    get: function () { return Object.assign({}, PRESETS.meridian, current || local() || {}); },
+    reset: function () { try { localStorage.removeItem(LS_KEY); } catch (e) {} apply(PRESETS.meridian); },
   };
 })(window);

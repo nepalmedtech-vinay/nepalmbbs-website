@@ -1,0 +1,27 @@
+---
+// A real photography band for the homepage — the hero's WebGL medical
+// icons and the map below are both abstractions of "medical education";
+// nothing on the home page was an actual photograph until this. Same
+// `.why-img` treatment as the why-nepal and life-in-nepal pages (rounded
+// corners, hover zoom, gradient overlay, badge, and the sitewide broken-
+// image fallback in chrome.js/chrome.css), so this doesn't invent a
+// fourth image-card language for one more section.
+//
+// Captions describe what the photo generically shows ("Clinical
+// training"), never a specific college or "our campus" — the site's
+// standing decision (DECISION_LOG.md) is that a stock photograph must
+// not stand in for evidence about any particular institution.
+---
+<section class="med-gallery-section m-rise">
+  <div class="wrap">
+    <div class="tc" style="margin-bottom: var(--s-6)">
+      <span class="eyebrow">Clinical Training</span>
+      <h2 class="sec-title">What medical training actually looks like</h2>
+    </div>
+    <div class="med-gallery">
+      <div class="why-img med-gallery-lg"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?fm=webp&w=1920&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Medical students in clinical training" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🩺 Clinical Rounds</div></div>
+      <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1516549655169-df83a0774514?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Hospital corridor and clinical setting" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🏥 Teaching Hospital</div></div>
+      <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1579154204601-01588f351e67?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Medical students studying anatomy" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">📖 MBBS Curriculum</div></div>
+    </div>
+  </div>
+</section>

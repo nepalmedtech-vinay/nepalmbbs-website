@@ -1,5 +1,6 @@
 ---
 import GlassLayout from '../layouts/GlassLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
 
 // Written from what the code actually does, not from a template. Every claim
 // below was checked against the source:
@@ -23,12 +24,7 @@ const UPDATED = 'August 2026';
 <div class="tab-pane on">
 <div class="container pv-wrap">
 
-  <p class="eyebrow">Last updated {UPDATED}</p>
-  <h1 class="sec-title" style="margin-bottom:12px">Privacy</h1>
-  <p class="sec-sub" style="max-width:62ch">
-    This page describes what actually happens to the details you type into
-    this site. It is written from the code that runs it, not from a template.
-  </p>
+  <PageHeader eyebrow={`Last updated ${UPDATED}`} lead="This page describes what actually happens to the details you type into this site. It is written from the code that runs it, not from a template.">Privacy</PageHeader>
 
   <div class="doc" style="margin-top:28px">
     <div class="doc-head">

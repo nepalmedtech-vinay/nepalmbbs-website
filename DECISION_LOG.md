@@ -418,3 +418,402 @@ data (higher value per the brief's zero-fabrication standard, but is
 research work, not code, and should probably run as its own longer task
 rather than be rushed inside a coding session). Left for `NEXT_TASK.md`
 to record once Phase 0's verify run finishes and a decision is made.
+
+## 2026-09-08 — Cinematic-premium brief: palette promotion, two bug fixes, imagery conflict left open
+
+**Decision: promoted the codebase's own existing "Porcelain" preset colours
+to the site default**, rather than inventing a new palette from scratch, in
+response to a request for a more explicitly "corporate/professional" look.
+`engine.js` already shipped four curated alternate themes
+(`porcelain`, `monsoon`, `saffron`) alongside the default `dawn`; Porcelain's
+blue/bronze pair (`#1F5F8B`/`#B4632F`) was already built, already
+contrast-solved by `engine.js`'s own dynamic solver, and already described
+in its own `hint` field as "near-white, minimal colour" — a lower-risk move
+than hand-picking new hex values, and it kept Dawn's fuller glass/glow/
+motion settings rather than adopting Porcelain's quieter ones (the ask was
+for more motion, not less). `--sh-radius` moved 22px→18px and `--dp` 1→1.05
+alongside it — sharper corners and slightly deeper shadow, both small,
+both reversible via the admin panel's existing theme controls.
+
+**Decision: did not add stock or generated campus photography**, despite
+the cinematic brief's hero/campus sections assuming it. This is not a new
+call — it is enforcing the Phase 2 decision already recorded in
+`PROJECT_STATE.md` ("replaced stock-photo 'campuses' with honest
+non-photographic treatments") and stated directly in the homepage's own
+copy ("no stock photographs standing in for a campus"). Fabricating or
+substituting generic photography would have reversed a decision that isn't
+this session's to reverse, the same standing `DECISION_LOG.md` already
+holds for the fee-calculator question below. Recorded as an open question
+in `DESIGN_AUDIT.md` §7 for the owner, not resolved unilaterally in either
+direction — the hero was instead built from the site's own data/motion
+language (the map's graticule motif) as the non-photographic alternative.
+
+**Decision: fixed two accessibility bugs found while testing Phase 3, not
+originally in scope, rather than only reporting them.** Both were small
+(one-line), both were genuine regressions for real users (no focus
+indicator at all on two elements; `prefers-reduced-motion` silently
+defeated sitewide by the theme engine's own inline-style application), and
+both had an unambiguous correct fix already proven elsewhere in the same
+codebase (the pattern three other correct uses of `--focus-ring` already
+established; a `matchMedia` check added to `engine.js`'s `apply()`). Judged
+this the same class of decision as the earlier `@keyframes fade` fix for
+the invisible map — a found, verified, narrowly-scoped bug, not a
+redesign — rather than something requiring a check-in first.
+
+**Decision: the "Universal Design OS" and follow-on skills-library work is
+account/workstation-level tooling, committed to this repo only because it
+is the writable location this session has access to.** Explicitly not a
+NepalMBBS feature or dependency — `.claude/skills/README.md` states this
+and gives the reuse path (copy the folder into a future project, or
+install the packaged `.skill` file at the account level). Recorded here so
+a future session reading `git log` on commits like `a5d2433`/`2419f98`/
+`a1368b5` does not mistake workstation tooling for site work.
+
+**2026-09-08 — hero icon field: two contrast regressions found and fixed,
+then the icons themselves redesigned on owner feedback.** After the
+light-palette revert (`73df424`) and the genuine-WebGL medical-icons pass
+(`27208f4`/`5c1538d`), `audit.mjs` caught two real AA failures neither
+present before that work:
+
+1. `.gl-crystal-face`'s gradient (`--brand-lift -> --brand -> --brand-deep`)
+   put white label text over `--brand-lift` at ~3.84:1. Same fault
+   `chrome.css`'s "Brand fills under white text" section already
+   documents and fixed for every other primary action — this component
+   was added after that sweep and never got it. Fixed in `premium.css` by
+   dropping `--brand-lift` from the gradient (`7498369`), same remedy
+   `chrome.css` already proved safe.
+2. `.test-stars`'s hardcoded `#9a6400` (pre-token-system leftover, same
+   class of debt as the Sora/Inter font rules `chrome.css` already maps)
+   measured 3.95:1 over the translucent testimonial card. Darkened to
+   `#7b5000` in `base.css` (`8a8f9e0`).
+
+Separately, the owner reviewed a recorded motion preview of the WebGL
+hero and judged the three medical icons too large and too saturated —
+"cheap" rather than premium — and asked for a proper medical + medicine +
+biology set, not one shape per category, with an explicit requirement
+that the colour never read as a solid block over the copy. Addressed in
+`cf6c280`: both the CSS/SVG fallback and the WebGL scene were resized
+(~40% smaller), the stethoscope redrawn as a closed loop (matching the
+🩺 emoji's grammar instead of an open squiggle), colour mixed toward
+white before reaching any material, and two shapes added — a capsule
+(medicine) and a DNA double helix (biology) — alongside the existing
+stethoscope, pulse trace, and cross. `audit.mjs` confirmed 0 low-contrast
+elements after all three changes.
+
+**2026-09-09 — site-wide motion, second icon-visibility correction, and
+WebGL expanded past the homepage.** Owner reported the site still read as
+static/no motion after watching the recorded preview, despite the hero
+WebGL work. Two real causes, not one:
+
+1. The "cheap" icon fix a day earlier overcorrected — 0.13 opacity and a
+   30% white colour mix stopped reading as motion at all on a real
+   screen. Rebalanced (opacity 0.26, 15% white mix, ~35% larger) in both
+   `GlassHero.astro`'s CSS fallback and `medical-icons-scene.js`'s
+   material tint/scale — a deliberate middle setting between the two
+   passes, documented in both files.
+2. `motion.css`'s scroll-driven utilities (`m-rise`, `m-stagger`,
+   `animation-timeline: view()`) existed and worked but were applied to
+   almost nothing — the homepage's `TrustSection` and `SectionNav` had
+   zero motion classes, and no page-specific markup anywhere used the
+   shared card family (`college-card`/`why-card`/`life-card`/`test-card`/
+   `vid-card`/`guide-card`/`faq-item`/`cx-card`) with any entrance motion
+   at all. Fixed by binding the animation directly to that shared
+   selector in `motion.css`, once — since premium.css's own card
+   unification (§10) already applies that selector across all 44 routes,
+   this covers every card grid site-wide (including JS-rendered ones,
+   colleges.js) without touching 40 page files individually.
+
+Separately, owner asked for real 3D "everywhere", lead-flow automation,
+and an automated blog writer, and pushed back explicitly on a prior
+message where research was skipped by Claude's own judgement rather than
+performed as asked — noted here so a future session does not repeat that:
+when asked to check something, check it, don't substitute judgement for
+the request.
+
+- **3D beyond the hero**: added an opt-in `threeD` prop to
+  `PageHeader.astro` (the shared header on 40 sub-pages) that mounts the
+  same `mountMedicalIconsScene` — not a duplicate scene, the identical
+  function. Left off by default (a WebGL context + Three.js fetch on all
+  40 pages for a decorative flourish most visitors never see is real
+  cost, not a hypothetical one) and enabled on the two highest-traffic
+  decision pages, `/colleges` and `/why-nepal`. Deliberately not enabled
+  on `/counseling` — that page doesn't use `PageHeader` at all; it's the
+  lead-capture form, where decoration competing with conversion is the
+  wrong trade, not an oversight.
+- **Lead-flow automation**: investigated before building anything, since
+  this touches the real leads table. Found the automation structure
+  already exists — `sequences`/`sequence_steps`/`sequence_runs`/`tasks`
+  tables and an `enrol_sequences()` trigger (0002_admission_platform.sql)
+  that auto-enrols an application into a follow-up sequence and creates
+  staff tasks with a channel (call/whatsapp/email) and due date. What
+  does not exist is an actual outbound sender — no WhatsApp Business API
+  or email provider is wired up; `tasks.channel` labels intent for a
+  human, nothing sends automatically. Not built further this session:
+  doing so needs the owner to choose a provider and supply credentials,
+  which is a decision and a secret Claude cannot originate.
+- **Automated blog writer**: not built. `CLAUDE.md` rule 1 ("never invent
+  a fact... no fee, seat count, deadline, ranking or recognition status
+  that does not trace to a named source with a date") is in direct
+  tension with an automation that generates content on its own for a
+  medical-admissions site. Flagged to the owner rather than either
+  silently building it or silently refusing — a source-gated "draft
+  assistant" (matching the site's existing sourced-assistant discipline:
+  every claim needs a source before it can be used) was offered as the
+  version of this feature that doesn't cross that line, pending the
+  owner's decision.
+
+Full `audit.mjs` re-run after each change in this pass: 0 low-contrast
+elements, 0 pages overflowing, each time.
+
+**2026-09-09 — chat launcher redesigned, broken-image fallback built,
+hamburger confirmed present.** Owner reported the hamburger menu missing,
+the chatbot icon looking cheap, and two images missing on `/why-nepal`,
+and asked for more Nepal/medical photography sourced from open sources.
+
+- **Hamburger**: verified present and correctly coloured via a real
+  mobile-viewport screenshot (`.hbg`, base.css shows/premium.css tints it
+  dark) — not a bug. Not touched further.
+- **Chat launcher (`.chat-toggle`)**: a real bug, and the same class as
+  every other fault this file (chrome.css) exists to fix — a 2023 dark-
+  build gradient (`var(--m-fill)` to `var(--blue-dark)`) with a hardcoded
+  `#fff` icon fill and a shadow tuned for a dark page. `audit.mjs`'s
+  contrast pass explicitly bails on gradient backgrounds (this file's own
+  opening comment), so it could not have caught this — it only showed up
+  by looking. Redesigned with the same crystal-glass surface the Book
+  free counseling button already uses, plus a slow sonar-ping idle
+  animation (gated on `--mo`/reduced-motion) since it is the one always-
+  visible affordance on every page.
+- **Broken-image fallback, sitewide**: every photograph on the site
+  hotlinks Unsplash, a third-party CDN this project does not control.
+  Added one capture-phase `error` listener in `chrome.js` (`error` does
+  not bubble, so no per-`<img>` wiring needed) that flags a failed image
+  `.img-broken`; `chrome.css` hides it and gives the container a tokened
+  gradient instead of a browser broken-image glyph, and drops the photo-
+  darkening overlay that would otherwise muddy the fallback. Verified
+  working via a real broken-image case (this sandbox's network policy
+  blocks images.unsplash.com entirely, confirmed at the proxy level, not
+  just for this session's own curl calls) — a real visitor's browser is
+  not behind that restriction.
+- **Could not verify the specific "2 missing" images or confirm any new
+  photo IDs actually resolve** — this sandbox cannot reach Unsplash,
+  Pexels, or Wikimedia (org-level proxy policy denial on all three,
+  confirmed via `/__agentproxy/status`), so no external image URL can be
+  fetched or checked from here, ever, regardless of which host is used.
+  Added a `.life-gallery` (three Nepal/culture photos, asymmetric layout)
+  to `/life-in-nepal` — which had exactly one photo on the whole page —
+  using new Unsplash photo IDs chosen without the ability to confirm
+  they resolve. The fallback above means a dead ID degrades to a clean
+  gradient rather than a broken glyph either way, but the owner should
+  spot-check `/life-in-nepal` and the two originally-reported `/why-nepal`
+  images after deploy and report which (if any) still show as a gradient
+  rather than a photo, so the specific dead ID can be swapped rather than
+  guessed at again.
+
+**2026-09-09 — mobile menu redesigned, homepage medical-photo section
+added.** Owner shared a screenshot of the open mobile menu: dark navy
+glass, gold accents. Found the cause — `#mob-menu` (base.css,
+components.css) is three separate rule blocks, one literally commented
+`/* Image 5 exact style */`, none reading a single design token. It is
+the one screen on the site that still opens onto the near-black surface
+the owner's brief ruled out everywhere, and the gold accent matches
+nothing in the current two-colour (blue/teal) brand. It only renders once
+opened, which is almost certainly why no audit or screenshot pass this
+project has run ever caught it. Overridden in chrome.css with the same
+glass tokens the rest of the chrome uses, gold swapped for the brand blue
+already used on the desktop nav's EN/HI toggle.
+
+Added `MedicalGallery.astro` to the home page (`GlassHero` → `CollegeMap`
+→ `TrustSection` → **`MedicalGallery`** → `SectionNav`) — the home page's
+only prior "medical" imagery was the hero's WebGL icons and the map,
+both abstractions; nothing was an actual photograph. Same `.why-img`
+treatment and honest-caption discipline as why-nepal/life-in-nepal
+(captions describe what a photo generically shows — "Teaching Hospital",
+"Clinical Rounds" — never a specific college or "our campus").
+
+Also answered directly, in chat, why no further externally-sourced
+images can be verified from this session: `/__agentproxy/status` shows
+policy denials for images.unsplash.com, images.pexels.com, and
+upload.wikimedia.org alike — this is a blanket sandbox network policy,
+not a per-host quirk to route around by picking a different CDN. The
+concrete way past it: the owner uploads image files directly into the
+conversation, which this session can then save as local assets and
+reference with no external fetch involved at all — more reliable than
+hotlinking a third party regardless.
+
+**2026-09-09 — deploy confusion resolved: `main` was never behind a
+different redesign, just behind this branch.** Owner enabled Netlify
+branch deploys ("All") and triggered one via the dashboard's "Trigger
+deploy" button, then reported nepalmbbs.in still showing an old view.
+The deploy details named `main@392ad45` ("Merge pull request #2 from
+redesign/premium-ecosystem") — worth checking rather than assuming,
+since that name reads like a competing redesign. It is not: `git
+merge-base HEAD origin/main` resolves to that exact commit, so it is
+this branch's own fork point, with zero divergence and zero conflicts —
+29 commits ahead, nothing on `main` this branch doesn't already have.
+`main` simply predates every visual change this session made (the
+light-palette revert, the WebGL medical icons, the mobile-menu and chat-
+launcher fixes, all of it), which is why the deployed page looked like
+none of this session's work.
+
+The actual cause: Netlify's "Trigger deploy" button rebuilds the site's
+configured *production* branch (`main`) — it does not offer a branch
+picker. Branch-deploy builds for a non-production branch fire from a
+*push* to that branch (a webhook), which only starts working once
+"branch deploys: All" is enabled going forward; it does not retroactively
+build a branch that was already fully pushed before the setting changed.
+This commit's own push is what should trigger that first build for
+`claude/website-premium-design-j6mphw` and produce a
+`claude-website-premium-design-j6mphw--nepalmbbs.netlify.app` preview URL.
+
+The branch-deploy webhook never did fire even after this push; PR #4
+(already open on this branch) already carried a working Netlify Deploy
+Preview status (`deploy-preview-4--nepalmbbs.netlify.app`, checked via
+`pull_request_read get_status`) — GitHub's own PR-comment/status path
+was simply the more reliable of the two integration paths, so that
+became the actual answer rather than debugging the branch-deploy
+webhook further.
+
+**2026-09-09 — WebGL extended to four more pages, FAQ hover redesigned,
+footer given motion, two why-nepal photos swapped.** Continuing from the
+owner's screenshot-driven review:
+
+- `threeD` (the `PageHeader.astro` prop already built for `/colleges` and
+  `/why-nepal`) turned on for `/guidelines`, `/videos`, and `/faq`.
+  `/admission-process` doesn't use `PageHeader` — it hand-rolls its own
+  `.ph` header because it needs a fourth staged element (`.pr-rail-meta`)
+  that component stops short of — so the same canvas/CSS/script is
+  duplicated directly into that page rather than extending the shared
+  component's prop contract for one caller.
+- FAQ row hover redone: was a faint background tint (premium.css); now
+  fills solid `--brand-deep` with white (`--brand-ink`) text on hover/
+  focus, per explicit request for a bolder, felt response to the
+  pointer — a hover *state*, not a reversion of the "no dark background"
+  rule, which is about page backgrounds, not an interactive fill on the
+  one row under the cursor.
+- Footer given `.m-rise` (was completely static, the one thing on every
+  one of 44 routes with zero motion) and `.m-stagger` across its four
+  columns.
+- Swapped the two `/why-nepal` photos the owner identified by their
+  captions ("English + Hindi", "Familiar Culture") for new Unsplash IDs —
+  same verification caveat as before: this sandbox cannot confirm any
+  external image URL resolves, so the sitewide broken-image fallback is
+  what actually protects these two if the new IDs turn out dead as well.
+
+`audit.mjs` after all of the above: 0 low-contrast elements, 0 pages
+overflowing.
+
+**2026-09-09 — footer given a WebGL layer + glass-tab links (olive
+accent), stethoscope rebuilt as a real two-material object, and a real
+bug found in the process.** Owner's specific asks: a third accent colour
+(olive) for the footer specifically, the footer's own medical-icons
+scene, glass-tab links with an olive fill on hover, and — after seeing
+it — a materially more realistic stethoscope than the single-colour
+glass loop the last two passes shipped.
+
+- **New token**: `--olive` (#5F6E1A, white text clears 5.63:1) plus
+  derived `--olive-deep`/`--olive-lift`/`--olive-line`, following the
+  same pattern as `--brand`'s derived tokens. Used only where a caller
+  asks for it by name — the site's default material language stays the
+  two-hue blue/teal system everywhere else.
+- **Real bug, found via a console warning**: `getComputedStyle(...).
+  getPropertyValue('--olive-deep')` returns the literal, unparsed string
+  `"color-mix(in oklab, ...)"` — custom properties are not resolved by
+  the browser the way normal CSS properties are, so `new THREE.Color()`
+  failed silently on it, which is why the footer's DNA helix and cross
+  were rendering white instead of olive no matter how the tint/
+  transmission parameters were tuned. Added `--olive-deep-rgb`, a plain
+  hex literal duplicate, specifically for JS/Three.js consumption; CSS
+  itself keeps using the color-mix version, which resolves fine when
+  read normally (element.style, computed `color`, etc — the bug is
+  specific to reading a *custom* property's value in JS).
+- **`mountMedicalIconsScene` gained two new options** (`transmission`,
+  `tint`, alongside the existing `brand`/`brand2` colour-token names) —
+  the hero/page-header default (high transmission, white-tinted) is
+  correct there ("glass, not a coloured shape" was the original brief),
+  but it reads as washed-out white when a caller wants the icons to
+  visibly read as an accent colour, which is what the footer asked for.
+  Threaded through all five `build*` functions rather than hard-coded,
+  so any future caller can ask for the same "solid colour, less glass"
+  variant without another round of this.
+- **Stethoscope rebuilt with two materials** instead of one crystal-glass
+  material for the whole object: `steel` (metallic, low roughness,
+  neutral silver — a deliberate exception to token-driven colour, since
+  real stethoscope metal is not brand-coloured) for the binaurals, yoke,
+  chestpiece rim/stem; coloured matte rubber for the flexible tubing and
+  diaphragm face. Also corrected the topology to an actual Y-shape (two
+  binaural curves converging on a yoke, one tube continuing to the
+  chestpiece) rather than one continuous loop standing in for both
+  earpieces — the single-material, wrong-topology version is what read
+  as "abstract loop" rather than "stethoscope" regardless of how much
+  the proportions were tuned.
+- Footer given `.foot-3d` (the same scene, olive-tinted) and its links
+  restyled as small crystal-glass tabs, filled solid olive with white
+  text on hover — matching the FAQ page's hover language in the
+  footer's own colour.
+
+Cost, stated plainly: the footer now carries the Three.js scene on
+**every one of the 44 routes**, not just the pages that opted into
+`threeD` — median page weight in `audit.mjs`'s report went from ~353 kB
+to ~863 kB. Still gated to desktop + motion-on visitors only (same as
+every other WebGL layer on the site), and `audit.mjs` still reports 0
+low-contrast elements and 0 overflowing pages, but this is a real,
+sitewide bandwidth cost the previous, more targeted `threeD` opt-in did
+not carry — worth knowing about rather than discovering later.
+
+**2026-09-09 — footer olive replaced with navy + light blue; two real
+bugs found and fixed along the way; FAQ hover finally actually applies.**
+Owner reported the FAQ hover "abhi nahi hua" (still hasn't happened)
+despite the previous session's fix, and asked for the footer's accent
+switched from olive-green to navy/light-blue.
+
+- **FAQ hover — the actual bug**: the previous fix was written into
+  `chrome.css`, but `premium.css` loads *after* chrome.css and already
+  carried its own `.faq-q:hover { color: var(--brand-text) !important }`
+  — same specificity, later file wins, so chrome.css's version was
+  silently losing every time regardless of how correct it looked in
+  isolation. Fixed at the actual winning rule, in premium.css itself,
+  and removed the now-dead duplicate from chrome.css rather than leaving
+  two copies of the same fix arguing with each other.
+- **Colour swap — `--olive`/`--olive-deep`/`--olive-lift` replaced** with
+  `--navy-accent` (#173F73) and `--sky` (#5B9BD5) in engine.css, and
+  every consumer in Footer.astro and the footer's `mountMedicalIconsScene`
+  call updated to match.
+- **Second real bug, caught before it shipped this time**: the first
+  attempt named the new token `--navy` — which turned out to already be
+  a heavily-used legacy token (~30 selectors in base.css) that
+  `bridge.css` deliberately remaps to `var(--g-ink)` as part of the
+  dark->light migration. Every consumer of the new "navy" silently read
+  near-black ink instead, since bridge.css loads after engine.css and
+  the same name wins. Caught by checking a computed style rather than
+  assuming the token resolved to what it was declared as — the same
+  discipline that caught the color-mix()-in-JS bug the pass before this
+  one. Renamed to `--navy-accent` throughout; verified via
+  `getComputedStyle` afterward that the resolved gradient is actually
+  `rgb(91,155,213) -> rgb(23,63,115)` (sky -> navy-accent, not g-ink).
+- Swapped the `/why-nepal` "English + Hindi" photo again — the owner
+  judged the previous replacement still too generic — for a lecture-hall-
+  specific Unsplash ID. Same standing caveat: this sandbox cannot verify
+  any external image URL resolves.
+
+`audit.mjs` after all of the above: 0 low-contrast elements, 0 pages
+overflowing.
+
+**2026-09-09 — crystal shine added to footer tabs, third attempt at the
+"English + Hindi" photo.** Owner asked for the same sweeping-light shine
+`.gl-crystal-sheen` already gives the Book free counseling button, on
+the footer's navy tabs on hover — added as a real `::after` element
+(needs `overflow: hidden` on the link, added alongside) reusing
+`cx-sweep`, the same keyframe the CTA button already defined, rather
+than a second copy of the same animation.
+
+Swapped the "English + Hindi" photo a third time — first two passes
+were both judged too generic/medical rather than specifically a
+classroom. Same standing caveat repeated because it is still true:
+this sandbox cannot fetch or verify any external image URL, so each
+attempt is a best-effort ID pick, not a confirmed one. If this one is
+still wrong, the reliable fix is the owner uploading an actual photo
+into the conversation for this session to save as a local asset
+instead of a third-party hotlink — sidesteps the verification problem
+entirely rather than another guess.
+
+`audit.mjs`: 0 low-contrast elements, 0 pages overflowing.

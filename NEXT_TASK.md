@@ -3,6 +3,92 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-08 — read this section first, it supersedes the "page interiors" chunk below
+
+A separate "ultra-premium cinematic" brief arrived mid-session and became
+the active thread of work — it did not continue the "page interiors" chunk
+this file previously pointed at (still described further down; that work
+is paused, not abandoned, and is a reasonable place to return to once the
+cinematic thread resolves).
+
+**What happened, in order:**
+
+1. **`DESIGN_AUDIT.md` (new file, repo root)** — a Phase 1 audit against
+   the cinematic brief's own "audit first, do not redesign yet" process.
+   Documents the stack, styling layers, motion inventory, and — the one
+   thing that matters for what's next — **an unresolved conflict**: the
+   brief's hero/campus sections assume photography that does not exist in
+   this repo, and contradicts a recorded Phase 2 decision (no stock
+   photos standing in for a campus, stated in the homepage's own copy).
+   **This is still open. It blocks the hero/campus sections specifically
+   if the cinematic work continues** — nothing else in the brief depends
+   on it.
+
+2. **Corporate palette is now the site default.** `engine.css` and
+   `engine.js`'s `PRESETS.dawn` both moved from jade-green/orange to deep
+   blue (`#1F5F8B`) + bronze (`#B4632F`) — reusing the codebase's own
+   pre-existing "Porcelain" preset's colours at fuller glass/motion
+   settings. Verified: 0 contrast failures, both before and after the
+   change, across all 43 routes.
+
+3. **Phase 3 visual benchmark shipped** — Navbar (real transparent→glass
+   scroll transition, was previously glass unconditionally), Hero
+   (cinematic field layer + staged load choreography, no photography —
+   built from the same graticule/data motif as the map), a reusable
+   "Crystal CTA" component (nav + hero primary actions), and the college
+   map's motion (path-drawing graticule, a "ping" activation ring per
+   point instead of a generic fade). Full diff: 6 files, `git log` on
+   this branch from commit `6e16bf3` onward.
+
+4. **Two real, pre-existing bugs found and fixed** while testing the
+   above (not part of the 5 permitted benchmark areas, but genuine
+   breakage a mandated a11y pass surfaced):
+   - `prefers-reduced-motion` was silently defeated **sitewide** —
+     `engine.js`'s theme `apply()` set `--mo` as an inline style
+     unconditionally, which beat the CSS media query meant to zero it
+     out. Fixed and verified (`--mo` now correctly reads `0`, content
+     visible within 150ms under reduced motion, was previously stuck
+     invisible 500–900ms).
+   - No visible focus indicator on the skip-to-content link (every page)
+     or the counselor console's search fields — `outline:
+     var(--focus-ring)` is invalid CSS (`--focus-ring` is a box-shadow-
+     shaped token), silently dropped. Fixed to `box-shadow` on both.
+
+5. **A separate, broader ask followed**: audit the Claude *workstation's*
+   skill library (not this project) for general premium-design/creative-
+   technology/native-app/automation/agent-building capability. Resulted
+   in 8 skills total living in `.claude/skills/` — 2 vendored
+   (`taste-skill`, `redesign-skill`) plus 6 authored this session
+   (`premium-design-os`, `creative-technology-lab`, `native-app-design`,
+   `brand-identity-lab`, `agent-architecture-lab`, `automation-router`).
+   See `.claude/skills/README.md` for what each covers and the explicit
+   honesty note that none have been through `skill-creator`'s real eval
+   loop yet. **Not NepalMBBS-specific** — this is workstation tooling,
+   not a site feature; do not confuse it with project work when reading
+   `git log` on this branch.
+
+**Full verify suite result as of the last run this session:** `csp` ✅,
+`console-verify` ✅, `a11y-verify` ✅ (after the focus-ring fix),
+`audit.mjs` ✅ (0 low-contrast, 0 mobile overflow, 43 routes), `build-verify`
+❌ — but on the pre-existing, documented rollback-tag issue (`CLAUDE.md`:
+tags return 403 on push), unrelated to any of the above.
+
+**⏸ Waiting on the owner before Phase 4 (full-site rollout of the
+cinematic direction):**
+- Confirmation that Phase 3's benchmark (screenshots sent, all 4
+  breakpoints) is approved to extend to the rest of the site.
+- The imagery-policy question from `DESIGN_AUDIT.md` §7 — real, licensed
+  campus photography, or continue building the "no photography, data as
+  the visual signature" language the hero/map already establish. This
+  gates only the hero/campus-visualization sections of Phase 4, nothing
+  else.
+
+If a fresh session picks this up with neither answered: **do not guess.**
+Report this section back to the owner and wait, rather than either
+resuming the old "page interiors" chunk or unilaterally starting Phase 4.
+
+---
+
 ## Status as of 2026-08-29
 
 `npm run verify` is green: 44 routes, 0 failures, 0 low-contrast elements

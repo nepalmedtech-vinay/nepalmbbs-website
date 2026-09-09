@@ -17,39 +17,158 @@ const stats = [
 ];
 ---
 <section class="gh">
+  {/* The field: architectural grid + one slow radial light + a graticule
+      motif borrowed from the map section below (same fine-line, degree-
+      tick language) + three real medical icons drifting slowly — a
+      stethoscope, a pulse/ECG trace, and a caduceus-free medical cross,
+      standing in for "campus photography" the same way the map does:
+      honest about what it is (a decorative field, aria-hidden) rather
+      than an abstract shape with no connection to the actual subject.
+      Replaces an earlier Three.js glass-cluster pass that was visually
+      impressive but generic — it could have sat in front of any brief,
+      not specifically a medical one, and needed WebGL for something three
+      static icons don't. Motion stays the same register as before: one
+      very slow (26s+) drift, nothing that resolves into something a
+      visitor would stop to watch. */}
+  <div class="gh-field" aria-hidden="true">
+    <div class="gh-grid"></div>
+    <div class="gh-glow"></div>
+    <svg class="gh-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <line x1="0" y1="28" x2="100" y2="28" />
+      <line x1="0" y1="74" x2="100" y2="74" />
+      <line x1="82" y1="0" x2="82" y2="100" />
+    </svg>
+
+    {/* Five icons — a proper medical + medicine + biology set (stethoscope,
+       ECG pulse, capsule, DNA helix, cross) rather than one shape standing
+       in for the whole vocabulary. Positioned to clear both the copy
+       column's text measure and the ledger's fixed 17rem right column (see
+       .gh-in's grid-template-columns below) — the first pass placed two of
+       these directly under the ledger cards, effectively invisible. All
+       five sit in the gap between the lead paragraph's capped measure and
+       the ledger, or below the CTA row, not behind either.
+
+       Sized and coloured a second time in this pass: the first redesign
+       (46-68px, full brand saturation) read as heavy shapes competing with
+       the headline, so it went down to 22-34px at 0.12 opacity — which
+       overcorrected into not registering as motion at all on a real
+       screen. This is the middle setting: present enough to read as
+       "something is moving back there" without being mistaken for
+       decoration competing with the copy. */}
+    <span class="gh-icon" style="--mx:6%; --my:10%; --md:36s; --sz:44px; --ic:1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="5" cy="3.2" r="1"/>
+        <circle cx="9.4" cy="3.2" r="1"/>
+        <path d="M5 4.2v2.3a2.7 2.7 0 0 0 2.7 2.7 2.7 2.7 0 0 0 2.7-2.7V4.2"/>
+        <path d="M7.7 9.2v3.6a5.6 5.6 0 0 0 5.6 5.6h.2a5.6 5.6 0 0 0 5.6-5.6v-1.3"/>
+        <circle cx="19.1" cy="10.3" r="2.1"/>
+      </svg>
+    </span>
+
+    <span class="gh-icon" style="--mx:63%; --my:44%; --md:44s; --sz:50px; --ic:2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="2,12 6,12 8.5,5 12,19 14.5,12 17,12 19,7 21,12"/>
+      </svg>
+    </span>
+
+    <span class="gh-icon" style="--mx:70%; --my:8%; --md:39s; --sz:36px; --ic:1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2.5" y="8" width="19" height="8" rx="4" transform="rotate(-35 12 12)"/>
+        <line x1="12" y1="6.4" x2="12" y2="17.6" transform="rotate(-35 12 12)"/>
+      </svg>
+    </span>
+
+    <span class="gh-icon" style="--mx:8%; --my:58%; --md:41s; --sz:40px; --ic:2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 2c0 4 10 4 10 8s-10 4-10 8"/>
+        <path d="M17 2c0 4-10 4-10 8s10 4 10 8"/>
+        <line x1="8.3" y1="5" x2="15.7" y2="5"/>
+        <line x1="7" y1="10" x2="17" y2="10"/>
+        <line x1="8.3" y1="15" x2="15.7" y2="15"/>
+      </svg>
+    </span>
+
+    <span class="gh-icon" style="--mx:24%; --my:80%; --md:31s; --sz:30px; --ic:1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v18M3 12h18"/>
+      </svg>
+    </span>
+  </div>
+
+  {/* The genuine-WebGL upgrade: the same three shapes (stethoscope, pulse
+      trace, cross) as real 3D geometry — a tube swept along a curve, an
+      extruded bevelled cross — physically lit and glass-materialled, not
+      the flat SVGs above redrawn as sprites. The 2D field above is not a
+      fallback bolted on after this; it is the pre-existing, already-
+      finished layer this mounts in front of on top of, exactly like the
+      site's WebGL aurora background already does elsewhere — a visitor who
+      gets neither WebGL nor motion still gets a finished-looking hero. */}
+  <canvas id="gh-medical-3d" class="gh-medical-3d" aria-hidden="true"></canvas>
+
   <div class="wrap gh-in">
-    <span class="gl-eyebrow m-focus">NMC India recognised · MEC Nepal process</span>
+   <div class="gh-copy">
+    <span class="gl-eyebrow gh-in-1">NMC India recognised · MEC Nepal process</span>
 
     <h1 class="gl-display gh-h1">
-      <span class="gl-line" style="--i:0"><span>Your MBBS in Nepal,</span></span>
-      <span class="gl-line" style="--i:1"><span>decided on <em class="gl-grad">evidence</em>.</span></span>
+      <span class="gl-line" style="--i:1"><span>Your MBBS in Nepal,</span></span>
+      <span class="gl-line" style="--i:2"><span>decided on <em class="gl-grad">evidence</em>.</span></span>
     </h1>
 
-    <p class="gl-lead m-rise">
+    <p class="gl-lead gh-in-4">
       We publish what we can source and say so when we cannot. No fee figures
       that go stale, no stock photographs standing in for a campus, no promise
       the Medical Education Commission has not made.
     </p>
 
-    <div class="gh-cta m-rise">
-      <a href="/counseling" class="gl-btn gl-btn--primary m-magnet" data-pull="0.22">Book free counseling</a>
+    <div class="gh-cta gh-in-5">
+      <a href="/counseling" class="gl-crystal m-magnet" data-pull="0.22">
+        <span class="gl-crystal-face"><span class="gl-crystal-sheen"></span>Book free counseling</span>
+      </a>
       <a href="/colleges" class="gl-btn gl-btn--ghost">See all {colleges.length} colleges</a>
     </div>
+   </div>
 
-    <div class="gh-stats m-stagger">
-      {stats.map((s) => (
-        <div class="gh-stat gl gl--soft">
-          <b data-count={s.n}>0</b>
-          <span>{s.l}</span>
+    {/* The ledger, as floating dimensional glass rather than a flat list —
+        the owner asked for real 3D, not a colour swap. Each figure is a
+        genuine `.gl--live` pane (glass.css's existing pointer-tilt +
+        moving specular system, already built, previously only used on a
+        couple of cards) inside a wrapper that carries its own slow float;
+        splitting the two keeps the continuous float animation and the
+        pointer-driven tilt on separate transforms so they don't fight for
+        the same CSS property. Still counted evidence, not a stock image —
+        the glass is real, the numbers are still colleges.json's. */}
+    <dl class="gh-stats gh-in-6">
+      {stats.map((s, i) => (
+        <div class="gh-stat-float" style={`--fi:${i}`}>
+          <div class="gh-stat gl gl--live">
+            <dt><b data-count={s.n}>0</b></dt>
+            <dd>{s.l}</dd>
+          </div>
         </div>
       ))}
-    </div>
+    </dl>
   </div>
 </section>
 
 <style is:global>
   .gh { padding-block: clamp(3rem, 1.5rem + 7vw, 7rem) var(--s-section); }
   .gh-in { max-width: 62rem; }
+  .gh-copy { min-width: 0; }
+
+  @media (min-width: 76rem) {
+    .gh-in {
+      max-width: min(var(--container), 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 17rem;
+      column-gap: clamp(2.5rem, 1rem + 4vw, 5.5rem);
+      align-items: start;
+    }
+    .gh-stats {
+      grid-template-columns: minmax(0, 1fr) !important;
+      margin-top: var(--s-3) !important;
+      border-top: 0 !important;
+    }
+  }
   .gh-h1 { margin: var(--s-5) 0 var(--s-5); }
   .gh-h1 em { font-style: italic; }
   .gh-cta { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-6); }
@@ -58,15 +177,147 @@ const stats = [
     display: grid; gap: var(--s-4); margin-top: var(--s-8);
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   }
-  .gh-stat { padding: var(--s-5); }
+  .gh-stat { padding: var(--s-5); margin: 0; }
+  .gh-stat dt, .gh-stat dd { margin: 0; }
   .gh-stat b {
     display: block; font-family: var(--ty-display);
     font-size: clamp(2rem, 1.4rem + 2.2vw, 2.9rem); font-weight: var(--ty-weight-d);
     line-height: 1; letter-spacing: var(--ty-tight);
     font-variant-numeric: tabular-nums; color: var(--g-ink);
   }
-  .gh-stat span {
+  .gh-stat dd {
     display: block; margin-top: var(--s-2);
     font-size: var(--t-xs); color: var(--g-ink-3);
   }
+
+  /* Five medical/medicine/biology icons — stethoscope, ECG pulse, capsule,
+     DNA helix, cross. Positioned in percentage coordinates within .gh-field
+     (same --mx/--my convention the old decorative dots used), sized small
+     via --sz (22-36px — a watermark scale, not an illustration scale) so
+     none of them reads as heavy enough to compete with the headline.
+     Colour alternates --brand/--brand-2 via --ic (set inline per icon) at
+     low opacity, softened further with white — the brief was explicit that
+     the colour must never "block a view": nothing here should read as a
+     solid tinted shape sitting over copy, only as a faint tinted line.
+
+     The tumble is real CSS 3D (perspective on the field + rotateX/rotateY/
+     translateZ per icon), not a WebGL scene — flat SVGs do not need a
+     renderer to read as objects turning in space; `perspective` on the
+     shared parent is what gives each child's rotation actual depth instead
+     of looking like a 2D squash. This is deliberately the lighter tool: the
+     earlier pass reached for Three.js for the same "3D, floating" brief
+     and it cost a real dependency and, on a black ground, the exact look
+     the owner then asked to remove. Every icon still degrades to a flat,
+     static SVG with no `perspective`/3D support at all — nothing here can
+     render as missing or broken, only as flat instead of tumbling. */
+  .gh-field { perspective: 900px; }
+  .gh-icon {
+    position: absolute;
+    left: var(--mx);
+    top: var(--my);
+    width: var(--sz, 30px);
+    height: var(--sz, 30px);
+    opacity: 0.26;
+    transform-style: preserve-3d;
+    transform: translate3d(0, 0, 0) rotateX(0) rotateY(0);
+    filter: drop-shadow(0 4px 8px color-mix(in oklab, var(--brand) 22%, transparent));
+  }
+  .gh-icon svg { width: 100%; height: 100%; display: block; }
+  /* CSS has no ternary, so the brand/brand-2 alternation from --ic is
+     resolved with two plain overrides instead of the (invalid) inline
+     expression above. */
+  .gh-icon { color: color-mix(in oklab, var(--brand) 85%, white 15%); }
+  .gh-icon[style*="--ic:2"] { color: color-mix(in oklab, var(--brand-2) 85%, white 15%); }
+  @media (prefers-reduced-motion: no-preference) {
+    .gh-icon {
+      animation: gh-icon-tumble var(--md, 36s) ease-in-out infinite alternate;
+    }
+  }
+  /* Each icon gets its own rotation axis and direction so the five don't
+     read as one motion copy-pasted. */
+  .gh-icon:nth-of-type(1) { --rx: 22deg; --ry: -16deg; --tz: 20px; }
+  .gh-icon:nth-of-type(2) {
+    --rx: -14deg; --ry: 24deg; --tz: 26px;
+    animation-direction: alternate-reverse;
+  }
+  .gh-icon:nth-of-type(3) { --rx: -18deg; --ry: 12deg; --tz: 16px; }
+  .gh-icon:nth-of-type(4) {
+    --rx: 16deg; --ry: -22deg; --tz: 22px;
+    animation-direction: alternate-reverse;
+  }
+  .gh-icon:nth-of-type(5) { --rx: 18deg; --ry: 20deg; --tz: 14px; }
+  @keyframes gh-icon-tumble {
+    from {
+      transform: translate3d(0, 0, 0) rotateX(0) rotateY(0);
+    }
+    to {
+      transform:
+        translate3d(calc(-14px * var(--mo)), calc(10px * var(--mo)), calc(var(--tz, 24px) * var(--mo)))
+        rotateX(calc(var(--rx, 18deg) * var(--mo)))
+        rotateY(calc(var(--ry, 18deg) * var(--mo)));
+    }
+  }
+
+  /* The WebGL canvas sits over the same field area the 2D icons occupy.
+     Hidden until the scene actually mounts (`.is-ready`, added by the
+     script below only after a real WebGL context was created) — an
+     `opacity` cross-fade, not `display`, so the swap from flat SVG to real
+     3D is not an abrupt pop. The 2D icons are hidden once the 3D layer is
+     ready rather than removed, so a WebGL context lost mid-session
+     (`.gh-medical-3d.is-ready` removed by the mount script's own listener)
+     has something to fall back to instantly. */
+  .gh-medical-3d {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity var(--d-5, 720ms) var(--ea-out, ease);
+    pointer-events: none;
+  }
+  .gh-medical-3d.is-ready { opacity: 1; }
+  /* Toggled on .gh-field directly by the mount script below, not via a CSS
+     sibling combinator — .gh-field comes BEFORE .gh-medical-3d in the DOM,
+     and `~`/`+` only ever select LATER siblings, so a combinator here
+     would silently never match. */
+  .gh-field.gh-field--3d-active .gh-icon { opacity: 0; transition: opacity var(--d-4, 420ms) var(--ea-out, ease); }
 </style>
+
+<script>
+  const canvas = document.getElementById('gh-medical-3d');
+  const field = document.querySelector('.gh-field');
+  const fine = matchMedia('(min-width: 62rem)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Desktop + motion-on + WebGL-capable only, exactly the gate this site's
+  // other WebGL layer (aurora-gl.js) already uses. A *dynamic* import,
+  // deliberately — three is not a small dependency, and a static top-level
+  // import would fetch and parse it for every visitor regardless of this
+  // gate, including phones that will never see the canvas.
+  if (canvas && field && fine && !reduce) {
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
+    idle(async () => {
+      try {
+        const { mountMedicalIconsScene } = await import('../lib/medical-icons-scene.js');
+        const handle = mountMedicalIconsScene(canvas);
+        if (handle) {
+          canvas.classList.add('is-ready');
+          field.classList.add('gh-field--3d-active');
+          // A lost context (GPU memory pressure, driver reset) is real on
+          // real hardware. Fall back to the already-correct 2D field rather
+          // than attempting to silently recreate the context.
+          canvas.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            handle.stop();
+            canvas.classList.remove('is-ready');
+            field.classList.remove('gh-field--3d-active');
+          }, { once: true });
+        }
+      } catch (e) {
+        // Import failure (blocked request, unsupported browser quirk) —
+        // the 2D field is already the correct, finished hero on its own.
+      }
+    });
+  }
+</script>
