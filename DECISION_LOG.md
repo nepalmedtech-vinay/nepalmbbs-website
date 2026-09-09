@@ -664,3 +664,40 @@ build a branch that was already fully pushed before the setting changed.
 This commit's own push is what should trigger that first build for
 `claude/website-premium-design-j6mphw` and produce a
 `claude-website-premium-design-j6mphw--nepalmbbs.netlify.app` preview URL.
+
+The branch-deploy webhook never did fire even after this push; PR #4
+(already open on this branch) already carried a working Netlify Deploy
+Preview status (`deploy-preview-4--nepalmbbs.netlify.app`, checked via
+`pull_request_read get_status`) — GitHub's own PR-comment/status path
+was simply the more reliable of the two integration paths, so that
+became the actual answer rather than debugging the branch-deploy
+webhook further.
+
+**2026-09-09 — WebGL extended to four more pages, FAQ hover redesigned,
+footer given motion, two why-nepal photos swapped.** Continuing from the
+owner's screenshot-driven review:
+
+- `threeD` (the `PageHeader.astro` prop already built for `/colleges` and
+  `/why-nepal`) turned on for `/guidelines`, `/videos`, and `/faq`.
+  `/admission-process` doesn't use `PageHeader` — it hand-rolls its own
+  `.ph` header because it needs a fourth staged element (`.pr-rail-meta`)
+  that component stops short of — so the same canvas/CSS/script is
+  duplicated directly into that page rather than extending the shared
+  component's prop contract for one caller.
+- FAQ row hover redone: was a faint background tint (premium.css); now
+  fills solid `--brand-deep` with white (`--brand-ink`) text on hover/
+  focus, per explicit request for a bolder, felt response to the
+  pointer — a hover *state*, not a reversion of the "no dark background"
+  rule, which is about page backgrounds, not an interactive fill on the
+  one row under the cursor.
+- Footer given `.m-rise` (was completely static, the one thing on every
+  one of 44 routes with zero motion) and `.m-stagger` across its four
+  columns.
+- Swapped the two `/why-nepal` photos the owner identified by their
+  captions ("English + Hindi", "Familiar Culture") for new Unsplash IDs —
+  same verification caveat as before: this sandbox cannot confirm any
+  external image URL resolves, so the sitewide broken-image fallback is
+  what actually protects these two if the new IDs turn out dead as well.
+
+`audit.mjs` after all of the above: 0 low-contrast elements, 0 pages
+overflowing.

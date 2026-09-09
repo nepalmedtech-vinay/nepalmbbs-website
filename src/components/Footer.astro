@@ -1,10 +1,14 @@
 ---
-// Lifted verbatim from the single-page build (Phase 2).
+// Lifted verbatim from the single-page build (Phase 2). Had zero motion —
+// the last thing on every one of the 44 routes was a flat, static block.
+// `.m-rise` on the footer itself; `.m-stagger` on the four-column row so
+// they cascade rather than arrive as one flat pop, using motion.css's
+// --n-indexed animation-range, no JS timer.
 ---
-<footer>
+<footer class="m-rise">
 <div class="foot-inner">
-  <div class="foot-top">
-    <div>
+  <div class="foot-top m-stagger">
+    <div style="--n:0">
       <a href="/" class="foot-logo">Nepal<span>MBBS</span>.in</a>
       <p class="foot-desc" id="footer-desc">Official guidance platform for NEET qualified Indian students exploring MBBS in Nepal. All information sourced exclusively from NMC India and MEC Nepal official sources.</p>
       {/* Emoji were doing the work of icons here — 📞📲💬✉️ as list markers.
@@ -38,7 +42,7 @@
         </a>
       </div>
     </div>
-    <div class="foot-col"><h2 class="foot-h">Navigate</h2>
+    <div class="foot-col" style="--n:1"><h2 class="foot-h">Navigate</h2>
       <a data-act="click" data-do='[["switchTab","process"]]'>Admission Process</a>
       <a data-act="click" data-do='[["switchTab","why"]]'>Why Nepal</a>
       <a data-act="click" data-do='[["switchTab","calculator"]]'>NEET Calculator</a>
@@ -47,7 +51,7 @@
       <a data-act="click" data-do='[["switchTab","faq"]]'>FAQ</a>
       <a data-act="click" data-do='[["switchTab","counsel"]]'>Free Counseling</a>
     </div>
-    <div class="foot-col"><h2 class="foot-h">Official Sites</h2>
+    <div class="foot-col" style="--n:2"><h2 class="foot-h">Official Sites</h2>
       <a href="https://nmc.org.in" target="_blank" rel="noopener">NMC India ↗</a>
       <a href="https://mec.gov.np" target="_blank" rel="noopener">MEC Nepal ↗</a>
       <a href="https://nmc.org.np" target="_blank" rel="noopener">Nepal NMC ↗</a>
@@ -55,7 +59,7 @@
       <a href="https://natboard.edu.in" target="_blank" rel="noopener">NBE India ↗</a>
       <a href="https://wdoms.org" target="_blank" rel="noopener">WDOMS ↗</a>
     </div>
-    <div class="foot-col"><h2 class="foot-h">Contact</h2>
+    <div class="foot-col" style="--n:3"><h2 class="foot-h">Contact</h2>
       <a id="footer-calendly" href="https://calendly.com/nepalmedtech/30min" target="_blank" rel="noopener">Book Free Session ↗</a>
       <a id="footer-wa" href="https://wa.me/917080800888" target="_blank" rel="noopener">WhatsApp ↗</a>
       <a href="https://drive.google.com/drive/folders/1W-q-NqJwrkJ1K8EirJvphAwW-xsMF4cQ" target="_blank" rel="noopener">Video Library ↗</a>
