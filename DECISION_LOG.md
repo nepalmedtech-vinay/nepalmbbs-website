@@ -842,3 +842,55 @@ only the sandbox's usual blocked-image `ERR_CONNECTION_RESET`/
 `ERR_TUNNEL_CONNECTION_FAILED` noise, no real JS errors.
 
 `npm run build`: 44 pages, clean. `console-verify.mjs`: 34/34 passed.
+
+**2026-09-09 — cinematic 3D enabled on mobile too, not just desktop.**
+Owner reported the recent motion/3D work "looked effective on web but
+mobile mein proper changes update nahi mila." Investigated with actual
+mobile-viewport (390px) Playwright renders rather than guessing: colors,
+images, the mobile menu and the guide-tab active fill all matched
+desktop exactly. The one real gap was the WebGL medical-icons scenes
+(the five `threeD` `PageHeader` pages, `admission-process`'s own hand-
+rolled header, and the footer) — all gated behind
+`matchMedia('(min-width: 62rem)')`, a **deliberate** desktop-only
+decision from the footer-3D pass (documented above: adding the footer
+scene alone took median page weight from ~353 kB to ~863 kB). Below
+992px — i.e. every phone — the canvas never mounted at all, which is
+exactly the gap the owner was seeing.
+
+Put the tradeoff to the owner directly (data cost vs. motion parity)
+rather than deciding unilaterally, since it's a real cost to the
+NEET-aspirant mobile audience, not just an aesthetic call. Owner chose
+full parity: enable on mobile too. Removed the `fine`/`min-width: 62rem`
+check in `PageHeader.astro`, `Footer.astro`, and `admission-process.astro`
+— all three now mount purely on `prefers-reduced-motion` + a successful
+dynamic import, same as desktop. The homepage hero (`GlassHero.astro`)
+keeps its own desktop-only gate; it wasn't part of what was asked and is
+a separate, pre-existing decision.
+
+Verified on an iPhone-sized viewport via Playwright: all five `threeD`
+pages plus the footer reach `is-ready: true` at their normal opacity,
+zero console errors.
+
+Also found, while chasing a red `a11y-verify.mjs` run, that
+`@keyframes cx-sweep` is defined **twice** — once in `premium.css` (the
+crystal-shine translate/skew used by the footer tabs, guideline tabs,
+and FAQ) and once in `console.css` (a background-position shimmer for
+`.cx-skel`, the staff-console loading skeleton). Same class of bug as
+the `--navy` collision earlier in this file — a keyframe name is global,
+last-loaded stylesheet wins for *all* consumers of that name. Checked
+whether it's live: `console.css` only loads on `/staff` and `/portal`,
+neither of which ever renders `.gl-crystal-sheen`/footer-tabs/`.g-tab`/
+FAQ, and the marketing pages that do never load `console.css` — so the
+two never actually share a page today. Left as-is (a rename would be
+the fix if a future page ever needs both), noted here so it isn't
+rediscovered as a mystery later.
+
+`a11y-verify.mjs` briefly looked broken after this change — a run
+right after showed `/staff` and `/portal` failing "focus is visibly
+indicated" on `.cx-input`. Traced it rather than assuming: both pages
+render with `bare={true}`, which skips `Footer` entirely, and neither
+uses `PageHeader`'s `threeD` prop — i.e. neither page touches any of
+the three files this change edited. A clean re-run (32/32, zero code
+changes in between) confirmed it as pre-existing flakiness in
+Chromium's synthetic-Tab `:focus-visible` timing, not a regression.
+`console-verify.mjs`: 34/34. `npm run build`: 44 pages, clean.
