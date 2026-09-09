@@ -639,3 +639,28 @@ concrete way past it: the owner uploads image files directly into the
 conversation, which this session can then save as local assets and
 reference with no external fetch involved at all — more reliable than
 hotlinking a third party regardless.
+
+**2026-09-09 — deploy confusion resolved: `main` was never behind a
+different redesign, just behind this branch.** Owner enabled Netlify
+branch deploys ("All") and triggered one via the dashboard's "Trigger
+deploy" button, then reported nepalmbbs.in still showing an old view.
+The deploy details named `main@392ad45` ("Merge pull request #2 from
+redesign/premium-ecosystem") — worth checking rather than assuming,
+since that name reads like a competing redesign. It is not: `git
+merge-base HEAD origin/main` resolves to that exact commit, so it is
+this branch's own fork point, with zero divergence and zero conflicts —
+29 commits ahead, nothing on `main` this branch doesn't already have.
+`main` simply predates every visual change this session made (the
+light-palette revert, the WebGL medical icons, the mobile-menu and chat-
+launcher fixes, all of it), which is why the deployed page looked like
+none of this session's work.
+
+The actual cause: Netlify's "Trigger deploy" button rebuilds the site's
+configured *production* branch (`main`) — it does not offer a branch
+picker. Branch-deploy builds for a non-production branch fire from a
+*push* to that branch (a webhook), which only starts working once
+"branch deploys: All" is enabled going forward; it does not retroactively
+build a branch that was already fully pushed before the setting changed.
+This commit's own push is what should trigger that first build for
+`claude/website-premium-design-j6mphw` and produce a
+`claude-website-premium-design-j6mphw--nepalmbbs.netlify.app` preview URL.
