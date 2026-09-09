@@ -608,3 +608,34 @@ and asked for more Nepal/medical photography sourced from open sources.
   images after deploy and report which (if any) still show as a gradient
   rather than a photo, so the specific dead ID can be swapped rather than
   guessed at again.
+
+**2026-09-09 — mobile menu redesigned, homepage medical-photo section
+added.** Owner shared a screenshot of the open mobile menu: dark navy
+glass, gold accents. Found the cause — `#mob-menu` (base.css,
+components.css) is three separate rule blocks, one literally commented
+`/* Image 5 exact style */`, none reading a single design token. It is
+the one screen on the site that still opens onto the near-black surface
+the owner's brief ruled out everywhere, and the gold accent matches
+nothing in the current two-colour (blue/teal) brand. It only renders once
+opened, which is almost certainly why no audit or screenshot pass this
+project has run ever caught it. Overridden in chrome.css with the same
+glass tokens the rest of the chrome uses, gold swapped for the brand blue
+already used on the desktop nav's EN/HI toggle.
+
+Added `MedicalGallery.astro` to the home page (`GlassHero` → `CollegeMap`
+→ `TrustSection` → **`MedicalGallery`** → `SectionNav`) — the home page's
+only prior "medical" imagery was the hero's WebGL icons and the map,
+both abstractions; nothing was an actual photograph. Same `.why-img`
+treatment and honest-caption discipline as why-nepal/life-in-nepal
+(captions describe what a photo generically shows — "Teaching Hospital",
+"Clinical Rounds" — never a specific college or "our campus").
+
+Also answered directly, in chat, why no further externally-sourced
+images can be verified from this session: `/__agentproxy/status` shows
+policy denials for images.unsplash.com, images.pexels.com, and
+upload.wikimedia.org alike — this is a blanket sandbox network policy,
+not a per-host quirk to route around by picking a different CDN. The
+concrete way past it: the owner uploads image files directly into the
+conversation, which this session can then save as local assets and
+reference with no external fetch involved at all — more reliable than
+hotlinking a third party regardless.

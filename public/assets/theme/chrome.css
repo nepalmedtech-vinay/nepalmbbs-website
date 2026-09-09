@@ -707,6 +707,70 @@ section.hero, .hero {
 .chat-avatar svg { width: 20px; height: 20px; }
 
 
+/* ── Mobile menu ───────────────────────────────────────────────────────────
+   `#mob-menu` never made it into the light migration at all — not one of
+   the three separate rule blocks across base.css/components.css that
+   built it (a `/* Image 5 exact style */` comment names the reference it
+   was matched to) reads a single design token. It is a dark navy glass
+   panel (`rgba(11,30,61,.45)`), white text, and a gold/amber accent that
+   appears nowhere else in the current two-colour (blue/teal) brand — the
+   one screen on the whole site that still opens onto exactly the near-
+   black surface the owner's brief explicitly ruled out everywhere. It
+   only shows once opened, which is almost certainly why it survived every
+   audit and every screenshot pass this project has run: nothing opens it
+   automatically.
+
+   Redone here in the same glass language as the rest of the chrome —
+   `var(--m-fill)`/`var(--m-filter)`, hairline border, tinted shadow, dark
+   ink text — and the accent switched from gold to the brand blue already
+   used for the desktop nav's EN/HI toggle, so the two toggles read as the
+   same control rather than two different colour systems. */
+#mob-menu {
+  background: var(--m-fill) !important;
+  -webkit-backdrop-filter: var(--m-filter) !important;
+          backdrop-filter: var(--m-filter) !important;
+  border-bottom: var(--sh-border) solid var(--m-hairline) !important;
+  border-right: 0 !important;
+  box-shadow: var(--sd-3) !important;
+}
+
+#mob-menu a {
+  border-radius: var(--r-sm) !important;
+  margin: 0 0 4px 0 !important;
+  padding: 0.8rem 1rem !important;
+  background: color-mix(in oklab, var(--g-base) 40%, transparent) !important;
+  border: var(--sh-border) solid var(--m-hairline) !important;
+  color: var(--g-ink) !important;
+  font-weight: 600 !important;
+  text-shadow: none !important;
+}
+#mob-menu a span { text-shadow: none !important; }
+#mob-menu a:hover {
+  background: color-mix(in oklab, var(--brand) 8%, var(--g-base)) !important;
+  border-color: color-mix(in oklab, var(--brand) 30%, var(--m-hairline)) !important;
+  box-shadow: inset 3px 0 0 var(--brand) !important;
+}
+#mob-menu a:last-child {
+  background: color-mix(in oklab, var(--brand) 12%, var(--g-base)) !important;
+  border-color: color-mix(in oklab, var(--brand) 35%, transparent) !important;
+  color: var(--brand-text) !important;
+}
+#mob-menu a:last-child span { color: var(--brand-text) !important; }
+
+.mob-lang button {
+  background: var(--g-base) !important;
+  border: var(--sh-border) solid var(--m-hairline) !important;
+  color: var(--g-ink-2) !important;
+  backdrop-filter: none !important;
+}
+.mob-lang button.on {
+  background: var(--brand) !important;
+  border-color: transparent !important;
+  color: var(--brand-ink) !important;
+  box-shadow: none !important;
+}
+
+
 /* ── Floating actions ─────────────────────────────────────────────────────
    Three stacked circles (chat, WhatsApp, WhatsApp-call) covered the bottom
    right of every page and overlapped the footer. Now that the contact bar
@@ -734,6 +798,25 @@ section.hero, .hero {
   .life-gallery { grid-template-columns: 1fr; grid-template-rows: none; }
   .life-gallery-lg { grid-row: auto; }
   .life-gallery .why-img { height: 220px; }
+}
+
+/* ── Homepage medical-training gallery ────────────────────────────────────
+   Same asymmetric recipe, mirrored (tall image on the right this time —
+   two identical bands back to back should not also share a layout, or
+   the second reads as a rerun of the first even with different photos). */
+.med-gallery-section { padding-block: var(--s-section, 5rem); }
+.med-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  grid-template-rows: repeat(2, minmax(150px, 1fr));
+  gap: var(--s-4, 1rem);
+}
+.med-gallery .why-img { height: 100%; margin: 0; border-radius: var(--r-lg); }
+.med-gallery-lg { grid-row: 1 / 3; grid-column: 2; }
+@media (max-width: 48rem) {
+  .med-gallery { grid-template-columns: 1fr; grid-template-rows: none; }
+  .med-gallery-lg { grid-row: auto; grid-column: auto; }
+  .med-gallery .why-img { height: 220px; }
 }
 
 
