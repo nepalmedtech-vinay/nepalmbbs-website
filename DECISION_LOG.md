@@ -701,3 +701,61 @@ owner's screenshot-driven review:
 
 `audit.mjs` after all of the above: 0 low-contrast elements, 0 pages
 overflowing.
+
+**2026-09-09 — footer given a WebGL layer + glass-tab links (olive
+accent), stethoscope rebuilt as a real two-material object, and a real
+bug found in the process.** Owner's specific asks: a third accent colour
+(olive) for the footer specifically, the footer's own medical-icons
+scene, glass-tab links with an olive fill on hover, and — after seeing
+it — a materially more realistic stethoscope than the single-colour
+glass loop the last two passes shipped.
+
+- **New token**: `--olive` (#5F6E1A, white text clears 5.63:1) plus
+  derived `--olive-deep`/`--olive-lift`/`--olive-line`, following the
+  same pattern as `--brand`'s derived tokens. Used only where a caller
+  asks for it by name — the site's default material language stays the
+  two-hue blue/teal system everywhere else.
+- **Real bug, found via a console warning**: `getComputedStyle(...).
+  getPropertyValue('--olive-deep')` returns the literal, unparsed string
+  `"color-mix(in oklab, ...)"` — custom properties are not resolved by
+  the browser the way normal CSS properties are, so `new THREE.Color()`
+  failed silently on it, which is why the footer's DNA helix and cross
+  were rendering white instead of olive no matter how the tint/
+  transmission parameters were tuned. Added `--olive-deep-rgb`, a plain
+  hex literal duplicate, specifically for JS/Three.js consumption; CSS
+  itself keeps using the color-mix version, which resolves fine when
+  read normally (element.style, computed `color`, etc — the bug is
+  specific to reading a *custom* property's value in JS).
+- **`mountMedicalIconsScene` gained two new options** (`transmission`,
+  `tint`, alongside the existing `brand`/`brand2` colour-token names) —
+  the hero/page-header default (high transmission, white-tinted) is
+  correct there ("glass, not a coloured shape" was the original brief),
+  but it reads as washed-out white when a caller wants the icons to
+  visibly read as an accent colour, which is what the footer asked for.
+  Threaded through all five `build*` functions rather than hard-coded,
+  so any future caller can ask for the same "solid colour, less glass"
+  variant without another round of this.
+- **Stethoscope rebuilt with two materials** instead of one crystal-glass
+  material for the whole object: `steel` (metallic, low roughness,
+  neutral silver — a deliberate exception to token-driven colour, since
+  real stethoscope metal is not brand-coloured) for the binaurals, yoke,
+  chestpiece rim/stem; coloured matte rubber for the flexible tubing and
+  diaphragm face. Also corrected the topology to an actual Y-shape (two
+  binaural curves converging on a yoke, one tube continuing to the
+  chestpiece) rather than one continuous loop standing in for both
+  earpieces — the single-material, wrong-topology version is what read
+  as "abstract loop" rather than "stethoscope" regardless of how much
+  the proportions were tuned.
+- Footer given `.foot-3d` (the same scene, olive-tinted) and its links
+  restyled as small crystal-glass tabs, filled solid olive with white
+  text on hover — matching the FAQ page's hover language in the
+  footer's own colour.
+
+Cost, stated plainly: the footer now carries the Three.js scene on
+**every one of the 44 routes**, not just the pages that opted into
+`threeD` — median page weight in `audit.mjs`'s report went from ~353 kB
+to ~863 kB. Still gated to desktop + motion-on visitors only (same as
+every other WebGL layer on the site), and `audit.mjs` still reports 0
+low-contrast elements and 0 overflowing pages, but this is a real,
+sitewide bandwidth cost the previous, more targeted `threeD` opt-in did
+not carry — worth knowing about rather than discovering later.

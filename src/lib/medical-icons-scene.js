@@ -47,59 +47,102 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v));
 // by colour — keeps the five objects visually consistent (same "material
 // language") and keeps this file from repeating the same six properties
 // five times.
-function crystalMaterial(color, tint = 0.18) {
+function crystalMaterial(color, tint = 0.18, transmission = 0.4) {
   const c = new THREE.Color(color).lerp(new THREE.Color(0xffffff), tint);
   return new THREE.MeshPhysicalMaterial({
-    color: c, metalness: 0.04, roughness: 0.14,
-    transmission: 0.55, thickness: 0.55, ior: 1.4,
-    clearcoat: 0.6, clearcoatRoughness: 0.2,
+    color: c, metalness: 0.04, roughness: 0.22,
+    transmission, thickness: 0.55, ior: 1.4,
+    clearcoat: 0.5, clearcoatRoughness: 0.28,
   });
 }
 
-// Rounder than the first pass: a closed loop from the two earpieces down to
-// a single tube, mirroring the 2D fallback icon (and the 🩺 emoji's own
-// grammar) instead of an open, ambiguous squiggle.
-function buildStethoscope(color) {
+// Real stethoscopes read as an object, not a shape, because they are two
+// materials — polished steel binaurals and chestpiece, coloured rubber
+// tubing — not one uniform surface. A single crystal-glass material
+// across the whole thing (the first two passes) is exactly what made it
+// read as an abstract loop rather than a recognisable instrument, however
+// much the proportions were fixed. Split in two here:
+//   - `steel`: the earpieces, binaural tubes and chestpiece rim/stem —
+//     metallic, low roughness, neutral silver (steel is steel-coloured on
+//     a real stethoscope; this is the one shape in the set that does not
+//     take the page's accent colour, on purpose).
+//   - `tubeMat`: the flexible tubing and the chestpiece's diaphragm face —
+//     matte, coloured rubber, no transmission — where the accent colour
+//     actually reads as colour instead of being diluted by glass.
+// True Y-geometry too: two binaural curves converge on a yoke, one tube
+// continues down to the chestpiece — not one continuous loop standing in
+// for both ears at once.
+function buildStethoscope(color, transmission, tint) {
   const group = new THREE.Group();
-  const mat = crystalMaterial(color);
 
-  const pts = [
-    new THREE.Vector3(-0.42, 0.62, 0),
-    new THREE.Vector3(-0.5, 0.4, 0.05),
-    new THREE.Vector3(-0.3, 0.18, 0.05),
-    new THREE.Vector3(0, 0.18, 0),
-    new THREE.Vector3(0.3, 0.18, -0.05),
-    new THREE.Vector3(0.5, 0.4, -0.05),
-    new THREE.Vector3(0.42, 0.62, 0),
-  ];
-  const loop = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.4);
-  group.add(new THREE.Mesh(new THREE.TubeGeometry(loop, 48, 0.032, 8, false), mat));
+  const steel = new THREE.MeshPhysicalMaterial({
+    color: 0xcbd3da, metalness: 0.85, roughness: 0.22,
+    clearcoat: 0.4, clearcoatRoughness: 0.15,
+  });
+  const c = new THREE.Color(color).lerp(new THREE.Color(0xffffff), tint ?? 0.05);
+  const tubeMat = new THREE.MeshPhysicalMaterial({
+    color: c, metalness: 0, roughness: 0.55,
+    transmission: (transmission ?? 0.55) * 0.25, thickness: 0.4, ior: 1.4,
+    clearcoat: 0.25, clearcoatRoughness: 0.4,
+  });
 
-  const drop = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0, 0.18, 0),
-    new THREE.Vector3(-0.02, -0.15, 0.03),
-    new THREE.Vector3(0.02, -0.42, 0),
+  const yoke = new THREE.Vector3(0, 0.08, 0);
+
+  // Binaurals — steel, each ear to the yoke, angled apart in Z so they
+  // read as two separate tubes rather than one flattened loop.
+  [
+    { ear: new THREE.Vector3(-0.4, 0.64, -0.06), mid: new THREE.Vector3(-0.34, 0.32, 0.08) },
+    { ear: new THREE.Vector3(0.4, 0.64, 0.06), mid: new THREE.Vector3(0.34, 0.32, -0.08) },
+  ].forEach(({ ear, mid }) => {
+    const curve = new THREE.CatmullRomCurve3([ear, mid, yoke], false, 'catmullrom', 0.35);
+    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.024, 10, false), steel));
+    // Ear tip — a small rubber cap, the one place the binaural touches skin.
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.045, 14, 14), tubeMat);
+    tip.position.copy(ear);
+    group.add(tip);
+  });
+
+  // The yoke — a short steel sleeve where both binaurals meet the tubing,
+  // not the two curves simply touching at a point.
+  const yokeMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.09, 16), steel);
+  yokeMesh.position.copy(yoke);
+  group.add(yokeMesh);
+
+  // Flexible tubing — rubber, coloured, the single tube every real
+  // stethoscope actually has between the yoke and the chestpiece.
+  const tubing = new THREE.CatmullRomCurve3([
+    yoke,
+    new THREE.Vector3(-0.05, -0.18, 0.04),
+    new THREE.Vector3(0.03, -0.42, -0.02),
   ]);
-  group.add(new THREE.Mesh(new THREE.TubeGeometry(drop, 24, 0.032, 8, false), mat));
+  group.add(new THREE.Mesh(new THREE.TubeGeometry(tubing, 32, 0.03, 10, false), tubeMat));
 
-  // Chest piece — a flattened cylinder at the tube's lower end.
-  const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.05, 32), mat);
-  disc.position.set(0.02, -0.5, 0);
+  // Chest piece — steel rim and stem, a coloured rubber diaphragm face
+  // (the part that would actually be a different, softer material on a
+  // real one), and a small raised centre boss for the acoustic seal.
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.08, 16), steel);
+  stem.position.set(0.03, -0.5, 0);
+  group.add(stem);
+
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.04, 40), tubeMat);
+  disc.position.set(0.03, -0.57, 0);
   disc.rotation.x = Math.PI / 2;
   group.add(disc);
 
-  // Earpieces — two small tori near the top ends.
-  [-0.42, 0.42].forEach((x) => {
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.02, 12, 24), mat);
-    ring.position.set(x, 0.66, 0);
-    group.add(ring);
-  });
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.02, 12, 40), steel);
+  rim.position.set(0.03, -0.57, 0);
+  rim.rotation.x = Math.PI / 2;
+  group.add(rim);
 
-  group.scale.setScalar(0.74);
+  const boss = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 16), steel);
+  boss.position.set(0.03, -0.55, 0);
+  group.add(boss);
+
+  group.scale.setScalar(0.72);
   return group;
 }
 
-function buildPulseTrace(color) {
+function buildPulseTrace(color, transmission, tint) {
   const pts = [
     new THREE.Vector3(-0.75, 0, 0),
     new THREE.Vector3(-0.4, 0, 0),
@@ -112,16 +155,16 @@ function buildPulseTrace(color) {
   ];
   const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.15);
   const tube = new THREE.TubeGeometry(curve, 96, 0.034, 10, false);
-  const mesh = new THREE.Mesh(tube, crystalMaterial(color));
+  const mesh = new THREE.Mesh(tube, crystalMaterial(color, tint, transmission));
   mesh.scale.setScalar(0.74);
   return mesh;
 }
 
 // Medicine's own shape — two capped half-cylinders, standing in for
 // "medicine" the way the stethoscope stands in for "clinical".
-function buildCapsule(color) {
+function buildCapsule(color, transmission, tint) {
   const geo = new THREE.CapsuleGeometry(0.16, 0.42, 6, 14);
-  const mesh = new THREE.Mesh(geo, crystalMaterial(color, 0.22));
+  const mesh = new THREE.Mesh(geo, crystalMaterial(color, tint ?? 0.22, transmission));
   mesh.rotation.z = Math.PI / 2.6;
   mesh.scale.setScalar(0.74);
   return mesh;
@@ -131,9 +174,9 @@ function buildCapsule(color) {
 // rungs between them at regular intervals. Standing in for "biology" the
 // way the cross stands in for "medical". Built from parametric points
 // rather than an imported model, same as every other shape here.
-function buildDnaHelix(color) {
+function buildDnaHelix(color, transmission, tint) {
   const group = new THREE.Group();
-  const mat = crystalMaterial(color, 0.22);
+  const mat = crystalMaterial(color, tint ?? 0.22, transmission);
   const turns = 2.1, height = 1.1, radius = 0.22, steps = 40;
 
   const strandA = [];
@@ -167,7 +210,7 @@ function buildDnaHelix(color) {
   return group;
 }
 
-function buildCross(color) {
+function buildCross(color, transmission, tint) {
   const shape = new THREE.Shape();
   const a = 0.22, b = 0.7; // arm half-width, arm length
   shape.moveTo(-a, b); shape.lineTo(a, b); shape.lineTo(a, a);
@@ -181,12 +224,17 @@ function buildCross(color) {
     bevelSize: 0.04, bevelSegments: 4, curveSegments: 2,
   });
   geo.center();
-  const mesh = new THREE.Mesh(geo, crystalMaterial(color, 0.22));
+  const mesh = new THREE.Mesh(geo, crystalMaterial(color, tint ?? 0.22, transmission));
   mesh.scale.setScalar(0.74);
   return mesh;
 }
 
-export function mountMedicalIconsScene(canvas) {
+// `colorVars` lets a caller point the scene at a different pair of CSS
+// custom properties than the site's default --brand/--brand-2 — used by
+// the footer to render this same scene in the olive accent introduced
+// there, without the scene ever hard-coding a colour disconnected from
+// a token, and without touching the site's global brand tokens.
+export function mountMedicalIconsScene(canvas, colorVars) {
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
@@ -208,36 +256,52 @@ export function mountMedicalIconsScene(canvas) {
   const env = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
   scene.environment = env;
 
-  const key = new THREE.DirectionalLight(0xffffff, 1.1);
+  const key = new THREE.DirectionalLight(0xffffff, 0.95);
   key.position.set(3, 4, 5);
   scene.add(key);
-  const fill = new THREE.AmbientLight(0xdfe8ff, 0.55);
+  const fill = new THREE.AmbientLight(0xdfe8ff, 0.4);
   scene.add(fill);
 
   // Brand tokens, read at mount time — falls back to the site's own blue/
   // teal if CSS custom properties are for some reason unavailable, never
   // to a hard-coded colour disconnected from the theme.
   const cs = getComputedStyle(document.documentElement);
-  const brand = new THREE.Color((cs.getPropertyValue('--brand') || '#2464E0').trim());
-  const brand2 = new THREE.Color((cs.getPropertyValue('--brand-2') || '#20B78E').trim());
+  const brandVar = colorVars?.brand || '--brand';
+  const brand2Var = colorVars?.brand2 || '--brand-2';
+  const brand = new THREE.Color((cs.getPropertyValue(brandVar) || '#2464E0').trim());
+  const brand2 = new THREE.Color((cs.getPropertyValue(brand2Var) || '#20B78E').trim());
+  // High transmission (the default, 0.55) reads as clear glass regardless
+  // of the colour underneath it — correct for the hero/page-headers,
+  // where the brief was "glass, not a coloured shape". The footer asked
+  // for the opposite: icons that visibly read as the accent colour. A
+  // caller can turn the glass down and the colour up via this option
+  // rather than the scene defaulting to washed-out for everyone.
+  const transmission = colorVars?.transmission ?? 0.55;
+  // Same reasoning as transmission above: the default white-mix keeps the
+  // hero/page-header icons reading as tinted glass rather than solid
+  // colour, on purpose. A caller after visibly-coloured icons (the
+  // footer) turns this down too — a low transmission alone still looked
+  // pale, since the white-mixed colour was what the glass was clear
+  // *about*.
+  const tint = colorVars?.tint;
 
-  const stetho = buildStethoscope(brand);
+  const stetho = buildStethoscope(brand, transmission, tint);
   stetho.position.set(-1.7, 0.7, 0);
   scene.add(stetho);
 
-  const pulse = buildPulseTrace(brand2);
+  const pulse = buildPulseTrace(brand2, transmission, tint);
   pulse.position.set(0.15, -0.85, -0.5);
   scene.add(pulse);
 
-  const capsule = buildCapsule(brand);
+  const capsule = buildCapsule(brand, transmission, tint);
   capsule.position.set(1.75, 0.85, -0.2);
   scene.add(capsule);
 
-  const dna = buildDnaHelix(brand2);
+  const dna = buildDnaHelix(brand2, transmission, tint);
   dna.position.set(-1.6, -0.75, -0.4);
   scene.add(dna);
 
-  const cross = buildCross(brand.clone().lerp(brand2, 0.5));
+  const cross = buildCross(brand.clone().lerp(brand2, 0.5), transmission, tint);
   cross.position.set(1.3, -1.25, -0.3);
   scene.add(cross);
 

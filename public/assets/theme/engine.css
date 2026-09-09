@@ -81,6 +81,28 @@
   --brand-deep:    color-mix(in oklab, var(--brand) 82%, black 18%);
   --brand-lift:    color-mix(in oklab, var(--brand) 84%, white 16%);
 
+  /* A third accent, used only where a caller asks for it by name (the
+     footer's crystal treatment) rather than anywhere in the default
+     token cascade — the site's material language is deliberately a
+     two-hue system (blue/teal) everywhere else. White text on #5F6E1A
+     clears 5.63:1. */
+  --olive:         #5F6E1A;
+  --olive-ink:     #FFFFFF;
+  --olive-deep:    color-mix(in oklab, var(--olive) 80%, black 20%);
+  --olive-lift:    color-mix(in oklab, var(--olive) 82%, white 18%);
+  /* Same colour as --olive-deep, as a plain hex literal rather than a
+     color-mix() expression. getComputedStyle().getPropertyValue() on a
+     *custom* property returns its declared value verbatim, not the
+     resolved colour a browser computes for a normal property — so
+     anything reading these tokens in JS (medical-icons-scene.js, for a
+     THREE.Color) gets the literal string "color-mix(in oklab, ...)" and
+     fails to parse it silently. Found via a console warning
+     ("THREE.Color: Unknown color color-mix(...)") that explained why the
+     footer's DNA helix and cross were reading as white instead of olive
+     — this token exists so JS callers have something they can parse. */
+  --olive-deep-rgb: #4C5815;
+  --olive-line:    color-mix(in oklab, var(--olive) 34%, transparent);
+
   /* ══ 3. AURORA ═════════════════════════════════════════════════════════
      The colour field behind the glass. Four blobs, each its own hue, size
      and position, drifting slowly. This is what the glass has to refract —

@@ -6,6 +6,7 @@
 // --n-indexed animation-range, no JS timer.
 ---
 <footer class="m-rise">
+<canvas class="foot-3d" aria-hidden="true"></canvas>
 <div class="foot-inner">
   <div class="foot-top m-stagger">
     <div style="--n:0">
@@ -76,4 +77,89 @@
   </div>
 </div>
 </footer>
+
+<style>
+  /* The footer's own WebGL layer — the same medical-icons scene the hero
+     and four page headers already use, recoloured olive (a third accent
+     used only here, on the owner's explicit ask) via mountMedicalIconsScene's
+     colorVars parameter rather than a duplicated scene file. Sits behind
+     the whole footer, so it needs `footer` to actually establish a
+     stacking/clipping context — it did not have `position: relative`
+     before, since it never needed one. */
+  footer { position: relative; overflow: hidden; }
+  .foot-inner { position: relative; z-index: 1; }
+  .foot-3d {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 900ms ease;
+    pointer-events: none;
+  }
+  .foot-3d.is-ready { opacity: 0.55; }
+
+  /* Footer links as small crystal-glass tabs — the same internal-light-
+     gradient/lit-ring/tinted-shadow material the Book free counseling
+     button uses elsewhere, scaled down to text-link size and tinted
+     olive instead of brand blue, since this section now carries its own
+     accent. Filled solid olive with white text on hover/focus, matching
+     the FAQ page's hover language but in this section's own colour. */
+  .foot-contacts a, .foot-col a {
+    position: relative;
+    border-radius: var(--r-sm);
+    padding: 0.4em 0.65em;
+    margin-inline: -0.65em;
+    background:
+      linear-gradient(180deg, rgba(255 255 255 / 0.35) 0%, transparent 55%),
+      color-mix(in oklab, var(--olive) 7%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgba(255 255 255 / 0.4),
+      0 0 0 1px var(--olive-line);
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+    transition: background var(--d-2, 200ms) var(--ea-out, ease),
+                color var(--d-2, 200ms) var(--ea-out, ease),
+                box-shadow var(--d-2, 200ms) var(--ea-out, ease),
+                transform var(--d-2, 200ms) var(--ea-out, ease);
+  }
+  .foot-contacts a:hover, .foot-contacts a:focus-visible,
+  .foot-col a:hover, .foot-col a:focus-visible {
+    background: linear-gradient(148deg, var(--olive), var(--olive-deep)) !important;
+    color: var(--olive-ink) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255 255 255 / 0.35),
+      0 0 0 1px color-mix(in oklab, var(--olive-lift) 55%, transparent),
+      0 6px 18px color-mix(in oklab, var(--olive) 30%, transparent) !important;
+    transform: translate3d(2px, -1px, 0);
+  }
+  .foot-contacts a:hover svg, .foot-contacts a:focus-visible svg {
+    color: var(--olive-ink) !important;
+    opacity: 1 !important;
+  }
+</style>
+
+<script>
+  const canvas = document.querySelector('.foot-3d');
+  const fine = matchMedia('(min-width: 62rem)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (canvas && fine && !reduce) {
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
+    idle(async () => {
+      try {
+        const { mountMedicalIconsScene } = await import('../lib/medical-icons-scene.js');
+        const handle = mountMedicalIconsScene(canvas, { brand: '--olive', brand2: '--olive-deep-rgb', transmission: 0.12, tint: 0.04 });
+        if (handle) {
+          canvas.classList.add('is-ready');
+          canvas.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            handle.stop();
+            canvas.classList.remove('is-ready');
+          }, { once: true });
+        }
+      } catch (e) {}
+    });
+  }
+</script>
 <!-- FLOATING WA BUTTONS -->
