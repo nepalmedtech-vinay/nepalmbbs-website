@@ -499,3 +499,68 @@ white before reaching any material, and two shapes added — a capsule
 (medicine) and a DNA double helix (biology) — alongside the existing
 stethoscope, pulse trace, and cross. `audit.mjs` confirmed 0 low-contrast
 elements after all three changes.
+
+**2026-09-09 — site-wide motion, second icon-visibility correction, and
+WebGL expanded past the homepage.** Owner reported the site still read as
+static/no motion after watching the recorded preview, despite the hero
+WebGL work. Two real causes, not one:
+
+1. The "cheap" icon fix a day earlier overcorrected — 0.13 opacity and a
+   30% white colour mix stopped reading as motion at all on a real
+   screen. Rebalanced (opacity 0.26, 15% white mix, ~35% larger) in both
+   `GlassHero.astro`'s CSS fallback and `medical-icons-scene.js`'s
+   material tint/scale — a deliberate middle setting between the two
+   passes, documented in both files.
+2. `motion.css`'s scroll-driven utilities (`m-rise`, `m-stagger`,
+   `animation-timeline: view()`) existed and worked but were applied to
+   almost nothing — the homepage's `TrustSection` and `SectionNav` had
+   zero motion classes, and no page-specific markup anywhere used the
+   shared card family (`college-card`/`why-card`/`life-card`/`test-card`/
+   `vid-card`/`guide-card`/`faq-item`/`cx-card`) with any entrance motion
+   at all. Fixed by binding the animation directly to that shared
+   selector in `motion.css`, once — since premium.css's own card
+   unification (§10) already applies that selector across all 44 routes,
+   this covers every card grid site-wide (including JS-rendered ones,
+   colleges.js) without touching 40 page files individually.
+
+Separately, owner asked for real 3D "everywhere", lead-flow automation,
+and an automated blog writer, and pushed back explicitly on a prior
+message where research was skipped by Claude's own judgement rather than
+performed as asked — noted here so a future session does not repeat that:
+when asked to check something, check it, don't substitute judgement for
+the request.
+
+- **3D beyond the hero**: added an opt-in `threeD` prop to
+  `PageHeader.astro` (the shared header on 40 sub-pages) that mounts the
+  same `mountMedicalIconsScene` — not a duplicate scene, the identical
+  function. Left off by default (a WebGL context + Three.js fetch on all
+  40 pages for a decorative flourish most visitors never see is real
+  cost, not a hypothetical one) and enabled on the two highest-traffic
+  decision pages, `/colleges` and `/why-nepal`. Deliberately not enabled
+  on `/counseling` — that page doesn't use `PageHeader` at all; it's the
+  lead-capture form, where decoration competing with conversion is the
+  wrong trade, not an oversight.
+- **Lead-flow automation**: investigated before building anything, since
+  this touches the real leads table. Found the automation structure
+  already exists — `sequences`/`sequence_steps`/`sequence_runs`/`tasks`
+  tables and an `enrol_sequences()` trigger (0002_admission_platform.sql)
+  that auto-enrols an application into a follow-up sequence and creates
+  staff tasks with a channel (call/whatsapp/email) and due date. What
+  does not exist is an actual outbound sender — no WhatsApp Business API
+  or email provider is wired up; `tasks.channel` labels intent for a
+  human, nothing sends automatically. Not built further this session:
+  doing so needs the owner to choose a provider and supply credentials,
+  which is a decision and a secret Claude cannot originate.
+- **Automated blog writer**: not built. `CLAUDE.md` rule 1 ("never invent
+  a fact... no fee, seat count, deadline, ranking or recognition status
+  that does not trace to a named source with a date") is in direct
+  tension with an automation that generates content on its own for a
+  medical-admissions site. Flagged to the owner rather than either
+  silently building it or silently refusing — a source-gated "draft
+  assistant" (matching the site's existing sourced-assistant discipline:
+  every claim needs a source before it can be used) was offered as the
+  version of this feature that doesn't cross that line, pending the
+  owner's decision.
+
+Full `audit.mjs` re-run after each change in this pass: 0 low-contrast
+elements, 0 pages overflowing, each time.
