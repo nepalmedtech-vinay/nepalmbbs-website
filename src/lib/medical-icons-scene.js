@@ -231,9 +231,9 @@ function buildCross(color, transmission, tint) {
 
 // `colorVars` lets a caller point the scene at a different pair of CSS
 // custom properties than the site's default --brand/--brand-2 — used by
-// the footer to render this same scene in the olive accent introduced
-// there, without the scene ever hard-coding a colour disconnected from
-// a token, and without touching the site's global brand tokens.
+// the footer to render this same scene in its own navy/light-blue accent
+// pair, without the scene ever hard-coding a colour disconnected from a
+// token, and without touching the site's global brand tokens.
 export function mountMedicalIconsScene(canvas, colorVars) {
   let renderer;
   try {

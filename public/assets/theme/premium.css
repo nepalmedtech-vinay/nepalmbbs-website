@@ -977,7 +977,21 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
   cursor: pointer;
   transition: background var(--d-2) var(--ea-out), color var(--d-2) var(--ea-out);
 }
-.faq-q:hover { background: var(--pr-sunk); color: var(--brand-text) !important; }
+/* Filled navy on hover/focus, white text — a bolder, felt response to
+   the pointer than the faint tint this started as, per explicit request.
+   This is the rule that actually wins: premium.css loads last, so an
+   earlier attempt at this same effect from chrome.css was silently
+   losing to this file's own !important on `color` the whole time. */
+.faq-q:hover, .faq-q:focus-visible {
+  background: var(--brand-deep) !important;
+  color: var(--brand-ink) !important;
+}
+.faq-q:hover span, .faq-q:focus-visible span { color: var(--brand-ink) !important; }
+.faq-q:hover .faq-icon, .faq-q:focus-visible .faq-icon {
+  background: color-mix(in oklab, var(--brand-ink) 18%, transparent) !important;
+  color: var(--brand-ink) !important;
+  border-color: color-mix(in oklab, var(--brand-ink) 30%, transparent) !important;
+}
 
 /* The mark rotates from + to × instead of swapping glyphs, which is one
    fewer thing that can end up out of step with the open state. */

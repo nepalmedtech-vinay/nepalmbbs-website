@@ -759,3 +759,41 @@ every other WebGL layer on the site), and `audit.mjs` still reports 0
 low-contrast elements and 0 overflowing pages, but this is a real,
 sitewide bandwidth cost the previous, more targeted `threeD` opt-in did
 not carry — worth knowing about rather than discovering later.
+
+**2026-09-09 — footer olive replaced with navy + light blue; two real
+bugs found and fixed along the way; FAQ hover finally actually applies.**
+Owner reported the FAQ hover "abhi nahi hua" (still hasn't happened)
+despite the previous session's fix, and asked for the footer's accent
+switched from olive-green to navy/light-blue.
+
+- **FAQ hover — the actual bug**: the previous fix was written into
+  `chrome.css`, but `premium.css` loads *after* chrome.css and already
+  carried its own `.faq-q:hover { color: var(--brand-text) !important }`
+  — same specificity, later file wins, so chrome.css's version was
+  silently losing every time regardless of how correct it looked in
+  isolation. Fixed at the actual winning rule, in premium.css itself,
+  and removed the now-dead duplicate from chrome.css rather than leaving
+  two copies of the same fix arguing with each other.
+- **Colour swap — `--olive`/`--olive-deep`/`--olive-lift` replaced** with
+  `--navy-accent` (#173F73) and `--sky` (#5B9BD5) in engine.css, and
+  every consumer in Footer.astro and the footer's `mountMedicalIconsScene`
+  call updated to match.
+- **Second real bug, caught before it shipped this time**: the first
+  attempt named the new token `--navy` — which turned out to already be
+  a heavily-used legacy token (~30 selectors in base.css) that
+  `bridge.css` deliberately remaps to `var(--g-ink)` as part of the
+  dark->light migration. Every consumer of the new "navy" silently read
+  near-black ink instead, since bridge.css loads after engine.css and
+  the same name wins. Caught by checking a computed style rather than
+  assuming the token resolved to what it was declared as — the same
+  discipline that caught the color-mix()-in-JS bug the pass before this
+  one. Renamed to `--navy-accent` throughout; verified via
+  `getComputedStyle` afterward that the resolved gradient is actually
+  `rgb(91,155,213) -> rgb(23,63,115)` (sky -> navy-accent, not g-ink).
+- Swapped the `/why-nepal` "English + Hindi" photo again — the owner
+  judged the previous replacement still too generic — for a lecture-hall-
+  specific Unsplash ID. Same standing caveat: this sandbox cannot verify
+  any external image URL resolves.
+
+`audit.mjs` after all of the above: 0 low-contrast elements, 0 pages
+overflowing.

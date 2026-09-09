@@ -707,30 +707,10 @@ section.hero, .hero {
 .chat-avatar svg { width: 20px; height: 20px; }
 
 
-/* ── FAQ hover — filled state ─────────────────────────────────────────────
-   premium.css's own `.faq-q:hover` was a faint background tint — a
-   considered choice for a page where every row is dense body text (the
-   answers), but the owner asked specifically for a bolder, more felt
-   response to the pointer: the row under the cursor fills solid navy and
-   its text goes white, the way a selected/active state reads rather than
-   a passive hover. `--brand-deep` rather than a hand-picked navy, so a
-   future theme edit through the admin panel's colour tokens still
-   reaches this. Transition on both background and colour so the fill
-   itself reads as motion, not a hard cut. */
-.faq-q {
-  transition: background var(--d-2, 200ms) var(--ea-out, ease),
-              color var(--d-2, 200ms) var(--ea-out, ease);
-}
-.faq-q:hover, .faq-q:focus-visible {
-  background: var(--brand-deep) !important;
-  color: var(--brand-ink) !important;
-}
-.faq-q:hover span, .faq-q:focus-visible span { color: var(--brand-ink) !important; }
-.faq-q:hover .faq-icon, .faq-q:focus-visible .faq-icon {
-  background: color-mix(in oklab, var(--brand-ink) 18%, transparent) !important;
-  color: var(--brand-ink) !important;
-  border-color: color-mix(in oklab, var(--brand-ink) 30%, transparent) !important;
-}
+/* FAQ row hover/focus (filled navy, white text) lives in premium.css now
+   — that file loads last, so this same rule written here was silently
+   losing to premium.css's own `.faq-q:hover { color: ... !important }`
+   the whole time. See premium.css's own comment on the actual rule. */
 
 
 /* ── Mobile menu ───────────────────────────────────────────────────────────
