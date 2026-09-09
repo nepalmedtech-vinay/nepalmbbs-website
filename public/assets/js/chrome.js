@@ -53,3 +53,29 @@
   window.addEventListener('authchange', apply);
   window.addEventListener('hashchange', apply);
 })();
+
+
+/* ── Broken-image fallback ────────────────────────────────────────────────
+   Every photograph on the site is hotlinked from Unsplash (CSP's img-src
+   only allows images.unsplash.com beyond 'self') — a third-party CDN this
+   site does not control. A photo ID going dead, a network hiccup, or a
+   visitor's ad-blocker treating an image host as trackable is not this
+   site's bug to prevent, but a broken-image glyph sitting in a card is
+   still the wrong thing for a visitor to see. `error` does not bubble, so
+   this listens on the capture phase at the document root instead of
+   wiring a handler onto every <img> — one listener covers every image on
+   every page, including ones added later.
+
+   Never removes the surrounding card or its text — only the broken <img>
+   itself, replaced by the tokened gradient the design system already uses
+   for empty imagery elsewhere, so a dead photo degrades to "considered
+   placeholder" rather than "obviously missing asset". */
+(function () {
+  'use strict';
+  document.addEventListener('error', function (e) {
+    var img = e.target;
+    if (!img || img.tagName !== 'IMG' || img.dataset.fallbackApplied) return;
+    img.dataset.fallbackApplied = '1';
+    img.classList.add('img-broken');
+  }, true);
+})();

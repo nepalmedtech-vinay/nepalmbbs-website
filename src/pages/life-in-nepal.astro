@@ -26,6 +26,21 @@ import GlassLayout from '../layouts/GlassLayout.astro';
     <div class="life-card rev"><div class="life-icon">🚌</div><h4>Transport</h4><p>Direct buses from Gorakhpur/Delhi (Sonauli border). Flights Delhi→Kathmandu available. No visa for Indian citizens.</p></div>
     <div class="life-card rev"><div class="life-icon">🏥</div><h4>Healthcare</h4><p>Good hospitals in Kathmandu and Pokhara. Indian students have access to college hospital facilities during studies.</p></div>
   </div>
+  {/* A real photo gallery, not another row of emoji cards — the page's
+     own subject is what day-to-day life looks like, and eight abstract
+     icons said nothing about that. Reuses `.why-img`'s already-built
+     treatment (rounded corners, hover zoom, gradient overlay, badge) so
+     this doesn't invent a second image-card language for one page.
+     Asymmetric three-up rather than equal thirds, on purpose — three
+     identical columns is the layout every generic template reaches for
+     first. Falls back to a tokened gradient automatically if any of
+     these fail to load (chrome.js's `.img-broken` handler). */}
+  <div class="life-gallery rev">
+    <div class="why-img life-gallery-lg"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?fm=webp&w=1920&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Kathmandu valley and the Himalayan foothills" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🏔️ Kathmandu Valley</div></div>
+    <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1553856622-c4f04ea9b6df?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Prayer flags and Nepali street life" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🙏 Everyday Nepal</div></div>
+    <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1544736150-6e4617d64a3b?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Momos and Nepali street food" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🥟 Local Food</div></div>
+  </div>
+
   <div class="curr-wrap rev">
     <div class="curr-title">💱 INR ↔ NPR Currency Converter</div>
     <div class="curr-row"><span class="curr-lbl">INR ₹</span><input class="curr-in" type="number" id="inr-val" value="10000" data-act="input" data-do='[["convertCurr","inr"]]' inputmode="numeric"></div>

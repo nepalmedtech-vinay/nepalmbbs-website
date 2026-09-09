@@ -564,3 +564,47 @@ the request.
 
 Full `audit.mjs` re-run after each change in this pass: 0 low-contrast
 elements, 0 pages overflowing, each time.
+
+**2026-09-09 — chat launcher redesigned, broken-image fallback built,
+hamburger confirmed present.** Owner reported the hamburger menu missing,
+the chatbot icon looking cheap, and two images missing on `/why-nepal`,
+and asked for more Nepal/medical photography sourced from open sources.
+
+- **Hamburger**: verified present and correctly coloured via a real
+  mobile-viewport screenshot (`.hbg`, base.css shows/premium.css tints it
+  dark) — not a bug. Not touched further.
+- **Chat launcher (`.chat-toggle`)**: a real bug, and the same class as
+  every other fault this file (chrome.css) exists to fix — a 2023 dark-
+  build gradient (`var(--m-fill)` to `var(--blue-dark)`) with a hardcoded
+  `#fff` icon fill and a shadow tuned for a dark page. `audit.mjs`'s
+  contrast pass explicitly bails on gradient backgrounds (this file's own
+  opening comment), so it could not have caught this — it only showed up
+  by looking. Redesigned with the same crystal-glass surface the Book
+  free counseling button already uses, plus a slow sonar-ping idle
+  animation (gated on `--mo`/reduced-motion) since it is the one always-
+  visible affordance on every page.
+- **Broken-image fallback, sitewide**: every photograph on the site
+  hotlinks Unsplash, a third-party CDN this project does not control.
+  Added one capture-phase `error` listener in `chrome.js` (`error` does
+  not bubble, so no per-`<img>` wiring needed) that flags a failed image
+  `.img-broken`; `chrome.css` hides it and gives the container a tokened
+  gradient instead of a browser broken-image glyph, and drops the photo-
+  darkening overlay that would otherwise muddy the fallback. Verified
+  working via a real broken-image case (this sandbox's network policy
+  blocks images.unsplash.com entirely, confirmed at the proxy level, not
+  just for this session's own curl calls) — a real visitor's browser is
+  not behind that restriction.
+- **Could not verify the specific "2 missing" images or confirm any new
+  photo IDs actually resolve** — this sandbox cannot reach Unsplash,
+  Pexels, or Wikimedia (org-level proxy policy denial on all three,
+  confirmed via `/__agentproxy/status`), so no external image URL can be
+  fetched or checked from here, ever, regardless of which host is used.
+  Added a `.life-gallery` (three Nepal/culture photos, asymmetric layout)
+  to `/life-in-nepal` — which had exactly one photo on the whole page —
+  using new Unsplash photo IDs chosen without the ability to confirm
+  they resolve. The fallback above means a dead ID degrades to a clean
+  gradient rather than a broken glyph either way, but the owner should
+  spot-check `/life-in-nepal` and the two originally-reported `/why-nepal`
+  images after deploy and report which (if any) still show as a gradient
+  rather than a photo, so the specific dead ID can be swapped rather than
+  guessed at again.

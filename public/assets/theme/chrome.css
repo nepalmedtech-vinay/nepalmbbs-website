@@ -715,10 +715,108 @@ section.hero, .hero {
 
    Kept: the chat widget and one WhatsApp button. */
 
+/* ── Life-in-Nepal photo gallery ──────────────────────────────────────────
+   Asymmetric — one tall image beside two stacked smaller ones — rather
+   than three equal columns, which is the layout every generic template
+   reaches for first. `.why-img`'s own fixed height (180px, base.css)
+   still applies inside the grid tracks below; `height` is set on the grid
+   items themselves so the tracks size to something other than 180px. */
+.life-gallery {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  grid-template-rows: repeat(2, minmax(150px, 1fr));
+  gap: var(--s-4, 1rem);
+  margin: var(--s-8, 3rem) 0;
+}
+.life-gallery .why-img { height: 100%; margin: 0; border-radius: var(--r-lg); }
+.life-gallery-lg { grid-row: 1 / 3; }
+@media (max-width: 48rem) {
+  .life-gallery { grid-template-columns: 1fr; grid-template-rows: none; }
+  .life-gallery-lg { grid-row: auto; }
+  .life-gallery .why-img { height: 220px; }
+}
+
+
+/* ── Broken-image fallback ─────────────────────────────────────────────────
+   chrome.js flags any <img> that fails to load with .img-broken (a single
+   document-level `error` listener, since the event does not bubble). This
+   is the visual half: hide the broken image itself and give its container
+   the same token gradient the design system already uses for imagery-free
+   surfaces, rather than a visitor seeing a broken-image glyph in a card. */
+img.img-broken { opacity: 0; }
+.why-img:has(img.img-broken),
+.lifestyle-hero:has(img.img-broken) {
+  background: linear-gradient(135deg,
+    color-mix(in oklab, var(--brand) 22%, var(--g-base)),
+    color-mix(in oklab, var(--brand-2) 18%, var(--g-base)));
+}
+/* The dark overlay (rgba(10,22,40,.7), base.css/bridge.css — there to
+   darken a real photo enough for the white/light badge text on top of
+   it) only muddies the fallback gradient above when there is no photo
+   underneath it. The badge chip already carries its own light, blurred
+   background (`.why-img-badge`), so its legibility does not depend on
+   this overlay — safe to drop for the broken-image case specifically. */
+.why-img:has(img.img-broken) .why-img-overlay,
+.lifestyle-hero:has(img.img-broken) .lifestyle-hero-overlay {
+  opacity: 0;
+}
+
 .wa-call-btn-f { display: none !important; }
 
 .wa-chat-btn {
   box-shadow: 0 8px 24px color-mix(in oklab, #0B7A55 28%, transparent) !important;
+}
+
+/* `.chat-toggle` carries the same 2023 dark-chrome fault this file already
+   fixed for the widget's header, avatar and message bubbles: a translucent-
+   glass-to-brand gradient with a hardcoded `#fff` icon fill and a shadow
+   tuned for a dark page (`rgba(10,22,40,.4)`, in base.css). audit.mjs's
+   contrast pass explicitly bails on gradient backgrounds ("gradient:
+   unknowable" — this file's own opening comment) so this one was never
+   going to show up in a report; it only shows up by looking at it. This is
+   the one button every visitor sees on every single page, so it gets the
+   same real "crystal" surface — internal light gradient, lit ring, tinted
+   glow — the Book free counseling button already uses, instead of
+   pre-dating the rest of the site's material language. */
+.chat-toggle {
+  background:
+    linear-gradient(180deg, rgba(255 255 255 / 0.28) 0%, transparent 46%),
+    linear-gradient(148deg, var(--brand), var(--brand-deep)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.5),
+    inset 0 -1px 0 rgba(0 0 0 / 0.12),
+    0 0 0 1px color-mix(in oklab, var(--brand-lift) 45%, transparent),
+    0 10px 28px color-mix(in oklab, var(--brand) 30%, transparent) !important;
+  border: 0 !important;
+  position: relative;
+  overflow: visible;
+  transition: transform var(--d-2, 180ms) var(--ea-spring, ease-out), box-shadow var(--d-3, 260ms) ease;
+}
+.chat-toggle:hover { transform: scale(1.06) translateY(-2px); }
+.chat-toggle:active { transform: scale(0.97); }
+.chat-toggle svg { fill: var(--brand-ink) !important; }
+
+/* A slow sonar ping behind the button — the one always-visible, always-on
+   affordance on the page, so it earns a small idle signal that this is
+   interactive rather than sitting completely still. One ring, not a
+   loop of colour, and gone entirely under reduced motion. */
+.chat-toggle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--brand) 45%, transparent);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .chat-toggle::before {
+    animation: chat-toggle-ping calc(2.6s * max(var(--mo), 0.001)) ease-out infinite;
+  }
+}
+@keyframes chat-toggle-ping {
+  0%   { transform: scale(1);   opacity: 0.45; }
+  75%, 100% { transform: scale(1.55); opacity: 0; }
 }
 
 
