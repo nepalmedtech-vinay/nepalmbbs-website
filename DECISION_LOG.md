@@ -797,3 +797,23 @@ switched from olive-green to navy/light-blue.
 
 `audit.mjs` after all of the above: 0 low-contrast elements, 0 pages
 overflowing.
+
+**2026-09-09 — crystal shine added to footer tabs, third attempt at the
+"English + Hindi" photo.** Owner asked for the same sweeping-light shine
+`.gl-crystal-sheen` already gives the Book free counseling button, on
+the footer's navy tabs on hover — added as a real `::after` element
+(needs `overflow: hidden` on the link, added alongside) reusing
+`cx-sweep`, the same keyframe the CTA button already defined, rather
+than a second copy of the same animation.
+
+Swapped the "English + Hindi" photo a third time — first two passes
+were both judged too generic/medical rather than specifically a
+classroom. Same standing caveat repeated because it is still true:
+this sandbox cannot fetch or verify any external image URL, so each
+attempt is a best-effort ID pick, not a confirmed one. If this one is
+still wrong, the reliable fix is the owner uploading an actual photo
+into the conversation for this session to save as a local asset
+instead of a third-party hotlink — sidesteps the verification problem
+entirely rather than another guess.
+
+`audit.mjs`: 0 low-contrast elements, 0 pages overflowing.
