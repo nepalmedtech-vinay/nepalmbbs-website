@@ -47,11 +47,15 @@ than by re-reading the brief's own list back:
    `DECISION_LOG.md`. Any new visual system work should audit against
    computed styles, not source, or it will re-introduce this class of
    bug.
-6. **The video page (`/videos`) is a filter grid, not an experience** —
-   matches the brief's own diagnosis. Confirmed: `college-tab` filter
-   buttons + a flat video grid, no featured/hero video, no "no verified
-   footage yet" state for colleges without video (worth checking how
-   many of the 27 have none before designing that state).
+6. **The video page (`/videos`) is a filter grid, not a featured/hero
+   experience** — true. But **correction to an earlier draft of this
+   report**: the "no verified footage yet" state the brief asks for
+   (§ VIDEO EXPERIENCE) is not missing — it already exists, close to
+   verbatim ("No video for this college yet... Ask us and we will tell
+   you what we have on this college — including what we do not," with
+   WhatsApp/email CTAs). Confirmed by direct screenshot. What's actually
+   missing is only the featured/cinematic wrapper around it — a smaller
+   task than originally scoped.
 7. **The homepage has no clear narrative arc between sections** — Hero →
    Map → Trust → Gallery → SectionNav is a stack of good individual
    pieces, not a scene sequence. Confirmed by direct inspection of
@@ -220,11 +224,35 @@ provide those credentials.
 ## J. Exact implementation order
 
 1. **Fix the TBT regression** (root-cause first, per the brief's own
-   investigation checklist — not a padding cut). Re-run `perf-verify.mjs`
-   until every route is green.
-2. **Phase 1: blank-space and bug audit**, page by page, against fresh
-   screenshots — classify each large empty region per the brief's own
-   A-H taxonomy, fix B-H, leave A alone.
+   investigation checklist — not a padding cut). Partially done 2026-09-10
+   (see `DECISION_LOG.md`): a real, free ~24% cut with zero visual cost,
+   real cost identified as architectural rather than tunable. Re-run
+   `perf-verify.mjs` until every route is green once the scope question
+   (§ I.1 of this doc) is settled.
+2. **Phase 1: blank-space and bug audit** — done for a first pass
+   (2026-09-10), 8+ pages screenshotted full-page and inspected. Finding:
+   **no genuine blank-space bugs.** Two apparent ones turned out to be
+   screenshot-methodology artifacts, not real bugs, both verified rather
+   than assumed: (a) `fullPage: true` captures do not reliably trigger
+   the site's IntersectionObserver-based scroll-reveal (`.rev`/`.vis`),
+   making below-the-fold content look "missing" in a screenshot when a
+   real visitor scrolling normally sees it fine — confirmed by an actual
+   scroll-through test, and separately confirmed that
+   `prefers-reduced-motion` visitors already get every `.rev` element at
+   full opacity immediately (`base.css` line 671), which is the real
+   accessibility contract and was already correct; (b) a stray duplicate
+   text fragment in one screenshot traced to the built HTML and found to
+   occur exactly once in the DOM, so not a real duplication either —
+   most likely a capture-time compositing artifact. **Lesson for any
+   future automated visual audit of this site: re-screenshot with
+   `reducedMotion: 'reduce'` context emulation, not a bare `fullPage`
+   capture**, or scroll-reveal timing will produce false positives.
+   The one real content gap found is the same one already flagged in
+   §A.3/§G — generic stock photography, visible as the sitewide
+   broken-image-fallback gradient wherever a hotlink doesn't resolve in
+   a network-restricted context. Remaining pages (5 of 13, lower-traffic)
+   not yet spot-checked; low expectation of new findings given the
+   consistent pattern across the 8 checked.
 3. **Surface the existing backend/decision-tools** visually (§B.2, §B.4)
    — highest ratio of impact to new engineering, since the functionality
    already exists and is tested.
