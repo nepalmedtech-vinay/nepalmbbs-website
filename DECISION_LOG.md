@@ -894,3 +894,68 @@ the three files this change edited. A clean re-run (32/32, zero code
 changes in between) confirmed it as pre-existing flakiness in
 Chromium's synthetic-Tab `:focus-visible` timing, not a regression.
 `console-verify.mjs`: 34/34. `npm run build`: 44 pages, clean.
+
+**2026-09-10 — full-site colour + hover audit after PR #4 merged to
+`main`.** Owner opened the now-live site and asked why colours had
+"auto changed," then asked for a complete audit: fix whatever's wrong,
+ship one consistent blue theme with the crystal hover language
+everywhere. (They hadn't changed anything themselves — PR #4 had simply
+been merged, taking the navy/sky/crystal work built across the last
+several rounds live on `nepalmbbs.in`. This branch had three more
+commits queued past the merge point, so it was brought current with
+`git merge origin/main` rather than a rebase, since a force-push to
+publish a rebase was denied by the environment's own safety classifier
+— merging avoids needing one at all.)
+
+Treated "audit" literally rather than re-skinning anything that already
+worked: catalogued every `:hover` rule in the site's own stylesheets
+(bridge/glass/motion/panel/chrome/premium — the ones GlassLayout
+actually loads; `console.css` is the separate `/staff` `/portal` admin
+tool and out of scope), then checked each finding against what actually
+renders, the same discipline this file has leaned on all along —
+`getComputedStyle`/CDP `getMatchedStylesForNode`, not just reading the
+source and assuming.
+
+Three real, live findings, all fixed:
+- **`.college-tab` (the `/videos` college filter) had no crystal hover**
+  — literally the same tab-switcher pattern as Guidelines' `.g-tab`
+  (button, `.on` active state, one filter group), just never brought
+  along when that language was built. Same treatment added in
+  `chrome.css`, guarded `:not(.on)` so the active tab's own `--brand`
+  fill isn't fought over on hover.
+- **`.chat-restart-btn`** ("Start New Chat" in the assistant panel,
+  present on every route) **and `.curr-result`** (the INR/NPR answer on
+  `/life-in-nepal`) were still rendering their original pre-migration
+  amber (`rgba(232,160,32,...)`) background/border — nobody had ever
+  re-skinned these two specifically, unlike the dozen-plus other
+  gold-literal selectors from the same era (`.hero-badge`, `.card-badge`,
+  `.play-btn`, `.official-badge`, `.res-cta`, `.form-success-btn`,
+  `.cbar-pill-amber`, `.h-cta-btn`, `.hero-stat-val`, `.slide-dot`,
+  `.submit-btn`/`.h-submit`, `.guide-warn`, `.cs-sum` — checked each by
+  grepping for actual markup usage, and all of those are dead CSS with
+  no live element to affect). Both fixed to the `--brand`/`--brand-line`
+  family in `chrome.css`, matching the tint-fill language already used
+  for `.counsel-btn` and `.ff` focus rings on the same page tier.
+
+One false alarm worth recording so it isn't re-investigated: a
+diagnostic session chasing why `.college-tab:hover`'s text looked dark
+instead of white in a Playwright check turned out to be nothing —
+sampling `getComputedStyle` at 50ms after the mouse event catches the
+160ms (`--d-2`) colour transition still in flight; by 150ms it's
+settled to the correct white every time. Confirmed with a time-series
+sample (50/150/300/500/1000/2000ms) before accepting it as real. Not a
+bug, not a fix — a reminder that a hover check needs to out-wait the
+transition token, not just add an arbitrary short pause.
+
+Also removed two now-dead duplicate hover rules that were never the
+live one to begin with, same class of leftover as the FAQ-hover
+load-order bug from two sessions back: `chrome.css`'s
+`.foot-contacts a:hover`/`svg` and `bridge.css`'s `.foot-col a:hover,
+.foot-link:hover`, both superseded by `Footer.astro`'s own scoped
+crystal-hover rule (which wins on specificity via Astro's
+`[data-astro-cid]` attribute, confirmed via the same CDP
+matched-styles check, not assumed). `.foot-link` itself turned out to
+be unused in any page's markup.
+
+`console-verify.mjs`: 34/34. `a11y-verify.mjs`: 32/32. `npm run build`:
+44 pages, clean. Full `audit.mjs` run queued next.
