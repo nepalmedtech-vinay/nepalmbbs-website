@@ -20,12 +20,33 @@ that way too, verify against the actual repo rather than trusting it._
   mode (no PMREM, no transmission, halved geometry segments) for
   mobile/low-core devices — cutting TBT 92-97% across every measured
   route (6969-11708ms baseline down to 221-585ms).
-- **IN PROGRESS / NOT YET DONE**: LCP is still over its 2.5s budget on
-  every route (2.7-3.6s) — a separate metric from TBT, not yet
-  root-caused or addressed this pass.
-- **NEXT ACTION**: root-cause the LCP regression (likely candidates:
-  render-blocking CSS/font weight, or the largest above-fold element's
-  own load timing — not yet investigated). Independent of that:
+- **IN PROGRESS / NOT YET DONE**: LCP reads over its 2.5s budget on
+  every route in `perf-verify.mjs` (2.7-3.6s), including `/staff` and
+  `/portal` which carry no WebGL at all — ruling out 3D as the cause,
+  since it's uniform across routes with wildly different content.
+  **Investigated, not fixed — see the finding below before touching
+  this.** `perf-verify.mjs`'s local test server is plain `node:http`
+  (line 15: `import http from 'node:http'`), i.e. HTTP/1.1. Netlify
+  serves the real site over HTTP/2. `GlassLayout.astro`'s own comment
+  (above its stylesheet `<link>` tags) documents that concatenating the
+  site's nine render-blocking CSS files into one bundle was tried and
+  **measured worse in production** (LCP 1632ms → 1916ms) specifically
+  *because* HTTP/2 multiplexes many small parallel requests better than
+  one large serialised one — `tools/bundle-css.mjs` exists and is
+  deliberately not wired in for this reason. The likely read: this
+  harness's own HTTP/1.1 connection-limit is inflating the LCP numbers
+  it reports, the same class of "test methodology, not a real bug" trap
+  as the two screenshot false positives found in the Phase 1 audit — do
+  **not** re-attempt CSS bundling to chase this number down, that
+  experiment already ran and its result is documented.
+- **NEXT ACTION**: get a real LCP reading from something that actually
+  serves HTTP/2 (Netlify's own deploy preview, or a Lighthouse/PSI run
+  against the live site) before deciding whether there's a genuine LCP
+  problem to fix at all, rather than trusting this harness's absolute
+  number further. `perf-verify.mjs`'s TBT numbers don't have this
+  caveat — TBT is a main-thread-blocking measure, not a
+  network-transport one, so this session's TBT fixes and their
+  before/after comparisons stand regardless. Independent of that:
   Decisions 2 (cost planner architecture) and 3 (asset-slot system +
   `CONTENT_ASSET_PLAN.md`) are both authorised and not yet started.
 - **KNOWN ISSUES**: `tests/csp-verify.mjs` and `tests/a11y-verify.mjs`
