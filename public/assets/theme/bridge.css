@@ -313,7 +313,11 @@ footer, .foot-inner, .foot-col, .foot-bottom {
 }
 .foot-logo, .foot-col h4, .foot-title { color: var(--g-ink) !important; }
 .foot-col a, .foot-link { color: var(--g-ink-2) !important; }
-.foot-col a:hover, .foot-link:hover { color: var(--brand) !important; }
+/* .foot-col a:hover is Footer.astro's own scoped crystal-tab rule now (see
+   chrome.css's note on .foot-contacts a for the same removal) — this file
+   loads before that component style and lost on specificity regardless,
+   so the plain colour-swap version was dead. .foot-link:hover along with
+   it, since .foot-link itself isn't used in any page's markup. */
 
 /* Legacy gold literals used as text on light. */
 .ticker-item, .ticker-item span, .off-flag { color: var(--g-ink-2) !important; }

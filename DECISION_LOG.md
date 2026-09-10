@@ -817,3 +817,145 @@ instead of a third-party hotlink — sidesteps the verification problem
 entirely rather than another guess.
 
 `audit.mjs`: 0 low-contrast elements, 0 pages overflowing.
+
+**2026-09-09 — same navy-blue crystal hover extended to the Guidelines
+tabs.** Owner asked for the Guidelines page's three `.g-tab` buttons
+(NMC India / Nepal NMC / All Official Resources) to get the identical
+treatment already built for the footer's link-tabs: tinted-glass rest
+state, solid `sky -> navy-accent` gradient fill with white text on
+hover/focus, and the `cx-sweep` crystal shine reused (not redefined) a
+third time. Added as a page-scoped `<style>` block in
+`guidelines.astro` rather than a global rule, since `.g-tab` is used
+on no other page.
+
+One thing to guard against going in: `.g-tab.on` (the active tab) is
+already brand-blue filled via a `chrome.css` rule from an earlier
+round. Wrote the new hover rule as `.g-tab:not(.on):hover` specifically
+so hovering the already-active tab does not fight that existing fill.
+Verified both states via `getComputedStyle`: a non-active tab resolves
+to `linear-gradient(148deg, rgb(91,155,213), rgb(23,63,115))` (sky ->
+navy-accent) with white text on hover, and the active tab's hover
+computed style is untouched — still its own
+`linear-gradient(148deg, var(--brand), var(--brand-deep))`. Screenshot
+confirms the fill visually; console output during the check showed
+only the sandbox's usual blocked-image `ERR_CONNECTION_RESET`/
+`ERR_TUNNEL_CONNECTION_FAILED` noise, no real JS errors.
+
+`npm run build`: 44 pages, clean. `console-verify.mjs`: 34/34 passed.
+
+**2026-09-09 — cinematic 3D enabled on mobile too, not just desktop.**
+Owner reported the recent motion/3D work "looked effective on web but
+mobile mein proper changes update nahi mila." Investigated with actual
+mobile-viewport (390px) Playwright renders rather than guessing: colors,
+images, the mobile menu and the guide-tab active fill all matched
+desktop exactly. The one real gap was the WebGL medical-icons scenes
+(the five `threeD` `PageHeader` pages, `admission-process`'s own hand-
+rolled header, and the footer) — all gated behind
+`matchMedia('(min-width: 62rem)')`, a **deliberate** desktop-only
+decision from the footer-3D pass (documented above: adding the footer
+scene alone took median page weight from ~353 kB to ~863 kB). Below
+992px — i.e. every phone — the canvas never mounted at all, which is
+exactly the gap the owner was seeing.
+
+Put the tradeoff to the owner directly (data cost vs. motion parity)
+rather than deciding unilaterally, since it's a real cost to the
+NEET-aspirant mobile audience, not just an aesthetic call. Owner chose
+full parity: enable on mobile too. Removed the `fine`/`min-width: 62rem`
+check in `PageHeader.astro`, `Footer.astro`, and `admission-process.astro`
+— all three now mount purely on `prefers-reduced-motion` + a successful
+dynamic import, same as desktop. The homepage hero (`GlassHero.astro`)
+keeps its own desktop-only gate; it wasn't part of what was asked and is
+a separate, pre-existing decision.
+
+Verified on an iPhone-sized viewport via Playwright: all five `threeD`
+pages plus the footer reach `is-ready: true` at their normal opacity,
+zero console errors.
+
+Also found, while chasing a red `a11y-verify.mjs` run, that
+`@keyframes cx-sweep` is defined **twice** — once in `premium.css` (the
+crystal-shine translate/skew used by the footer tabs, guideline tabs,
+and FAQ) and once in `console.css` (a background-position shimmer for
+`.cx-skel`, the staff-console loading skeleton). Same class of bug as
+the `--navy` collision earlier in this file — a keyframe name is global,
+last-loaded stylesheet wins for *all* consumers of that name. Checked
+whether it's live: `console.css` only loads on `/staff` and `/portal`,
+neither of which ever renders `.gl-crystal-sheen`/footer-tabs/`.g-tab`/
+FAQ, and the marketing pages that do never load `console.css` — so the
+two never actually share a page today. Left as-is (a rename would be
+the fix if a future page ever needs both), noted here so it isn't
+rediscovered as a mystery later.
+
+`a11y-verify.mjs` briefly looked broken after this change — a run
+right after showed `/staff` and `/portal` failing "focus is visibly
+indicated" on `.cx-input`. Traced it rather than assuming: both pages
+render with `bare={true}`, which skips `Footer` entirely, and neither
+uses `PageHeader`'s `threeD` prop — i.e. neither page touches any of
+the three files this change edited. A clean re-run (32/32, zero code
+changes in between) confirmed it as pre-existing flakiness in
+Chromium's synthetic-Tab `:focus-visible` timing, not a regression.
+`console-verify.mjs`: 34/34. `npm run build`: 44 pages, clean.
+
+**2026-09-10 — full-site colour + hover audit after PR #4 merged to
+`main`.** Owner opened the now-live site and asked why colours had
+"auto changed," then asked for a complete audit: fix whatever's wrong,
+ship one consistent blue theme with the crystal hover language
+everywhere. (They hadn't changed anything themselves — PR #4 had simply
+been merged, taking the navy/sky/crystal work built across the last
+several rounds live on `nepalmbbs.in`. This branch had three more
+commits queued past the merge point, so it was brought current with
+`git merge origin/main` rather than a rebase, since a force-push to
+publish a rebase was denied by the environment's own safety classifier
+— merging avoids needing one at all.)
+
+Treated "audit" literally rather than re-skinning anything that already
+worked: catalogued every `:hover` rule in the site's own stylesheets
+(bridge/glass/motion/panel/chrome/premium — the ones GlassLayout
+actually loads; `console.css` is the separate `/staff` `/portal` admin
+tool and out of scope), then checked each finding against what actually
+renders, the same discipline this file has leaned on all along —
+`getComputedStyle`/CDP `getMatchedStylesForNode`, not just reading the
+source and assuming.
+
+Three real, live findings, all fixed:
+- **`.college-tab` (the `/videos` college filter) had no crystal hover**
+  — literally the same tab-switcher pattern as Guidelines' `.g-tab`
+  (button, `.on` active state, one filter group), just never brought
+  along when that language was built. Same treatment added in
+  `chrome.css`, guarded `:not(.on)` so the active tab's own `--brand`
+  fill isn't fought over on hover.
+- **`.chat-restart-btn`** ("Start New Chat" in the assistant panel,
+  present on every route) **and `.curr-result`** (the INR/NPR answer on
+  `/life-in-nepal`) were still rendering their original pre-migration
+  amber (`rgba(232,160,32,...)`) background/border — nobody had ever
+  re-skinned these two specifically, unlike the dozen-plus other
+  gold-literal selectors from the same era (`.hero-badge`, `.card-badge`,
+  `.play-btn`, `.official-badge`, `.res-cta`, `.form-success-btn`,
+  `.cbar-pill-amber`, `.h-cta-btn`, `.hero-stat-val`, `.slide-dot`,
+  `.submit-btn`/`.h-submit`, `.guide-warn`, `.cs-sum` — checked each by
+  grepping for actual markup usage, and all of those are dead CSS with
+  no live element to affect). Both fixed to the `--brand`/`--brand-line`
+  family in `chrome.css`, matching the tint-fill language already used
+  for `.counsel-btn` and `.ff` focus rings on the same page tier.
+
+One false alarm worth recording so it isn't re-investigated: a
+diagnostic session chasing why `.college-tab:hover`'s text looked dark
+instead of white in a Playwright check turned out to be nothing —
+sampling `getComputedStyle` at 50ms after the mouse event catches the
+160ms (`--d-2`) colour transition still in flight; by 150ms it's
+settled to the correct white every time. Confirmed with a time-series
+sample (50/150/300/500/1000/2000ms) before accepting it as real. Not a
+bug, not a fix — a reminder that a hover check needs to out-wait the
+transition token, not just add an arbitrary short pause.
+
+Also removed two now-dead duplicate hover rules that were never the
+live one to begin with, same class of leftover as the FAQ-hover
+load-order bug from two sessions back: `chrome.css`'s
+`.foot-contacts a:hover`/`svg` and `bridge.css`'s `.foot-col a:hover,
+.foot-link:hover`, both superseded by `Footer.astro`'s own scoped
+crystal-hover rule (which wins on specificity via Astro's
+`[data-astro-cid]` attribute, confirmed via the same CDP
+matched-styles check, not assumed). `.foot-link` itself turned out to
+be unused in any page's markup.
+
+`console-verify.mjs`: 34/34. `a11y-verify.mjs`: 32/32. `npm run build`:
+44 pages, clean. Full `audit.mjs` run queued next.
