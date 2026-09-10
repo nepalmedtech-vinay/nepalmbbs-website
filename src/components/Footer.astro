@@ -170,24 +170,10 @@
 </style>
 
 <script>
-  const canvas = document.querySelector('.foot-3d');
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (canvas && !reduce) {
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
-    idle(async () => {
-      try {
-        const { mountMedicalIconsScene } = await import('../lib/medical-icons-scene.js');
-        const handle = mountMedicalIconsScene(canvas, { brand: '--navy-accent', brand2: '--sky', transmission: 0.12, tint: 0.04 });
-        if (handle) {
-          canvas.classList.add('is-ready');
-          canvas.addEventListener('webglcontextlost', (e) => {
-            e.preventDefault();
-            handle.stop();
-            canvas.classList.remove('is-ready');
-          }, { once: true });
-        }
-      } catch (e) {}
+  import('../lib/mount-medical-scene.js').then(({ mountMedicalSceneWhenVisible }) => {
+    mountMedicalSceneWhenVisible(document.querySelector('.foot-3d'), {
+      colorVars: { brand: '--navy-accent', brand2: '--sky', transmission: 0.12, tint: 0.04 },
     });
-  }
+  });
 </script>
 <!-- FLOATING WA BUTTONS -->

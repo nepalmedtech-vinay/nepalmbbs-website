@@ -66,33 +66,18 @@ const { eyebrow, lead, center = false, threeD = false } = Astro.props;
   <script>
     // PageHeader renders once per page (it is the page's own H1 header),
     // so a plain query is enough — no need to scope past a script tag's
-    // own siblings. Runs on any viewport now (owner explicitly asked for
-    // mobile parity, accepting the bandwidth cost); still motion-on +
-    // WebGL-capable only, dynamic import so visitors who never see the
-    // canvas never fetch Three.js.
-    const canvas = document.querySelector('.ph-3d');
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (canvas && !reduce) {
-      const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
-      idle(async () => {
-        try {
-          const { mountMedicalIconsScene } = await import('../lib/medical-icons-scene.js');
-          const handle = mountMedicalIconsScene(canvas);
-          if (handle) {
-            canvas.classList.add('is-ready');
-            canvas.closest('.ph')?.classList.add('ph--3d-active');
-            canvas.addEventListener('webglcontextlost', (e) => {
-              e.preventDefault();
-              handle.stop();
-              canvas.classList.remove('is-ready');
-              canvas.closest('.ph')?.classList.remove('ph--3d-active');
-            }, { once: true });
-          }
-        } catch (e) {
-          // Import failure — the CSS field underneath is already correct.
-        }
+    // own siblings. Mounts on any viewport (owner explicitly asked for
+    // mobile parity), gated by visibility + idle time + reduced-motion —
+    // see mount-medical-scene.js. This header canvas is always at/near
+    // the top of the page, so the IntersectionObserver gate fires
+    // essentially immediately here; it matters for the footer, which is
+    // never on screen at load.
+    import('../lib/mount-medical-scene.js').then(({ mountMedicalSceneWhenVisible }) => {
+      const canvas = document.querySelector('.ph-3d');
+      mountMedicalSceneWhenVisible(canvas, {
+        onReady: () => canvas.closest('.ph')?.classList.add('ph--3d-active'),
+        onLost: () => canvas.closest('.ph')?.classList.remove('ph--3d-active'),
       });
-    }
+    });
   </script>
 )}

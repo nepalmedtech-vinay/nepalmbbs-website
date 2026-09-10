@@ -212,26 +212,12 @@ const comparison = [
 </style>
 
 <script>
-  const canvas = document.querySelector('.ph-3d');
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (canvas && !reduce) {
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
-    idle(async () => {
-      try {
-        const { mountMedicalIconsScene } = await import('../lib/medical-icons-scene.js');
-        const handle = mountMedicalIconsScene(canvas);
-        if (handle) {
-          canvas.classList.add('is-ready');
-          canvas.closest('.ph')?.classList.add('ph--3d-active');
-          canvas.addEventListener('webglcontextlost', (e) => {
-            e.preventDefault();
-            handle.stop();
-            canvas.classList.remove('is-ready');
-            canvas.closest('.ph')?.classList.remove('ph--3d-active');
-          }, { once: true });
-        }
-      } catch (e) {}
+  import('../lib/mount-medical-scene.js').then(({ mountMedicalSceneWhenVisible }) => {
+    const canvas = document.querySelector('.ph-3d');
+    mountMedicalSceneWhenVisible(canvas, {
+      onReady: () => canvas.closest('.ph')?.classList.add('ph--3d-active'),
+      onLost: () => canvas.closest('.ph')?.classList.remove('ph--3d-active'),
     });
-  }
+  });
 </script>
 </GlassLayout>

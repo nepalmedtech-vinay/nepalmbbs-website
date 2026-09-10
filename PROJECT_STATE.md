@@ -1,10 +1,63 @@
 # PROJECT_STATE.md
 
-_Last updated: 2026-09-10, after a Phase 0 forensic audit for the
+_Last updated: 2026-09-10, after the Phase 1 3D-architecture pass for the
 "ultra-premium experience transformation" effort. Read this file first in
-any new session before doing implementation work — the previous version of
+any new session before doing implementation work — an earlier version of
 this file (last touched 2026-08-27) had drifted badly out of sync with
-reality and is not a reliable starting point._
+reality and is not a reliable starting point; if this one starts to feel
+that way too, verify against the actual repo rather than trusting it._
+
+## Status
+
+- **CURRENT PHASE**: Phase 1 (experience foundation / technical clean-up),
+  per `ULTRA_PREMIUM_ROADMAP.md`'s implementation order.
+- **COMPLETED THIS PASS**: Phase 0 forensic audit; a real ~24% TBT cut
+  (cheap PMREM environment, zero visual cost); Phase 1 blank-space audit
+  (no genuine bugs, two screenshot-methodology false positives traced and
+  corrected); the 3D adaptive-mount architecture (see `3D_ARCHITECTURE.md`)
+  — IntersectionObserver-gated mounting shared across all four scene
+  sites, adaptive DPR cap — cutting footer-only-route TBT by 93-97%.
+- **IN PROGRESS / NOT YET DONE**: the two remaining above-the-fold
+  `threeD` routes (`/colleges`, `/faq`) are still over the TBT budget
+  (~4.3-4.6s) — their cost is the genuine, currently-unreduced cost of one
+  meaningful scene mounting immediately, not something the visibility gate
+  can defer without making it feel slow to appear.
+- **NEXT ACTION**: build a lighter-geometry/no-transmission scene variant
+  specifically for mobile above-the-fold mounts (`/colleges`, `/faq`, and
+  by extension `/why-nepal`, `/guidelines`, `/videos`, `/admission-process`
+  once measured), re-run `perf-verify.mjs` until every route is green.
+  Independent of that: Decisions 2 (cost planner architecture) and 3
+  (asset-slot system + `CONTENT_ASSET_PLAN.md`) are both authorised and
+  not yet started.
+- **KNOWN ISSUES**: `tests/csp-verify.mjs` and `tests/a11y-verify.mjs`
+  have been intermittently very slow in this sandbox this session (one
+  csp-verify run exceeded 10 minutes without completing; a11y-verify
+  needed ~3 minutes against a normal ~1-2) — confirmed as sandbox network
+  flakiness during the run itself (the process was still making progress,
+  not hung), not a regression, by re-running bounded and inspecting
+  partial output rather than assuming a hang. Budget accordingly rather
+  than treating a long wait alone as a failure signal.
+- **DECISIONS**: see the three "DECISION N — ..." headings the owner sent
+  2026-09-10, authoritative and superseding the three open questions
+  `ULTRA_PREMIUM_ROADMAP.md` originally raised. Full text is in the
+  conversation record; the operative points are captured in
+  `3D_ARCHITECTURE.md` (Decision 1) and `ULTRA_PREMIUM_ROADMAP.md`
+  (Decisions 2 and 3, not yet updated to reflect the authorised-but-not-
+  fabricated cost-planner and asset-slot architectures — do that before
+  starting either).
+- **DEPENDENCIES**: unchanged — `astro`, `@astrojs/sitemap`, `three` in
+  production; no new dependency added or currently justified.
+- **TEST STATUS** (this pass): `npm run build` clean (44 pages);
+  `tests/console-verify.mjs` 34/34; `tests/a11y-verify.mjs` 32/32;
+  `tests/audit.mjs` (full) — see latest `DECISION_LOG.md` entry for the
+  result of the run started alongside this update.
+- **PERFORMANCE STATUS**: `tests/perf-verify.mjs`, 4x CPU throttle +
+  slow-4G, 390×844 — footer-only routes (`/`, `/neet-calculator`,
+  `/colleges/institute-of-medicine`) now pass or nearly pass TBT (221-
+  486ms against a 200ms budget, down from 6969-9872ms pre-session-start);
+  `/colleges` and `/faq` (above-fold `threeD`) still fail (~4.3-4.6s TBT);
+  LCP is over budget (~2.7-3.8s against 2.5s) on every route measured,
+  not yet addressed this pass.
 
 ## What this project actually is, right now
 

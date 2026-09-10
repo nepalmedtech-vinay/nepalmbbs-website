@@ -285,39 +285,24 @@ const stats = [
 </style>
 
 <script>
-  const canvas = document.getElementById('gh-medical-3d');
-  const field = document.querySelector('.gh-field');
+  // Desktop only, deliberately — this is the one scene still gated by
+  // viewport width rather than mobile parity (unlike footer/page-header,
+  // opened up 2026-09-10). The hero is above the fold by definition, so
+  // the visibility gate below doesn't defer it on desktop; it exists here
+  // for architectural consistency with the other three mount sites and to
+  // skip Three.js entirely for phones, which this specific scene still
+  // doesn't run on. A lighter mobile version is a candidate for later —
+  // see 3D_ARCHITECTURE.md — not settled by this pass.
   const fine = matchMedia('(min-width: 62rem)').matches;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Desktop + motion-on + WebGL-capable only, exactly the gate this site's
-  // other WebGL layer (aurora-gl.js) already uses. A *dynamic* import,
-  // deliberately — three is not a small dependency, and a static top-level
-  // import would fetch and parse it for every visitor regardless of this
-  // gate, including phones that will never see the canvas.
-  if (canvas && field && fine && !reduce) {
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
-    idle(async () => {
-      try {
-        const { mountMedicalIconsScene } = await import('../lib/medical-icons-scene.js');
-        const handle = mountMedicalIconsScene(canvas);
-        if (handle) {
-          canvas.classList.add('is-ready');
-          field.classList.add('gh-field--3d-active');
-          // A lost context (GPU memory pressure, driver reset) is real on
-          // real hardware. Fall back to the already-correct 2D field rather
-          // than attempting to silently recreate the context.
-          canvas.addEventListener('webglcontextlost', (e) => {
-            e.preventDefault();
-            handle.stop();
-            canvas.classList.remove('is-ready');
-            field.classList.remove('gh-field--3d-active');
-          }, { once: true });
-        }
-      } catch (e) {
-        // Import failure (blocked request, unsupported browser quirk) —
-        // the 2D field is already the correct, finished hero on its own.
-      }
+  if (fine) {
+    import('../lib/mount-medical-scene.js').then(({ mountMedicalSceneWhenVisible }) => {
+      const canvas = document.getElementById('gh-medical-3d');
+      const field = document.querySelector('.gh-field');
+      if (!field) return;
+      mountMedicalSceneWhenVisible(canvas, {
+        onReady: () => field.classList.add('gh-field--3d-active'),
+        onLost: () => field.classList.remove('gh-field--3d-active'),
+      });
     });
   }
 </script>

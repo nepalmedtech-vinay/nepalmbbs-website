@@ -344,11 +344,22 @@ export function mountMedicalIconsScene(canvas, colorVars) {
     { mesh: cross, spin: 0.06, floatAmp: 0.17, floatSpeed: 0.31, phase: 4.2 },
   ];
 
+  // Adaptive DPR cap: full retina (2x) only for a device that also reports
+  // enough CPU cores to make good use of it. `hardwareConcurrency` is a
+  // rough proxy — real budget phones commonly report 4 or fewer — but it's
+  // the only signal the platform actually offers; there is no direct "how
+  // fast is this GPU" API. A narrow viewport (phone-width, independent of
+  // DPR) is capped harder still, since these are small background icons
+  // where the extra resolution is invisible at that size anyway.
+  const cores = navigator.hardwareConcurrency || 4;
+  const narrow = matchMedia('(max-width: 48rem)').matches;
+  const dprCap = narrow ? 1.25 : (cores <= 4 ? 1.5 : 2);
+
   function resize() {
     const w = canvas.clientWidth || 1;
     const h = canvas.clientHeight || 1;
     renderer.setSize(w, h, false);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
