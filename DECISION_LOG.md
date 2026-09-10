@@ -959,3 +959,73 @@ be unused in any page's markup.
 
 `console-verify.mjs`: 34/34. `a11y-verify.mjs`: 32/32. `npm run build`:
 44 pages, clean. Full `audit.mjs` run queued next.
+
+**2026-09-10 — Phase 0 forensic audit for an "ultra-premium transformation"
+brief; real TBT regression found and partially fixed.** Owner sent a large,
+explicit-execution-mode brief (10 phases, cinematic hero, new 3D systems,
+decision tools, etc.) and asked for it to be carried out. Did the Phase 0
+audit it asked for first (read-only), which surfaced:
+
+- `PROJECT_STATE.md` was two weeks stale and described a different
+  branch's reality entirely (unpublished site, missing features that now
+  exist — e.g. it claimed no college-comparison tool existed; `/colleges/
+  compare` does). Rewritten to match verified current state, since a
+  future session trusting the old version would start from false
+  assumptions. `ULTRA_PREMIUM_ROADMAP.md` added with the full Phase 0
+  findings (top problems/opportunities, dependency/3D/motion/photography
+  recommendations, phased implementation order).
+- Two direct conflicts between the brief and standing rules, flagged
+  rather than built: a "cost planner" would override the documented
+  no-fee-calculator decision (`CLAUDE.md` rule 2, `DECISION_LOG.md`
+  2026-08-28); the brief's photography requirements need real
+  campus/hospital assets this sandbox cannot source or fabricate (all
+  current photography is Unsplash stock — 13 images, zero real photos of
+  any of the 27 actual colleges).
+- **`tests/perf-verify.mjs` (real Core Web Vitals, 4x CPU throttle +
+  slow-4G, 390×844 — i.e. an actual budget-Android/Indian-mobile-data
+  simulation) was failing badly**: Total Blocking Time 30-58x over the
+  200ms budget on every route that mounts the medical-icons Three.js
+  scene (9357ms on `/`, 11104ms on `/faq`), against near-zero TBT (33-
+  43ms) on `/staff`/`/portal`, which use `bare={true}` and skip the scene
+  entirely — a clean before/after isolating the cause.
+
+Root-caused rather than guessed, with two real A/B measurements:
+
+1. `PMREMGenerator.fromScene(new RoomEnvironment())` — a genuinely
+   expensive, synchronous, multi-mip-level GPU prefilter — was being
+   recomputed independently by every scene mount (footer runs on all 44
+   routes; up to three renderer instances on one page since each mount
+   owns its own WebGL context and can't share the resulting texture
+   across contexts). Replaced `RoomEnvironment` with a cheap, hand-built
+   single-sphere gradient scene fed through the same `PMREMGenerator`
+   call, so the material still gets a real, non-fabricated environment to
+   reflect — just one costing a fraction as much to compute. Measured
+   effect: homepage TBT 9357ms → 7114ms (~24%), zero visual difference
+   (screenshotted before/after).
+2. A/B test with `transmission` forced to 0 (removing Three.js's
+   per-frame backdrop-render pass for transmissive materials) recovered a
+   further ~1900ms (7114ms → 5232ms) — confirming transmission is a real
+   contributor, but not the dominant one. **Reverted this** rather than
+   shipping it: the remaining ~5200ms floor, present even on
+   `/colleges/institute-of-medicine` with exactly one scene mount
+   (footer only, no page-header `threeD`), shows the irreducible cost is
+   Three.js library execution + procedural-geometry construction itself
+   under 4x CPU throttle — not something a material-property tweak
+   solves, and losing the real-glass look for a partial, non-decisive
+   win wasn't judged worth it without the owner's sign-off.
+
+Kept the first fix (real, free improvement, no visual cost); reverted the
+second (real cost, only partial win). The performance problem is **not
+resolved** — TBT is still far over budget on every WebGL-carrying route.
+This is now an architectural question (does the footer's ambient scene
+need to run on all 44 routes and on mobile, given the measured cost on
+the hardware this audience actually uses) rather than a tuning one, and
+is written up for the owner's decision in `ULTRA_PREMIUM_ROADMAP.md`
+rather than acted on unilaterally, since it bears directly on this
+week's mobile-3D-parity decision (made without this throttled-CPU data).
+
+`console-verify.mjs`: 34/34. `a11y-verify.mjs`: 31/32 (the same
+pre-existing `:focus-visible` timing flake on `/staff`'s `.cx-input`
+documented 2026-09-10 earlier — confirmed same signature, unrelated to
+this change, which never touches `/staff` or `/portal`). `npm run
+build`: 44 pages, clean. Full `audit.mjs` run queued next.

@@ -39,9 +39,40 @@
 // screen. This is the middle setting: still soft glass, not solid colour,
 // but present enough that the float/rotation is actually visible.
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+// A cheap stand-in for `RoomEnvironment` (the addon Three.js ships for this
+// exact purpose). RoomEnvironment builds a small multi-plane lit room and
+// PMREMGenerator then prefilters it across several roughness mip levels —
+// correct for a hero-focal product render, but this scene mounts up to
+// three times on one page (page-header + footer, sometimes both), each
+// with its own WebGLRenderer/GL context, so the cost is paid twice or
+// three times per page load and cannot be shared across those contexts.
+// Measured with `tests/perf-verify.mjs` under 4x CPU throttle: this was
+// the dominant cost behind Total Blocking Time being 30-58x over budget
+// on every route that mounts this scene (see DECISION_LOG.md 2026-09-10).
+// A single softly-lit sphere prefilters in a fraction of the time and is
+// visually indistinguishable for small ambient background objects — the
+// crystal material still gets a real, non-fabricated environment to
+// reflect, just a much cheaper one to compute.
+function cheapEnvironmentScene() {
+  const scene = new THREE.Scene();
+  const geo = new THREE.SphereGeometry(6, 12, 8);
+  const mat = new THREE.MeshBasicMaterial({ side: THREE.BackSide, vertexColors: true });
+  const colors = geo.attributes.position;
+  const c = new Float32Array(colors.count * 3);
+  const top = new THREE.Color(0xf5f8ff);
+  const bottom = new THREE.Color(0xc9d6ee);
+  for (let i = 0; i < colors.count; i++) {
+    const y = colors.getY(i) / 6; // -1..1
+    const mixed = bottom.clone().lerp(top, (y + 1) / 2);
+    c[i * 3] = mixed.r; c[i * 3 + 1] = mixed.g; c[i * 3 + 2] = mixed.b;
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(c, 3));
+  scene.add(new THREE.Mesh(geo, mat));
+  return scene;
+}
 
 // A soft physical-glass material shared by every shape, parameterised only
 // by colour — keeps the five objects visually consistent (same "material
@@ -253,7 +284,7 @@ export function mountMedicalIconsScene(canvas, colorVars) {
   // used) so the glass material reflects something appropriate to a
   // clinical, light-ground page rather than carrying a dark cast into it.
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const env = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
+  const env = pmrem.fromScene(cheapEnvironmentScene(), 0.05).texture;
   scene.environment = env;
 
   const key = new THREE.DirectionalLight(0xffffff, 0.95);
