@@ -14,21 +14,20 @@ that way too, verify against the actual repo rather than trusting it._
 - **COMPLETED THIS PASS**: Phase 0 forensic audit; a real ~24% TBT cut
   (cheap PMREM environment, zero visual cost); Phase 1 blank-space audit
   (no genuine bugs, two screenshot-methodology false positives traced and
-  corrected); the 3D adaptive-mount architecture (see `3D_ARCHITECTURE.md`)
-  — IntersectionObserver-gated mounting shared across all four scene
-  sites, adaptive DPR cap — cutting footer-only-route TBT by 93-97%.
-- **IN PROGRESS / NOT YET DONE**: the two remaining above-the-fold
-  `threeD` routes (`/colleges`, `/faq`) are still over the TBT budget
-  (~4.3-4.6s) — their cost is the genuine, currently-unreduced cost of one
-  meaningful scene mounting immediately, not something the visibility gate
-  can defer without making it feel slow to appear.
-- **NEXT ACTION**: build a lighter-geometry/no-transmission scene variant
-  specifically for mobile above-the-fold mounts (`/colleges`, `/faq`, and
-  by extension `/why-nepal`, `/guidelines`, `/videos`, `/admission-process`
-  once measured), re-run `perf-verify.mjs` until every route is green.
-  Independent of that: Decisions 2 (cost planner architecture) and 3
-  (asset-slot system + `CONTENT_ASSET_PLAN.md`) are both authorised and
-  not yet started.
+  corrected); the full 3D adaptive-mount architecture (see
+  `3D_ARCHITECTURE.md`) — IntersectionObserver-gated mounting shared
+  across all four scene sites, adaptive DPR cap, and a `lite` rendering
+  mode (no PMREM, no transmission, halved geometry segments) for
+  mobile/low-core devices — cutting TBT 92-97% across every measured
+  route (6969-11708ms baseline down to 221-585ms).
+- **IN PROGRESS / NOT YET DONE**: LCP is still over its 2.5s budget on
+  every route (2.7-3.6s) — a separate metric from TBT, not yet
+  root-caused or addressed this pass.
+- **NEXT ACTION**: root-cause the LCP regression (likely candidates:
+  render-blocking CSS/font weight, or the largest above-fold element's
+  own load timing — not yet investigated). Independent of that:
+  Decisions 2 (cost planner architecture) and 3 (asset-slot system +
+  `CONTENT_ASSET_PLAN.md`) are both authorised and not yet started.
 - **KNOWN ISSUES**: `tests/csp-verify.mjs` and `tests/a11y-verify.mjs`
   have been intermittently very slow in this sandbox this session (one
   csp-verify run exceeded 10 minutes without completing; a11y-verify
@@ -36,7 +35,12 @@ that way too, verify against the actual repo rather than trusting it._
   flakiness during the run itself (the process was still making progress,
   not hung), not a regression, by re-running bounded and inspecting
   partial output rather than assuming a hang. Budget accordingly rather
-  than treating a long wait alone as a failure signal.
+  than treating a long wait alone as a failure signal. Separately: **never
+  rebuild while a test suite is reading `dist/`** — this was violated once
+  this session (an `npm run build` ran while a stale `audit.mjs` was still
+  in flight), caught immediately, the corrupted run killed and redone
+  clean. `dist/` itself is fine (each build overwrites it completely); the
+  risk is only to whatever suite is mid-read when the overwrite happens.
 - **DECISIONS**: see the three "DECISION N — ..." headings the owner sent
   2026-09-10, authoritative and superseding the three open questions
   `ULTRA_PREMIUM_ROADMAP.md` originally raised. Full text is in the
@@ -48,16 +52,19 @@ that way too, verify against the actual repo rather than trusting it._
 - **DEPENDENCIES**: unchanged — `astro`, `@astrojs/sitemap`, `three` in
   production; no new dependency added or currently justified.
 - **TEST STATUS** (this pass): `npm run build` clean (44 pages);
-  `tests/console-verify.mjs` 34/34; `tests/a11y-verify.mjs` 32/32;
-  `tests/audit.mjs` (full) — see latest `DECISION_LOG.md` entry for the
-  result of the run started alongside this update.
+  `tests/console-verify.mjs` 34/34 (twice, after each 3D-architecture
+  edit); `tests/a11y-verify.mjs` 31-32/32 both times, the one failure
+  each time the same pre-existing `.cx-input` `:focus-visible` timing
+  flake on `/staff` or `/portal` documented earlier this session —
+  neither route touches any file this pass changed; `tests/audit.mjs`
+  (full) — see latest `DECISION_LOG.md` entry for the result of the run
+  started alongside this update.
 - **PERFORMANCE STATUS**: `tests/perf-verify.mjs`, 4x CPU throttle +
-  slow-4G, 390×844 — footer-only routes (`/`, `/neet-calculator`,
-  `/colleges/institute-of-medicine`) now pass or nearly pass TBT (221-
-  486ms against a 200ms budget, down from 6969-9872ms pre-session-start);
-  `/colleges` and `/faq` (above-fold `threeD`) still fail (~4.3-4.6s TBT);
-  LCP is over budget (~2.7-3.8s against 2.5s) on every route measured,
-  not yet addressed this pass.
+  slow-4G, 390×844 — every measured route's TBT now sits at 221-585ms
+  against a 200ms budget (down from a 6969-11708ms starting point this
+  session began at), effectively closing the regression that motivated
+  this whole pass. LCP remains over budget (2.7-3.6s against 2.5s) on
+  every route — untouched by this pass, the next thing to root-cause.
 
 ## What this project actually is, right now
 

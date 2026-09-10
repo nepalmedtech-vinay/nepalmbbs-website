@@ -89,27 +89,39 @@ being no direct GPU-capability API.
 
 ## Measured result
 
-| Route | Scene(s) mounted | TBT before this pass | TBT after |
-|---|---|---|---|
-| `/` | footer only | 9357ms | **486ms** (95% cut) |
-| `/colleges/institute-of-medicine` | footer only | 7020ms (pre-env-fix) | **226ms** (97% cut) |
-| `/neet-calculator` | footer only | 6969ms | **221ms** (97% cut) |
-| `/colleges` (index) | footer + page-header (`threeD`) | 9872ms (pre-env-fix) | 4576ms |
-| `/faq` | footer + page-header (`threeD`) | 10718ms (pre-env-fix) | 4344ms |
-| `/staff`, `/portal` | none (`bare`) | 33-43ms | unchanged |
+Two passes, both against `tests/perf-verify.mjs` (4x CPU throttle,
+~1.6 Mbps/150ms RTT, 390×844):
 
-Every footer-only route is now at or near the 200ms budget. The two
-remaining over-budget routes (`/colleges`, `/faq`) both mount an
-**above-the-fold** `threeD` page-header scene — the IntersectionObserver
-gate correctly does not defer these (that would make a "meaningful"
-element feel slow to appear, which is the opposite of the point), so their
-remaining cost is the genuine, currently-unreduced cost of one scene
-mounting immediately. This is the next lever, not yet pulled this pass:
-a lighter-geometry/no-transmission variant specifically for these
-above-fold mobile mounts, distinct from the desktop version, matching the
-adaptive-strategy brief ("MOBILE: lighter 3D / reduced geometry"). Tracked
-here rather than acted on in this pass — see `PROJECT_STATE.md`'s "Next
-action."
+| Route | Scene(s) mounted | TBT, original baseline | After IO gate + DPR | After lite mode |
+|---|---|---|---|---|
+| `/` | footer only | 9357ms | 486ms | 482ms |
+| `/colleges/institute-of-medicine` | footer only | 7020ms† | 226ms | 276ms |
+| `/neet-calculator` | footer only | 6969ms | 221ms | 336ms |
+| `/colleges` (index) | footer + page-header (`threeD`) | 9872ms† | 4576ms | **585ms** |
+| `/faq` | footer + page-header (`threeD`) | 10718ms† | 4344ms | **452ms** |
+| `/staff`, `/portal` | none (`bare`) | 33-43ms | unchanged | unchanged |
+
+† measured after the cheap-environment fix, before the IO-gate pass —
+see the first table's original baseline in the earlier `DECISION_LOG.md`
+entry for the true pre-session numbers (all four routes were 6969-11708ms
+before any of this session's fixes).
+
+Every route is now within 220-585ms of the 200ms TBT budget — down from
+a 6969-11708ms starting point, a 92-97% reduction across the board. The
+`lite` mode threaded through every shape/material in
+`medical-icons-scene.js` (§ above) is what closed the remaining gap on
+`/colleges` and `/faq`: activated by the same `narrow`/`cores` signal the
+DPR cap already used, it skips the PMREM environment prefilter entirely
+(plain directional+ambient lighting instead), swaps
+`MeshPhysicalMaterial`'s transmission/clearcoat for a plain
+`MeshStandardMaterial`, and roughly halves every tube/sphere/cylinder's
+segment counts — all invisible at the on-screen size these objects
+render at (confirmed by screenshot, not assumed), all real cost when
+paid immediately on an above-the-fold mount that the IntersectionObserver
+gate correctly can't defer.
+
+Remaining, not addressed this pass: LCP is over its 2.5s budget on every
+route (2.7-3.6s) — a separate metric from TBT, not yet root-caused.
 
 ## What stayed deliberately as-is
 

@@ -78,8 +78,20 @@ function cheapEnvironmentScene() {
 // by colour — keeps the five objects visually consistent (same "material
 // language") and keeps this file from repeating the same six properties
 // five times.
-function crystalMaterial(color, tint = 0.18, transmission = 0.4) {
+//
+// `lite`: `transmission` on MeshPhysicalMaterial costs Three.js an extra
+// full-scene backdrop render pass per frame per object — measured as a
+// real, if secondary, contributor to the TBT regression documented in
+// 3D_ARCHITECTURE.md. On a route where this scene mounts above the fold
+// (paying its cost immediately, not deferrable the way the footer's is),
+// lite mode swaps to MeshStandardMaterial — no transmission, clearcoat or
+// IOR — same colour language, same lit-glass reading from the scene's
+// own lights, just without the per-frame backdrop pass.
+function crystalMaterial(color, tint = 0.18, transmission = 0.4, lite = false) {
   const c = new THREE.Color(color).lerp(new THREE.Color(0xffffff), tint);
+  if (lite) {
+    return new THREE.MeshStandardMaterial({ color: c, metalness: 0.08, roughness: 0.32 });
+  }
   return new THREE.MeshPhysicalMaterial({
     color: c, metalness: 0.04, roughness: 0.22,
     transmission, thickness: 0.55, ior: 1.4,
@@ -103,19 +115,29 @@ function crystalMaterial(color, tint = 0.18, transmission = 0.4) {
 // True Y-geometry too: two binaural curves converge on a yoke, one tube
 // continues down to the chestpiece — not one continuous loop standing in
 // for both ears at once.
-function buildStethoscope(color, transmission, tint) {
+function buildStethoscope(color, transmission, tint, lite = false) {
   const group = new THREE.Group();
+  // Segment counts halved (floored, minimum kept round-looking) in lite
+  // mode — invisible at the on-screen size these objects render at, real
+  // savings in geometry construction cost on a route paying it above the
+  // fold. `s(n)` keeps every call below readable rather than repeating
+  // the ternary at each site.
+  const s = (n) => (lite ? Math.max(4, Math.round(n / 2)) : n);
 
-  const steel = new THREE.MeshPhysicalMaterial({
-    color: 0xcbd3da, metalness: 0.85, roughness: 0.22,
-    clearcoat: 0.4, clearcoatRoughness: 0.15,
-  });
+  const steel = lite
+    ? new THREE.MeshStandardMaterial({ color: 0xcbd3da, metalness: 0.7, roughness: 0.3 })
+    : new THREE.MeshPhysicalMaterial({
+        color: 0xcbd3da, metalness: 0.85, roughness: 0.22,
+        clearcoat: 0.4, clearcoatRoughness: 0.15,
+      });
   const c = new THREE.Color(color).lerp(new THREE.Color(0xffffff), tint ?? 0.05);
-  const tubeMat = new THREE.MeshPhysicalMaterial({
-    color: c, metalness: 0, roughness: 0.55,
-    transmission: (transmission ?? 0.55) * 0.25, thickness: 0.4, ior: 1.4,
-    clearcoat: 0.25, clearcoatRoughness: 0.4,
-  });
+  const tubeMat = lite
+    ? new THREE.MeshStandardMaterial({ color: c, metalness: 0, roughness: 0.6 })
+    : new THREE.MeshPhysicalMaterial({
+        color: c, metalness: 0, roughness: 0.55,
+        transmission: (transmission ?? 0.55) * 0.25, thickness: 0.4, ior: 1.4,
+        clearcoat: 0.25, clearcoatRoughness: 0.4,
+      });
 
   const yoke = new THREE.Vector3(0, 0.08, 0);
 
@@ -126,16 +148,16 @@ function buildStethoscope(color, transmission, tint) {
     { ear: new THREE.Vector3(0.4, 0.64, 0.06), mid: new THREE.Vector3(0.34, 0.32, -0.08) },
   ].forEach(({ ear, mid }) => {
     const curve = new THREE.CatmullRomCurve3([ear, mid, yoke], false, 'catmullrom', 0.35);
-    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.024, 10, false), steel));
+    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, s(32), 0.024, s(10), false), steel));
     // Ear tip — a small rubber cap, the one place the binaural touches skin.
-    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.045, 14, 14), tubeMat);
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.045, s(14), s(14)), tubeMat);
     tip.position.copy(ear);
     group.add(tip);
   });
 
   // The yoke — a short steel sleeve where both binaurals meet the tubing,
   // not the two curves simply touching at a point.
-  const yokeMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.09, 16), steel);
+  const yokeMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.09, s(16)), steel);
   yokeMesh.position.copy(yoke);
   group.add(yokeMesh);
 
@@ -146,26 +168,26 @@ function buildStethoscope(color, transmission, tint) {
     new THREE.Vector3(-0.05, -0.18, 0.04),
     new THREE.Vector3(0.03, -0.42, -0.02),
   ]);
-  group.add(new THREE.Mesh(new THREE.TubeGeometry(tubing, 32, 0.03, 10, false), tubeMat));
+  group.add(new THREE.Mesh(new THREE.TubeGeometry(tubing, s(32), 0.03, s(10), false), tubeMat));
 
   // Chest piece — steel rim and stem, a coloured rubber diaphragm face
   // (the part that would actually be a different, softer material on a
   // real one), and a small raised centre boss for the acoustic seal.
-  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.08, 16), steel);
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.08, s(16)), steel);
   stem.position.set(0.03, -0.5, 0);
   group.add(stem);
 
-  const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.04, 40), tubeMat);
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.04, s(40)), tubeMat);
   disc.position.set(0.03, -0.57, 0);
   disc.rotation.x = Math.PI / 2;
   group.add(disc);
 
-  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.02, 12, 40), steel);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.02, s(12), s(40)), steel);
   rim.position.set(0.03, -0.57, 0);
   rim.rotation.x = Math.PI / 2;
   group.add(rim);
 
-  const boss = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 16), steel);
+  const boss = new THREE.Mesh(new THREE.SphereGeometry(0.05, s(16), s(16)), steel);
   boss.position.set(0.03, -0.55, 0);
   group.add(boss);
 
@@ -173,7 +195,7 @@ function buildStethoscope(color, transmission, tint) {
   return group;
 }
 
-function buildPulseTrace(color, transmission, tint) {
+function buildPulseTrace(color, transmission, tint, lite = false) {
   const pts = [
     new THREE.Vector3(-0.75, 0, 0),
     new THREE.Vector3(-0.4, 0, 0),
@@ -185,17 +207,17 @@ function buildPulseTrace(color, transmission, tint) {
     new THREE.Vector3(0.75, 0, 0),
   ];
   const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.15);
-  const tube = new THREE.TubeGeometry(curve, 96, 0.034, 10, false);
-  const mesh = new THREE.Mesh(tube, crystalMaterial(color, tint, transmission));
+  const tube = new THREE.TubeGeometry(curve, lite ? 48 : 96, 0.034, lite ? 6 : 10, false);
+  const mesh = new THREE.Mesh(tube, crystalMaterial(color, tint, transmission, lite));
   mesh.scale.setScalar(0.74);
   return mesh;
 }
 
 // Medicine's own shape — two capped half-cylinders, standing in for
 // "medicine" the way the stethoscope stands in for "clinical".
-function buildCapsule(color, transmission, tint) {
-  const geo = new THREE.CapsuleGeometry(0.16, 0.42, 6, 14);
-  const mesh = new THREE.Mesh(geo, crystalMaterial(color, tint ?? 0.22, transmission));
+function buildCapsule(color, transmission, tint, lite = false) {
+  const geo = new THREE.CapsuleGeometry(0.16, 0.42, lite ? 3 : 6, lite ? 8 : 14);
+  const mesh = new THREE.Mesh(geo, crystalMaterial(color, tint ?? 0.22, transmission, lite));
   mesh.rotation.z = Math.PI / 2.6;
   mesh.scale.setScalar(0.74);
   return mesh;
@@ -205,10 +227,10 @@ function buildCapsule(color, transmission, tint) {
 // rungs between them at regular intervals. Standing in for "biology" the
 // way the cross stands in for "medical". Built from parametric points
 // rather than an imported model, same as every other shape here.
-function buildDnaHelix(color, transmission, tint) {
+function buildDnaHelix(color, transmission, tint, lite = false) {
   const group = new THREE.Group();
-  const mat = crystalMaterial(color, tint ?? 0.22, transmission);
-  const turns = 2.1, height = 1.1, radius = 0.22, steps = 40;
+  const mat = crystalMaterial(color, tint ?? 0.22, transmission, lite);
+  const turns = 2.1, height = 1.1, radius = 0.22, steps = lite ? 24 : 40;
 
   const strandA = [];
   const strandB = [];
@@ -222,11 +244,11 @@ function buildDnaHelix(color, transmission, tint) {
 
   [strandA, strandB].forEach((pts) => {
     const curve = new THREE.CatmullRomCurve3(pts);
-    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.024, 6, false), mat));
+    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, lite ? 36 : 64, 0.024, lite ? 4 : 6, false), mat));
   });
 
   // Rungs between the strands, evenly spaced along the axis.
-  const rungCount = 7;
+  const rungCount = lite ? 5 : 7;
   for (let i = 0; i < rungCount; i++) {
     const t = i / (rungCount - 1);
     const angle = t * turns * Math.PI * 2;
@@ -234,14 +256,14 @@ function buildDnaHelix(color, transmission, tint) {
     const a = new THREE.Vector3(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
     const b = new THREE.Vector3(Math.cos(angle + Math.PI) * radius, y, Math.sin(angle + Math.PI) * radius);
     const rungCurve = new THREE.CatmullRomCurve3([a, b]);
-    group.add(new THREE.Mesh(new THREE.TubeGeometry(rungCurve, 4, 0.014, 5, false), mat));
+    group.add(new THREE.Mesh(new THREE.TubeGeometry(rungCurve, 4, 0.014, lite ? 4 : 5, false), mat));
   }
 
   group.scale.setScalar(0.74);
   return group;
 }
 
-function buildCross(color, transmission, tint) {
+function buildCross(color, transmission, tint, lite = false) {
   const shape = new THREE.Shape();
   const a = 0.22, b = 0.7; // arm half-width, arm length
   shape.moveTo(-a, b); shape.lineTo(a, b); shape.lineTo(a, a);
@@ -252,10 +274,10 @@ function buildCross(color, transmission, tint) {
 
   const geo = new THREE.ExtrudeGeometry(shape, {
     depth: 0.22, bevelEnabled: true, bevelThickness: 0.05,
-    bevelSize: 0.04, bevelSegments: 4, curveSegments: 2,
+    bevelSize: 0.04, bevelSegments: lite ? 2 : 4, curveSegments: 2,
   });
   geo.center();
-  const mesh = new THREE.Mesh(geo, crystalMaterial(color, tint ?? 0.22, transmission));
+  const mesh = new THREE.Mesh(geo, crystalMaterial(color, tint ?? 0.22, transmission, lite));
   mesh.scale.setScalar(0.74);
   return mesh;
 }
@@ -280,17 +302,34 @@ export function mountMedicalIconsScene(canvas, colorVars) {
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 20);
   camera.position.set(0, 0, 6.2);
 
-  // A light, neutral environment (not the dark-tuned one an earlier pass
-  // used) so the glass material reflects something appropriate to a
-  // clinical, light-ground page rather than carrying a dark cast into it.
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const env = pmrem.fromScene(cheapEnvironmentScene(), 0.05).texture;
-  scene.environment = env;
+  // Device signal, computed once up front — decides both the material/
+  // geometry weight below and the DPR cap further down. `hardwareConcurrency`
+  // is a rough proxy (real budget phones commonly report 4 or fewer cores)
+  // but it's the only signal the platform actually offers; there is no
+  // direct "how fast is this GPU" API. `lite` additionally skips the
+  // PMREM environment prefilter entirely — real cost even at the cheap-
+  // scene size added in the previous perf pass — trading its reflections
+  // for plain directional+ambient lighting on a route that has already
+  // chosen to mount this scene above the fold, i.e. cannot defer the
+  // cost the way the footer's IntersectionObserver gate does.
+  const cores = navigator.hardwareConcurrency || 4;
+  const narrow = matchMedia('(max-width: 48rem)').matches;
+  const lite = narrow || cores <= 4;
+
+  let pmrem, env;
+  if (!lite) {
+    pmrem = new THREE.PMREMGenerator(renderer);
+    env = pmrem.fromScene(cheapEnvironmentScene(), 0.05).texture;
+    scene.environment = env;
+  }
 
   const key = new THREE.DirectionalLight(0xffffff, 0.95);
   key.position.set(3, 4, 5);
   scene.add(key);
-  const fill = new THREE.AmbientLight(0xdfe8ff, 0.4);
+  // A touch brighter in lite mode — with no environment map to add fill
+  // light of its own, the plain MeshStandardMaterial objects read slightly
+  // flatter without it.
+  const fill = new THREE.AmbientLight(0xdfe8ff, lite ? 0.55 : 0.4);
   scene.add(fill);
 
   // Brand tokens, read at mount time — falls back to the site's own blue/
@@ -316,23 +355,23 @@ export function mountMedicalIconsScene(canvas, colorVars) {
   // *about*.
   const tint = colorVars?.tint;
 
-  const stetho = buildStethoscope(brand, transmission, tint);
+  const stetho = buildStethoscope(brand, transmission, tint, lite);
   stetho.position.set(-1.7, 0.7, 0);
   scene.add(stetho);
 
-  const pulse = buildPulseTrace(brand2, transmission, tint);
+  const pulse = buildPulseTrace(brand2, transmission, tint, lite);
   pulse.position.set(0.15, -0.85, -0.5);
   scene.add(pulse);
 
-  const capsule = buildCapsule(brand, transmission, tint);
+  const capsule = buildCapsule(brand, transmission, tint, lite);
   capsule.position.set(1.75, 0.85, -0.2);
   scene.add(capsule);
 
-  const dna = buildDnaHelix(brand2, transmission, tint);
+  const dna = buildDnaHelix(brand2, transmission, tint, lite);
   dna.position.set(-1.6, -0.75, -0.4);
   scene.add(dna);
 
-  const cross = buildCross(brand.clone().lerp(brand2, 0.5), transmission, tint);
+  const cross = buildCross(brand.clone().lerp(brand2, 0.5), transmission, tint, lite);
   cross.position.set(1.3, -1.25, -0.3);
   scene.add(cross);
 
@@ -344,15 +383,11 @@ export function mountMedicalIconsScene(canvas, colorVars) {
     { mesh: cross, spin: 0.06, floatAmp: 0.17, floatSpeed: 0.31, phase: 4.2 },
   ];
 
-  // Adaptive DPR cap: full retina (2x) only for a device that also reports
-  // enough CPU cores to make good use of it. `hardwareConcurrency` is a
-  // rough proxy — real budget phones commonly report 4 or fewer — but it's
-  // the only signal the platform actually offers; there is no direct "how
-  // fast is this GPU" API. A narrow viewport (phone-width, independent of
-  // DPR) is capped harder still, since these are small background icons
-  // where the extra resolution is invisible at that size anyway.
-  const cores = navigator.hardwareConcurrency || 4;
-  const narrow = matchMedia('(max-width: 48rem)').matches;
+  // Adaptive DPR cap, reusing the same `cores`/`narrow` signal `lite` was
+  // decided from above: full retina (2x) only where there's CPU to spare,
+  // scaled down harder on a phone-width viewport specifically since these
+  // are small background icons where the extra resolution is invisible
+  // at that size anyway.
   const dprCap = narrow ? 1.25 : (cores <= 4 ? 1.5 : 2);
 
   function resize() {
@@ -409,7 +444,7 @@ export function mountMedicalIconsScene(canvas, colorVars) {
         else obj.material?.dispose?.();
       });
       env?.dispose?.();
-      pmrem.dispose();
+      pmrem?.dispose?.();
       renderer.dispose();
       renderer.forceContextLoss();
     },
