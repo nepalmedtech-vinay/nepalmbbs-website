@@ -156,6 +156,46 @@ this session's own manual screenshotting left running on ports
 verify` if a future session hits the same `EADDRINUSE` this one did on
 the first attempt.
 
+**Chunk 5 — remaining public pages, in progress.** Screenshotted every
+remaining route (desktop + mobile) before touching anything, to find the
+real gaps rather than guess from source. Most were already fine:
+`/guidelines`, `/videos`, `/faq`, `/colleges/[slug]`, `/404`, `/privacy`
+all carry the Record system or the cinematic PageHeader already and
+needed nothing. Two findings:
+
+- **`/life-in-nepal`'s 8-card feature grid was the one icon language on
+  the site still using raw emoji** (font-size:34px glyphs, `base.css`) —
+  the page's own gallery comment already named this as wrong ("not
+  another row of emoji cards") without fixing it. Replaced with inline
+  SVG line icons matching the `.tab-svg`/trust-badge convention. The
+  gallery's own image-badge emoji captions are a separate, deliberate,
+  already-sitewide pattern (same as `/why-nepal` and the homepage
+  gallery) and were left alone. Verified: desktop + mobile screenshots,
+  `console-verify` and `audit.mjs` both green (0 low-contrast, 0 mobile
+  overflow, 43 routes + assistant).
+- **`/why-nepal` and `/counseling`** were audited and deliberately left
+  unchanged. `/why-nepal` already has the cinematic `PageHeader threeD`
+  and its `.why-card`/`.test-card` entrances technically carry two
+  competing motion rules (`.rev`'s `pr-arrive` from `premium.css` wins
+  over the shared `.why-card` selector's `m-rise` from `motion.css` by
+  cascade order) — both are the same fade-rise family and the visible
+  result is correct, so this is dead-code redundancy, not a bug; not
+  touched, since editing the shared `.why-card`/`.rev` selectors risks
+  every other page carrying them. `/counseling` is one of the three pages
+  `PageHeader.astro`'s own comment names as an intended `threeD`
+  recipient ("colleges list, why-nepal, counseling") but never actually
+  received it — hand-rolled two-column layout instead. Deliberately not
+  retrofitted: this is the site's highest-commercial-value page (its own
+  `chrome.css` comment calls it "the page that matters most
+  commercially"), the custom grid the enquiry form depends on has no
+  header slot to insert PageHeader into without restructuring it, and the
+  aspect-ratio bug chunk 3 just fixed is a fresh reminder of what
+  reusing that component on an unfamiliar container shape can do. A
+  session with time to test it thoroughly (not a squeeze between other
+  pages) should be the one to pick this up, not this pass.
+
+Still to look at: `/neet-calculator`.
+
 ## Status
 
 - **CURRENT PHASE**: Phase 1 (experience foundation / technical clean-up),
