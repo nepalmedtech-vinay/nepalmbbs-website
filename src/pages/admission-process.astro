@@ -208,6 +208,13 @@ const comparison = [
     pointer-events: none;
   }
   .ph-3d.is-ready { opacity: 0.8; }
+  /* See PageHeader.astro's own version of this rule: below 48rem this
+     canvas spans the whole header, over the lead paragraph rather than
+     beside it, so the same opacity that works on desktop reads as clutter
+     over body text on a phone. */
+  @media (max-width: 48rem) {
+    .ph-3d.is-ready { opacity: 0.32; }
+  }
   .ph.ph--3d-active .ph-field { opacity: 0; transition: opacity 420ms ease; }
 </style>
 

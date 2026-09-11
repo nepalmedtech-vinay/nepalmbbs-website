@@ -55,6 +55,15 @@ const { eyebrow, lead, center = false, threeD = false } = Astro.props;
       pointer-events: none;
     }
     .ph-3d.is-ready { opacity: 0.8; }
+    /* Below 48rem this canvas spans the whole header — heading, lead and
+       meta paragraph, not the wide, mostly-empty band it gets on desktop —
+       so the same 0.8 sits directly over body text instead of beside it.
+       Found visually (a mobile screenshot of /colleges showed the icons
+       overlapping the lead paragraph). Quieter there; medical-icons-
+       scene.js's own aspect-ratio shrink handles the rest. */
+    @media (max-width: 48rem) {
+      .ph-3d.is-ready { opacity: 0.32; }
+    }
     /* Same reasoning as the hero: hide the flatter CSS field once the real
        scene is up rather than removing it, so a lost WebGL context has
        something to fall back to instantly. */

@@ -72,6 +72,48 @@ CSS). Verified visually: hover and multi-select both render correctly, the
 comparison table (`compare.js`) already emits `.doc-table` markup, so it
 inherits the Record system automatically — nothing to do there.
 
+**Chunk 3 — /admission-process, done — plus a real sitewide bug found by
+screenshotting it:** This page turned out to already carry the *most*
+sophisticated motion on the site outside the homepage (`premium.css` §8/§14
+— a scroll-filling spine, cascading stagger via `.doc-steps > .doc-step`,
+a slower-drifting sticky rail head), so there was nothing to add on the
+content side. But taking the mobile screenshot this rollout's own process
+calls for (visual inspection, not just a green build) surfaced something
+the automated suite has apparently never caught: on a narrow viewport, the
+WebGL medical-icons-scene mounted by `PageHeader`'s `threeD` prop (and by
+this page's own hand-rolled copy of the same header) renders its five
+icons large enough, and opaque enough (0.8), to sit directly over the
+heading and lead paragraph rather than behind them as quiet decoration —
+confirmed on **both** `/admission-process` and `/colleges`, i.e. every
+`threeD` `PageHeader` mount, not something specific to one page. Root
+cause: the scene's object layout (world-space x-offsets out to ~1.75,
+camera distance 6.2, 38° vertical FOV) was tuned against the wide, short
+canvas of the desktop-only hero band; `PageHeader`/`admission-process`
+mount the identical scene into a canvas shaped like an entire page header
+instead — often near-square or taller-than-wide on a phone — where the
+same spread fills the frame edge to edge. `tests/audit.mjs`'s contrast
+check reads DOM/CSS colours, not actual canvas pixels, so this was
+invisible to it — 0 low-contrast across 44 routes was true and still
+missed this; screenshotting is what caught it, which is the whole reason
+this rollout's process asks for it every chunk.
+
+Fix, in `src/lib/medical-icons-scene.js` (shared by every mount site —
+footer, hero, page-header, admission-process): grouped the five objects
+under one `THREE.Group` and scale the group down when the *canvas's own
+aspect ratio* (not viewport width, so this also self-corrects
+admission-process's narrower sticky-rail canvas on desktop) is narrower
+than the wide ratio the layout was designed at, floored so nothing shrinks
+to invisible. Paired with a `max-width: 48rem` opacity reduction
+(0.8 → 0.32) on `.ph-3d.is-ready` in both `PageHeader.astro` and
+`admission-process.astro`'s own copy of the rule, since even a smaller
+opaque shape still read as clutter directly over body text. Verified with before/after screenshots at 390px on both affected pages —
+the admission-process pair pixel-diffed to confirm the fix actually
+changed rendered output, not just source — plus 1440px on the hero,
+`/colleges` and `/admission-process` to visually confirm the wide-aspect
+cases, where this was never broken, still look right (no automated diff
+run against a pre-fix desktop baseline, but nothing in the fix's logic
+touches the aspect ≥ 1.6 path — `field.scale` stays exactly 1 there).
+
 ## Status
 
 - **CURRENT PHASE**: Phase 1 (experience foundation / technical clean-up),

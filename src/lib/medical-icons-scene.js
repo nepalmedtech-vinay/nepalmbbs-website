@@ -355,25 +355,31 @@ export function mountMedicalIconsScene(canvas, colorVars) {
   // *about*.
   const tint = colorVars?.tint;
 
+  // All five ride in one group so the formation can be scaled as a whole
+  // (see the aspect-ratio note in resize() below) without re-deriving each
+  // object's individual position.
+  const field = new THREE.Group();
+  scene.add(field);
+
   const stetho = buildStethoscope(brand, transmission, tint, lite);
   stetho.position.set(-1.7, 0.7, 0);
-  scene.add(stetho);
+  field.add(stetho);
 
   const pulse = buildPulseTrace(brand2, transmission, tint, lite);
   pulse.position.set(0.15, -0.85, -0.5);
-  scene.add(pulse);
+  field.add(pulse);
 
   const capsule = buildCapsule(brand, transmission, tint, lite);
   capsule.position.set(1.75, 0.85, -0.2);
-  scene.add(capsule);
+  field.add(capsule);
 
   const dna = buildDnaHelix(brand2, transmission, tint, lite);
   dna.position.set(-1.6, -0.75, -0.4);
-  scene.add(dna);
+  field.add(dna);
 
   const cross = buildCross(brand.clone().lerp(brand2, 0.5), transmission, tint, lite);
   cross.position.set(1.3, -1.25, -0.3);
-  scene.add(cross);
+  field.add(cross);
 
   const objects = [
     { mesh: stetho, spin: 0.05, floatAmp: 0.16, floatSpeed: 0.35, phase: 0 },
@@ -390,6 +396,21 @@ export function mountMedicalIconsScene(canvas, colorVars) {
   // at that size anyway.
   const dprCap = narrow ? 1.25 : (cores <= 4 ? 1.5 : 2);
 
+  // The five objects' world-space spread (x out to ~1.75) was tuned against
+  // a wide, short canvas — the desktop hero band this scene was built for
+  // first. PageHeader and admission-process mount the same scene into a
+  // canvas shaped like a whole page header instead: on a phone that is
+  // often near-square or taller than wide, where the same spread fills the
+  // frame edge to edge and sits directly over the heading/lead text
+  // underneath it rather than reading as a quiet background field (found
+  // visually — a mobile screenshot of /colleges and /admission-process
+  // both showed the icons overlapping their own headline). REF_ASPECT is
+  // the wide ratio the layout already looks right at; a canvas at or above
+  // it is untouched, so the desktop hero and any already-wide mount are
+  // unaffected. Floored so the icons never shrink to invisible on a very
+  // tall narrow header.
+  const REF_ASPECT = 1.6;
+
   function resize() {
     const w = canvas.clientWidth || 1;
     const h = canvas.clientHeight || 1;
@@ -397,6 +418,7 @@ export function mountMedicalIconsScene(canvas, colorVars) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    field.scale.setScalar(camera.aspect < REF_ASPECT ? Math.max(0.34, camera.aspect / REF_ASPECT) : 1);
   }
 
   const ro = new ResizeObserver(resize);
