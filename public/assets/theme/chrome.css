@@ -873,6 +873,12 @@ section.hero, .hero {
 }
 .med-gallery .why-img { height: 100%; margin: 0; border-radius: var(--r-lg); }
 .med-gallery-lg { grid-row: 1 / 3; grid-column: 2; }
+/* The .m-para scroll-parallax animation (motion.css) drives `transform`
+   continuously; base.css's `transition: transform .4s` on .why-img img is
+   meant for the hover-zoom case (.why-card:hover, which this gallery's
+   bare .why-img never triggers) and would otherwise add a lag between the
+   scroll position and the rendered offset. */
+.med-gallery .why-img img.m-para { transition: none; }
 @media (max-width: 48rem) {
   .med-gallery { grid-template-columns: 1fr; grid-template-rows: none; }
   .med-gallery-lg { grid-row: auto; grid-column: auto; }

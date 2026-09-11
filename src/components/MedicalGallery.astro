@@ -11,6 +11,13 @@
 // training"), never a specific college or "our campus" — the site's
 // standing decision (DECISION_LOG.md) is that a stock photograph must
 // not stand in for evidence about any particular institution.
+// Reveal + parallax: a clip-path wipe uncovers each frame on scroll entry
+// (motion.css .m-reveal, added this pass — the "clip-path/mask reveal"
+// gap DESIGN_AUDIT.md §4 flagged as not yet built anywhere in the
+// codebase) and the photo drifts gently inside it afterward (.m-para).
+// --m-para-scale pre-scales the image 14% so the drift never exposes the
+// clipped edge; --n staggers the three wipes the same --n convention
+// .m-stagger uses elsewhere, so they uncover in sequence, not at once.
 ---
 <section class="med-gallery-section m-rise">
   <div class="wrap">
@@ -19,9 +26,9 @@
       <h2 class="sec-title">What medical training actually looks like</h2>
     </div>
     <div class="med-gallery">
-      <div class="why-img med-gallery-lg"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?fm=webp&w=1920&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Medical students in clinical training" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🩺 Clinical Rounds</div></div>
-      <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1516549655169-df83a0774514?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Hospital corridor and clinical setting" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">🏥 Teaching Hospital</div></div>
-      <div class="why-img"><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1579154204601-01588f351e67?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Medical students studying anatomy" loading="lazy"><div class="why-img-overlay"></div><div class="why-img-badge">📖 MBBS Curriculum</div></div>
+      <div class="why-img med-gallery-lg m-reveal" style="--n:0"><img class="m-para" style="--m-para-scale:1.14; --m-depth:26px" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?fm=webp&w=1920&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Medical students in clinical training"><div class="why-img-overlay"></div><div class="why-img-badge">🩺 Clinical Rounds</div></div>
+      <div class="why-img m-reveal" style="--n:1"><img class="m-para" style="--m-para-scale:1.14; --m-depth:18px" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1516549655169-df83a0774514?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Hospital corridor and clinical setting"><div class="why-img-overlay"></div><div class="why-img-badge">🏥 Teaching Hospital</div></div>
+      <div class="why-img m-reveal" style="--n:2"><img class="m-para" style="--m-para-scale:1.14; --m-depth:18px" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1579154204601-01588f351e67?fm=webp&w=1400&q=95&fit=crop&auto=format&ixlib=rb-4.1.0" alt="Medical students studying anatomy"><div class="why-img-overlay"></div><div class="why-img-badge">📖 MBBS Curriculum</div></div>
     </div>
   </div>
 </section>

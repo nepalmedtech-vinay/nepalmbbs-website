@@ -62,7 +62,10 @@
     /* ── Parallax ─────────────────────────────────────────────────────
        Driven across the whole time the element is in view, so the offset is
        proportional to scroll rather than to elapsed time. --m-depth sets how
-       far it lags: negative moves against the scroll. */
+       far it lags: negative moves against the scroll. --m-para-scale (default
+       1, a no-op) lets a caller pre-scale the element so the translate never
+       exposes the edge of a clipped image — used first by the homepage
+       medical-training gallery. */
 
     .m-para {
       animation: m-para linear both;
@@ -71,8 +74,25 @@
       will-change: transform;
     }
     @keyframes m-para {
-      from { transform: translate3d(0, calc(var(--m-depth, 40px) * var(--mo-parallax)), 0); }
-      to   { transform: translate3d(0, calc(var(--m-depth, 40px) * -1 * var(--mo-parallax)), 0); }
+      from { transform: scale(var(--m-para-scale, 1)) translate3d(0, calc(var(--m-depth, 40px) * var(--mo-parallax)), 0); }
+      to   { transform: scale(var(--m-para-scale, 1)) translate3d(0, calc(var(--m-depth, 40px) * -1 * var(--mo-parallax)), 0); }
+    }
+
+    /* ── Mask reveal ──────────────────────────────────────────────────
+       A clip-path wipe rather than a fade — the element is genuinely
+       concealed and then uncovered, which reads as "revealed" instead of
+       "appeared". Scaled by --mo like every other primitive here: at
+       --mo:0 the inset collapses to 0 at both ends, so the element is
+       simply visible with no animation, never stuck half-clipped. First
+       use: the homepage medical-training gallery's three photographs. */
+    .m-reveal {
+      animation: m-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry calc(0% + var(--n, 0) * 7%) entry 75%;
+    }
+    @keyframes m-reveal {
+      from { clip-path: inset(0 0 calc(100% * var(--mo)) 0); }
+      to   { clip-path: inset(0 0 0% 0); }
     }
 
     /* ── Sticky headline scrub ────────────────────────────────────────

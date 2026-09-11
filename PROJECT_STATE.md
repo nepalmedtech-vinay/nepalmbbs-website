@@ -1,11 +1,52 @@
 # PROJECT_STATE.md
 
-_Last updated: 2026-09-10, after the Phase 1 3D-architecture pass for the
-"ultra-premium experience transformation" effort. Read this file first in
-any new session before doing implementation work — an earlier version of
-this file (last touched 2026-08-27) had drifted badly out of sync with
-reality and is not a reliable starting point; if this one starts to feel
-that way too, verify against the actual repo rather than trusting it._
+_Last updated: 2026-09-11. Read this file first in any new session before
+doing implementation work — an earlier version of this file (last touched
+2026-08-27) had drifted badly out of sync with reality and is not a
+reliable starting point; if this one starts to feel that way too, verify
+against the actual repo rather than trusting it._
+
+## ⭐ 2026-09-11 — Phase 4 (full-site cinematic rollout) approved, in progress
+
+The owner answered both questions `NEXT_TASK.md` had open (see that file's
+top section for the full history): **Phase 4 rollout is approved**, and
+the imagery policy is **use real/licensed photography where it exists,
+never fabricate or pass off stock/AI imagery as a specific college's own
+campus; where no real asset exists, build a premium non-photographic
+placeholder (motion/data-viz/3D), document the exact missing asset, and
+keep the slot swap-ready.** Working autonomously in page-priority order
+(`/` → `/colleges` → `/admission-process` → `/documents` → remaining
+public pages), each chunk: implement → build/targeted validation → visual
+inspection (Playwright screenshots, desktop + mobile + reduced-motion) →
+fix → update this file → commit → push. Full `npm run verify` is run at
+checkpoints, not after every single chunk (~20 min/run makes that
+impractical across dozens of pages) — see each chunk's own commit for
+exactly what was checked.
+
+**Chunk 1 — homepage, done:** Audited the three homepage sections Phase 3
+didn't touch (hero/map/navbar were already done). `TrustSection.astro`
+and `SectionNav.astro` turned out to already be at standard — both were
+rebuilt into a ruled editorial index/rail (`premium.css` §4/§5) in the
+pass *before* Phase 3, deliberately moving away from the card-grid pattern
+the brief warns against; re-skinning them in hero-style glass would fight
+that already-good, deliberate design rather than improve it. The real gap
+was `MedicalGallery.astro`: three photo cards with zero cinematic
+treatment, exactly the "clip-path/mask reveal" gap `DESIGN_AUDIT.md` §4
+flagged as not built anywhere in the codebase. Added `.m-reveal` (a
+clip-path wipe, `--mo`-scaled, `motion.css`) and extended the existing
+unused `.m-para` parallax primitive with an optional `--m-para-scale` so
+the drift never exposes a clipped edge — both zero-dependency
+scroll-timeline CSS, the established pattern here, no new library. Applied
+to all three gallery frames with a `--n` stagger. Verified: build clean
+(44 routes), no layout/nav duplication, `prefers-reduced-motion` correctly
+collapses `clip-path` to `none` (computed-style check, not assumed) so
+reduced-motion visitors get the content immediately with no animation.
+**Note for the next session:** this sandbox cannot reach `images.unsplash.com`
+(same outbound restriction as `WebFetch`), so the gallery renders its
+existing broken-image fallback gradient here — expected, pre-existing,
+not something this chunk introduced or can verify visually in this
+environment; confirm on a real network before assuming the photos
+themselves render correctly.
 
 ## Status
 
