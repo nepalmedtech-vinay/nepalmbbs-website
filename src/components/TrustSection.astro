@@ -6,7 +6,14 @@
 // scroll entry; `.m-stagger` on the grid cascades the six badges in one
 // after another via motion.css's --n-indexed animation-range, no JS timer.
 ---
-<div class="trust-section m-rise">
+<div class="trust-section m-rise" id="hp-proof">
+  {/* Phase 5A: the same grid language the hero's own field uses, at a
+      third of its opacity and masked to fade out entirely by ~78% down
+      this section — the cinematic atmosphere from Hero/Map settling into
+      this section's editorial register rather than the two simply
+      sitting next to each other. Styled in premium.css §22
+      (.trust-field), matching where .gh-field itself is styled. */}
+  <div class="trust-field" aria-hidden="true"></div>
 <div class="trust-in">
   <div class="trust-title">Verified & Trusted Sources — Official Government Bodies Only</div>
   <div class="trust-grid m-stagger">

@@ -1843,3 +1843,208 @@ input:not(:placeholder-shown):invalid {
   max-height: 26rem;
   object-fit: cover;
 }
+
+
+/* ══ 22. HOMEPAGE NARRATIVE ═════════════════════════════════════════════
+   Phase 5A. The homepage was five independently well-motioned sections
+   with no connective tissue between them — each arrived on its own,
+   nothing carried through from the one before it (Phase 0's own forensic
+   audit named this directly: "a stack of good individual pieces, not a
+   scene sequence"). This section is the connective tissue, built
+   entirely from primitives that already exist elsewhere on the site
+   (the hero's own field language, .m-focus, the admission sequence's
+   spine mechanic, the sitewide scroll-progress rail) rather than a new
+   visual system: Promise (hero) -> Place (map) -> Proof (trust) ->
+   Practice (gallery) -> Path (nav), each section's own id below used
+   only by the rail's IntersectionObserver in index.astro.
+
+   Nothing here touches Gallery or SectionNav's own styling, or the
+   map's interaction/motion beyond the one entrance-class swap in
+   CollegeMap.astro — both already at standard, preserved as asked. */
+
+/* ── Hero -> Map handoff ──────────────────────────────────────────────
+   .gh-glow already sets the hero's own light, top-right. This second
+   glow — same element type, same drift keyframe, different anchor —
+   sits low and left instead, bleeding toward the section below, so the
+   field reads as one thing a visitor scrolls through rather than two
+   backgrounds that happen to be adjacent. Teal (--brand-2) rather than
+   the hero's own --brand blue: a quiet colour cue toward the map's own
+   government/private legend colours just ahead, not a repeat of the
+   hero's exact light. */
+.gh-glow--handoff {
+  top: auto;
+  right: auto;
+  bottom: -12rem;
+  left: 6%;
+  width: 32rem;
+  height: 32rem;
+  background: radial-gradient(circle,
+    color-mix(in oklab, var(--brand-2) 15%, transparent) 0%,
+    color-mix(in oklab, var(--brand-2) 4%, transparent) 46%,
+    transparent 72%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gh-glow--handoff {
+    animation: gh-drift calc(46s * max(var(--mo), 0.3)) ease-in-out infinite alternate-reverse;
+  }
+}
+/* Same reasoning as .gh-grid/.gh-lines/.gh-icon just above: a phone-width
+   field competes with the text more than it adds depth. */
+@media (max-width: 48rem) {
+  .gh-glow--handoff { display: none; }
+}
+
+/* ── Map -> Trust: the register shift ─────────────────────────────────
+   The same grid recipe .gh-grid uses (two linear-gradients forming a
+   64px lattice), at roughly a third of its opacity and masked so it is
+   strongest where Trust begins — picking up from the map's own
+   graticule — and is fully gone by ~78% down the section. This is the
+   "cinematic atmosphere settling into the editorial register" moment:
+   not a hard cut from glass to paper, a fade written into the mask
+   itself, so it happens as a visitor scrolls rather than needing any
+   scroll-linked JS to drive it. Gallery and SectionNav, after this,
+   stay exactly as flat and editorial as they already were — the fade
+   ends here on purpose. */
+.trust-section { position: relative; }
+.trust-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    linear-gradient(90deg, color-mix(in oklab, var(--g-ink) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in oklab, var(--g-ink) 5%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
+          mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
+}
+.trust-in { position: relative; z-index: 1; }
+@media (max-width: 48rem) {
+  /* Same mobile restraint as the hero's own grid — see .gh-grid above. */
+  .trust-field { display: none; }
+}
+
+/* ── The chapter rail ─────────────────────────────────────────────────
+   Five sections, five stops. The fill reuses the exact mechanic
+   `.m-progress` (motion.css) already uses sitewide — scaleY driven by
+   `animation-timeline: scroll(root block)`, no JS — repositioned as a
+   vertical rail instead of a bar under the nav. Only the "which stop is
+   current" state needs JS, via IntersectionObserver watching the five
+   section ids (index.astro's own small script) — the same lightweight,
+   dependency-free pattern CollegeMap.astro and reveal.js already use
+   for "is this in view", not a new scroll architecture. Desktop only in
+   its full dot-and-label form; see the 64rem query below for the
+   phone/tablet treatment (Phase 5A item 5). */
+.hp-story {
+  position: fixed;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: calc(var(--z-nav) - 10);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 26px;
+}
+.hp-story-fill {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  bottom: 3px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--brand), color-mix(in oklab, var(--brand) 25%, transparent));
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  pointer-events: none;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hp-story-fill {
+      animation: hp-story-fill linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+@keyframes hp-story-fill { to { transform: scaleY(1); } }
+/* No scroll-timeline support, or motion off: the fill is simply full —
+   "no motion", never "no content", the same guarantee every other
+   scroll-driven element on this site makes. */
+@supports not (animation-timeline: view()) {
+  .hp-story-fill { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hp-story-fill { animation: none; transform: scaleY(1); }
+}
+
+.hp-story a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--g-ink-3);
+  outline-offset: 4px;
+}
+.hp-story-dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--g-ink) 16%, transparent);
+  border: 1px solid color-mix(in oklab, var(--g-ink) 26%, transparent);
+  transition: background var(--d-3) var(--ea-out), border-color var(--d-3) var(--ea-out),
+              transform var(--d-3) var(--ea-spring);
+}
+.hp-story-label {
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translate3d(6px, 0, 0);
+  transition: opacity var(--d-2) var(--ea-out), transform var(--d-2) var(--ea-out);
+  white-space: nowrap;
+}
+.hp-story a:hover .hp-story-label,
+.hp-story a:focus-visible .hp-story-label,
+.hp-story a.is-current .hp-story-label {
+  opacity: 1;
+  transform: none;
+}
+.hp-story a:hover .hp-story-dot,
+.hp-story a:focus-visible .hp-story-dot {
+  border-color: color-mix(in oklab, var(--brand) 55%, transparent);
+}
+.hp-story a.is-current .hp-story-dot {
+  background: var(--brand);
+  border-color: var(--brand);
+  transform: scale(1.4);
+}
+.hp-story a.is-current { color: var(--g-ink); }
+
+/* Phone/tablet: the full rail (five labelled stops floating over content)
+   does not fit without competing for the same edge the thumb scrolls
+   from. Collapses to just the fill line, moved to the leading edge — a
+   continuous vertical spine a visitor scrolls alongside, the same
+   "state, not a menu" role admission-process's own spine already plays
+   on that page. This is Phase 5A item 5, sharing the rail's own
+   mechanism rather than a second one. */
+@media (max-width: 64rem) {
+  .hp-story {
+    right: auto;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: none;
+    gap: 0;
+  }
+  .hp-story a { display: none; }
+  .hp-story-fill {
+    right: auto;
+    left: 5px;
+    top: 0;
+    bottom: 0;
+  }
+}

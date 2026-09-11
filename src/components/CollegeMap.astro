@@ -48,10 +48,16 @@ const points = colleges
 const totalSeats = points.reduce((n, p) => n + p.seats, 0);
 ---
 
-<section class="map-section">
+<section class="map-section" id="hp-place">
   <div class="container">
 
-    <div class="map-head m-rise">
+    {/* Phase 5A: .m-focus (motion.css) instead of the generic .m-rise the
+        rest of the site's block-arrivals use — a blur-in that reads as a
+        camera pulling focus rather than a plain fade, so this section
+        feels like it's resolving out of the hero's own field instead of
+        starting its own, unrelated entrance. Existing primitive, no new
+        CSS. */}
+    <div class="map-head m-focus">
       <span class="gl-eyebrow">Where they are</span>
       <h2 class="map-title">
         One admission process,<br />
@@ -65,7 +71,7 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
       </p>
     </div>
 
-    <figure class="map-figure m-rise">
+    <figure class="map-figure m-focus">
       <svg
         class="map-svg"
         style="color:var(--brand)"

@@ -12,9 +12,82 @@ import MedicalGallery from '../components/MedicalGallery.astro';
   path="/"
   isHome={true}
 >
+  {/* Phase 5A: the homepage's chapter rail — Promise/Place/Proof/Practice/
+      Path, one stop per section below. `position: fixed` (premium.css §22
+      .hp-story), so its place here in the markup doesn't affect layout;
+      kept at the top so a keyboard/screen-reader visitor reaches it before
+      the content it points into, the same order a sighted visitor
+      encounters it in (fixed to the viewport, visible from the first
+      scroll). The fill and each dot's rest state are pure CSS
+      (scroll(root block), no JS); only which stop is "current" needs the
+      small script below. */}
+  <nav class="hp-story" aria-label="Homepage sections">
+    <i class="hp-story-fill" aria-hidden="true"></i>
+    <a href="#hp-promise" data-target="hp-promise"><span class="hp-story-dot"></span><span class="hp-story-label">Promise</span></a>
+    <a href="#hp-place" data-target="hp-place"><span class="hp-story-dot"></span><span class="hp-story-label">Place</span></a>
+    <a href="#hp-proof" data-target="hp-proof"><span class="hp-story-dot"></span><span class="hp-story-label">Proof</span></a>
+    <a href="#hp-practice" data-target="hp-practice"><span class="hp-story-dot"></span><span class="hp-story-label">Practice</span></a>
+    <a href="#tabs-section" data-target="tabs-section"><span class="hp-story-dot"></span><span class="hp-story-label">Path</span></a>
+  </nav>
+
   <GlassHero />
   <CollegeMap />
   <TrustSection />
   <MedicalGallery />
   <SectionNav />
 </GlassLayout>
+
+<script is:inline>
+  // Phase 5A chapter rail: which of the five homepage sections is
+  // "current". Pure enhancement — the rail's fill and rest-state dots
+  // already work with no JS at all (premium.css §22); this only adds
+  // the highlight, the same "additive, never load-bearing" contract
+  // reveal.js/CollegeMap.astro's own scripts already keep.
+  //
+  // Deliberately the site's rAF-coalesced scroll pattern (the same one
+  // runtime.js uses for the nav's is-stuck state), not an
+  // IntersectionObserver threshold. Tried that first and it genuinely
+  // broke: Proof (Trust) is ~200px tall against Place/Practice's 700-
+  // 1200px, short enough that a fast or discrete scroll can cross its
+  // whole intersection band between two observer callbacks and it never
+  // fires as current at all. "Closest section centre to the viewport
+  // centre, recomputed once per scroll frame" doesn't have that failure
+  // mode regardless of a section's height.
+  (function () {
+    var links = document.querySelectorAll('.hp-story a');
+    if (!links.length) return;
+    var byId = {};
+    links.forEach(function (a) { byId[a.dataset.target] = a; });
+    var sections = Object.keys(byId)
+      .map(function (id) { return { id: id, el: document.getElementById(id) }; })
+      .filter(function (s) { return s.el; });
+    if (!sections.length) return;
+
+    var current = null;
+    function setCurrent(a) {
+      if (a === current) return;
+      if (current) { current.classList.remove('is-current'); current.removeAttribute('aria-current'); }
+      current = a;
+      if (current) { current.classList.add('is-current'); current.setAttribute('aria-current', 'true'); }
+    }
+
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var mid = window.innerHeight / 2;
+      var best = null, bestDist = Infinity;
+      sections.forEach(function (s) {
+        var r = s.el.getBoundingClientRect();
+        var dist = Math.abs((r.top + r.height / 2) - mid);
+        if (dist < bestDist) { bestDist = dist; best = s; }
+      });
+      if (best) setCurrent(byId[best.id]);
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }, { passive: true });
+    update();
+  })();
+</script>

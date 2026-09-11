@@ -6,7 +6,90 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
-## ⭐ 2026-09-11 — Phase 4 (full-site cinematic rollout) approved, in progress
+## ⭐ 2026-09-11 — Phase 5A (homepage cinematic narrative) shipped
+
+Followed a creative gap audit (against `ULTRA_PREMIUM_ROADMAP.md`,
+`DESIGN_AUDIT.md` and this file's own Phase 4 history) that the owner
+explicitly asked for *before* any more code — the conclusion was that
+Phase 4's rollout was real polish, not the scale of change the original
+"ultra-premium cinematic" brief asked for. The gap audit's #1 approved
+priority: the homepage was five independently well-motioned sections
+with no connective tissue (`ULTRA_PREMIUM_ROADMAP.md`'s own Phase 0
+finding, still true after Phase 4: "a stack of good individual pieces,
+not a scene sequence").
+
+**What shipped**, all reusing existing primitives, zero new WebGL/GSAP/
+Lenis, homepage-only:
+
+1. **A persistent field**, not a page-spanning wrapper — a second,
+   teal-tinted `.gh-glow--handoff` anchored to the *bottom* of the hero
+   (`GlassHero.astro`) bleeds toward where the map begins, and a new
+   `.trust-field` (same two-gradient grid recipe `.gh-grid` already uses)
+   sits behind Trust, strongest where Map hands off and masked to fade to
+   nothing by ~78% down the section. Both live in `premium.css` §22, not
+   in the components — matching where `.gh-field` itself is styled.
+2. **Register shift**: the `.trust-field` mask *is* the mechanism — no
+   separate scroll-linked effect needed. Verified by screenshot: the grid
+   is visible entering Trust and fully gone by Gallery, exactly where the
+   brief asked the cinematic atmosphere to settle into the existing
+   Record/editorial register.
+3. **Handoff entrance**: Map's `.map-head`/`.map-figure` swapped from the
+   generic `.m-rise` to the already-existing `.m-focus` (blur-pull) —
+   reads as resolving out of the hero's field rather than starting an
+   independent entrance. Zero new CSS.
+4. **Chapter rail** (`.hp-story`, `premium.css` §22): Promise/Place/
+   Proof/Practice/Path, fixed vertical dot-rail on desktop, collapsing to
+   a left-edge fill-only spine below 64rem (Phase 5A's mobile
+   deliverable) — one component, two presentations. The fill reuses
+   `.m-progress`'s own `scroll(root block)` mechanic verbatim. "Current
+   chapter" state is the one piece of new JS
+   (`index.astro`, `is:inline`) — **and it went through a real
+   correctness bug during this pass**: the first version used
+   `IntersectionObserver` with a centre-band `rootMargin`, and Trust
+   (~200px tall against Map/Gallery's 700-1200px) could get skipped
+   entirely on a fast or discrete scroll — confirmed by direct
+   measurement (`getBoundingClientRect` on all 5 sections at each
+   section's own centred scroll position), not assumed. Replaced with
+   the project's actual established rAF-coalesced scroll pattern
+   (matching `runtime.js`'s nav `is-stuck` toggle): closest section
+   centre to viewport centre, recomputed once per scroll frame. Re-
+   verified correct for all 5 sections after the fix, including Trust.
+
+**Verified before shipping**: 390/820/1440px screenshots through all 5
+chapters; `prefers-reduced-motion: reduce` emulation (every new animation
+collapses to its finished state — fill line full, glow static, no blur —
+computed-style-checked, not just eyeballed); mobile horizontal-overflow
+check (`scrollWidth === innerWidth`, no overflow); `console-verify.mjs`
+and a direct `pageerror`/`console.error` scan of `/` (clean — the only
+console errors are this sandbox's own pre-existing blocked-network
+noise, unrelated). CSP hashes regenerated (`tools/gen-csp.mjs`) for the
+new inline script.
+
+**Performance**: `perf-verify.mjs`'s full run showed `/` TBT at 534ms,
+above budget and above `3D_ARCHITECTURE.md`'s last recorded 482ms for
+this route. Didn't accept that at face value — isolated it with a
+repeated-measurement A/B (`.m-focus` vs `.m-rise`, 3-4 runs each) and,
+critically, measured the **true pre-Phase-5A baseline** via `git stash`
++ rebuild: 504ms avg on the untouched prior commit, right now, in this
+environment. Phase 5A's own numbers (511-517ms across variants) are
+within noise of that baseline. **Conclusion, measured not assumed:
+Phase 5A adds no detectable TBT regression** — the elevated reading
+relative to the historical 482ms figure is this session's environment
+right now, not something this pass introduced. Worth a fresh
+`perf-verify.mjs` run in a future session to see if 482ms or ~505ms is
+the more representative number going forward; not re-litigated further
+here since it's independent of Phase 5A specifically.
+
+**Not done, out of scope for 5A on purpose**: Gallery and SectionNav's
+own styling (untouched, per the brief), Map's interaction/motion beyond
+the one entrance-class swap (untouched — already excellent), any other
+route (homepage only). The gap audit's remaining priorities (#2-8:
+visible admissions automation, college discovery, college-detail
+redesign, video experience, counselling conversion, second dataviz,
+mobile/tablet QA) and `CONTENT_ASSET_PLAN.md` are queued, not started —
+the owner's own instruction was not to move to 5B after this.
+
+## Phase 4 (full-site cinematic rollout) — complete, 2026-09-11
 
 The owner answered both questions `NEXT_TASK.md` had open (see that file's
 top section for the full history): **Phase 4 rollout is approved**, and

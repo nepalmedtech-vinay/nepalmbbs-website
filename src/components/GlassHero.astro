@@ -16,7 +16,7 @@ const stats = [
   { n: govt,            l: 'government institutions' },
 ];
 ---
-<section class="gh">
+<section class="gh" id="hp-promise">
   {/* The field: architectural grid + one slow radial light + a graticule
       motif borrowed from the map section below (same fine-line, degree-
       tick language) + three real medical icons drifting slowly — a
@@ -33,6 +33,14 @@ const stats = [
   <div class="gh-field" aria-hidden="true">
     <div class="gh-grid"></div>
     <div class="gh-glow"></div>
+    {/* Phase 5A: a second, fainter, teal-tinted glow anchored to the
+        bottom of the hero rather than the top — where .gh-glow sets the
+        hero's own light, this one sits where the map section picks up,
+        so the two read as one field a visitor scrolls through rather
+        than two independent decorative backgrounds that happen to be
+        adjacent. Styled in premium.css §22 (.gh-glow--handoff), not
+        here, matching where .gh-glow itself is styled. */}
+    <div class="gh-glow gh-glow--handoff"></div>
     <svg class="gh-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
       <line x1="0" y1="28" x2="100" y2="28" />
       <line x1="0" y1="74" x2="100" y2="74" />
