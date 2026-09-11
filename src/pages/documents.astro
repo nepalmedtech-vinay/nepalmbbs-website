@@ -196,7 +196,41 @@ const stages = [
 
   .dc-table td { vertical-align: top; padding-top: var(--s-4); padding-bottom: var(--s-4); }
 
-  .dc-list { margin: 0; padding-left: 1.1rem; display: grid; gap: 4px; }
-  .dc-list li { font-size: var(--t-sm); color: var(--g-ink-2); line-height: var(--lh-body); }
+  /* A page titled "document checklist" was rendering its one actual
+     checklist — which documents each stage needs — as a bare default
+     bullet list, the one spot on the page that hadn't gotten the same
+     typographic care as the table and doc-notes around it. A small tick
+     reads as "required for this stage", not decoration, matching the
+     page's own framing rather than inventing a new visual language. */
+  .dc-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+  .dc-list li {
+    position: relative;
+    padding-left: 1.35rem;
+    font-size: var(--t-sm);
+    color: var(--g-ink-2);
+    line-height: var(--lh-body);
+  }
+  .dc-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.32em;
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 3px;
+    background: color-mix(in oklab, var(--brand) 10%, transparent);
+    border: 1px solid color-mix(in oklab, var(--brand) 34%, transparent);
+  }
+  .dc-list li::after {
+    content: '';
+    position: absolute;
+    left: 0.19rem;
+    top: 0.46em;
+    width: 0.47rem;
+    height: 0.26rem;
+    border-left: 1.6px solid var(--brand);
+    border-bottom: 1.6px solid var(--brand);
+    transform: rotate(-45deg);
+  }
 </style>
 </GlassLayout>
