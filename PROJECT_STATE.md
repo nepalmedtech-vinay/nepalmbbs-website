@@ -48,6 +48,30 @@ not something this chunk introduced or can verify visually in this
 environment; confirm on a real network before assuming the photos
 themselves render correctly.
 
+**Chunk 2 — /colleges, done:** Audited before touching anything, since
+premium.css's own §17 comment is explicit that Crystal CTA ("`.gl-crystal`,
+the nav/hero glass button") is *deliberately* reserved for the site's two
+highest-visibility conversion points and is "not a replacement for
+`.gl-btn` everywhere" — the temptation to reskin `/colleges`' CTAs into
+crystal glass would have been reversing a documented restraint, not
+extending the benchmark. Checked instead: `/colleges` already carries the
+Phase 3 signature (`PageHeader` with `threeD`, the same cinematic field +
+WebGL medical-icons scene as the homepage hero), its body is the
+pre-Phase-3 "Record" editorial system (`premium.css` §7/§9 — ruled panels,
+sourced footnotes, responsive tables that stack on mobile rather than
+overflow), and its CTAs are correctly on the secondary `.gl-btn`-family
+system per that same restraint. **Conclusion: the index page was already
+at standard: no change made there beyond verifying it.** The real,
+non-redundant gap was `/colleges/compare` — the college picker
+(`.cmp-option`, 27 checkboxes) had zero visual feedback for which colleges
+were selected beyond the native tickbox itself, on a page whose entire
+purpose is picking. Added a hover/checked wash reusing `.tab-card`'s own
+brand-tint treatment (`compare.astro`'s scoped `<style>` — no new global
+CSS). Verified visually: hover and multi-select both render correctly, the
+"N selected" counter and the checked-state highlight agree. The dynamic
+comparison table (`compare.js`) already emits `.doc-table` markup, so it
+inherits the Record system automatically — nothing to do there.
+
 ## Status
 
 - **CURRENT PHASE**: Phase 1 (experience foundation / technical clean-up),

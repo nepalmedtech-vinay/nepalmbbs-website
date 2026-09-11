@@ -110,11 +110,23 @@ const groups = [
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 4px;
+    padding: 6px 8px;
+    margin: 0 -8px;
+    border-radius: var(--r-xs, 6px);
     font-size: var(--t-sm, 0.9rem);
     color: var(--doc-text);
     cursor: pointer;
+    transition: background var(--d-2, 0.15s) var(--ea-out, ease);
   }
+  /* A picker with no feedback beyond the native tickbox is easy to lose
+     track of past a handful of options — the whole point of this page is
+     picking, so the checked state gets the same brand wash .tab-card
+     already uses for "this one" elsewhere on the site, not a new one. */
+  .cmp-option:hover { background: color-mix(in oklab, var(--brand) 6%, transparent); }
+  .cmp-option:has(.cmp-check:checked) {
+    background: color-mix(in oklab, var(--brand) 9%, transparent);
+  }
+  .cmp-option:has(.cmp-check:checked) span { color: var(--g-ink); font-weight: 600; }
   .cmp-check { width: 17px; height: 17px; flex: none; accent-color: var(--brand); }
   .cmp-check:disabled { opacity: 0.4; cursor: not-allowed; }
   .cmp-check:disabled + span { opacity: 0.5; }
