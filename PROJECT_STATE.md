@@ -194,7 +194,20 @@ needed nothing. Two findings:
   session with time to test it thoroughly (not a squeeze between other
   pages) should be the one to pick this up, not this pass.
 
-Still to look at: `/neet-calculator`.
+**`/neet-calculator`** checked last: already uses `PageHeader` (without
+`threeD`, correctly — a compact utility tool isn't one of the three pages
+that component's own comment reserves the WebGL scene for), a plain
+focused form and a disclaimer. Nothing generic or flat about it; no
+change made.
+
+**Phase 4 rollout status: all five priority chunks (`/`, `/colleges`,
+`/admission-process`, `/documents`, remaining public pages) are done.**
+What's left is judgment calls this pass deliberately deferred rather than
+unfinished work: `/counseling`'s PageHeader retrofit (see above — needs
+its own careful session, not a squeeze) and `/why-nepal`'s harmless
+`.rev`/`.why-card` motion-selector redundancy (cosmetic dead code, not a
+visible bug). Every change this session made is covered by the verify
+checkpoints recorded above and in `NEXT_TASK.md`.
 
 ## Status
 
