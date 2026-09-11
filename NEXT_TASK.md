@@ -3,7 +3,47 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
-## ⭐ Status as of 2026-09-08 — read this section first, it supersedes the "page interiors" chunk below
+## ⭐ Status as of 2026-09-11 — read this section first, everything below it is history
+
+The site is mid-way through an "autonomous premium product builder"
+operating contract (owner-supplied, governs Phase 5 onward). Phases so
+far, in order, all shipped and on `claude/website-premium-design-j6mphw`:
+
+- **Phase 4** (full-site rollout of the Phase 3 cinematic benchmark) —
+  complete. See `PROJECT_STATE.md`'s Phase 4 section for the per-page
+  detail; the short version is every public route got at minimum a
+  visual audit, and the real gaps found (a WebGL header bug, the last
+  emoji-icon holdout on `/life-in-nepal`, a few honest UX additions) got
+  fixed rather than papered over.
+- **Phase 5A** (homepage cinematic narrative) — complete, commit
+  `e654d23`. The five homepage sections now read as one connected
+  Promise→Place→Proof→Practice→Path scroll story instead of five
+  independent blocks. Full detail in `PROJECT_STATE.md`.
+- **Phase 5B** (visible admissions automation) — complete, this pass.
+  `/counseling`'s enquiry-success panel now shows the real near-term
+  follow-up sequence and the real 8-stage application lifecycle
+  (`src/data/journey-stages.json`, sourced from `portal.js`'s own
+  `STAGES`), instead of two lines of generic reassurance. Full detail in
+  `PROJECT_STATE.md`.
+
+**Next approved task: Phase 5C — interactive college discovery** (search,
+filter, sort, map integration, meaningful comparison, progressive
+disclosure on `/colleges`). Per the operating contract, do not start it
+without a fresh short implementation plan grounded in the actual current
+`/colleges` and `CollegeMap.astro` code — both already reasonably strong
+(a real interactive SVG map, a working 4-way comparison tool at
+`/colleges/compare`), so the real gap is specifically that the college
+*list* itself is two static grouped tables with no filter/sort/search,
+not a rebuild of what already works.
+
+Also still queued, not started: `CONTENT_ASSET_PLAN.md` (cataloguing
+exactly what real per-college photography/video is missing, so the owner
+has something concrete to act on) — not part of Phase 5B and not
+bundled into it, since it's unrelated to admissions-automation
+visibility; worth its own short pass whenever there's a natural gap
+between phases.
+
+## Status as of 2026-09-08 — superseded by the section above, kept for history
 
 A separate "ultra-premium cinematic" brief arrived mid-session and became
 the active thread of work — it did not continue the "page interiors" chunk

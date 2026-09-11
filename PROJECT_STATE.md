@@ -6,7 +6,69 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
-## ⭐ 2026-09-11 — Phase 5A (homepage cinematic narrative) shipped
+## ⭐ 2026-09-11 — Phase 5B (visible admissions automation) shipped
+
+The gap audit's #1 finding after Phase 5A: the real backend (lead intake,
+a genuine counsellor follow-up sequence, an 11-stage `application_stage`
+lifecycle, a working student portal with a live per-application timeline)
+is functionally real and completely invisible from the public site. A
+visitor clicking "Send Enquiry →" got two lines of reassurance and no
+sense that anything organised was happening behind it.
+
+**What shipped** — `/counseling`'s post-enquiry success panel (the one
+live public moment this applies to; the homepage's own hero form fields
+are dead markup, no longer wired to anything since Phase 3's hero
+rewrite):
+
+- **"What happens next"** — four near-term steps, paraphrased (not
+  invented) from the real seeded counsellor sequence
+  (`supabase/migrations/0004_lead_intake.sql`'s "New enquiry follow-up":
+  call, eligibility summary, second call, week check-in). Deliberately
+  generalised rather than quoting its exact hour offsets — those live in
+  an admin-editable table, and a public promise that can drift out of
+  sync with the real timing is worse than a slightly vaguer true one.
+  The existing "within two working hours" line is kept exactly as-is,
+  since it was already the site's own standing promise.
+- **"The path ahead, if you proceed"** — the real 8-stage
+  `application_stage` lifecycle, in the *exact* words
+  `public/assets/js/portal.js`'s own `STAGES` array already shows a real
+  applicant (Enquiry received → Checking eligibility → Eligible →
+  Applied to MEC → Entrance → In MEC counselling → Seat allotted →
+  Admitted). New `src/data/journey-stages.json` is the canonical copy —
+  portal.js is a classic script the Astro build doesn't process, so it
+  can't import the JSON directly; the file's own header comment flags
+  that the two need to be kept in sync by hand if the wording ever
+  changes. Nothing here is invented copy: it's the real enum
+  `0002_admission_platform.sql` already enforces, humanised.
+- Visual language deliberately reused rather than invented: the
+  near-term steps reuse admission-process.astro's ordinal-spine motif at
+  a compact scale (`premium.css` §8), and the 8-stage strip echoes the
+  Phase 5A homepage chapter rail's dot/chip-and-connector grammar
+  (`premium.css` §22) as a wrapped horizontal strip — the same signature
+  applied a second place, which is what makes it a recognisable brand
+  element rather than a one-off effect.
+
+**Deliberately not done**: no fake dashboard, no fabricated activity
+("3 people enquired today"), no backend jargon exposed ("sequence
+engine," "SECURITY DEFINER"), no new Supabase migration or RLS change
+(this session's standing rule), no touching `portal.js` itself (a
+working authenticated flow — the new JSON file is additive only).
+
+**Verified**: 390/820/1440px screenshots of the revealed success state
+(the same `display:none`-reveal technique `tests/audit.mjs` itself uses,
+since the panel only appears after a real form submit); a canvas-based
+contrast check on every new text/background pairing this pass introduced
+(resolves the actual `color-mix`/`oklab` computed values rather than
+guessing — 6.01–6.45:1, all comfortably past AA); mobile
+horizontal-overflow check (clean); a direct `pageerror` scan (clean); a
+production build (44 routes, clean); CSP hash confirmed unchanged (no
+inline `<script>` touched, only static markup + a scoped `<style>`).
+No dedicated `perf-verify.mjs` run — the change is static markup and CSS
+with zero new JS, motion, images or animation, so there's no plausible
+TBT/LCP mechanism for it to move; noted here rather than run for form's
+sake.
+
+## Phase 5A (homepage cinematic narrative) — complete, 2026-09-11
 
 Followed a creative gap audit (against `ULTRA_PREMIUM_ROADMAP.md`,
 `DESIGN_AUDIT.md` and this file's own Phase 4 history) that the owner

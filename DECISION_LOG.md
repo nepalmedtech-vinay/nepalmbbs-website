@@ -5,6 +5,46 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-09-11 — Phase 5B: visible admissions automation, scoped to one real surface
+
+Decided the *only* public integration point for "what happens after you
+enquire" is `/counseling`'s post-submit success panel — not a new page,
+not a homepage addition. The homepage hero's own inline lead-form fields
+(`leads.js`'s `submitLead('hero')` branch, `#hform-area`/`#hform-success`)
+are dead code: `GlassHero.astro`'s Phase 3 rewrite replaced the inline
+form with two CTA links, so those ids don't exist in the current markup.
+Left `leads.js` untouched rather than either wiring the dead branch back
+up (out of scope) or deleting it (real risk of missing a caller
+somewhere; not this phase's job to audit).
+
+Decided against exposing the real `sequences`/`sequence_steps` data via a
+new public API or RLS-relaxed view, even though that would make the
+"visible automation" more literally live. Reasons: (1) this session's own
+standing rule against touching `supabase/migrations/` or RLS without
+asking; (2) the step *templates* contain internal coaching language
+("Never quote a number we cannot source") that must never reach a public
+response even if only the titles were meant to be exposed — a narrow
+view is exactly the kind of thing that's easy to widen by mistake later;
+(3) the real value — showing an honest shape of what happens — doesn't
+require live data, since the shape of a seeded, rarely-changed sequence
+is stable enough to describe in static, reviewed copy. Built
+`src/data/journey-stages.json` instead: a small, explicitly-flagged
+static copy of the *stage labels* only (not the sequence steps, not the
+templates), sourced from `portal.js`'s own already-public `STAGES` array
+wording — the one part of this system already shown to a real user, just
+never to a prospective one.
+
+Decided to generalise the near-term follow-up steps' timing rather than
+quote the seeded sequence's exact hour offsets (1h / 24h / 72h / 168h).
+Those offsets live in an admin-editable table (`sequence_steps.delay_hours`)
+and can be retuned by a counsellor without a deploy; a public promise
+quoting them verbatim would drift out of sync with reality with nobody
+noticing until a family complained. The existing "within two working
+hours" headline promise was kept verbatim since it's the site's own
+already-standing commitment, not something this pass introduced.
+
+---
+
 ## 2026-08-28 — Chunk 6: the assistant becomes data-driven and sourced
 
 The owner asked for maximum automation, corporate content, and for me to

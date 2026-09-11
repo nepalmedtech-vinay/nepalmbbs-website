@@ -3,6 +3,20 @@
 Known, named debt. Per the master brief: document it here rather than
 leaving it as a silent TODO, and give each item a path to being resolved.
 
+## Newly identified 2026-09-11 (Phase 5B) — not fixed, out of scope
+
+- **`AdminPanel.astro`'s "Hero Lead Form" toggle (`#sw-form`) targets an
+  element that no longer exists.** It calls
+  `toggleFeature('@el','show_lead_form','hform-area')`, but `hform-area`
+  (and `#h-name`/`#hform-success`, the rest of that inline form) isn't in
+  `GlassHero.astro` — confirmed by a repo-wide search, the only other hit
+  is this same admin toggle. The homepage hero was rewritten in Phase 3
+  to two CTA links instead of an inline form; this admin control was
+  never removed to match. Flipping the switch today does nothing
+  observable. Not fixed here since it's unrelated to Phase 5B and touches
+  the admin panel, not the public site — a future session doing admin-
+  panel work should either remove the toggle or restore what it controls.
+
 ## Fixed this session
 
 - ~~`tests/build-verify.mjs`, `tests/auth-verify.mjs`, `tests/regression.mjs`

@@ -1,5 +1,16 @@
 ---
 import GlassLayout from '../layouts/GlassLayout.astro';
+import journeyStages from '../data/journey-stages.json';
+
+// The exact 8-stage vocabulary the student portal already shows a real
+// applicant (public/assets/js/portal.js's own STAGES array — same keys,
+// same order, same wording). Kept as a separate small JSON file rather
+// than hand-retyped here so there is one canonical copy of the words, even
+// though portal.js (a classic script, not built through Astro) can't
+// import it directly — if that array's wording or order ever changes,
+// this file needs the matching update. Nothing here is invented: this is
+// the real lifecycle `applications.stage` already enforces in the
+// database (supabase/migrations/0002_admission_platform.sql).
 ---
 <GlassLayout
   title="Free MBBS Nepal Counseling for NEET Qualified Students | NepalMBBS.in"
@@ -103,12 +114,145 @@ import GlassLayout from '../layouts/GlassLayout.astro';
           Also retoned: an exclamation mark and a 📩 belong to a different
           register than the rest of this site, and "Enquiry Received!" tells
           the reader less than saying what happens next and when. */}
+      {/* Phase 5B: this was two lines of reassurance and nothing else —
+          the exact moment "what happens after I enquire?" matters most,
+          answered with no answer. What follows is real, not marketing
+          copy invented for this panel: the four near-term steps paraphrase
+          the actual seeded follow-up sequence a counsellor works from
+          (supabase/migrations/0004_lead_intake.sql's "New enquiry
+          follow-up" sequence — call, eligibility summary, second call,
+          week check-in), generalised rather than quoting its exact hour
+          offsets, since those live in an admin-editable table and a
+          public promise that drifts out of sync with the real timing
+          would be worse than a vaguer one. The 8-stage path is the
+          literal words the student portal already shows a real
+          applicant (see the import above) — not a preview of a feature
+          that does not exist, a preview of the one that does. */}
       <div class="form-success" id="cform-success">
         <h3>Your enquiry has been received</h3>
         <p>A counsellor will contact you on your preferred channel within two working hours. If your enquiry arrives outside working hours, it will be answered the following morning.</p>
+
+        <div class="jr">
+          <div class="jr-label">What happens next</div>
+          <ol class="jr-next">
+            <li><span class="jr-next-n"></span><span>A counsellor reviews your NEET score and what you're looking for</span></li>
+            <li><span class="jr-next-n"></span><span>You're contacted on the channel you chose above</span></li>
+            <li><span class="jr-next-n"></span><span>You get a written eligibility summary — the rule, not a promise</span></li>
+            <li><span class="jr-next-n"></span><span>If we haven't heard back, we check in — you never have to chase us</span></li>
+          </ol>
+
+          <div class="jr-label jr-label--path">The path ahead, if you proceed</div>
+          <ol class="jr-path">
+            {journeyStages.map((s, i) => (
+              <li class:list={['jr-path-step', { 'is-now': i === 0 }]}>{s.label}</li>
+            ))}
+          </ol>
+          <p class="jr-note">Once your enquiry becomes an application, you get a private link that tracks it against this same list — kept current by your counsellor as it actually happens, not a status page that goes stale.</p>
+        </div>
       </div>
     </div>
   </div>
 </div>
 </div>
+
+<style>
+  /* Phase 5B — the enquiry-success "what happens next" reveal.
+     .jr-next reuses admission-process.astro's own ordinal-spine language
+     (premium.css §8 .doc-steps) at a compact scale — the site's own
+     established "this is a sequence, not a list" motif, not a new one.
+     .jr-path echoes the homepage chapter rail's dot-and-line grammar
+     (premium.css §22 .hp-story) as a horizontal wrapped strip instead of
+     a fixed vertical one — the same signature applied a second place,
+     which is what makes it a signature rather than a one-off effect. */
+  .jr { margin-top: var(--s-6, 1.75rem); }
+
+  .jr-label {
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g-ink-3);
+    margin-bottom: var(--s-3, 0.75rem);
+  }
+  .jr-label--path { margin-top: var(--s-6, 1.75rem); }
+
+  .jr-next {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--s-3, 0.7rem);
+    counter-reset: jrstep;
+  }
+  .jr-next li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--s-3, 0.7rem);
+    font-size: var(--t-sm);
+    color: var(--g-ink-2);
+    line-height: var(--lh-body);
+  }
+  .jr-next-n {
+    counter-increment: jrstep;
+    display: grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--brand-text);
+    background: color-mix(in oklab, var(--brand) 10%, transparent);
+    border: 1px solid color-mix(in oklab, var(--brand) 28%, transparent);
+  }
+  .jr-next-n::before { content: counter(jrstep); }
+
+  /* The path ahead: a wrapped chip sequence, not a table of stage names.
+     A chevron between chips (::after on every item but the last) reads
+     as "leads to" without a connecting line fighting the wrap. */
+  .jr-path {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.3rem;
+  }
+  .jr-path-step {
+    position: relative;
+    padding: 0.32rem 0.65rem;
+    border-radius: var(--r-pill);
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--g-ink-3);
+    background: color-mix(in oklab, var(--g-ink) 5%, transparent);
+    border: 1px solid color-mix(in oklab, var(--g-ink) 12%, transparent);
+    white-space: nowrap;
+  }
+  .jr-path-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -0.95rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.65rem;
+    color: color-mix(in oklab, var(--g-ink) 22%, transparent);
+  }
+  .jr-path-step.is-now {
+    color: var(--brand-text);
+    background: color-mix(in oklab, var(--brand) 10%, transparent);
+    border-color: color-mix(in oklab, var(--brand) 34%, transparent);
+    font-weight: 600;
+  }
+
+  .jr-note {
+    margin: var(--s-4, 1rem) 0 0;
+    font-size: var(--t-xs);
+    line-height: var(--lh-body);
+    color: var(--g-ink-3);
+    max-width: 42ch;
+  }
+</style>
 </GlassLayout>
