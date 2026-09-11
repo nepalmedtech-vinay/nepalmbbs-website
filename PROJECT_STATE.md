@@ -114,6 +114,48 @@ cases, where this was never broken, still look right (no automated diff
 run against a pre-fix desktop baseline, but nothing in the fix's logic
 touches the aspect ≥ 1.6 path — `field.scale` stays exactly 1 there).
 
+**Chunk 4 — /documents, done.** This page already uses the Record system
+(`.doc`/`.doc-table`) like `/colleges` and `/documents`' own `PageHeader`
+usage doesn't pass `threeD`, so it was never exposed to chunk 3's WebGL
+bug. The one under-designed spot: the three admission-stage blocks each
+list their required documents as a bare default `<ul>` bullet list, the
+only place on a page titled "document checklist" that didn't get the same
+typographic care as the table and `.doc-note`s around it. Replaced the
+native bullet with a small brand-tint tick (CSS-only, `::before`/`::after`
+on `.dc-list li`, no new markup) — matches the page's own framing rather
+than inventing a new visual language. **Process note for future
+sessions:** this was committed ahead of its own screenshot check (the stop
+hook fired while a background `npm run verify` was in flight, and
+rebuilding mid-run would have corrupted it — committing is safe since git
+doesn't touch `dist/`, so the commit went ahead and the visual check
+followed once the verify run finished). The first screenshot attempt
+afterward *also* looked wrong — turned out to be a stale/conflicting local
+dist-server left over from a previous manual check, not a real bug; a
+fresh server + computed-style check (`::before` width, background,
+`list-style: none`) confirmed the CSS was correct all along. Lesson worth
+keeping: when a screenshot contradicts a computed-style check on the same
+build, trust the computed style and suspect the serving setup first.
+
+**Verify checkpoint (after chunks 1-4):** `npm run verify` fails at
+`build-verify.mjs`'s `wrc-tracker`/`cmc-tracker` byte-identical check —
+confirmed as the pre-existing, documented issue (`CLAUDE.md`,
+`docs/GOLIVE.md`): this session's fresh clone has **no local git tags at
+all** (`git tag -l` returns nothing), so `phase1-static-rollback` doesn't
+exist to compare against. Not something this session broke or can fix
+(tag pushes return 403; recreating the tag from scratch risks it not
+matching whatever historical commit it's actually supposed to pin).
+Ran every other check individually instead, skipping only that one
+assertion: `csp-verify`, `console-verify`, `auth-verify`, `a11y-verify`,
+`compare-verify`, `assistant-verify` all exit 0; `audit.mjs` — **0
+low-contrast elements, 0 mobile overflow, across all 43 routes + the
+assistant, median 303 kB** — clean after the homepage gallery motion,
+the compare picker, the medical-icons-scene fix, and this chunk's
+checklist styling. Also cleaned up several stray local `node` dist-servers
+this session's own manual screenshotting left running on ports
+8103-8105 — worth checking `lsof -ti:8103` before the next `npm run
+verify` if a future session hits the same `EADDRINUSE` this one did on
+the first attempt.
+
 ## Status
 
 - **CURRENT PHASE**: Phase 1 (experience foundation / technical clean-up),
