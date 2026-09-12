@@ -2,6 +2,7 @@
 import GlassLayout from '../../layouts/GlassLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import CollegeMap from '../../components/CollegeMap.astro';
+import CollegeScatter from '../../components/CollegeScatter.astro';
 import { getColleges } from '../../lib/colleges.js';
 import { SITE } from '../../lib/routes.js';
 
@@ -179,6 +180,13 @@ const ownerNotes = {
       </p>
     </div>
   </div>
+
+  {/* Phase 5G: DISCOVER (map) → UNDERSTAND breadth (the table above) → this
+      — a second, genuinely different graphic, not a restyle of the map —
+      before COMPARE/DECIDE (the link into /colleges/compare below). Own
+      section, own component (CollegeScatter.astro), so it can be reasoned
+      about and tested independently of Phase 5C's already-verified table. */}
+  <CollegeScatter />
 
   {/* Outside .doc.cd deliberately: .doc sets overflow:hidden (for its ruled-
       panel corners), which would clip a position:sticky bar to nothing.

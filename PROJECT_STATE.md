@@ -6,6 +6,63 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-12 — Phase 5F (counselling conversion) + Phase 5G (second dataviz) shipped
+
+Full account, including every bug found and exactly how each was verified,
+is in `NEXT_TASK.md`'s top section — this is the short version.
+
+**Phase 5F** rebuilt `/counseling` around the owner's own UNCERTAINTY →
+CONFIDENCE → PERSONALISATION → ACTION → ENQUIRY → FOLLOW-UP brief. The real
+finding: the page's "what happens after you enquire" content (the actual
+seeded follow-up sequence plus the real 8-stage application path, sourced
+from Phase 5B) only ever rendered *after* a real form submission, which
+means the large majority of visitors — who read before they'll hand over a
+phone number — never saw the one thing most likely to earn that trust. Made
+it a persistent card beside the enquiry form instead. Also found and fixed
+a genuine sitewide bug, not scoped to this page: `switchTab()`'s same-page
+branch has been unreachable-by-design since Phase 2 removed multi-pane
+pages, except it still ran a scroll-to-`#tabs-section` that only the
+homepage has and that the homepage's own switchTab calls can never reach
+(no `pane-*` elements there at all) — meaning every "talk to us" style CTA
+elsewhere in body copy that pointed at its own current page was a **dead
+click**, confirmed concretely on this page's eligibility-checker result
+button. `navigation.js` now scrolls to (and focuses) a page-declared
+`[data-scroll-target]` instead.
+
+**Phase 5G** added `src/components/CollegeScatter.astro` — established year
+vs. foreign-quota seats, by ownership — to `/colleges`, right after the
+Phase 5C discovery table. Deliberately not another `CollegeMap`: temporal/
+capacity, not geographic, built the dataviz skill's way (validated
+categorical palette, fixed mark/hit-target specs, a real `<details>` table
+as the required accessible fallback). The copy only claims what the data
+actually verifies — government colleges' seat allocation averages a
+fraction of private colleges' (4 vs 44, checked directly) — and deliberately
+says nothing about relative age, since that pattern does not hold in one
+direction in the real data (checked before writing, not assumed).
+
+**Two bugs worth knowing about if this pattern comes up again**: (1) an SVG
+direct label centred on a plot's own edge point overflows past the SVG's
+bounds — invisible on a wide desktop gutter, genuinely clipped on a
+mobile horizontally-scrolling figure; fix is an edge-aware `text-anchor`,
+not a wider container. (2) `tests/a11y-verify.mjs`'s `vis()` visibility
+check reported real dimensions for content inside a **closed** `<details>`
+element in this Chromium build, even though `innerText` (used one check
+later, in the same function) correctly reports it as empty — a checker
+blind spot that would misfire on any future `<details>` use, now fixed by
+checking for a closed `details` ancestor directly in `vis()` itself.
+
+**Verified**: `npm run build` clean (44 routes); CSP regenerated and
+current; `csp-verify` 11/11 (3118/3118 handlers); `console-verify` 34/34;
+`auth-verify` 12/12; `a11y-verify` 31/32 (the one failure is the
+pre-existing, previously-documented `/staff` `.cx-input` focus-timing
+flake — unrelated, that page touches none of this pass's files);
+`compare-verify` 13/13; `assistant-verify` 18/18; `audit.mjs` 0
+low-contrast / 0 overflow across all 43 routes + the assistant. Additionally
+screenshotted both changed pages at 768/820/1024 (not just the usual
+390/1440) — zero overflow, zero console errors, both new components read
+cleanly. `build-verify.mjs` still hits the pre-existing rollback-tag 403 —
+unrelated, documented since Phase 4.
+
 ## ⭐ 2026-09-12 — NEET eligibility checker corrected to sourced criteria, embedded on /counseling
 
 The tool at `/neet-calculator` (`public/assets/js/leads.js`'s

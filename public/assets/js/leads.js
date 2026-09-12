@@ -26,6 +26,16 @@ async function submitLead(src){
     document.getElementById(h?'hform-area':'cform-area').style.display='none';
     document.getElementById(h?'hform-success':'cform-success').style.display='block';
     toast('Registered successfully! We will contact you shortly.','ok');
+    // /counseling's "what happens after you enquire" card is always visible
+    // (Phase 5F — most visitors need this before they'll trust the form with
+    // their number, not after), so a real submit doesn't reveal new content;
+    // it marks the first step/chip as genuinely underway instead.
+    if(!h){
+      const firstChip=document.querySelector('.counsel-journey .jr-path-step');
+      if(firstChip) firstChip.classList.add('is-now');
+      const firstStep=document.querySelector('.counsel-journey .jr-next li');
+      if(firstStep) firstStep.classList.add('is-done');
+    }
   }else{
     toast('Error submitting. Please WhatsApp us directly.','err');
     btn.disabled=false;btn.textContent=h?'Get Free Guidance →':'Send Enquiry →';

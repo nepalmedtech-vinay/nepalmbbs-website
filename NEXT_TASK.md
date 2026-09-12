@@ -3,7 +3,177 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
-## ⭐ Status as of 2026-09-12 (later pass) — read this section first
+## ⭐ Status as of 2026-09-12 (Phase 5F + 5G shipped) — read this section first
+
+The owner explicitly approved Phase 5F, 5G and 5H by name this pass (the
+"fresh explicit approval naming the phase" the previous version of this
+section asked for) and authorised continuing without stopping between
+them. 5F and 5G are complete; 5H was done as a bounded, real verification
+pass rather than a from-scratch redo of Phase 4's already-clean baseline —
+see its own paragraph below for exactly what that means and doesn't mean.
+
+**Phase 5F — `/counseling` restructured around UNCERTAINTY → CONFIDENCE →
+PERSONALISATION → ACTION → ENQUIRY → FOLLOW-UP:**
+- Found and fixed a real, sitewide, pre-existing bug, not something this
+  pass introduced: `switchTab()`'s same-page-reactivation branch only ever
+  scrolled to `#tabs-section`, and that element turns out to be
+  unreachable from `switchTab()` at all — the homepage carries no
+  `pane-*` element post-Phase-2, so any same-page call there always hits
+  the *navigate-away* branch instead, confirmed by reading the markup
+  directly. In practice this meant **every CTA on every page that called
+  `switchTab()` to point at its own current page did nothing at all** —
+  confirmed concretely on `/counseling`'s own eligibility-checker result
+  button ("Book Free Counseling →" / "Talk to a Counselor →"), which a
+  visitor could click after finding out they don't clearly qualify and
+  nothing would happen. Fixed generically in `public/assets/js/navigation.js`:
+  a same-page call now scrolls to and focuses a `[data-scroll-target]`
+  element inside the pane, if the page declares one.
+  `/counseling`'s enquiry form is the one page that declares one today
+  (`.counsel-card`); verified end-to-end with a real Playwright click,
+  not just reading the code — scroll position changed and
+  `document.activeElement` landed on the name field.
+- The real "what happens after you enquire" content (the actual seeded
+  follow-up sequence and the real 8-stage `application_stage` path, same
+  source as Phase 5B) used to be hidden behind a real form submission —
+  meaning the ~95% of visitors who read before they'll type a phone
+  number in never saw the single most confidence-building thing on the
+  page. Moved to a persistent `.counsel-journey` card beside the form,
+  always visible; a real submit now marks the first step/chip "underway"
+  via one class toggle rather than re-rendering the same copy a second
+  time. This also closed the large dead whitespace the old layout left in
+  the right column at desktop width (the sticky enquiry card with nothing
+  else beside it) — confirmed by direct measurement before/after, not
+  just eyeballed.
+- Added a compact trust-chip strip ("Free, always" / "30-minute session" /
+  "Based only on NMC/MEC rules") ahead of the eligibility checker, reusing
+  the `.jr-path-step` pill grammar already established lower on the same
+  page rather than inventing a second chip language.
+- A real bug found mid-build, not shipped: nesting the enquiry form into
+  a new flex column on its own broke nothing, but `.counsel-card`'s
+  inherited `position: sticky` (built for when this column had nothing
+  else in it) visibly ghosted through the new card scrolling underneath
+  it — both cards are a 94%-opaque white fill, so the overlap blended
+  rather than occluded. Fixed by making it `static` in this layout;
+  caught by scrolling a real headless browser through the page and
+  checking the rendered pixels, not by reading the CSS.
+
+**Phase 5G — `src/components/CollegeScatter.astro`, wired into `/colleges`
+right after the Phase 5C discovery table:**
+- Established year vs. foreign-quota seats, coloured by ownership — a
+  genuinely different graphic from `CollegeMap` (temporal/capacity, not
+  geographic), built the same zero-dependency way from the same
+  `getColleges()` data. Went through the workstation's `dataviz` skill
+  before writing any markup: palette validated with the skill's own
+  script (`--brand`/`--brand-2`, CVD ΔE 27.4/29.2 — both pass; the
+  contrast WARN on `--brand-2` is satisfied by the always-present legend
+  text plus a real `<details>` table view, per the skill's own rule that
+  a WARN obligates one of those, not that it's dismissable), fixed
+  mark/hit-target/legend specs applied (6px dot, 2px surface ring, ≥16px
+  hit target, legend always present for 2 series, only 3 points
+  direct-labelled — the extremes the story is actually about).
+- The copy is deliberately careful about what `established` means:
+  checked the data directly rather than assume it means "years running
+  as an MBBS program" — it's an institutional founding year, and two
+  colleges this file's own history flagged as "brand new" MBBS programs
+  (Madan Bhandari AHS, Madhesh IHS) already carry a founding year (2018,
+  2021), which is a different fact than first-intake year. The chart's
+  lead sentence claims only the one pattern actually verified in the data
+  (government colleges' seat allocation averages 4 against 44 for
+  private) and says nothing about relative age, because that does **not**
+  hold in one direction here — government colleges' average founding
+  year (2006) is actually *later* than private colleges' (2001). Checked
+  with a real computation before writing the sentence, not assumed from
+  impression.
+- 7 of 27 colleges have no `established` value on file; listed honestly
+  in the chart's own `<details>` table (all 27 rows, "—" where blank)
+  rather than dropped silently or estimated onto the plot.
+- Three real bugs found and fixed during verification, each confirmed
+  with a direct check before and after, not just re-screenshotted:
+  1. Two colleges share an identical (year, seats) pair — Kathmandu
+     Medical College and Nepalgunj Medical College, both 1997/43 — so
+     one point's hit target sat entirely under the other's and was
+     unreachable by hover, focus or click. Fixed generically: any
+     pixel-position collision fans out along x evenly, not special-cased
+     to these two colleges by name.
+  2. A direct label centred on a plot-edge point (the oldest/newest
+     colleges, which sit at the x-axis extremes by definition) overflowed
+     past the SVG's own bounds — invisible on desktop's generous
+     container gutter, genuinely clipped on mobile's horizontally-
+     scrolling figure (confirmed via a cropped screenshot showing
+     "hdest on record" instead of "Oldest on record"). Fixed with an
+     edge-aware `text-anchor` (`start`/`end` within 90 user-units of
+     either edge, `middle` otherwise).
+  3. Found while fixing (2), and the more interesting bug: this Chromium
+     build reports a non-`'none'` `display` and a non-zero
+     `getBoundingClientRect()` for content inside a **closed** `<details>`
+     element, even though `innerText` (used by the very next check)
+     correctly treats that same content as unrendered. `tests/a11y-verify.mjs`'s
+     `vis()` filter used the former, its `unlabelled` check the latter —
+     so the new table-view's 27 college links were simultaneously
+     "visible" (per `vis()`) and reported as having empty text (per
+     `innerText`), i.e. 27 false-positive "unlabelled control" failures.
+     Confirmed the exact mechanism with a direct `page.evaluate` dump
+     (`display: inline`, real width/height, `innerText: ""`,
+     `textContent`: the real name) before touching the checker. Same
+     family of blind spot as the gradient-contrast one already fixed in
+     this file's history — hardened `vis()` to check for a closed
+     `<details>` ancestor directly (an element only counts as visible if
+     it's inside that details' own `<summary>`); re-verified clean
+     (27 → 0).
+
+**Full verify result this pass** (`build-verify.mjs` skipped — still the
+pre-existing, documented rollback-tag 403, unrelated to anything here):
+`npm run build` clean, 44 routes; `node tools/gen-csp.mjs --check`
+current after regenerating for the new inline script; `tests/csp-verify.mjs`
+11/11, 45 routes, 3118/3118 handlers fired; `tests/console-verify.mjs`
+34/34; `tests/auth-verify.mjs` 12/12; `tests/a11y-verify.mjs` **31/32** —
+the one failure is the same pre-existing `/staff` `.cx-input`
+focus-visibility timing flake this file has documented multiple times
+before (Chromium's synthetic-Tab timing, not a real regression — `/staff`
+touches none of this pass's files); `tests/compare-verify.mjs` 13/13;
+`tests/assistant-verify.mjs` 18/18; `tests/audit.mjs` **0 low-contrast
+elements, 0 mobile overflow, across all 43 routes + the assistant**
+(median 387 kB). Also spot-checked tablet breakpoints (768/820/1024) on
+both changed pages directly (not assumed from the 390/1440 checks above):
+zero horizontal overflow, zero console errors, both new components read
+cleanly at every width tested.
+
+**Phase 5H (final mobile/tablet cinematic QA) — done as a bounded,
+evidence-based pass, not a from-scratch redo, and that's a deliberate
+scope call:** Phase 4 already screenshotted and fixed every route this
+site has, most recently reconfirmed via the `audit.mjs` run above at
+0 low-contrast / 0 overflow across all 43 routes — and none of those
+files changed this pass. Redoing that whole sweep from zero would mostly
+re-verify pages nothing touched. What a genuine 5H adds on top of that
+already-clean baseline, and what this pass actually did:
+1. Verified this pass's own two changed surfaces don't regress anything
+   — the full suite result above, plus a specific check that
+   `navigation.js`'s refactored `switchTab()` can't break the homepage's
+   own tab-switching (it structurally can't: read the homepage's markup
+   directly and confirmed it has zero `pane-*` elements, so
+   `#tabs-section`'s scroll branch was already dead, unreachable code
+   *before* this pass touched the function — not something this pass's
+   refactor put at risk).
+2. A genuinely fresh breakpoint pass this session had not done yet:
+   768/820/1024 on both changed pages, screenshotted and read, not just
+   overflow-checked — see the "Full verify result" paragraph above.
+
+**Not done, and worth naming rather than quietly skipping:** a
+breakpoint/motion pass on the ~15 public routes this pass did not touch
+(already covered by Phase 4's own screenshots, which nothing since has
+invalidated); a real Safari/Firefox check of the `@supports
+(animation-timeline: view())` fallback path the `.rev`/`.m-rise` motion
+system relies on (this sandbox only has Chromium; the fallback is
+documented as "static, fully visible," and every reduced-motion check
+this pass ran confirms the *same* fallback path renders correctly, but
+that's not the same as a real non-Chromium engine); a genuine Lighthouse/
+Core Web Vitals run against the deployed site (still blocked on the same
+no-GPU-sandbox limitation `PROJECT_STATE.md` has documented since Phase 1).
+None of these are regressions from this pass — they're pre-existing gaps
+this pass didn't have the means to close, named here so a future session
+doesn't have to rediscover that.
+
+## Status as of 2026-09-12 (later pass) — superseded by the section above, kept for history
 
 **NEET eligibility checker corrected to sourced criteria** (full account
 in `PROJECT_STATE.md` and `DECISION_LOG.md`, same date). Picked up

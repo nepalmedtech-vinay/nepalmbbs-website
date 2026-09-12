@@ -1,0 +1,382 @@
+---
+import { getColleges } from '../lib/colleges.js';
+
+// Phase 5G — a second, genuinely different decision-support graphic from the
+// college map: not where a college is, but how established it is against how
+// many foreign-quota seats it actually offers. Built the same way the map
+// was — a zero-dependency SVG generated at build time from the real records,
+// no charting library, no invented axis. Two real fields already published
+// on every college's own page (`established`, the same "Established" Record
+// row; `seats`, the same foreign-quota figure the map sizes its circles by)
+// plotted against each other for the first time.
+//
+// `established` is an institutional founding year, not necessarily a first
+// MBBS-intake year — colleges.json does not distinguish the two, and
+// blurring that distinction here would be exactly the kind of invented
+// precision CLAUDE.md's rule 1 exists to prevent. The copy below says
+// "Established", matching the college pages' own label, and claims nothing
+// beyond what the field actually is.
+const all = await getColleges();
+const withYear = all
+  .filter((c) => c.established && !Number.isNaN(parseInt(c.established, 10)))
+  .map((c) => ({ ...c, yr: parseInt(c.established, 10), seats: parseInt(c.seats, 10) || 0 }));
+
+const W = 1000;
+const H = 460;
+const PAD_L = 50;
+const PAD_R = 20;
+const PAD_T = 26;
+const PAD_B = 44;
+
+const years = withYear.map((c) => c.yr);
+const minYear = Math.min(...years);
+const maxYear = Math.max(...years);
+const yearSpan = Math.max(maxYear - minYear, 1);
+const maxSeats = Math.max(...withYear.map((c) => c.seats), 1);
+
+const xOf = (yr) => PAD_L + ((yr - minYear) / yearSpan) * (W - PAD_L - PAD_R);
+const yOf = (seats) => PAD_T + (1 - seats / maxSeats) * (H - PAD_T - PAD_B);
+
+let points = withYear
+  .map((c) => ({ ...c, cx: xOf(c.yr), cy: yOf(c.seats), govt: c.type === 'govt' }))
+  .sort((a, b) => a.yr - b.yr);
+
+// Two colleges can share the same established year and seat count exactly
+// (Kathmandu Medical College and Nepalgunj Medical College both read
+// 1997 / 43) — without this, one point's hit target sits entirely under the
+// other's and is never reachable by hover, focus or click. Group by rounded
+// pixel position and fan any collision out along x, evenly, rather than
+// leaving one college silently unreachable.
+const groups = new Map();
+points.forEach((p) => {
+  const key = Math.round(p.cx) + ',' + Math.round(p.cy);
+  if (!groups.has(key)) groups.set(key, []);
+  groups.get(key).push(p);
+});
+groups.forEach((group) => {
+  if (group.length < 2) return;
+  group.forEach((p, i) => { p.cx += (i - (group.length - 1) / 2) * 16; });
+});
+
+// Clean decade ticks spanning the real data range, never a fabricated round
+// number outside it.
+const tickStartYear = Math.floor(minYear / 10) * 10;
+const tickEndYear = Math.ceil(maxYear / 10) * 10;
+const yearTicks = [];
+for (let yr = tickStartYear; yr <= tickEndYear; yr += 10) yearTicks.push(yr);
+
+const seatStep = maxSeats > 40 ? 20 : maxSeats > 20 ? 10 : 5;
+const seatTicks = [];
+for (let s = 0; s <= maxSeats; s += seatStep) seatTicks.push(s);
+if (seatTicks[seatTicks.length - 1] < maxSeats) seatTicks.push(Math.ceil(maxSeats / seatStep) * seatStep);
+
+// Direct labels, sparingly — the extremes the story is actually about, per
+// college. A college that wins more than one superlative is only labelled
+// once.
+const oldest = points[0];
+const newest = points[points.length - 1];
+const mostSeats = points.reduce((a, b) => (b.seats > a.seats ? b : a), points[0]);
+const labelled = new Map();
+[[oldest, 'Oldest on record'], [newest, 'Newest on record'], [mostSeats, 'Most seats']].forEach(([p, tag]) => {
+  if (p && !labelled.has(p.slug)) labelled.set(p.slug, tag);
+});
+// A centred label on a point sitting right at the plot's own edge (which the
+// oldest/newest colleges necessarily do, by definition of being the x-axis
+// extremes) overflows past x=0 or x=W — invisible on desktop's generous
+// container gutter, but genuinely clipped on mobile's horizontally-scrolling
+// figure, which has no gutter to spare. Anchor from the edge instead of the
+// centre whenever a labelled point sits within one label-width of either
+// side, same fix a real chart library would apply automatically.
+const EDGE = 90;
+const anchorFor = (cx) => (cx < PAD_L + EDGE ? 'start' : cx > W - PAD_R - EDGE ? 'end' : 'middle');
+
+const missingYear = all.filter((c) => !(c.established && !Number.isNaN(parseInt(c.established, 10))));
+
+// Verified against the actual records (not asserted from impression): govt
+// colleges' average foreign-quota allocation is under 4 seats against
+// private colleges' over 40 — a real, checkable pattern, unlike any claim
+// about relative age, which does not hold in one direction in this data.
+const govtSeats = withYear.filter((c) => c.type === 'govt').map((c) => c.seats);
+const privSeats = withYear.filter((c) => c.type !== 'govt').map((c) => c.seats);
+const avg = (arr) => (arr.length ? arr.reduce((s, n) => s + n, 0) / arr.length : 0);
+const govtAvg = Math.round(avg(govtSeats));
+const privAvg = Math.round(avg(privSeats));
+---
+
+<section class="sc-section" id="sc-landscape">
+  <div class="container">
+    <div class="sc-head m-rise">
+      <span class="gl-eyebrow">Capacity &amp; experience</span>
+      <h2 class="sc-title">How long each college has run, against how many seats it offers</h2>
+      <p class="gl-lead">
+        {points.length} of {all.length} colleges have a confirmed founding year on file — the
+        same "Established" row shown on each college's own page.
+        {missingYear.length > 0 && <> {missingYear.length} without one are listed in the table
+        below rather than guessed onto the chart.</>} One pattern holds regardless of when a
+        college opened: government colleges' foreign-quota allocation averages
+        {' '}{govtAvg} seats against {privAvg} for private colleges.
+      </p>
+    </div>
+
+    <figure class="sc-figure m-rise">
+      <svg
+        class="sc-svg"
+        viewBox={`0 0 ${W} ${H}`}
+        role="img"
+        aria-label={`Established year plotted against foreign-quota seats for ${points.length} of ${all.length} medical colleges`}
+      >
+        <g class="sc-grid">
+          {yearTicks.map((yr) => (
+            <>
+              <line x1={xOf(yr)} y1={PAD_T} x2={xOf(yr)} y2={H - PAD_B} />
+              <text x={xOf(yr)} y={H - PAD_B + 22} text-anchor="middle">{yr}</text>
+            </>
+          ))}
+          {seatTicks.map((s) => (
+            <>
+              <line x1={PAD_L} y1={yOf(s)} x2={W - PAD_R} y2={yOf(s)} />
+              <text x={PAD_L - 10} y={yOf(s) + 4} text-anchor="end">{s}</text>
+            </>
+          ))}
+        </g>
+
+        <g class="sc-points">
+          {points.map((p, i) => (
+            <g
+              class:list={['sc-pt', { 'is-govt': p.govt }]}
+              style={`--i:${i}`}
+              data-name={p.name}
+              data-yr={p.yr}
+              data-seats={p.seats}
+              data-owner={p.govt ? 'Government' : 'Private'}
+              data-href={`/colleges/${p.slug}`}
+              tabindex="0"
+              role="link"
+              aria-label={`${p.name}: established ${p.yr}, ${p.seats} foreign-quota seats, ${p.govt ? 'government' : 'private'}`}
+            >
+              <circle class="sc-ring" cx={p.cx} cy={p.cy} r="9" />
+              <circle class="sc-dot" cx={p.cx} cy={p.cy} r="6" />
+              <circle class="sc-hit" cx={p.cx} cy={p.cy} r="16" />
+              {labelled.has(p.slug) && (
+                <text class="sc-pt-label" x={p.cx} y={p.cy - 15} text-anchor={anchorFor(p.cx)}>{labelled.get(p.slug)}</text>
+              )}
+            </g>
+          ))}
+        </g>
+      </svg>
+
+      <div class="sc-card" id="sc-card" aria-live="polite" hidden>
+        <p class="sc-card-name"></p>
+        <p class="sc-card-meta"></p>
+        <span class="sc-card-cta">View record →</span>
+      </div>
+
+      <figcaption class="sc-legend">
+        <span class="sc-key is-govt"><i></i>Government</span>
+        <span class="sc-key"><i></i>Private</span>
+      </figcaption>
+    </figure>
+
+    <p class="sc-caveat">
+      Seats shown are each college's foreign-quota allocation at the current intake's
+      first-matching round (Medical Education Commission, Nepal) — not a fixed annual
+      capacity; later rounds and future intakes can change it. See each college's own
+      page for its exact source and category.
+    </p>
+
+    <details class="sc-table-toggle">
+      <summary>View this data as a table</summary>
+      <div class="pr-scroll">
+        <table class="doc-table">
+          <thead>
+            <tr><th>College</th><th>Established</th><th>Ownership</th><th class="num">Foreign-quota seats</th></tr>
+          </thead>
+          <tbody>
+            {all.map((c) => (
+              <tr>
+                <td data-label="College"><a href={`/colleges/${c.slug}`}>{c.name}</a></td>
+                <td data-label="Established">{c.established || '—'}</td>
+                <td data-label="Ownership">{c.type === 'govt' ? 'Government' : 'Private'}</td>
+                <td data-label="Foreign-quota seats" class="num">{c.seats || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    var fig = document.querySelector('.sc-figure');
+    if (!fig) return;
+    var card = document.getElementById('sc-card');
+    var name = card.querySelector('.sc-card-name');
+    var meta = card.querySelector('.sc-card-meta');
+    var active = null;
+
+    function show(g) {
+      if (active) active.classList.remove('is-active');
+      active = g;
+      g.classList.add('is-active');
+      name.textContent = g.dataset.name;
+      meta.textContent = 'Est. ' + g.dataset.yr + ' · ' + g.dataset.seats + ' seats · ' + g.dataset.owner;
+      card.hidden = false;
+      var dot = g.querySelector('.sc-ring').getBoundingClientRect();
+      var f = fig.getBoundingClientRect();
+      var left = dot.left - f.left + dot.width / 2;
+      card.style.left = Math.min(Math.max(left, 90), f.width - 90) + 'px';
+      card.style.top = dot.top - f.top - 14 + 'px';
+    }
+
+    function hide() {
+      if (active) active.classList.remove('is-active');
+      active = null;
+      card.hidden = true;
+    }
+
+    fig.querySelectorAll('.sc-pt').forEach(function (g) {
+      g.addEventListener('pointerenter', function () { show(g); });
+      g.addEventListener('focus', function () { show(g); });
+      g.addEventListener('click', function () { location.href = g.dataset.href; });
+      g.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); location.href = g.dataset.href; }
+      });
+    });
+    fig.addEventListener('pointerleave', hide);
+    fig.addEventListener('focusout', function (e) {
+      if (!fig.contains(e.relatedTarget)) hide();
+    });
+  })();
+</script>
+
+<style>
+  .sc-section { padding: var(--s-section, 4rem) 0; }
+  .sc-head { max-width: 62ch; }
+  .sc-title {
+    font-family: var(--ty-display);
+    font-size: var(--t-h2);
+    font-weight: 800;
+    line-height: var(--lh-snug);
+    letter-spacing: var(--ty-tight);
+    color: var(--g-ink);
+    margin: var(--s-4, 1rem) 0 0;
+    max-width: 26ch;
+    text-wrap: balance;
+  }
+
+  .sc-figure { position: relative; margin: var(--s-7, 2.5rem) 0 0; }
+  .sc-svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+  .sc-grid line { stroke: color-mix(in oklab, var(--g-ink) 10%, transparent); stroke-width: 1; }
+  .sc-grid text {
+    fill: var(--g-ink-4);
+    font-family: var(--ty-body);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
+  }
+
+  /* Marker spec: 6px-radius dot, 2px surface-color ring so overlapping or
+     adjacent points stay legible without a border drawn around the mark
+     itself; a much larger transparent .sc-hit carries the actual hover/
+     focus/click target, since an 8-12px painted dot is too small to aim at
+     reliably (dataviz skill's hit-target floor). */
+  .sc-ring { fill: var(--g-base); stroke: var(--g-base); stroke-width: 2; }
+  .sc-dot { fill: var(--brand); transition: r var(--d-2, .2s) var(--ea-out, ease), fill var(--d-2, .2s) var(--ea-out, ease); }
+  .sc-pt.is-govt .sc-dot { fill: var(--brand); }
+  .sc-pt:not(.is-govt) .sc-dot { fill: var(--brand-2); }
+  .sc-hit { fill: transparent; cursor: pointer; }
+
+  .sc-pt.is-active .sc-dot { r: 8; }
+  .sc-pt:focus-visible { outline: none; }
+  .sc-pt:focus-visible .sc-ring { stroke: var(--g-ink); stroke-width: 2.5; }
+
+  .sc-pt-label {
+    fill: var(--g-ink-3);
+    font-family: var(--ty-body);
+    font-size: 12px;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  .sc-card {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    min-width: 11rem;
+    max-width: 17rem;
+    padding: var(--s-3, .75rem) var(--s-4, 1rem);
+    background: var(--m-fill-solid);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--r-sm);
+    box-shadow: var(--sd-4);
+    pointer-events: none;
+    z-index: 4;
+  }
+  .sc-card-name {
+    margin: 0;
+    font-family: var(--ty-display);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    line-height: var(--lh-snug);
+    color: var(--g-ink);
+  }
+  .sc-card-meta {
+    margin: var(--s-1, .25rem) 0 0;
+    font-size: var(--t-xs);
+    color: var(--g-ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .sc-card-cta {
+    display: block;
+    margin-top: var(--s-2, .5rem);
+    font-size: var(--t-label);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brand);
+  }
+
+  .sc-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-5, 1.5rem);
+    margin-top: var(--s-5, 1.5rem);
+    font-size: var(--t-xs);
+    color: var(--g-ink-3);
+  }
+  .sc-key { display: inline-flex; align-items: center; gap: var(--s-2, .5rem); }
+  .sc-key i {
+    width: 0.65rem; height: 0.65rem; border-radius: 50%;
+    background: var(--brand-2);
+  }
+  .sc-key.is-govt i { background: var(--brand); }
+
+  .sc-caveat {
+    margin: var(--s-5, 1.5rem) 0 0;
+    font-size: var(--t-xs);
+    line-height: var(--lh-body);
+    color: var(--g-ink-3);
+    max-width: 62ch;
+  }
+
+  .sc-table-toggle { margin-top: var(--s-4, 1rem); }
+  .sc-table-toggle summary {
+    cursor: pointer;
+    font-size: var(--t-sm);
+    font-weight: 600;
+    color: var(--brand-text);
+    width: fit-content;
+  }
+  .sc-table-toggle[open] summary { margin-bottom: var(--s-4, 1rem); }
+
+  @media (max-width: 40rem) {
+    .sc-figure { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+    .sc-svg { min-width: 34rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sc-dot { transition: none; }
+  }
+</style>

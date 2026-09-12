@@ -30,6 +30,17 @@ import journeyStages from '../data/journey-stages.json';
       <h2>Free Counseling —<br>No Pressure</h2>
       <p>Our experienced counselors discuss your NEET score and options honestly — based strictly on official NMC India and MEC Nepal guidelines. No commitment required. No false promises. Ever.</p>
 
+      {/* Phase 5F: a scannable trust strip before the ask, reusing the exact
+          pill grammar .jr-path-step already establishes further down this
+          same page — a second place for the same signature, not a new one.
+          All three facts already exist in the paragraph above; this makes
+          them scannable in half a second for a visitor who came in unsure. */}
+      <ul class="assure-row rev" role="list">
+        <li class="assure-chip">Free, always</li>
+        <li class="assure-chip">30-minute session</li>
+        <li class="assure-chip">Based only on NMC/MEC rules</li>
+      </ul>
+
       {/* Phase 5F: not sure you qualify is the moment before a student ever
           reaches the form below — UNCERTAINTY before CONFIDENCE. Same
           calc-wrap component and checkEligibility() as /neet-calculator,
@@ -62,7 +73,8 @@ import journeyStages from '../data/journey-stages.json';
       </div>
       <p style="margin-top:18px;font-size:12px;color:rgba(255,255,255,.3)">📞 <span id="counsel-phone">+91 70808 00888</span> &nbsp;|&nbsp; 📧 info@nepalmbbs.in</p>
     </div>
-    <div class="counsel-card rev">
+    <div class="counsel-right">
+    <div class="counsel-card rev" data-scroll-target>
       <div class="counsel-card-title">Quick Enquiry</div>
       <div class="counsel-card-sub">Fill in — we'll contact you on your preferred channel within 2 hours</div>
       <div id="cform-area">
@@ -131,48 +143,125 @@ import journeyStages from '../data/journey-stages.json';
           Also retoned: an exclamation mark and a 📩 belong to a different
           register than the rest of this site, and "Enquiry Received!" tells
           the reader less than saying what happens next and when. */}
-      {/* Phase 5B: this was two lines of reassurance and nothing else —
-          the exact moment "what happens after I enquire?" matters most,
-          answered with no answer. What follows is real, not marketing
-          copy invented for this panel: the four near-term steps paraphrase
-          the actual seeded follow-up sequence a counsellor works from
-          (supabase/migrations/0004_lead_intake.sql's "New enquiry
-          follow-up" sequence — call, eligibility summary, second call,
-          week check-in), generalised rather than quoting its exact hour
-          offsets, since those live in an admin-editable table and a
-          public promise that drifts out of sync with the real timing
-          would be worse than a vaguer one. The 8-stage path is the
-          literal words the student portal already shows a real
-          applicant (see the import above) — not a preview of a feature
-          that does not exist, a preview of the one that does. */}
+      {/* Phase 5F: the "what happens" content that used to live only here
+          moved to .counsel-journey below, always visible — see that block's
+          own comment for why. This panel now stays purely the immediate
+          confirmation, plus one line pointing at what's already on screen
+          rather than re-stating it. */}
       <div class="form-success" id="cform-success">
         <h3>Your enquiry has been received</h3>
         <p>A counsellor will contact you on your preferred channel within two working hours. If your enquiry arrives outside working hours, it will be answered the following morning.</p>
-
-        <div class="jr">
-          <div class="jr-label">What happens next</div>
-          <ol class="jr-next">
-            <li><span class="jr-next-n"></span><span>A counsellor reviews your NEET score and what you're looking for</span></li>
-            <li><span class="jr-next-n"></span><span>You're contacted on the channel you chose above</span></li>
-            <li><span class="jr-next-n"></span><span>You get a written eligibility summary — the rule, not a promise</span></li>
-            <li><span class="jr-next-n"></span><span>If we haven't heard back, we check in — you never have to chase us</span></li>
-          </ol>
-
-          <div class="jr-label jr-label--path">The path ahead, if you proceed</div>
-          <ol class="jr-path">
-            {journeyStages.map((s, i) => (
-              <li class:list={['jr-path-step', { 'is-now': i === 0 }]}>{s.label}</li>
-            ))}
-          </ol>
-          <p class="jr-note">Once your enquiry becomes an application, you get a private link that tracks it against this same list — kept current by your counsellor as it actually happens, not a status page that goes stale.</p>
-        </div>
+        <p class="jr-live-note">The first step below is already underway — no need to refresh or check back.</p>
       </div>
+    </div>
+
+    {/* Phase 5F: this used to be the .jr block inside #cform-success, visible
+        only after a real form submit. That hid the single most confidence-
+        building content on the page — exactly what a counsellor does with
+        your number, and the real 8-stage path after — from the ~95% of
+        visitors who read before they'll ever type a phone number in. Made
+        permanently visible instead; a genuine submit (leads.js) marks the
+        first step/chip as actually underway rather than re-rendering this
+        content a second time. Nothing here is invented: same real seeded
+        follow-up sequence (supabase/migrations/0004_lead_intake.sql) and the
+        same literal 8-stage vocabulary portal.js already shows a real
+        applicant (see the import at the top of this file). */}
+    <div class="counsel-journey m-rise">
+      <div class="jr-label">What happens after you enquire</div>
+      <p class="counsel-journey-lead">Nothing manual on your side — this is what runs automatically the moment you press "Send Enquiry."</p>
+      <ol class="jr-next">
+        <li><span class="jr-next-n"></span><span>A counsellor reviews your NEET score and what you're looking for</span></li>
+        <li><span class="jr-next-n"></span><span>You're contacted on the channel you choose above</span></li>
+        <li><span class="jr-next-n"></span><span>You get a written eligibility summary — the rule, not a promise</span></li>
+        <li><span class="jr-next-n"></span><span>If we haven't heard back, we check in — you never have to chase us</span></li>
+      </ol>
+
+      <div class="jr-label jr-label--path">The path ahead, if you proceed</div>
+      <ol class="jr-path">
+        {journeyStages.map((s) => (
+          <li class="jr-path-step">{s.label}</li>
+        ))}
+      </ol>
+      <p class="jr-note">Once your enquiry becomes an application, you get a private link that tracks it against this same list — kept current by your counsellor as it actually happens, not a status page that goes stale.</p>
+    </div>
     </div>
   </div>
 </div>
 </div>
 
 <style>
+  /* Phase 5F — layout for the right-hand column: the enquiry form and the
+     always-visible "what happens" card stack as two siblings inside one
+     flex column, rather than as two direct children of .counsel-grid's own
+     2-column grid. A grid with unequal-height rows would otherwise place a
+     third direct child in a new implicit row that only starts once the
+     *tallest* row across both columns finishes — reopening the exact
+     "large dead gap" problem this phase set out to close, just moved
+     further down the page instead of removed. */
+  .counsel-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-6, 2rem);
+  }
+  /* base.css's .counsel-card carries position:sticky, built for when this
+     column held nothing else and had a lot of empty space beside a much
+     taller left column to fill. It no longer does (see .counsel-journey
+     below) — and a sticky, 94%-opaque card left free to float over its own
+     sibling as the page scrolls visibly ghosts through it. Static removes
+     the conflict; the column is close enough in height to the left one now
+     that the float-while-scrolling affordance isn't needed anyway. */
+  .counsel-right .counsel-card {
+    position: static;
+  }
+
+  /* Phase 5F — trust strip ahead of the eligibility check: reuses the exact
+     pill grammar .jr-path-step establishes below (border, ink-3 text, pill
+     radius) rather than inventing a second chip language on the same page. */
+  .assure-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0 0 var(--s-6, 1.75rem);
+    padding: 0;
+    list-style: none;
+  }
+  .assure-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--r-pill);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    color: var(--g-ink-2);
+    background: color-mix(in oklab, var(--brand) 6%, var(--m-fill-solid));
+    border: 1px solid var(--m-hairline);
+    white-space: nowrap;
+  }
+
+  /* Phase 5F — the persistent "what happens" card. Visually matches
+     .counsel-card (same fill/border/radius/shadow tokens) without inheriting
+     its position:sticky — two sticky siblings in the same column would
+     fight for the same top offset instead of stacking. */
+  .counsel-journey {
+    background: var(--m-fill-solid);
+    border: 1px solid var(--m-hairline);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sd-3);
+    padding: var(--s-6, 2rem);
+  }
+  .counsel-journey-lead {
+    font-size: var(--t-sm);
+    line-height: var(--lh-body);
+    color: var(--g-ink-3);
+    margin: 0 0 var(--s-5, 1.25rem);
+  }
+  .jr-live-note {
+    margin-top: var(--s-3, 0.75rem);
+    font-size: var(--t-xs);
+    color: var(--brand-text);
+    font-weight: 600;
+  }
+
   /* Phase 5B — the enquiry-success "what happens next" reveal.
      .jr-next reuses admission-process.astro's own ordinal-spine language
      (premium.css §8 .doc-steps) at a compact scale — the site's own
@@ -225,6 +314,15 @@ import journeyStages from '../data/journey-stages.json';
     border: 1px solid color-mix(in oklab, var(--brand) 28%, transparent);
   }
   .jr-next-n::before { content: counter(jrstep); }
+
+  /* Set by leads.js on a real submit — the first step is no longer generic,
+     it's genuinely underway for this enquiry. */
+  .jr-next li.is-done .jr-next-n {
+    color: var(--brand-ink);
+    background: var(--brand);
+    border-color: var(--brand);
+  }
+  .jr-next li.is-done .jr-next-n::before { content: '✓'; }
 
   /* The path ahead: a wrapped chip sequence, not a table of stage names.
      A chevron between chips (::after on every item but the last) reads

@@ -64,8 +64,23 @@ for (const route of ['/', '/colleges', '/neet-calculator', '/portal', '/staff'])
   const r = await page.evaluate(() => {
     const vis = (el) => {
       const cs = getComputedStyle(el), b = el.getBoundingClientRect();
-      return cs.display !== 'none' && cs.visibility !== 'hidden' &&
-             parseFloat(cs.opacity) > 0.05 && b.width > 0 && b.height > 0;
+      if (!(cs.display !== 'none' && cs.visibility !== 'hidden' &&
+            parseFloat(cs.opacity) > 0.05 && b.width > 0 && b.height > 0)) return false;
+      // A closed <details> renders nothing but its own <summary> — real and
+      // already reflected in innerText (which is why the unlabelled check
+      // below never actually saw these), but this Chromium build still
+      // reports a non-'none' display and a non-zero layout box for a
+      // descendant of the hidden body, which made every closed-details
+      // control look both "visible" and "unlabelled" here. Same family of
+      // checker blind spot as the gradient-contrast one already fixed in
+      // this file's history — caught by a real false-positive run, not
+      // assumed.
+      const closedDetails = el.closest('details:not([open])');
+      if (closedDetails) {
+        const summary = closedDetails.querySelector(':scope > summary');
+        if (!summary || !summary.contains(el)) return false;
+      }
+      return true;
     };
     const controls = [...document.querySelectorAll(
       'a[href],button,input,select,textarea,[tabindex]')].filter(vis);
