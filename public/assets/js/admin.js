@@ -305,22 +305,48 @@ async function addVideo(){
   const title=document.getElementById('a-vid-title').value.trim();
   const desc=document.getElementById('a-vid-desc').value.trim();
   const college=document.getElementById('a-vid-college')?document.getElementById('a-vid-college').value:'all';
+  const rights=document.getElementById('a-vid-rights')?document.getElementById('a-vid-rights').value:'unknown';
+  const featured=document.getElementById('a-vid-featured')?document.getElementById('a-vid-featured').checked:false;
   if(!url||!title){toast('URL and title are required','err');return;}
-  const ok=await sbW('/rest/v1/site_videos',{url,title,description:desc,category:college,is_active:true,sort_order:0});
+  // Media-readiness follow-up: saved as a draft (is_active:false) rather
+  // than instantly public — a wrong URL or mistyped college used to go
+  // live on the actual page the moment this button was clicked, with no
+  // chance to check it first. Publish it explicitly from the list below.
+  const ok=await sbW('/rest/v1/site_videos',{
+    url,title,description:desc,category:college,
+    rights_status:rights,source_type:ytId?'youtube':'external',featured,
+    is_active:false,sort_order:0,
+  });
   if(ok){
-    toast('Video added to Supabase','ok');
-    document.getElementById('a-vid-url').value='';document.getElementById('a-vid-title').value='';document.getElementById('a-vid-desc').value='';
+    toast('Saved as a draft — publish it from the list below when it looks right.','ok');
+    document.getElementById('a-vid-url').value='';
+    document.getElementById('a-vid-title').value='';
+    document.getElementById('a-vid-desc').value='';
+    if(document.getElementById('a-vid-featured')) document.getElementById('a-vid-featured').checked=false;
     await loadAdminVids();
-    // Show immediately on page
-    const c=document.getElementById('videos-container');
-    if(c){const d=document.createElement('div');d.className='vid-card rev';d.innerHTML=`<div class="vid-thumb"><iframe src="${url}" loading="lazy" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe></div><div class="vid-info"><h4>${title}</h4><p>${desc}</p></div>`;c.appendChild(d);revObs.observe(d);}
   } else toast('Error adding video. Check Supabase write policies.','err');
 }
 async function loadAdminVids(){
   const list=document.getElementById('admin-vid-list');if(!list)return;
   const vids=await sbR('/rest/v1/site_videos?select=*&order=created_at.desc');
   if(!vids.length){list.innerHTML='<p style="color:var(--muted);font-size:13px">No videos added yet.</p>';return;}
-  list.innerHTML=vids.map(v=>`<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${v.title}</div><div class="vid-row-url">${v.url}</div></div><button class="a-btn a-btn-danger" ${actAttr('click',[['deleteVideo',v.id]])} style="padding:5px 10px;font-size:12px">✕ Delete</button></div>`).join('');
+  list.innerHTML=vids.map(v=>{
+    const status=v.is_active
+      ?'<span style="color:#0B7A55;font-weight:700">Live</span>'
+      :'<span style="color:#92400e;font-weight:700">Draft</span>';
+    const toggleBtn=v.is_active
+      ?`<button class="a-btn a-btn-sec" ${actAttr('click',[['setVideoActive',v.id,false]])} style="padding:5px 10px;font-size:12px">Unpublish</button>`
+      :`<button class="a-btn a-btn-primary" ${actAttr('click',[['setVideoActive',v.id,true]])} style="padding:5px 10px;font-size:12px">Publish</button>`;
+    const meta=[v.category&&v.category!=='all'?v.category:null,v.rights_status&&v.rights_status!=='unknown'?v.rights_status:null].filter(Boolean).join(' · ');
+    return `<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${v.title} — ${status}</div><div class="vid-row-url">${v.url}${meta?' · '+meta:''}</div></div><div style="display:flex;gap:6px;flex-shrink:0">${toggleBtn}<button class="a-btn a-btn-danger" ${actAttr('click',[['deleteVideo',v.id]])} style="padding:5px 10px;font-size:12px">✕ Delete</button></div></div>`;
+  }).join('');
+}
+async function setVideoActive(id,active){
+  const ok=await sbW(`/rest/v1/site_videos?id=eq.${id}`,{is_active:active},'PATCH');
+  if(ok){
+    toast(active?'Published — now live on /videos and its college page.':'Unpublished.','ok');
+    await loadAdminVids();
+  } else toast('Error updating video.','err');
 }
 async function deleteVideo(id){
   if(!confirm('Delete this video permanently?'))return;
@@ -497,12 +523,33 @@ async function uploadCollegePhoto(){
     if(r.ok){
       toast('Photo uploaded — live on the college page now.', 'ok');
       fileEl.value = '';
+      // Media-readiness follow-up: the file itself is already live (this
+      // upload flow always has been, deliberately — see the section's own
+      // copy above), so the describable facts about it are saved
+      // immediately too, not held back as a draft the way a new video is.
+      await upsertHeroPhotoMeta(slug, path);
       await loadCollegePhotoPreview();
     } else {
       const body = await r.json().catch(()=>({}));
       toast(body.message || 'Upload failed.', 'err');
     }
   }catch(e){ toast('Network problem. Please try again.', 'err'); }
+}
+
+async function upsertHeroPhotoMeta(slug, storagePath){
+  const caption = (document.getElementById('ap-college-photo-caption')||{}).value?.trim() || null;
+  const alt = (document.getElementById('ap-college-photo-alt')||{}).value?.trim() || null;
+  const rights = (document.getElementById('ap-college-photo-rights')||{}).value || 'unknown';
+  const existing = await sbR(`/rest/v1/site_photos?select=id&college_slug=eq.${encodeURIComponent(slug)}&category=eq.hero&kind=eq.hosted`);
+  const payload = {
+    college_slug: slug, category: 'hero', kind: 'hosted', storage_path: storagePath,
+    caption, alt_text: alt, rights_status: rights, is_active: true, featured: true,
+  };
+  if(Array.isArray(existing) && existing.length){
+    await sbW(`/rest/v1/site_photos?id=eq.${existing[0].id}`, payload, 'PATCH');
+  } else {
+    await sbW('/rest/v1/site_photos', payload, 'POST');
+  }
 }
 
 async function loadCollegePhotoPreview(){
@@ -515,9 +562,18 @@ async function loadCollegePhotoPreview(){
   if(Array.isArray(files) && files.length){
     const url = sbPublicUrl('college-photos', slug + '/' + files[0].name);
     box.innerHTML = `<img src="${url}" alt="" style="max-width:220px;border-radius:8px;display:block">`;
+    // Pre-fill the metadata fields from what's on file, so re-checking a
+    // photo also shows (and lets someone correct) its caption/alt/rights
+    // rather than only ever being set once at upload time.
+    const meta = await sbR(`/rest/v1/site_photos?select=*&college_slug=eq.${encodeURIComponent(slug)}&category=eq.hero&kind=eq.hosted&limit=1`);
+    const row = Array.isArray(meta) && meta[0];
+    if(document.getElementById('ap-college-photo-caption')) document.getElementById('ap-college-photo-caption').value = (row && row.caption) || '';
+    if(document.getElementById('ap-college-photo-alt')) document.getElementById('ap-college-photo-alt').value = (row && row.alt_text) || '';
+    if(document.getElementById('ap-college-photo-rights') && row) document.getElementById('ap-college-photo-rights').value = row.rights_status || 'unknown';
   } else {
     box.innerHTML = '<p style="color:var(--muted);font-size:13px">No photo uploaded for this college yet.</p>';
   }
+  await loadPhotoRefs();
 }
 
 async function deleteCollegePhoto(){
@@ -535,9 +591,54 @@ async function deleteCollegePhoto(){
       method: 'DELETE',
       headers: Auth.headers()
     });
-    if(r.ok){ toast('Photo removed.', 'ok'); await loadCollegePhotoPreview(); }
+    if(r.ok){
+      toast('Photo removed.', 'ok');
+      const existing = await sbR(`/rest/v1/site_photos?select=id&college_slug=eq.${encodeURIComponent(slug)}&category=eq.hero&kind=eq.hosted`);
+      if(Array.isArray(existing) && existing.length){
+        await sbW(`/rest/v1/site_photos?id=eq.${existing[0].id}`, null, 'DELETE');
+      }
+      await loadCollegePhotoPreview();
+    }
     else toast('Could not remove photo — admin role required.', 'err');
   }catch(e){ toast('Network problem. Please try again.', 'err'); }
+}
+
+// Media-readiness follow-up: the reference-link path for a real photo whose
+// reuse rights aren't clear — nothing is copied or hosted, only a link to
+// where the institution has actually published it. See CONTENT_ASSET_PLAN.md.
+async function addOfficialPhotoRef(){
+  const sel = document.getElementById('ap-college-select');
+  const slug = sel ? sel.value : '';
+  const url = document.getElementById('ap-photo-ref-url').value.trim();
+  const source = document.getElementById('ap-photo-ref-source').value.trim();
+  if(!slug || !url){ toast('Choose a college and enter a URL.', 'err'); return; }
+  const ok = await sbW('/rest/v1/site_photos', {
+    college_slug: slug, category: 'hero', kind: 'reference',
+    external_url: url, source_name: source || null,
+    rights_status: 'official-public', is_active: true,
+  });
+  if(ok){
+    toast('Reference link added.', 'ok');
+    document.getElementById('ap-photo-ref-url').value = '';
+    document.getElementById('ap-photo-ref-source').value = '';
+    await loadPhotoRefs();
+  } else toast('Error adding reference.', 'err');
+}
+
+async function loadPhotoRefs(){
+  const sel = document.getElementById('ap-college-select');
+  const slug = sel ? sel.value : '';
+  const box = document.getElementById('ap-photo-ref-list');
+  if(!slug || !box) return;
+  const refs = await sbR(`/rest/v1/site_photos?select=*&college_slug=eq.${encodeURIComponent(slug)}&kind=eq.reference&order=created_at.desc`);
+  if(!Array.isArray(refs) || !refs.length){ box.innerHTML = ''; return; }
+  box.innerHTML = refs.map(r => `<div class="vid-row"><div class="vid-row-info"><div class="vid-row-title">${r.source_name || 'Reference link'}</div><div class="vid-row-url">${r.external_url}</div></div><button class="a-btn a-btn-danger" ${actAttr('click',[['deletePhotoRef',r.id]])} style="padding:5px 10px;font-size:12px">✕ Delete</button></div>`).join('');
+}
+
+async function deletePhotoRef(id){
+  if(!confirm('Remove this reference link?')) return;
+  const ok = await sbW(`/rest/v1/site_photos?id=eq.${id}`, null, 'DELETE');
+  if(ok){ toast('Removed.', 'ok'); await loadPhotoRefs(); } else toast('Error removing.', 'err');
 }
 
 async function exportCSV(){

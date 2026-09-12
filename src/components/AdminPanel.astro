@@ -8,7 +8,22 @@
 // page actually renders from. Left as-is; fixing it is a separate task from
 // what was asked here).
 import { getColleges } from '../lib/colleges.js';
+import videoCategories from '../data/video-categories.json';
 const colleges = await getColleges();
+
+// Media-readiness follow-up (2026-09-12): the video-college dropdown below
+// used to be 13 hand-typed options with their own, never-aligned codes
+// (manipal/nmc-b/lumbini/chitwan) — four of which didn't match what
+// video-categories.json (and therefore /videos.astro and college-video.js)
+// actually filter by, and five colleges had no option at all. A video an
+// admin filed under "chitwan" here would never have shown up on Chitwan
+// Medical College's own tab or page. Generated from the same single source
+// of truth every other video-aware surface already reads, so this can't
+// drift out of sync again.
+const videoCollegeOptions = colleges
+  .filter((c) => videoCategories[c.slug])
+  .map((c) => ({ code: videoCategories[c.slug].code, name: c.name }))
+  .sort((a, b) => a.name.localeCompare(b.name));
 ---
 <button class="admin-access-btn" data-act="click" data-do='[["openAdmin"]]' aria-label="Admin Panel">⚙️ Admin</button>
 
@@ -83,25 +98,32 @@ const colleges = await getColleges();
           <label class="a-label" style="margin-bottom:4px">College (for filtering)</label>
           <select class="a-inp" id="a-vid-college">
             <option value="all">All / General</option>
-            <option value="kmc">Kathmandu Medical College</option>
-            <option value="kist">KIST Medical College</option>
-            <option value="gandaki">Gandaki Medical College</option>
-            <option value="manipal">Manipal Pokhara</option>
-            <option value="cms">CMS Chitwan</option>
-            <option value="nobel">Nobel Medical College</option>
-            <option value="nmc-b">National Medical College</option>
-            <option value="ucms">UCMS</option>
-            <option value="lumbini">Lumbini Medical College</option>
-            <option value="bpkihs">BPKIHS</option>
-            <option value="chitwan">Chitwan Medical College</option>
-            <option value="birat">Birat Medical College</option>
-            <option value="janaki">Janaki Medical College</option>
+            {videoCollegeOptions.map((o) => <option value={o.code}>{o.name}</option>)}
           </select>
         </div>
       </div>
 <p style="font-size:11.5px;color:var(--muted);margin-bottom:8px">For YouTube: paste the video page URL (e.g. https://youtu.be/VIDEO_ID or https://www.youtube.com/watch?v=VIDEO_ID) — system auto-converts to embed format.</p>
-<div class="a-row"><input type="text" class="a-inp" id="a-vid-url" placeholder="YouTube URL or embed URL"><input type="text" class="a-inp" id="a-vid-title" placeholder="Video title"></div><input type="text" class="a-inp" id="a-vid-desc" placeholder="Short description (optional)" style="margin-top:8px"><div class="a-btns"><button class="a-btn a-btn-primary" data-act="click" data-do='[["addVideo"]]'>💾 Add to Supabase</button></div></div>
-      <div class="a-sect"><div class="a-label">Current Videos (from Supabase)</div><div id="admin-vid-list"><p style="color:var(--muted);font-size:13px">Loading...</p></div></div>
+<div class="a-row"><input type="text" class="a-inp" id="a-vid-url" placeholder="YouTube URL or embed URL"><input type="text" class="a-inp" id="a-vid-title" placeholder="Video title"></div><input type="text" class="a-inp" id="a-vid-desc" placeholder="Short description (optional)" style="margin-top:8px">
+      <div class="a-row" style="margin-top:8px">
+        <div>
+          <label class="a-label" style="margin-bottom:4px" for="a-vid-rights">Rights status</label>
+          <select class="a-inp" id="a-vid-rights">
+            <option value="unknown">Not sure / haven't checked</option>
+            <option value="official-public">Official — institution's own public channel</option>
+            <option value="licensed">Licensed / permission obtained</option>
+            <option value="own">We filmed this ourselves</option>
+          </select>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--g-ink-2,#4F5460);white-space:nowrap;padding-top:20px">
+          <input type="checkbox" id="a-vid-featured"> Feature this video first
+        </label>
+      </div>
+      <p style="font-size:11.5px;color:var(--muted);margin:6px 0 0">
+        Saves as a <strong>draft</strong> — not visible on the public site until you
+        press Publish in the list below, so you can check it looks right first.
+      </p>
+      <div class="a-btns" style="margin-top:8px"><button class="a-btn a-btn-primary" data-act="click" data-do='[["addVideo"]]'>💾 Save as draft</button></div></div>
+      <div class="a-sect"><div class="a-label">Current Videos (from Supabase)</div><p style="font-size:11.5px;color:var(--muted);margin-bottom:8px">Draft videos are saved but not shown on the public site — press Publish when ready.</p><div id="admin-vid-list"><p style="color:var(--muted);font-size:13px">Loading...</p></div></div>
     </div>
 
     <!-- TESTIMONIALS -->
@@ -196,12 +218,42 @@ const colleges = await getColleges();
             <input class="a-inp" id="ap-college-file" type="file" accept="image/jpeg,image/png,image/webp">
           </div>
         </div>
+        <div class="a-row" style="margin-top:10px">
+          <input type="text" class="a-inp" id="ap-college-photo-caption" placeholder="Caption (optional — shown near the photo)">
+          <input type="text" class="a-inp" id="ap-college-photo-alt" placeholder="Alt text (optional — for screen readers)">
+        </div>
+        <div style="margin-top:10px;max-width:16rem">
+          <label class="a-label" for="ap-college-photo-rights" style="margin-bottom:4px">Rights status</label>
+          <select class="a-inp" id="ap-college-photo-rights">
+            <option value="own">We took this photo ourselves</option>
+            <option value="official-public">Official — from the institution's own public materials</option>
+            <option value="licensed">Licensed / permission obtained</option>
+            <option value="unknown">Not sure / haven't checked</option>
+          </select>
+        </div>
         <div class="a-btns" style="margin-top:14px">
           <button class="a-btn a-btn-primary" data-act="click" data-do='[["uploadCollegePhoto"]]'>⬆️ Upload</button>
           <button class="a-btn a-btn-sec" data-act="click" data-do='[["loadCollegePhotoPreview"]]'>🔄 Check current photo</button>
           <button class="a-btn a-btn-danger" data-act="click" data-do='[["deleteCollegePhoto"]]'>🗑️ Remove current photo</button>
         </div>
         <div id="ap-college-photo-preview" style="margin-top:14px"></div>
+
+        <div style="margin-top:20px;padding-top:16px;border-top:1px dashed var(--border)">
+          <div class="a-label">Or: link to an official source instead of uploading</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:10px">
+            Use this when a real photo exists but reuse rights aren't clear —
+            link to the institution's own page rather than copying the image.
+            Shown as an outbound link, never as this site's own photo.
+          </p>
+          <div class="a-row">
+            <input type="text" class="a-inp" id="ap-photo-ref-url" placeholder="https://college-website.example/gallery">
+            <input type="text" class="a-inp" id="ap-photo-ref-source" placeholder='Source name (e.g. "CMC official website")'>
+          </div>
+          <div class="a-btns" style="margin-top:8px">
+            <button class="a-btn a-btn-sec" data-act="click" data-do='[["addOfficialPhotoRef"]]'>🔗 Add reference link</button>
+          </div>
+          <div id="ap-photo-ref-list" style="margin-top:10px"></div>
+        </div>
       </div>
     </div>
 

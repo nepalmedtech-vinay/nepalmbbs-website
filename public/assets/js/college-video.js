@@ -50,7 +50,10 @@
         '&is_active=eq.true&order=sort_order.asc,created_at.asc'
       );
       if (Array.isArray(vids) && vids.length) {
-        el.innerHTML = '<div class="vid-featured">' + vidCardHTML(vids[0], true) + '</div>';
+        // Media-readiness follow-up: an explicit featured=true row leads,
+        // same as /videos itself now does — sort_order still decides ties.
+        const ordered = vids.slice().sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+        el.innerHTML = '<div class="vid-featured">' + vidCardHTML(ordered[0], true) + '</div>';
         if (vids.length > 1) {
           const more = document.createElement('a');
           more.href = '/videos?college=' + encodeURIComponent(category);

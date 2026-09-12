@@ -101,6 +101,19 @@ const factParts = [
 
   .cph { position: absolute; inset: 0; z-index: 2; }
   .cph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Media-readiness follow-up: shown only when college-photo.js finds a real
+     caption on the photo's site_photos metadata row — most uploads won't
+     have one, and the slot works exactly as before when it doesn't. */
+  .cph-caption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    margin: 0;
+    padding: var(--s-3, 0.75rem);
+    font-size: 12px;
+    line-height: 1.4;
+    color: #fff;
+    background: linear-gradient(0deg, rgba(0 0 0 / 0.55), transparent);
+  }
 
   .ch-fallback {
     position: absolute;

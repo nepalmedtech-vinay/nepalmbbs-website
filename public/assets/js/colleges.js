@@ -80,6 +80,15 @@ function renderNoVideoState(college, container, btn) {
 // second, slightly-different implementation of the same YouTube-URL-to-
 // thumbnail logic. Global on purpose — colleges.js loads before
 // college-video.js in GlassLayout, same ordering config.js/leads.js rely on.
+// Media-readiness follow-up: rights_status (migration 0008) is optional and
+// most rows won't have anything more useful than 'unknown' — the source
+// line only renders when there's a genuinely meaningful label to show.
+var VID_RIGHTS_LABEL = {
+  'official-public': 'Official — institution’s own channel',
+  'licensed': 'Licensed',
+  'own': 'Filmed by us',
+};
+
 function vidCardHTML(v, featured) {
   let embedUrl = v.url;
   let thumbUrl = '';
@@ -89,18 +98,24 @@ function vidCardHTML(v, featured) {
     thumbUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
   }
   const cls = featured ? 'vid-card vid-card--featured' : 'vid-card';
+  const rightsLabel = VID_RIGHTS_LABEL[v.rights_status];
+  const sourceLine = rightsLabel ? `<p class="vid-source">${rightsLabel}</p>` : '';
   return thumbUrl
-    ? `<div class="${cls}"><div class="vid-thumb"><div class="vid-placeholder" ${actAttr('click',[['playVid','@el',embedUrl]])}><img src="${thumbUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy" decoding="async"><div style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div><div class="play-btn" style="position:relative;z-index:1">▶</div></div></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div></div>`
-    : `<div class="${cls}"><div class="vid-thumb"><iframe src="${embedUrl}" loading="lazy" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div></div>`;
+    ? `<div class="${cls}"><div class="vid-thumb"><div class="vid-placeholder" ${actAttr('click',[['playVid','@el',embedUrl]])}><img src="${thumbUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy" decoding="async"><div style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div><div class="play-btn" style="position:relative;z-index:1">▶</div></div></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p>${sourceLine}</div></div>`
+    : `<div class="${cls}"><div class="vid-thumb"><iframe src="${embedUrl}" loading="lazy" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p>${sourceLine}</div></div>`;
 }
 
 function renderVideoGrid(videos, container) {
   if (!container) return;
   const wrap = document.createElement('div');
   wrap.className = 'vid-wrap';
-  let html = `<div class="vid-featured">${vidCardHTML(videos[0], true)}</div>`;
-  if (videos.length > 1) {
-    html += `<div class="vid-grid">${videos.slice(1).map(v => vidCardHTML(v, false)).join('')}</div>`;
+  // Media-readiness follow-up: an explicit featured=true row leads, same as
+  // before when none is set — sort_order (already applied by the query)
+  // still decides the rest.
+  const ordered = videos.slice().sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+  let html = `<div class="vid-featured">${vidCardHTML(ordered[0], true)}</div>`;
+  if (ordered.length > 1) {
+    html += `<div class="vid-grid">${ordered.slice(1).map(v => vidCardHTML(v, false)).join('')}</div>`;
   }
   wrap.innerHTML = html;
   container.innerHTML = '';

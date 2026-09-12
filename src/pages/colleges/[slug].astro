@@ -7,6 +7,7 @@ import { SITE } from '../../lib/routes.js';
 import knowledge from '../../data/knowledge.json';
 import places from '../../data/places.json';
 import videoCategories from '../../data/video-categories.json';
+import officialSources from '../../data/official-sources.json';
 
 // One review date for the whole dataset, taken from the same file the
 // assistant answers from, so a page and an answer cannot claim different
@@ -28,6 +29,7 @@ const path = `/colleges/${c.slug}`;
 const shortName = c.name.split('(')[0].trim();
 const hasCoord = !!places[c.location];
 const videoCategory = videoCategories[c.slug]?.code || '';
+const sources = officialSources[c.slug];
 // Computed once here (frontmatter can await; the template below cannot) —
 // how many of the 27 colleges the compact map actually plots, for its own
 // lead copy.
@@ -195,6 +197,27 @@ const schema = {
           </p>
         </div>
       </noscript>
+      {/* Media-readiness follow-up (2026-09-12): a distinct third state,
+          neither "we have this evidence" nor "we have nothing" — this
+          college has a verified real institutional presence elsewhere, and
+          the honest thing is to point there rather than either embed
+          something we cannot confirm the rights/authorship of, or say
+          nothing at all. Renders only for the one college with a verified
+          entry today (see src/data/official-sources.json and
+          DECISION_LOG.md); absent for every other college, exactly like
+          every other unfilled slot on this page. */}
+      {sources && (
+        <div class="doc-note" style="margin-top:16px">
+          <strong>Official {shortName} sources.</strong> Verified {sources.verifiedAt} — {sources.verificationNote}
+          {' '}
+          {sources.links.map((l, i) => (
+            <>
+              <a href={l.url} target="_blank" rel="noopener">{l.label} ↗</a>
+              {i < sources.links.length - 1 ? ' · ' : ''}
+            </>
+          ))}
+        </div>
+      )}
     </div>
   </div>
 

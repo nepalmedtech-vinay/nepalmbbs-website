@@ -5,6 +5,79 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-09-12 — Media-readiness follow-up: no unverifiable video embedded; reference links over rehosted photos; draft/publish added only where it was missing
+
+Decided not to embed any of the specific CMC YouTube videos this session's
+`WebSearch` surfaced ("CHITWAN MEDICAL COLLEGE TOUR | CAMPUS & HOSPITAL |
+NEPAL | Episode #2", "CMC Virtual Tour | Jan 2024," others), even though the
+task explicitly asked to identify and use the best official CMC video.
+`WebFetch` is blocked for youtube.com in this sandbox (confirmed directly,
+not assumed from `CLAUDE.md`'s note), so a specific video's actual
+uploader/channel could not be independently verified — only its title and
+a search engine's summary. Several other results for the same search were
+explicitly third-party (a named individual's "campus review," a separate
+consultancy's own "Episode #2" series), which is direct evidence that not
+everything surfacing for "Chitwan Medical College" is CMC's own upload.
+Embedding one specific video as this college's official evidence, on
+search-snippet confidence alone, would have been exactly the kind of
+misattribution `DECISION_LOG.md`/`TECHNICAL_DEBT.md`/`CONTENT_SOURCE_LOG.md`
+already document standing rules against for text and photography — this is
+that same rule, applied to video, holding even under explicit instruction
+to "use what's available now," because the instruction's own rule 1
+("if reuse rights are unclear, do not copy the asset — use the official
+source as a reference/link instead") already anticipated exactly this
+case and named the fallback to use.
+
+Extended that same reasoning to authenticity, not only reuse rights: the
+task's rule 1 explicitly addresses unclear *rights*, but the identical
+logic applies when what's unclear is whether an asset is genuinely the
+institution's own at all. Used the safer, lower-stakes reference-link
+pattern for both situations rather than treating them as different
+problems needing different tools.
+
+Decided against downloading and rehosting any CMC website photograph for
+the same reason, independent of the rights-status field's `unknown`
+default even existing: a college's own photography is presumptively
+copyrighted to the college, and "publicly viewable on their site" is not
+"licensed for a third party's commercial admissions-consultancy site" —
+the task's own rule 1 says this explicitly. The three verified presences
+(website, Facebook page, YouTube channel — corroborated by matching phone/
+email across independent listings, not merely "this page's own claim")
+are recorded as outbound reference links instead, which carries none of
+that risk: the visitor goes and judges CMC's own page for themselves,
+rather than this site vouching for a specific asset.
+
+Decided to introduce a genuine draft-then-publish step for new video
+(`is_active: false` at insert, a separate Publish action) but explicitly
+*not* retrofit the same gate onto the hero-photo upload flow, even though
+both now share a metadata table. The photo flow's "upload → live
+immediately" behaviour is a pre-existing, already-documented, working
+design choice (its own on-page copy says so) — changing it was not asked
+for and was not the bug this pass was fixing. The video flow, by contrast,
+had literally never had any review step at all (every prior insert was
+`is_active: true` unconditionally) and was the one part of this system
+just discovered to have shipped a real, silent, months-old bug — a
+stronger case for adding a safety gate than "we now have a shared table."
+Applying the same policy everywhere a table is shared would have been
+uniformity for its own sake, not a decision serving either flow's actual
+risk profile.
+
+Found and fixed a second, independent instance of Phase 5E's own
+category-mismatch bug, this time in the admin panel's own UI rather than
+the database: `AdminPanel.astro`'s `#a-vid-college` dropdown had 13
+hand-typed options with codes that were never aligned with
+`video-categories.json` (4 actively wrong, 9 colleges missing outright).
+This meant that even after Phase 5E's migration fixed the missing
+`category` column, a staff member using the *existing, already-shipped*
+admin form to add a Chitwan Medical College video today would have saved
+it under `category: "chitwan"` — which nothing on the public site reads,
+since the real code is `cmc`. Not something the task asked to look for
+specifically, but it directly and silently blocks the exact goal ("make
+the media system usable now") the task named — fixed in the same pass
+rather than filed as a separate finding to revisit later, since leaving a
+freshly-discovered, actively-blocking bug unfixed while shipping
+adjacent work in the same file would not meet the task's own bar.
+
 ## 2026-09-12 — Phase 5E: asked before adding a DB column; used real Supabase access instead of guessing; reused college-photo.js's shape for video
 
 Found, while wiring a college detail page to its real video record, that

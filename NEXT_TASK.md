@@ -47,11 +47,11 @@ far, in order, all shipped and on `claude/website-premium-design-j6mphw`:
   defines the asset-slot architecture (7 slots, 0/27 photos filled today).
   Full detail, including a measured (not assumed) ~90-150ms TBT cost from
   reusing the map component, in `PROJECT_STATE.md` and `TECHNICAL_DEBT.md`.
-- **Phase 5E** (cinematic video / real media experience) — complete, this
-  pass. Found and fixed a real, blocking bug along the way (with explicit
-  approval before touching the schema): `site_videos` had no `category`
-  column despite the app already assuming one everywhere, so no video
-  could ever have been attached to a specific college — fixed with
+- **Phase 5E** (cinematic video / real media experience) — complete, commit
+  `126df2a`. Found and fixed a real, blocking bug along the way (with
+  explicit approval before touching the schema): `site_videos` had no
+  `category` column despite the app already assuming one everywhere, so no
+  video could ever have been attached to a specific college — fixed with
   `supabase/migrations/0007_site_videos_category.sql`. Extended video-tab
   coverage from 18 to all 27 colleges (`src/data/video-categories.json`),
   connected college detail pages to their own real videos (new
@@ -61,22 +61,42 @@ far, in order, all shipped and on `claude/website-premium-design-j6mphw`:
   confirmed correct end-to-end (via mocked responses) but has nothing real
   to display yet. Full detail in `PROJECT_STATE.md` and
   `CONTENT_ASSET_PLAN.md`'s Slot 6.
+- **Media-readiness follow-up** (a controlled Phase 5E extension, not
+  Phase 5F) — complete, this pass. Researched Chitwan Medical College's
+  official website/YouTube/social presence (`WebFetch` fully blocked in
+  this sandbox — verification limited to cross-checked `WebSearch`
+  snippets); found and fixed a second dropdown-code bug in the admin
+  panel itself (same family as Phase 5E's, but in the UI staff actually
+  use); built the requested asset/rights/featured metadata schema
+  (migration 0008: `site_videos` gains rights/source/featured columns, new
+  `site_photos` table for hosted-or-reference photo metadata); implemented
+  a genuine UPLOAD→IDENTIFY/MAP→REVIEW→PUBLISH workflow for new video in
+  the admin panel (drafts now, not instant-live); added three verified
+  official reference links for Chitwan Medical College only — deliberately
+  embedded no specific photo or video, since none could be confirmed
+  authentic/rights-cleared from this sandbox. Full detail in
+  `PROJECT_STATE.md` and `CONTENT_ASSET_PLAN.md`.
 
 **Next approved tasks, per the roadmap, not yet started — do not begin
 any of these without a fresh explicit approval naming the phase:**
 Phase 5F (dedicated counselling conversion experience), Phase 5G (second
 meaningful dataviz), Phase 5H (broad mobile/tablet cinematic QA).
 
-Also still queued, not started: sourcing real per-college photography and
-video (now that `CONTENT_ASSET_PLAN.md` names exactly what's needed, where
-it goes, and — for video — that the category field now actually works);
-the Nepalgunj/`places.json` location-string mismatch (`TECHNICAL_DEBT.md`,
-Phase 5D section) — a content-verification task, not a code change; a
-dedicated performance pass on `CollegeMap`'s per-instance cost if it
-becomes a priority on its own terms rather than folded into a
-product-narrative phase; pulling the 9 undocumented `exam_intelligence_*`
-migrations already applied to the live project down into this repo as
-local files (`TECHNICAL_DEBT.md`, Phase 5E section) — a real repo/database
+Also still queued, not started: the owner confirming a specific CMC video/
+photo is genuinely official and rights-cleared, then adding it through the
+now-working admin workflow (no code change needed); sourcing real
+per-college photography and video for the other 26 colleges (now that
+`CONTENT_ASSET_PLAN.md` names exactly what's needed, where it goes, and
+the full ingestion workflow); extending the admin panel's photo-category
+picker beyond `hero` once a gallery display component exists to show the
+result (`CONTENT_ASSET_PLAN.md` Slot 2); the Nepalgunj/`places.json`
+location-string mismatch (`TECHNICAL_DEBT.md`, Phase 5D section) — a
+content-verification task, not a code change; a dedicated performance pass
+on `CollegeMap`'s per-instance cost if it becomes a priority on its own
+terms rather than folded into a product-narrative phase; pulling the 9
+undocumented `exam_intelligence_*` migrations already applied to the live
+project down into this repo as local files (`TECHNICAL_DEBT.md`) — a real
+repo/database
 divergence, not something Phase 5E's own scope covered.
 
 ## Status as of 2026-09-08 — superseded by the section above, kept for history

@@ -6,6 +6,96 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-12 — Media-readiness follow-up (Phase 5E extension) shipped
+
+A controlled, explicitly-scoped follow-up to Phase 5E: make the media
+system usable now, without waiting on the owner's own photo/video uploads,
+using officially-published CMC resources where legitimately usable, and
+build a documented future-ingestion system. Not a Phase 5E redesign, not
+Phase 5F.
+
+**Research**: investigated Chitwan Medical College's official website and
+YouTube/social presence via `WebSearch` (`WebFetch` is blocked in this
+sandbox for every external domain tried, confirmed directly — the same
+constraint `CLAUDE.md` already documents). Confirmed an official website
+(`cmc.edu.np`) and official Facebook page (`facebook.com/cmcteachinghospital`)
+via matching contact details across both; found a plausible official
+YouTube channel by name but could not independently verify it. Found
+several YouTube "campus tour"/"virtual tour" videos but deliberately did
+**not** embed any of them — their actual uploader/channel could not be
+confirmed, and several search results were explicitly third-party
+(a named individual's review, another consultancy's own series). Embedding
+one as this college's official evidence without that confidence would be
+the exact misattribution this project's standing content rules exist to
+prevent. Added the three verified presences as outbound reference links
+instead (`src/data/official-sources.json`) — the safe, honest middle
+ground between "embedded evidence" and "nothing," rendered as a distinct
+"Official [college] sources" note on Chitwan Medical College's own detail
+page only.
+
+**Second bug found and fixed, same family as Phase 5E's**: the admin
+panel's own video-add dropdown (`AdminPanel.astro`) had its own,
+never-aligned 13-code list — 4 codes actively wrong (`manipal`/`nmc-b`/
+`lumbini`/`chitwan` vs the real `mcoms`/`nmcb`/`lmc`/`cmc`), 9 colleges
+missing entirely. Even after Phase 5E's schema fix, using this dropdown to
+tag a Chitwan Medical College video would have silently saved it under a
+code nothing reads. Fixed by generating the dropdown from
+`video-categories.json` directly — all 27 colleges, correct codes,
+impossible to drift out of sync again.
+
+**Schema (migration 0008, applied to the live project)**: `site_videos`
+gained `rights_status`/`source_type`/`poster_url`/`featured` (all
+nullable/defaulted, zero impact on the 0 existing rows). New `site_photos`
+table — `kind: 'hosted'` (a real file in `college-photos`, with caption/alt
+text/rights status/featured/ordering) or `kind: 'reference'` (an official
+external link, no file, used when reuse rights are unclear) — RLS mirrors
+`site_videos` exactly (public read, staff write). Verified via
+`get_advisors` afterward: zero new security findings.
+
+**Admin panel workflow (UPLOAD → IDENTIFY/MAP → REVIEW → PUBLISH)**: new
+videos now save as a draft (`is_active: false`) with a Publish button in
+the admin's own video list, rather than going instantly live the moment
+"Add to Supabase" was clicked — a wrong URL or mistyped college used to
+reach a visitor with zero chance to check it first. The hero-photo upload
+flow's existing "instant live" behaviour was deliberately *not* changed
+(it predates this pass, is documented, and works well); it gained optional
+caption/alt-text/rights-status fields instead, plus a parallel
+"link to an official source" path for reference-only assets. Full
+non-technical walkthrough in `CONTENT_ASSET_PLAN.md`.
+
+**Rendering**: `college-photo.js` now prefers `site_photos`' metadata
+(caption/alt text) when present, falling back to the original
+Storage-only behaviour otherwise — zero regression for anything uploaded
+before this pass. `vidCardHTML`/`renderVideoGrid`/`college-video.js` now
+show a small rights/source line when meaningful, and an explicit
+`featured: true` row leads regardless of upload order (verified via a
+mocked Supabase response, since no real video exists to test against
+naturally). Two more small pre-existing bugs fixed while in this code:
+`addVideo()`'s own "show immediately" DOM injection (now removed — it
+would have shown a draft as if it were live) and a stale comment/behaviour
+mismatch now corrected in the same functions.
+
+**Deliberately not done**: no CMC photo or video was copied, downloaded,
+or embedded — every slot on Chitwan Medical College's own page still shows
+its honest graphic fallback or empty state, now alongside three verified
+reference links. No new visual language, no WebGL, no GSAP/Lenis. No touch
+to the `exam_intelligence_*` migration divergence (documented separately,
+explicitly out of scope for this pass per the user's own instruction).
+
+**Verified**: production build (44 routes, clean); CSP unaffected (no
+inline-script changes); Playwright checks across all 6 breakpoints on
+Chitwan Medical College's own page (zero overflow); the official-sources
+block's 3 links (correct hrefs, `target=_blank`/`rel=noopener`, keyboard-
+focusable) render only for the one college with a verified entry and
+correctly absent for every other; a mocked-Supabase pass confirming
+featured-first ordering and the rights badge on both `/videos` and a
+college detail page; a `prefers-reduced-motion: reduce` pass; the admin
+panel opens with zero JS errors and all new fields (rights status,
+featured checkbox, caption/alt/reference-link inputs) present and the
+college dropdown showing all 27 correct entries; no console/page errors
+beyond this sandbox's pre-existing, already-documented network egress
+restrictions.
+
 ## ⭐ 2026-09-12 — Phase 5E (cinematic video / real media experience) shipped
 
 The strategic question this phase actually answered wasn't "what video
