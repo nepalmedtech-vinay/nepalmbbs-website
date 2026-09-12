@@ -5,6 +5,75 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-09-12 — Phase 5D: extend CollegeMap rather than build a second map; no crystal CTA per college; honest performance reporting
+
+Decided to extend `CollegeMap.astro` with three optional, additive props
+(`highlight`, `variant="compact"`, `headOverride`) rather than build a
+second, detail-page-specific map component. The alternative — a small,
+bespoke "locator" widget showing just one point — would have been cheaper
+to render but would have invented a second visual language for the same
+underlying fact this component already presents perfectly well, working
+directly against "ownable design language: extend the existing... language,
+do not introduce a new one." The three props are all optional and default
+to today's exact behaviour, so the homepage and `/colleges` render
+byte-for-byte the same as before this phase — verified, not assumed.
+
+Decided the highlighted point needs its own class (`is-highlight`),
+separate from the component's existing transient `is-active` (the class
+`show()`/`hide()` already move between whichever point has hover/focus).
+Marking the highlighted point `is-active` directly would have worked
+visually at first render, but the *first hover on any other point* would
+immediately strip it via `hide()`'s `active.classList.remove('is-active')`
+— losing the "this is the college you're on" signal exactly when a visitor
+starts comparing it against neighbours, which is the one moment it matters
+most. `is-highlight` never enters that toggle logic, so it survives
+regardless of what else on the map is being hovered.
+
+Decided against putting the enquire CTA in `CollegeHero.astro` or anywhere
+before the record/academic-path sections. The brief's own conversion
+requirement (§9) asked for the CTA to read as "the natural next step after
+understanding the college," which argues for placing it after the record
+and the academic path, not before them — and premium.css §17's own comment
+already reserves the `.gl-crystal` treatment for exactly two sitewide
+conversion points (nav + homepage hero), a restraint Phase 4's own audit
+already respected once. Reusing it a third time, once per college (27
+more), would be precisely the dilution that restraint was written to
+prevent. The enquire button stays `.college-enquire`, moved to a closing
+band at the end of the page instead.
+
+Found, while investigating "hospital ecosystem" data before writing
+anything: `knowledge.json` has one general, regulation-level fact sourced
+to Nepal Medical Council (every MEC-approved college is attached to a
+teaching hospital where clinical training and internship happen) but no
+per-college hospital name, bed count, or case mix for any of the 27
+colleges beyond what a college's own name happens to state (many literally
+contain "Teaching Hospital"). Decided to surface the general fact,
+explicitly say when a specific hospital isn't on file, and treat filling
+that gap as a future content-research task (recorded as Slot 3 in
+`CONTENT_ASSET_PLAN.md`) rather than infer or approximate a hospital
+identity per college from its name alone.
+
+Measured a real, reproducible ~90-150ms Total Blocking Time cost from
+reusing `CollegeMap` on the detail route, via a git-stash isolated
+before/after comparison on the same route under the same throttled-mobile
+harness (two runs per side: baseline 324ms/353ms, Phase 5D 436ms/447ms —
+non-overlapping ranges, not noise). Tried one targeted fix — deferring the
+highlighted point's card-reveal off the `IntersectionObserver` callback via
+double-`requestAnimationFrame`, since `show()` does two `getBoundingClientRect`
+calls that force layout — and it did not measurably reduce the number
+(460ms/509ms after). Decided to keep the deferral anyway, on the
+independent correctness argument that a purely cosmetic reveal shouldn't
+force synchronous layout inside a callback that fires during initial page
+settle, regardless of whether it moves this specific measurement — but
+explicitly did NOT report it as a fix, and recorded the real, un-improved
+number in `PROJECT_STATE.md`/`TECHNICAL_DEBT.md` rather than omit it or
+claim a false resolution. The project's own `tests/perf-verify.mjs`, run
+against the finished build, shows the detail route's absolute TBT
+(~500-545ms) below `/colleges`' own TBT (~975-980ms) in the same run — a
+route this phase never touched — which is why this is recorded as
+disclosed, pre-existing-environment-adjacent debt rather than treated as a
+blocking regression unique to this phase.
+
 ## 2026-09-12 — Phase 5C: discovery table stays server-rendered; compare bar fixed, not sticky
 
 Decided the entire discovery experience (search/filter/sort) runs

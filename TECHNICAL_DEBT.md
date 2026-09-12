@@ -3,6 +3,37 @@
 Known, named debt. Per the master brief: document it here rather than
 leaving it as a silent TODO, and give each item a path to being resolved.
 
+## Newly identified 2026-09-12 (Phase 5D) — not fixed, out of scope
+
+- **One college's `location` string does not match any `places.json` key.**
+  `nepalgunj-medical-college`'s `location` is `"Kohalpur, Banke"`;
+  `places.json` has coordinates filed under `"Nepalgunj"` instead. This
+  college was already silently excluded from `CollegeMap` (the component
+  filters to `places[c.location]`); Phase 5D's detail-page map reuse
+  inherits the same exclusion rather than introducing a new one, and the
+  page handles it correctly (no map section renders for this one college,
+  rather than a broken or empty one). Not fixed here since correcting a
+  college's recorded location is a content-verification task, not a code
+  change, and touching `colleges.json`/`places.json` values without
+  re-checking the source is exactly the kind of drift `CONTENT_SOURCE_LOG.md`
+  exists to prevent.
+- **Reusing `CollegeMap` on 27 detail pages costs a measured, real ~90-150ms
+  of Total Blocking Time** under this test harness's 4x CPU throttle
+  (isolated via a git-stash before/after comparison, not a single noisy
+  reading — see `PROJECT_STATE.md`'s Phase 5D entry and `DECISION_LOG.md`
+  for the full numbers). This is a disclosed cost of the phase's own "map
+  continuity" requirement, not a bug: the map is real, sourced,
+  content-bearing evidence, not decoration. The college detail route's
+  absolute TBT (~500-545ms via the project's own `tests/perf-verify.mjs`)
+  is, at the time of this measurement, still lower than `/colleges`'
+  own TBT (~975-980ms) — a route this phase did not touch — so it is not
+  an outlier against the rest of the site's current, already-over-budget
+  state in this sandbox. Worth a real fix (e.g. lazy-mounting the map's
+  interaction script until the figure is closer to the viewport, beyond
+  the existing IntersectionObserver-gated *draw*) in a future pass focused
+  on performance specifically, rather than folded into a product-narrative
+  phase.
+
 ## Newly identified 2026-09-11 (Phase 5B) — not fixed, out of scope
 
 - **`AdminPanel.astro`'s "Hero Lead Form" toggle (`#sw-form`) targets an

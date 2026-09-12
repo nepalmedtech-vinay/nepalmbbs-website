@@ -1,0 +1,156 @@
+---
+import EvidenceBadges from './EvidenceBadges.astro';
+import places from '../data/places.json';
+
+// Phase 5D — the college detail page's identity moment. Establishes which
+// college this is and why it matters before anything else on the page:
+// name, the handful of facts that place it, and the evidence badges that
+// were previously stranded below a generic PageHeader.
+//
+// The right-hand panel is an asset slot, not a photo: `#college-photo`
+// (college-photo.js, unchanged) already looks for a real staff-uploaded
+// photo in Supabase Storage and reveals itself the moment one exists for
+// this slug — nothing here changes that mechanism. Until a college has one,
+// the slot shows a graphic fallback built entirely from this college's own
+// real fields (its initials, its ownership, its actual coordinates where
+// known) — never a stock or generic campus image standing in for a real
+// one, per the standing content rule.
+interface Props { college: Record<string, any> }
+const { college: c } = Astro.props;
+const isGovt = c.type === 'govt';
+const shortName = c.name.split('(')[0].trim();
+const coord = places[c.location];
+
+const STOP = new Set(['of', 'the', 'and', '&', 'for']);
+const initials = (
+  shortName
+    .split(/\s+/)
+    .filter((w) => w && !STOP.has(w.toLowerCase()))
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('') || shortName.slice(0, 2)
+).toUpperCase();
+
+// A one-line identity sentence from fields that already exist — no new
+// facts, just the existing record read in order rather than as a table.
+const factParts = [
+  c.location,
+  c.affiliation && `affiliated to ${c.affiliation}`,
+  c.established && `established ${c.established}`,
+].filter(Boolean);
+---
+<div class="rev">
+  <a href="/colleges" class="college-link" style="display:inline-block;margin-bottom:18px">← All Nepal medical colleges</a>
+</div>
+
+<section class="ch rev">
+  <div class="ch-copy">
+    <span class="eyebrow">{isGovt ? 'Government college' : 'Private college'} · MEC Nepal 2025-26</span>
+    <h1 class="sec-title college-name ch-h1">{c.name}</h1>
+    {factParts.length > 0 && <p class="ch-facts">{factParts.join(' · ')}</p>}
+    <EvidenceBadges college={c} />
+  </div>
+
+  <div class="ch-asset" class:list={[{ 'is-govt': isGovt }]}>
+    {/* Empty and hidden until college-photo.js finds a real photo for this
+        slug. Absolutely positioned over the fallback below so the swap from
+        graphic mark to real photograph needs no script change here. */}
+    <div class="cph" id="college-photo" data-college-slug={c.slug} hidden></div>
+
+    <div class="ch-fallback" aria-hidden="true">
+      <svg class="ch-fallback-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <line x1="0" y1="22" x2="100" y2="22" />
+        <line x1="14" y1="0" x2="14" y2="100" />
+      </svg>
+      <span class="ch-mono">{initials}</span>
+    </div>
+    <p class="ch-fallback-cap">
+      {coord
+        ? <>Identity mark, not a photograph · {coord.lat.toFixed(2)}°N, {coord.lon.toFixed(2)}°E</>
+        : <>Identity mark, not a photograph</>}
+    </p>
+  </div>
+</section>
+
+<style>
+  .ch { display: grid; gap: var(--s-6, 2rem); }
+  @media (min-width: 56rem) {
+    .ch {
+      grid-template-columns: minmax(0, 1fr) 19rem;
+      align-items: start;
+      gap: clamp(2rem, 1rem + 3vw, 3.5rem);
+    }
+  }
+  .ch-h1 { margin: var(--s-4, 1rem) 0 var(--s-3, 0.75rem); }
+  .ch-facts {
+    margin: 0 0 var(--s-4, 1rem);
+    color: var(--g-ink-3, var(--muted));
+    font-size: var(--t-sm, 0.95rem);
+  }
+
+  .ch-asset {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--r-md, 12px);
+    overflow: hidden;
+    box-shadow: 0 0 0 1px var(--pr-hair, var(--border));
+  }
+  @media (min-width: 56rem) {
+    .ch-asset { aspect-ratio: 3 / 4; }
+  }
+
+  .cph { position: absolute; inset: 0; z-index: 2; }
+  .cph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .ch-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(155deg,
+      color-mix(in oklab, var(--brand) 16%, var(--g-base, #fff)),
+      color-mix(in oklab, var(--brand-2, var(--brand)) 10%, var(--g-base, #fff)));
+  }
+  .ch-asset.is-govt .ch-fallback {
+    background: linear-gradient(155deg,
+      color-mix(in oklab, var(--brand-2, var(--brand)) 18%, var(--g-base, #fff)),
+      color-mix(in oklab, var(--brand) 10%, var(--g-base, #fff)));
+  }
+  .ch-fallback-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    stroke: color-mix(in oklab, var(--g-ink) 12%, transparent);
+    stroke-width: 0.4;
+  }
+  .ch-mono {
+    position: relative;
+    font-family: var(--ty-display);
+    font-weight: var(--ty-weight-d, 800);
+    font-size: clamp(3.5rem, 2.5rem + 4vw, 5.5rem);
+    letter-spacing: 0.01em;
+    color: color-mix(in oklab, var(--g-ink) 78%, var(--brand) 22%);
+    opacity: 0.85;
+  }
+  .ch-fallback-cap {
+    position: absolute;
+    left: var(--s-3, 0.75rem);
+    bottom: var(--s-3, 0.75rem);
+    right: var(--s-3, 0.75rem);
+    z-index: 1;
+    margin: 0;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    color: color-mix(in oklab, var(--g-ink) 55%, transparent);
+  }
+  /* The moment a real photo reveals itself (college-photo.js removes
+     [hidden]), the caption belongs to a photograph, not a mark — hide it
+     rather than have it caption someone's real campus. */
+  .cph:not([hidden]) ~ .ch-fallback-cap { display: none; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ch-mono { transition: opacity var(--d-4, 0.5s) var(--ea-out, ease); }
+  }
+</style>

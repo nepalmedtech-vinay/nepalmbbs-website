@@ -25,28 +25,42 @@ far, in order, all shipped and on `claude/website-premium-design-j6mphw`:
   (`src/data/journey-stages.json`, sourced from `portal.js`'s own
   `STAGES`), instead of two lines of generic reassurance. Full detail in
   `PROJECT_STATE.md`.
-- **Phase 5C** (interactive college discovery) — complete, this pass.
-  `/colleges` moves the map above the list (geographic understanding
-  before the list, reusing `CollegeMap.astro` completely unchanged — map
-  clicks still navigate straight to a college's detail page) and replaces
-  the two static grouped tables (government / private) with one unified,
-  server-rendered, searchable/filterable/sortable table plus a per-row
-  compare-selection flow that hands off to the existing `/colleges/compare`
-  tool via its own `?c=slug1,slug2` URL param. Full detail in
-  `PROJECT_STATE.md`.
+- **Phase 5C** (interactive college discovery) — complete, commit
+  `6e8df7c`. `/colleges` moves the map above the list (geographic
+  understanding before the list, reusing `CollegeMap.astro` completely
+  unchanged — map clicks still navigate straight to a college's detail
+  page) and replaces the two static grouped tables (government / private)
+  with one unified, server-rendered, searchable/filterable/sortable table
+  plus a per-row compare-selection flow that hands off to the existing
+  `/colleges/compare` tool via its own `?c=slug1,slug2` URL param. Full
+  detail in `PROJECT_STATE.md`.
+- **Phase 5D** (premium college detail experience) — complete, this pass.
+  `/colleges/[slug]` is rebuilt around a DISCOVER→UNDERSTAND→EXPERIENCE→
+  VERIFY→DECIDE→ENQUIRE narrative: a new `CollegeHero.astro` (identity +
+  a real asset-slot with a graphic, never-fabricated fallback), the
+  existing `CollegeMap.astro` reused via three new optional props
+  (`highlight`/`variant="compact"`/`headOverride` — homepage and
+  `/colleges` are unaffected) to show this one college highlighted among
+  all 27, a new 4-step academic-path timeline sourced from
+  `knowledge.json`'s own already-vetted topics, and a new compare-with-
+  others link into `/colleges/compare?c=<slug>`. New `CONTENT_ASSET_PLAN.md`
+  defines the asset-slot architecture (7 slots, 0/27 photos filled today).
+  Full detail, including a measured (not assumed) ~90-150ms TBT cost from
+  reusing the map component, in `PROJECT_STATE.md` and `TECHNICAL_DEBT.md`.
 
 **Next approved tasks, per the roadmap, not yet started — do not begin
 any of these without a fresh explicit approval naming the phase:**
-Phase 5D (premium college-detail experience), Phase 5E (cinematic video
-experience), Phase 5F (dedicated counselling conversion experience),
-Phase 5G (second meaningful dataviz), Phase 5H (broad mobile/tablet
-cinematic QA).
+Phase 5E (cinematic video experience), Phase 5F (dedicated counselling
+conversion experience), Phase 5G (second meaningful dataviz), Phase 5H
+(broad mobile/tablet cinematic QA).
 
-Also still queued, not started: `CONTENT_ASSET_PLAN.md` (cataloguing
-exactly what real per-college photography/video is missing, so the owner
-has something concrete to act on) — not bundled into any phase so far
-since it's orthogonal to each phase's specific product goal; worth its
-own short pass whenever there's a natural gap between phases.
+Also still queued, not started: sourcing real per-college photography (now
+that `CONTENT_ASSET_PLAN.md` names exactly what's needed and where it goes
+— see that file); the Nepalgunj/`places.json` location-string mismatch
+(`TECHNICAL_DEBT.md`, Phase 5D section) — a content-verification task, not
+a code change; a dedicated performance pass on `CollegeMap`'s per-instance
+cost if it becomes a priority on its own terms rather than folded into a
+product-narrative phase.
 
 ## Status as of 2026-09-08 — superseded by the section above, kept for history
 

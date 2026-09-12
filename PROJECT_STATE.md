@@ -6,6 +6,104 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-12 — Phase 5D (premium college detail experience) shipped
+
+The college detail page (`/colleges/[slug]`) was a generic `PageHeader` plus
+one "Record" table plus a fee caveat plus an enquire button — a fact sheet,
+not the decision surface the brief asked for. Phase 5D rebuilds it around a
+DISCOVER → UNDERSTAND → EXPERIENCE → VERIFY → DECIDE → ENQUIRE narrative,
+using only systems the site already has.
+
+**Investigated before coding**: the route itself, `colleges.json`'s full
+field list, `CollegeMap.astro`'s data/interaction model, `compare.astro`'s
+`?c=` pre-select mechanism, `knowledge.json`'s already-sourced topics,
+`college-photo.js`/migration 0006's existing (unfilled) photo infrastructure,
+and `EvidenceBadges`/`.doc`/`.doc-steps`/`.college-enquire` — confirming a
+real, un-invented "hospital ecosystem" fact already exists
+(`knowledge.json`'s `teaching-hospital` topic: every MEC-approved college is
+attached to a teaching hospital) but no per-college hospital detail beyond
+what a college's own name states.
+
+**What shipped**:
+- **`CollegeHero.astro`** (new) — identity (name, one-line real facts,
+  evidence badges) plus an asset slot. The slot reuses `college-photo.js`'s
+  existing hook unchanged; until a real photo exists for a college (0/27 do
+  today), it shows a graphic fallback built from that college's own data —
+  its initials in display type, an ownership-tinted panel, and its real
+  coordinates where known — never a stock or generic campus image.
+- **`CollegeMap.astro` extended, not rebuilt**: three additive, optional
+  props (`highlight`, `variant="compact"`, `headOverride`) let the exact
+  same component render beside a detail page's own copy with one college's
+  point already marked. Reuses the existing `.map-pt`/`show()`/`hide()`
+  interaction model entirely; the one addition is a permanent
+  `.is-highlight` mark (decoupled from the transient hover-driven
+  `.is-active` class) so the highlighted college's ring survives hovering
+  elsewhere on the map. Homepage and `/colleges` pass none of these props
+  and are pixel-for-pixel unchanged.
+- **`[slug].astro` restructured** into the narrative: Hero → Record panel
+  (unchanged in substance) → compact highlighted map (skipped for the one
+  college with no `places.json` match, rather than shown broken) → "Your
+  years at [college]" — a 4-step `.doc-steps` timeline (the same ordinal
+  component `admission-process.astro` already uses) built from
+  `knowledge.json`'s own already-sourced curriculum/teaching-hospital/
+  duration/internship/NExT topics, read in chronological order rather than
+  as separate FAQ answers → the existing seat/fee caveats, unchanged → a new
+  "compare this college" link (`/colleges/compare?c=<slug>`, the tool's own
+  pre-select mechanism) and a link back to `/colleges` → the enquire CTA,
+  moved to the end so it reads as the next step after understanding the
+  college rather than a button competing with the facts above it.
+- **`CONTENT_ASSET_PLAN.md`** (new) — the asset-slot architecture: seven
+  named slots (hero photo, campus, hospital/clinical, library/classroom,
+  student life, video, maps/location), each with its intended storage,
+  current fill status (0/27 except maps, which is real data already), and
+  the one rule that governs all of them (an empty slot gets an intentional
+  graphic fallback, never a stock or invented image; a filled slot is
+  filled only by a real, staff-uploaded asset).
+
+**Deliberately not done**: no `.gl-crystal` on the enquire button (that
+crystal fill is reserved, by an existing documented decision, to the two
+highest-visibility sitewide conversion points — nav and homepage hero; using
+it again per-college would be the exact dilution that restraint exists to
+prevent); no fabricated hospital name/bed count/case-mix for any college
+(the page states the general, sourced regulatory fact and is explicit when
+a specific detail isn't on file); no gallery/video work (Slots 2-6 in
+`CONTENT_ASSET_PLAN.md` — no real assets exist yet to display); no change
+to `compare.js`, `colleges.js`, or any Supabase/RLS surface.
+
+**Verified**: production build (44 routes, clean) and CSP hash regeneration
+(the map component's inline script changed); Playwright checks at
+390/430/768/820/1024/1440 — zero horizontal overflow at any width, the
+highlighted map point auto-reveals its readout card and is the only one
+without the dimmed treatment, the college with no map-coordinate match
+correctly omits the map section entirely rather than rendering broken;
+keyboard reachability; the 4-step academic timeline renders with absolute,
+real source links; the compare-link carries the correct `?c=` value and
+genuinely pre-selects on `/colleges/compare`; the enquire button's
+`data-do` payload is correct; a `prefers-reduced-motion: reduce` pass (hero
+and map both render); a live discovery → detail → compare flow click-through.
+No console/page errors from this phase's own code (the only errors present
+are this sandbox's pre-existing, already-documented network egress
+restrictions on Google Fonts and Supabase).
+
+**Performance — measured, not assumed**: reusing `CollegeMap` on the detail
+route has a real, reproducible cost. A git-stash isolated before/after
+comparison (same route, same throttled-mobile harness, two runs each side)
+showed baseline TBT at ~325-355ms and Phase 5D's TBT at ~436-510ms — a
+genuine ~90-150ms increase, not noise. The project's own `tests/perf-verify.mjs`
+puts the finished route's TBT at ~500-545ms; in the same run, `/colleges`
+(untouched this phase) measured ~975-980ms TBT and `/` (also untouched)
+~555-560ms, so this route's number is not an outlier against the rest of
+the site's current state in this specific sandboxed harness — every route
+tested except `/staff` and `/portal` exceeds the 200ms budget right now,
+which is a pre-existing environmental condition, not something this phase
+introduced or fixed. One targeted attempt to reduce it (deferring the
+highlighted point's card-reveal off the `IntersectionObserver` callback via
+double-`requestAnimationFrame`) did not measurably help and was kept anyway
+on correctness grounds (it's still better practice not to force a
+synchronous layout read inside that callback), not claimed as a fix.
+Documented as real, open debt in `TECHNICAL_DEBT.md` rather than glossed
+over.
+
 ## ⭐ 2026-09-12 — Phase 5C (interactive college discovery) shipped
 
 `/colleges` was two static grouped tables (government, then private) with

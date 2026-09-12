@@ -11,6 +11,26 @@ import places from '../data/places.json';
 // It is a relative-position field, which is honest about its precision while
 // still telling a family, at a glance, that the east has clusters and the
 // far west has almost nothing.
+//
+// Phase 5D: reused as-is on college detail pages via three additive props —
+// nothing below changes for the homepage/`/colleges` callers, which pass
+// none of them. `highlight` marks one college's point as already-active (the
+// same `.is-active` state hover/focus already produce, not a new visual);
+// `variant="compact"` swaps the wide homepage layout for a narrower one that
+// sits beside a page's own copy; `headOverride` replaces the generic
+// headline with page-specific copy. A college whose `location` has no entry
+// in places.json (one currently does not — see TECHNICAL_DEBT.md) simply
+// won't appear as a point and can't be highlighted; callers check for that
+// via the exported `hasCoords` behaviour (a college not in `points`).
+interface Props {
+  highlight?: string;
+  variant?: 'full' | 'compact';
+  headOverride?: { eyebrow: string; title: string; lead: string };
+  sectionId?: string;
+}
+const { highlight, variant = 'full', headOverride, sectionId = 'hp-place' } = Astro.props;
+const compact = variant === 'compact';
+
 const colleges = (await getColleges()).filter((c) => places[c.location]);
 
 // Nepal's extent, padded. Latitude is inverted because SVG y grows downward.
@@ -48,8 +68,8 @@ const points = colleges
 const totalSeats = points.reduce((n, p) => n + p.seats, 0);
 ---
 
-<section class="map-section" id="hp-place">
-  <div class="container">
+<section class:list={['map-section', { 'map-section--compact': compact }]} id={sectionId}>
+  <div class:list={['container', { 'map-in--compact': compact }]}>
 
     {/* Phase 5A: .m-focus (motion.css) instead of the generic .m-rise the
         rest of the site's block-arrivals use — a blur-in that reads as a
@@ -58,22 +78,29 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
         starting its own, unrelated entrance. Existing primitive, no new
         CSS. */}
     <div class="map-head m-focus">
-      <span class="gl-eyebrow">Where they are</span>
-      <h2 class="map-title">
-        One admission process,<br />
-        <span class="gl-grad">{colleges.length} places it can take you</span>
-      </h2>
+      <span class="gl-eyebrow">{headOverride?.eyebrow ?? 'Where they are'}</span>
+      {headOverride
+        ? <h2 class="map-title">{headOverride.title}</h2>
+        : (
+          <h2 class="map-title">
+            One admission process,<br />
+            <span class="gl-grad">{colleges.length} places it can take you</span>
+          </h2>
+        )}
       <p class="gl-lead">
-        Every college is plotted where it actually sits, sized by the
-        {' '}{totalSeats} foreign-quota seats between them. The clustering is not
-        an accident of the drawing — it is where Nepal's medical education
-        actually is, and it is worth knowing before you pick a city.
+        {headOverride?.lead ?? (
+          <>Every college is plotted where it actually sits, sized by the
+          {' '}{totalSeats} foreign-quota seats between them. The clustering is not
+          an accident of the drawing — it is where Nepal's medical education
+          actually is, and it is worth knowing before you pick a city.</>
+        )}
       </p>
     </div>
 
     <figure class="map-figure m-focus">
       <svg
         class="map-svg"
+        class:list={[{ 'has-highlight': !!highlight }]}
         style="color:var(--brand)"
         viewBox={`0 0 ${W} ${H}`}
         role="img"
@@ -109,7 +136,7 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
         <g class="map-points">
           {points.map((p, i) => (
             <g
-              class:list={['map-pt', { 'is-govt': p.govt }]}
+              class:list={['map-pt', { 'is-govt': p.govt, 'is-highlight': p.slug === highlight }]}
               style={`--i:${i}`}
               data-name={p.name}
               data-loc={p.location}
@@ -189,16 +216,81 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
       if (!fig.contains(e.relatedTarget)) hide();
     });
 
+    // Phase 5D: on a college detail page, one point already carries a
+    // server-rendered .is-highlight (a permanent mark, untouched by
+    // show()/hide() above) — reveal its readout card once, right after the
+    // points draw in, so the map opens already answering "where is this
+    // one" rather than waiting for a hover that a visitor has no reason to
+    // try. Hovering elsewhere still works exactly as before; the highlight
+    // ring itself never depends on `active`, so it survives regardless.
+    //
+    // show() reads layout (getBoundingClientRect on both the point and the
+    // figure) to position the card — real work, and measured to add ~90ms
+    // of blocking time when it runs synchronously inside the
+    // IntersectionObserver callback, right as the rest of the page is
+    // still settling. Deferred one frame past paint with requestAnimationFrame
+    // (a setTimeout(…, 0) fallback for the handful of browsers without it)
+    // so this purely-cosmetic reveal never competes with first paint for
+    // main-thread time; a visitor sees the card appear a frame later, which
+    // reads as instant either way.
+    function revealHighlight() {
+      var reveal = function () {
+        var hl = fig.querySelector('.map-pt.is-highlight');
+        if (hl) show(hl);
+      };
+      if (window.requestAnimationFrame) requestAnimationFrame(function () { requestAnimationFrame(reveal); });
+      else setTimeout(reveal, 0);
+    }
+
     // Draw the points in only once the figure is actually on screen.
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (es) {
         es.forEach(function (e) {
-          if (e.isIntersecting) { fig.classList.add('is-drawn'); io.disconnect(); }
+          if (e.isIntersecting) { fig.classList.add('is-drawn'); revealHighlight(); io.disconnect(); }
         });
       }, { threshold: 0.18 });
       io.observe(fig);
     } else {
       fig.classList.add('is-drawn');
+      revealHighlight();
     }
   })();
 </script>
+
+<style>
+  /* Phase 5D reuse: dims every point except the one this page is about, and
+     gives that one a permanent ring independent of hover/focus state (the
+     existing .is-active class is transient — show()/hide() below move it
+     between whichever point the pointer is over). Only active when a
+     `highlight` prop is passed; homepage/`/colleges` never set one, so
+     `.map-svg` never gets `.has-highlight` there and this is a no-op. */
+  .map-svg.has-highlight .map-pt:not(.is-highlight) .map-ring,
+  .map-svg.has-highlight .map-pt:not(.is-highlight) .map-dot {
+    opacity: 0.32;
+  }
+  .map-pt.is-highlight .map-ring {
+    fill: color-mix(in oklab, var(--brand) 22%, transparent);
+    stroke: var(--brand-lift);
+    stroke-width: 2;
+  }
+  .map-pt.is-highlight .map-dot { fill: var(--brand-lift); }
+  .map-pt.is-highlight .map-halo { opacity: 1; }
+
+  /* Compact variant: a college detail page reuses this component beside its
+     own copy rather than as a full-width section, so the wide single-column
+     homepage layout becomes a narrower two-column one at desktop widths,
+     with shorter vertical padding. Below that width it stacks exactly like
+     the homepage's own responsive behaviour — no separate mobile rules
+     needed here. */
+  .map-section--compact { padding: var(--s-6, 2.5rem) 0; }
+  @media (min-width: 62rem) {
+    .map-in--compact {
+      display: grid;
+      grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+      gap: clamp(2rem, 1rem + 3vw, 3.5rem);
+      align-items: start;
+    }
+    .map-in--compact .map-head { max-width: none; }
+    .map-in--compact .map-figure { margin-top: 0; }
+  }
+</style>
