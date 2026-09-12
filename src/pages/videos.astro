@@ -32,7 +32,7 @@ const tabs = colleges
   <div class="college-selector rev" style="margin-top:28px">
     <div class="college-sel-label">Select a College to Explore</div>
     <div class="college-tabs-wrap" id="college-tabs">
-      <button class="college-tab on" data-act="click" data-do='[["selectCollege","@el","all"]]'>🏛️ All Videos</button>
+      <button class="college-tab on" data-act="click" data-do='[["selectCollege","@el","all"]]'><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> All Videos</button>
       {tabs.map((t) => (
         <button class="college-tab" data-act="click" data-do={`[["selectCollege","@el","${t.code}"]]`}>{t.label}</button>
       ))}
@@ -45,7 +45,7 @@ const tabs = colleges
     <h4>Campus footage and process guides</h4>
     <p>We publish video only where we have filmed it ourselves or the college has supplied it. If there is nothing here for a college you are considering, ask us — we will tell you what we hold, including where we hold nothing.</p>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
-      <a href="https://drive.google.com/drive/folders/1W-q-NqJwrkJ1K8EirJvphAwW-xsMF4cQ" target="_blank" rel="noopener" class="btn-primary" style="font-size:13px;padding:10px 20px">📂 Full Video Library →</a>
+      <a href="https://drive.google.com/drive/folders/1W-q-NqJwrkJ1K8EirJvphAwW-xsMF4cQ" target="_blank" rel="noopener" class="btn-primary" style="font-size:13px;padding:10px 20px;display:inline-flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Full Video Library →</a>
       <a id="vid-wa-req" href="https://wa.me/917080800888?text=Hi!%20I%20want%20to%20request%20a%20campus%20video%20for%20Nepal%20MBBS" target="_blank" rel="noopener" class="btn-glass btn-wa-req">Request on WhatsApp</a>
       <a href="mailto:info@nepalmbbs.in?subject=Video Request - Nepal MBBS" class="btn-glass btn-req-email">Request via Email</a>
     </div>

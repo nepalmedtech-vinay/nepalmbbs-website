@@ -1014,8 +1014,37 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
    is the *styling* that was generic: a plus sign in a grey circle, a heavy
    border, no state on the row itself. */
 
-.faq-item { box-shadow: 0 0 0 1px var(--pr-hair), var(--sd-1) !important; }
-.faq-item + .faq-item { margin-top: var(--s-3); }
+/* Design pass, 2026-09-12: this had already fixed the plus-sign-in-a-
+   circle/heavy-border genericness (see the section comment above), but
+   left each of the 13 questions as its own individually-shadowed,
+   rounded, 8px-margined card — thirteen buttons stacked, not an index of
+   answers. One shared panel instead (this site's own .doc "record"
+   language), with .faq-cat's existing category labels doing the work of
+   section headers inside it and each .faq-item a flush ruled row. */
+.faq-wrap {
+  background: var(--pr-paper) !important;
+  border-radius: var(--r-md) !important;
+  box-shadow: 0 0 0 1px var(--pr-hair), var(--sd-2) !important;
+  overflow: hidden;
+}
+/* .faq-cat carries no horizontal padding of its own (base.css) — added
+   here so it lines up with .faq-q's own var(--s-5) inset instead of
+   sitting flush against the panel edge while the questions don't. */
+.faq-cat { margin: var(--s-6, 1.75rem) var(--s-5, 1.5rem) var(--s-3) !important; }
+.faq-wrap > .faq-cat:first-child { margin-top: var(--s-5, 1.5rem) !important; }
+
+.faq-item {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid var(--pr-hair) !important;
+  margin: 0 !important;
+}
+.faq-item.on { background: color-mix(in oklab, var(--brand) 3%, transparent) !important; }
+.faq-wrap > .faq-item:last-child,
+.faq-item:has(+ .faq-cat) {
+  border-bottom: 0 !important;
+}
 
 .faq-q {
   display: flex;

@@ -525,6 +525,9 @@
 .college-tab {
   position: relative;
   overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: var(--m-fill-solid) !important;
   border: 1px solid var(--m-hairline) !important;
   color: var(--g-ink-2) !important;
@@ -534,6 +537,12 @@
               color var(--d-2, 200ms) var(--ea-out, ease),
               border-color var(--d-2, 200ms) var(--ea-out, ease);
 }
+/* The "All Videos" tab's icon swapped from an emoji (renders differently
+   per platform, sits on the text baseline rather than optically centred)
+   to inline SVG, matching the sitewide convention (Footer.astro,
+   life-in-nepal.astro). */
+.college-tab svg { flex: none; opacity: 0.8; }
+.college-tab.on svg { opacity: 1; }
 /* Same navy-blue crystal hover as the Guidelines page's `.g-tab` — this is
    the identical tab-switcher pattern (button, `.on` active state, one
    filter group) and was the one place on the site still using the plain

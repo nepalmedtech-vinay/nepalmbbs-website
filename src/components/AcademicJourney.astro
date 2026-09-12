@@ -1,0 +1,74 @@
+---
+// Homepage "Practice" chapter (#hp-practice — the chapter rail in index.astro
+// names it, so the id stays exactly where it was). This used to be
+// MedicalGallery.astro: three Unsplash stock photos captioned "Clinical
+// Rounds" / "Teaching Hospital" / "MBBS Curriculum". Replaced entirely,
+// not just given a better broken-image fallback — the homepage's own hero
+// copy already promises "no stock photographs standing in for a campus,
+// no promise the Medical Education Commission has not made", and this
+// section was the one place on the homepage still breaking that promise
+// (a real, previously-documented conflict in this codebase's own design
+// history, DESIGN_AUDIT.md §7). It also depended on three external
+// hotlinks with no fallback that actually engages in every failure mode
+// (confirmed this session: this sandbox's network stalls the request
+// rather than failing it, so even the sitewide broken-image gradient
+// never got the chance to show).
+//
+// What replaced it needs no photography at all: the same four-stage
+// academic sequence colleges/[slug].astro already builds from
+// knowledge.json's own sourced topics — regulation, true of every
+// MEC-approved college, not content invented for this page — reused
+// verbatim rather than duplicated, minus the one truly per-college clause
+// ([slug].astro's hospitalInName branch; this page names no college).
+// Rendered with .doc-steps, the same scroll-filling-spine component
+// admission-process.astro and every college detail page already use — a
+// third use of an established signature rather than a new "photo band"
+// component to maintain against three dead links.
+import knowledge from '../data/knowledge.json';
+const topic = (id) => knowledge.topics.find((t) => t.id === id);
+
+const steps = [
+  {
+    title: 'Pre-clinical years',
+    body: 'Anatomy, Physiology and Biochemistry — the same pre-clinical sequence the Indian MBBS curriculum follows.',
+    source: topic('curriculum').source,
+  },
+  {
+    title: 'Clinical years',
+    body: `Medicine, Surgery, Obstetrics & Gynaecology and Paediatrics. ${topic('teaching-hospital').answer}`,
+    source: topic('teaching-hospital').source,
+  },
+  {
+    title: 'Internship in Nepal',
+    body: `${topic('duration').answer} ${topic('provisional-registration').answer}`,
+    source: topic('duration').source,
+  },
+  {
+    title: 'NMC screening, in India',
+    body: topic('next-fmge').answer,
+    source: topic('next-fmge').source,
+  },
+];
+---
+<section class="med-gallery-section m-rise" id="hp-practice">
+  <div class="wrap">
+    <div class="tc" style="margin-bottom: var(--s-6)">
+      <span class="eyebrow">Clinical Training</span>
+      <h2 class="sec-title">What medical training actually looks like</h2>
+      <p class="gl-lead" style="margin-top: var(--s-3); max-width: 56ch;">
+        Not a photograph — the four-stage sequence Nepal Medical Council and
+        National Medical Commission (India) regulation actually sets, the
+        same for every MEC-approved college.
+      </p>
+    </div>
+    <ol class="doc-steps">
+      {steps.map((s) => (
+        <li class="doc-step">
+          <h3 class="doc-step-title">{s.title}</h3>
+          <p class="doc-step-body">{s.body}</p>
+          <a href={s.source.url} target="_blank" rel="noopener" class="card-link">{s.source.name} ↗</a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

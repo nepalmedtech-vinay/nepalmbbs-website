@@ -3,7 +3,85 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
-## ⭐ Status as of 2026-09-12 (design-led visual reconstruction pass) — read this section first
+## ⭐ Status as of 2026-09-12 (autonomous execution mandate — continued design pass) — read this section first
+
+The owner handed over full autonomous execution authority ("you own the
+remaining execution... decide and execute... stop only when genuinely
+nothing meaningful remains") after the design pass below. Continued the
+same screenshot → computed-style-verify → fix discipline across the rest
+of the site rather than stopping at the four fixes already shipped.
+
+**Three more real fixes shipped, plus one page confirmed already solid:**
+
+1. **Homepage "Clinical Training" gallery replaced entirely**, not just
+   given a better fallback. It was three Unsplash stock photos — the
+   homepage's own hero copy already promises "no stock photographs
+   standing in for a campus," a conflict this codebase's own design
+   history had flagged as unresolved (`DESIGN_AUDIT.md` §7) and this pass
+   finally closed. New `AcademicJourney.astro` (replacing the deleted
+   `MedicalGallery.astro`) reuses the exact four-stage academic sequence
+   `colleges/[slug].astro` already builds from `knowledge.json`'s sourced
+   topics (true of every MEC-approved college, not page-specific
+   content), rendered with the same `.doc-steps` scroll-spine component
+   `admission-process.astro` and every college detail page already use —
+   a third use of an established signature, needing no photography and
+   therefore nothing that can go dead as a hotlink. The section keeps its
+   `id="hp-practice"` exactly where the homepage's own Promise→Place→
+   Proof→Practice→Path chapter rail expects it; verified the rail still
+   highlights "Practice" correctly at this scroll position.
+2. **`/videos`' two emoji icons (🏛️ "All Videos", 📂 "Full Video
+   Library") replaced with inline SVG**, the same fix already applied to
+   `/life-in-nepal` and `Footer.astro` for the same reason (renders
+   differently per platform, sits on the baseline rather than optically
+   centred). The 27-college filter pill grid itself was checked via
+   computed style first and found to be a legitimate filter control
+   (`border-radius:999px`, no shadow at rest) — not the card-fatigue
+   anti-pattern, so left alone.
+3. **`/faq`'s 13 questions were each an individually-shadowed, rounded,
+   8px-margined card** — confirmed via computed style
+   (`border-radius:18px`, a real box-shadow, `margin-bottom:8px`) before
+   touching anything, unlike two false alarms earlier this session.
+   Converted to one shared panel (`.faq-wrap`, reusing this site's own
+   `.doc` "record" language) with the existing `.faq-cat` category labels
+   as internal section headers and each `.faq-item` a flush ruled row —
+   the `:has(+ .faq-cat)` selector (already used elsewhere in this
+   codebase, `chrome.css`'s broken-image fallback) picks out which item
+   in each category needs no bottom divider. The accordion behaviour
+   itself (click to expand, `toggleFaq()`) is completely unchanged.
+4. **`/colleges/[slug]` and `/admission-process` spot-checked and found
+   already at standard** — the college detail page's Record panel,
+   highlighted map, and `.doc-steps` academic timeline, and the
+   admission page's own numbered spine + comparison table, both already
+   match everything this pass has been fixing elsewhere. No changes
+   made; recorded so a future pass doesn't re-audit pages nothing is
+   wrong with.
+
+**Verified after all three fixes**: build clean (44 routes, one file
+deleted — `MedicalGallery.astro` — one added — `AcademicJourney.astro`);
+CSP unaffected (`gen-csp.mjs --check` current, no inline-script changes);
+`console-verify` 34/34; `a11y-verify` 32/32 (the `/staff` flake did not
+recur, twice in a row now); `auth-verify` 12/12; `compare-verify` 13/13;
+`assistant-verify` 18/18; `csp-verify` 11/11 (45 routes, 3118/3118
+handlers); `audit.mjs` **0 low-contrast, 0 mobile overflow, across all 43
+routes + the assistant** (median 384 kB — down slightly, consistent with
+the stock-photo band's removal).
+
+**Deliberately not touched**: `/why-nepal` (6 Unsplash photos) and
+`/life-in-nepal` (4) carry the same external-hotlink fragility the
+homepage gallery did, and share the exact same broken-image risk this
+sandbox happens to trigger every time. Not replaced this pass: unlike the
+homepage's small supplementary band, photography is these two pages'
+entire structural content, not a substitutable section — replacing it
+would be a genuine content/architecture decision (what replaces a
+page built around a photo grid), not a targeted visual fix, and both
+already have a real, working `:has(img.img-broken)` fallback for the one
+failure mode a production hotlink can actually have (this sandbox's own
+network-stall behavior, confirmed earlier this session, is a distinct,
+non-representative failure mode). Flagged here rather than silently
+skipped, in case a future session is tempted to "finish the job" — this
+was a considered stop, not an oversight.
+
+## Status as of 2026-09-12 (design-led visual reconstruction pass) — still current, read next
 
 The owner reviewed real mobile screenshots after Phase 5F/5G shipped and
 found the visual bar not yet met — "too many bordered cards... too much

@@ -6,6 +6,53 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-12 — Autonomous execution mandate: continued design pass
+
+The owner handed over full autonomous execution authority after the
+design pass below shipped. Continued the same screenshot → verify-by-
+computed-style → fix discipline across the rest of the site. Full detail
+in `NEXT_TASK.md`'s top section.
+
+**Homepage "Clinical Training" gallery replaced entirely** (not just
+given a better broken-image fallback): it was three Unsplash stock
+photos, directly contradicting the homepage's own hero copy ("no stock
+photographs standing in for a campus") — an unresolved conflict this
+codebase's design history had already flagged (`DESIGN_AUDIT.md` §7).
+New `AcademicJourney.astro` replaces the deleted `MedicalGallery.astro`,
+reusing the same four-stage academic sequence `colleges/[slug].astro`
+already builds from `knowledge.json`'s sourced topics, rendered with the
+same `.doc-steps` scroll-spine component `admission-process.astro` and
+every college detail page already use. Needs no photography, so nothing
+in it can go dead as a hotlink. Kept its `id="hp-practice"` exactly where
+the homepage's own chapter rail expects it — verified the rail still
+highlights correctly at this scroll position.
+
+**Two more real, confirmed-via-computed-style fixes**: `/videos`' two
+emoji icons replaced with inline SVG (same fix already applied elsewhere
+in this codebase, for the same reason); `/faq`'s 13 questions — each
+individually shadowed, rounded and margined (confirmed, not assumed) —
+consolidated into one shared panel with the existing category labels as
+section headers and each question a flush ruled row, the accordion
+behaviour itself untouched. `/videos`' own 27-college filter pills and
+`/colleges/[slug]` and `/admission-process` were all checked and found
+already correct/solid — no changes made to any of them.
+
+**Deliberately not touched**: `/why-nepal` and `/life-in-nepal` carry the
+same stock-photo hotlink fragility the homepage gallery did, but
+photography is those two pages' entire structural content, not a
+substitutable section — replacing it is a real content/architecture
+decision, not a targeted visual fix, and both already have a working
+broken-image fallback for a production hotlink's actual failure mode
+(distinct from this sandbox's own network-stall behavior). Recorded as a
+considered stop, not an oversight.
+
+**Verified**: build clean, one file removed and one added; CSP
+unaffected; `console-verify` 34/34; `a11y-verify` 32/32 (twice in a row —
+the `/staff` flake from earlier in the session did not recur);
+`auth-verify` 12/12; `compare-verify` 13/13; `assistant-verify` 18/18;
+`csp-verify` 11/11 (3118/3118 handlers); `audit.mjs` 0 low-contrast / 0
+overflow across all 43 routes + assistant.
+
 ## ⭐ 2026-09-12 — Design-led visual reconstruction pass (post-5F/5G)
 
 Full account, including how each finding was verified, is in
