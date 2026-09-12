@@ -5,6 +5,54 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-09-12 — Phase 5C: discovery table stays server-rendered; compare bar fixed, not sticky
+
+Decided the entire discovery experience (search/filter/sort) runs
+client-side over rows the server already rendered from `colleges.json`,
+rather than fetching or re-rendering from a JS data model. Reasons: (1)
+zero risk of the client list drifting from the committed data source of
+truth; (2) the page stays a complete, correctly ordered 27-college list
+with JavaScript disabled — search/filter/sort become progressive
+enhancement rather than the only way to see the data; (3) 27 rows is
+trivially small, so there is no performance reason to do otherwise.
+
+Asked the owner (via `AskUserQuestion`, not assumed) whether a map click
+on `/colleges` should navigate to the college detail page or highlight
+the corresponding list row in place, since `CollegeMap.astro` was about to
+be reused on a page that now also has a filterable list it could
+plausibly cross-highlight with. Answer: navigate — matching the
+homepage's existing, unmodified behaviour. This meant `CollegeMap.astro`
+needed zero code changes, which is why it was simply dropped in rather
+than extended.
+
+Found, mid-implementation, that `.doc` (`premium.css`/`trust.css`) sets
+`overflow: hidden !important`, which silently defeats `position: sticky`
+on any descendant — the compare-selection bar was originally sticky
+inside the `.doc.cd` panel and simply never stuck. Rather than special-
+case `.doc`'s overflow (used by many other ruled panels sitewide for a
+legitimate reason — the ruled-corner visual), moved the bar to `position:
+fixed`, outside `.doc.cd` entirely. This is also the more correct pattern
+for what the bar is: a persistent, page-level selection affordance, not
+content that belongs inside one record panel.
+
+That fix then exposed a second, real collision: `.wa-float` and
+`.chat-wrap` (base.css's persistent call/WhatsApp/chat widgets, both
+`position: fixed`, bottom-right) claim nearly the entire bottom band of a
+phone-width viewport once their labels are expanded — verified by
+measuring both widgets' actual rendered bounding boxes, not assumed.
+There is no reliable pixel gap to target that wouldn't be one more
+build's `bottom`/height tweak in those widgets away from breaking again.
+Decided against hard-coding a bottom offset guessed from today's
+measurements, and against modifying `.wa-float`/`.chat-wrap` themselves
+(out of this phase's scope, and they serve every other page too).
+Instead, `college-discovery.js` toggles a single `cd-compare-active`
+class on `<body>` exactly while 1+ rows are checked; a `:global()` rule
+scoped to this page's own `<style>` block hides those two widgets only
+while that class is present, and only on this route (the class is never
+set anywhere else). Verified both that they disappear while the compare
+bar is showing and that they reappear the instant the selection is
+cleared.
+
 ## 2026-09-11 — Phase 5B: visible admissions automation, scoped to one real surface
 
 Decided the *only* public integration point for "what happens after you

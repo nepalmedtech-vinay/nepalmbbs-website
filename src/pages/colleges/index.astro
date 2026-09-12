@@ -1,13 +1,13 @@
 ---
 import GlassLayout from '../../layouts/GlassLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
+import CollegeMap from '../../components/CollegeMap.astro';
 import { getColleges } from '../../lib/colleges.js';
 import { SITE } from '../../lib/routes.js';
 
 const colleges = await getColleges();
-const govt = colleges.filter((c) => c.type === 'govt');
-const priv = colleges.filter((c) => c.type !== 'govt');
 const totalSeats = colleges.reduce((n, c) => n + (parseInt(c.seats, 10) || 0), 0);
+const govtCount = colleges.filter((c) => c.type === 'govt').length;
 
 const schema = {
   '@context': 'https://schema.org',
@@ -22,12 +22,19 @@ const schema = {
   })),
 };
 
-const groups = [
-  { key: 'govt', title: 'Government colleges', rows: govt,
-    note: 'Government and autonomous institutions. Fewer foreign-quota seats, and the most competitive.' },
-  { key: 'priv', title: 'Private colleges', rows: priv,
-    note: 'Privately run, affiliated to Tribhuvan, Kathmandu or Purbanchal University.' },
-];
+// Phase 5C: the two static grouped tables became one discovery table —
+// search, an ownership filter and a sort all act on this same list, so a
+// visitor with fifteen minutes narrows 27 colleges to the two or three
+// worth reading closely, rather than reading two long tables top to
+// bottom. Ownership is now a column instead of the thing that splits the
+// page in two; the two paragraphs of context below survive as the note
+// that changes with the active filter, not as page furniture repeated
+// once per group.
+const ownerNotes = {
+  all: `${colleges.length} colleges, government and private. Filter or sort below — every field here is the one already published on that college's own page.`,
+  govt: 'Government and autonomous institutions. Fewer foreign-quota seats, and the most competitive.',
+  priv: 'Privately run, affiliated to Tribhuvan, Kathmandu or Purbanchal University.',
+};
 ---
 <GlassLayout
   title="NMC Approved Medical Colleges in Nepal 2025 — Full List | NepalMBBS.in"
@@ -45,6 +52,13 @@ const groups = [
   >
     Medical colleges in Nepal
   </PageHeader>
+
+  {/* Phase 5C: the map moves up from the homepage-only signature graphic
+      to this page's own first stop — geographic understanding before the
+      list, not a decoration after it. Same component, same data, same
+      interaction (hover for a name, click through to the record); reused
+      exactly as-is per this phase's own scope. */}
+  <CollegeMap />
 
   <!-- The recognition claim is made once, here, with its source named — rather
        than as a tick against each of 27 colleges. The underlying data carries
@@ -92,37 +106,88 @@ const groups = [
     notices for your intake year — including anything you read here.
   </div>
 
-  {groups.map((g) => (
-    <div class="doc rev" style="margin-top:24px">
-      <div class="doc-head">
-        <h2 class="doc-title">{g.title}</h2>
-        <span class="doc-kicker">{g.rows.length} colleges</span>
+  {/* Phase 5C: discovery — search, an ownership filter and a sort, all
+      acting on the one list below. Server-rendered with every college
+      already in the DOM (no fetch, no client-side data model to drift
+      from src/data/colleges.json) so a visitor with JS disabled still
+      gets the complete, correctly-grouped-by-nothing-in-particular list;
+      college-discovery.js only ever hides rows and reorders them, never
+      creates or deletes what the server already sent. */}
+  <div class="doc rev cd" style="margin-top:24px" id="college-discovery">
+    <div class="doc-head">
+      <h2 class="doc-title">All {colleges.length} colleges</h2>
+      <span class="doc-kicker" id="cd-count">{colleges.length} shown</span>
+    </div>
+    <div class="doc-body">
+      <div class="cd-controls">
+        <div class="cd-field cd-field--search">
+          <label for="cd-search">Search by name or city</label>
+          <input type="search" id="cd-search" placeholder="e.g. Kathmandu, Institute of Medicine" autocomplete="off">
+        </div>
+        <div class="cd-filters" role="group" aria-label="Filter by ownership">
+          <button type="button" class="g-tab on" data-filter="all" data-note={ownerNotes.all}>All</button>
+          <button type="button" class="g-tab" data-filter="govt" data-note={ownerNotes.govt}>Government</button>
+          <button type="button" class="g-tab" data-filter="priv" data-note={ownerNotes.priv}>Private</button>
+        </div>
+        <div class="cd-field cd-field--sort">
+          <label for="cd-sort">Sort by</label>
+          <select id="cd-sort">
+            <option value="seats-desc">Most seats first</option>
+            <option value="seats-asc">Fewest seats first</option>
+            <option value="name-asc">Name A–Z</option>
+            <option value="name-desc">Name Z–A</option>
+          </select>
+        </div>
       </div>
-      <div class="doc-body">
-        <p class="doc-empty-body" style="margin:0 0 var(--s-3);text-align:left;max-width:66ch">{g.note}</p>
-        <table class="doc-table">
+
+      <p class="cd-note" id="cd-note">{ownerNotes.all}</p>
+
+      <div class="pr-scroll">
+        <table class="doc-table cd-table">
           <thead>
             <tr>
+              <th class="cd-th-check">Compare</th>
               <th>College</th>
               <th>Location</th>
               <th>Affiliation</th>
+              <th>Ownership</th>
               <th class="num">Seats</th>
             </tr>
           </thead>
-          <tbody>
-            {g.rows.map((c) => (
-              <tr>
+          <tbody id="cd-rows">
+            {colleges.map((c) => (
+              <tr
+                data-name={c.name.toLowerCase()}
+                data-location={(c.location || '').toLowerCase()}
+                data-type={c.type === 'govt' ? 'govt' : 'priv'}
+                data-seats={parseInt(c.seats, 10) || 0}
+              >
+                <td data-label="Compare"><input type="checkbox" class="cd-check" value={c.slug} aria-label={`Add ${c.name} to comparison`}></td>
                 <td data-label="College"><a href={`/colleges/${c.slug}`}>{c.name}</a></td>
                 <td data-label="Location">{c.location || '—'}</td>
                 <td data-label="Affiliation">{c.affiliation || '—'}</td>
+                <td data-label="Ownership">{c.type === 'govt' ? 'Government' : 'Private'}</td>
                 <td data-label="Seats" class="num">{c.seats || '—'}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <p class="cd-empty" id="cd-empty" hidden>
+        No colleges match. <button type="button" id="cd-reset" class="college-link">Clear search and filters</button>
+      </p>
     </div>
-  ))}
+  </div>
+
+  {/* Outside .doc.cd deliberately: .doc sets overflow:hidden (for its ruled-
+      panel corners), which would clip a position:sticky bar to nothing.
+      Fixed to the viewport instead — the pattern that actually matches what
+      this bar is for: staying reachable while scrolling a 27-row table. */}
+  <div class="cd-compare-bar" id="cd-compare-bar" hidden>
+    <span id="cd-compare-count">0 selected</span>
+    <a href="/colleges/compare" id="cd-compare-link" class="college-enquire">Compare selected →</a>
+  </div>
 
   <div class="rev" style="margin-top:32px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
     <a href="/colleges/compare" class="college-enquire" style="text-decoration:none;display:inline-block">
@@ -135,3 +200,86 @@ const groups = [
 </div>
 </div>
 </GlassLayout>
+
+<script is:inline defer src="/assets/js/college-discovery.js"></script>
+
+<style>
+  .cd-controls {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: end;
+    margin-bottom: var(--s-3, 16px);
+  }
+  .cd-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .cd-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .cd-field--search { flex: 1 1 240px; }
+  .cd-field--sort { flex: 0 1 190px; }
+  .cd-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-self: end;
+  }
+  .cd-note {
+    margin: 0 0 var(--s-3, 16px);
+    max-width: 66ch;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .cd-th-check { width: 1%; }
+  .cd-check {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  .cd-table tbody tr[hidden] { display: none; }
+  .cd-empty {
+    margin: var(--s-4, 24px) 0 0;
+    text-align: center;
+    color: var(--muted);
+  }
+  /* .wa-float / .chat-wrap (base.css) sit fixed bottom-right and, at phone
+     widths, their expanded labels claim nearly the whole bottom band —
+     there is no gap left for another fixed bar to sit in. Rather than
+     guess at pixel offsets against widgets this phase doesn't own,
+     college-discovery.js toggles this body class while 1+ colleges are
+     selected, hiding them for the moment the compare bar needs the space;
+     they come back the instant the selection is cleared. */
+  :global(body.cd-compare-active .wa-float),
+  :global(body.cd-compare-active .chat-wrap) {
+    display: none !important;
+  }
+  .cd-compare-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    z-index: 995;
+    padding: 14px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+    max-width: calc(100vw - 32px);
+    background: color-mix(in oklab, var(--navy, #0b1e3d) 94%, transparent);
+    color: #fff;
+    border-radius: var(--r-lg, 12px);
+    box-shadow: 0 10px 30px rgba(0 0 0 / 0.25);
+  }
+  .cd-compare-bar a { text-decoration: none; white-space: nowrap; }
+  .cd-compare-bar span { white-space: nowrap; }
+  @media (max-width: 48rem) {
+    .cd-field--sort, .cd-field--search { flex-basis: 100%; }
+  }
+</style>

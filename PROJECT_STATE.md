@@ -1,10 +1,107 @@
 # PROJECT_STATE.md
 
-_Last updated: 2026-09-11. Read this file first in any new session before
+_Last updated: 2026-09-12. Read this file first in any new session before
 doing implementation work — an earlier version of this file (last touched
 2026-08-27) had drifted badly out of sync with reality and is not a
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
+
+## ⭐ 2026-09-12 — Phase 5C (interactive college discovery) shipped
+
+`/colleges` was two static grouped tables (government, then private) with
+no way to search, filter, sort, or geographically orient before reading
+27 rows top to bottom — a real UX gap even though the underlying data
+model, the map, and the comparison tool were all already solid.
+
+**Investigated before coding, per the phase's own instruction**:
+`src/lib/colleges.js` (Supabase-over-committed-JSON merge, one-directional,
+network-optional), `src/data/colleges.json` (27 records, complete field
+list), `CollegeMap.astro` (already used unchanged on the homepage — hover
+for a name, click through to the college's own page), `compare.js`'s
+existing `?c=slug1,slug2` shareable-URL mechanism, the `.doc-table`
+mobile responsive pattern (`data-label`-driven stacking), the sitewide
+auto-styled form-input CSS (no new classes needed for a search box or
+`<select>`), and `guidelines.astro`'s `.g-tab` filter-pill pattern
+(already styled globally in `base.css`/`chrome.css`, not page-scoped).
+Confirmed `filterColleges`/`.college-card` in `colleges.js` (the JS file,
+not the lib) are dead code, unrelated to this page.
+
+Asked the owner one concrete question before writing any markup: does
+clicking a map point on `/colleges` navigate straight to the college's
+page, or highlight the matching list row in place? Answer: navigate
+(matches the homepage's existing behaviour) — so `CollegeMap.astro` is
+reused with zero modification.
+
+**What shipped** (`src/pages/colleges/index.astro`,
+`public/assets/js/college-discovery.js`, both new/changed):
+
+- `<CollegeMap />` moved to the top of the page, immediately after the
+  page header — geographic orientation before the list, not a homepage-
+  only decoration.
+- The two static tables replaced by one server-rendered `.doc-table`
+  listing all 27 colleges, each row carrying `data-name`/`data-location`/
+  `data-type`/`data-seats`. A control bar above it: a live search input
+  (name or city), an ownership filter (`.g-tab` pills: All / Government /
+  Private, each with its own contextual note reusing the copy the old
+  two tables' intro paragraphs already had), and a sort `<select>` (seats
+  desc/asc, name A–Z/Z–A). A live "N shown" counter and an empty-state
+  with a one-click reset.
+- Each row also carries a compare checkbox (max 4, matching
+  `compare.js`'s own `MAX`). Checking one or more reveals a fixed
+  "N selected → Compare selected" bar that links straight into
+  `/colleges/compare?c=slug1,slug2` — the existing tool's own pre-select
+  mechanism, not a new comparison UI.
+- All filtering/sorting/searching happens client-side over rows already
+  in the server-rendered DOM: no fetch, no client data model that could
+  drift from `colleges.json`, and the page is a complete, correctly
+  ordered list with JS disabled.
+
+**Bug found and fixed before commit, not part of the original plan**:
+`.doc` (the ruled "Record" panel class, `premium.css`/`trust.css`) sets
+`overflow: hidden !important` for its own rounded-corner styling — which
+silently breaks `position: sticky` for any descendant. The compare bar
+was originally sticky *inside* `.doc.cd`; moved it to a sibling `position:
+fixed` bar instead (the right pattern for a persistent selection affordance
+regardless). That surfaced a second, real collision: `.wa-float` and
+`.chat-wrap` (base.css's persistent bottom-right call/WhatsApp/chat
+widgets) claim nearly the entire bottom band at phone widths when their
+labels are expanded — there is no gap left for another fixed bar to sit
+in without guessing at pixel offsets against widgets this phase doesn't
+own. Fixed by having `college-discovery.js` toggle a `cd-compare-active`
+class on `<body>` while 1+ rows are selected; a `:global()` rule in the
+page's own scoped `<style>` hides those two widgets only while that class
+is present, restoring them the instant the selection is cleared. Scoped
+to this one page's own script — no change to `base.css`, `boot.js`, or
+the widgets themselves.
+
+**Deliberately not done**: no new visual language (reuses `.doc`/
+`.doc-table`, `.g-tab`, the sitewide form-input styling, `college-link`/
+`college-enquire` link classes verbatim), no WebGL, no invented college
+facts/fees/rankings (every field rendered already existed in
+`colleges.json`; the contextual filter notes reuse the old tables' own
+intro-paragraph language almost verbatim), no change to `CollegeMap.astro`,
+`compare.js`, `colleges.js`, or any Supabase/RLS surface.
+
+**Verified**: production build (44 routes, clean); `npm run csp --check`
+(unaffected — external `src=` script, no inline-script hash to
+regenerate); 390/820/1440px screenshots of the control bar and table;
+Playwright-driven interaction checks (search narrows results, ownership
+filter narrows + swaps the contextual note, sort reorders rows correctly,
+checking rows reveals the compare bar with a correct `?c=` link,
+`/colleges/compare?c=...` genuinely pre-selects those colleges on load,
+empty-state + reset work, keyboard reachability of the search input and
+filter tabs); a `prefers-reduced-motion: reduce` pass (page loads, search
+still works — nothing here depends on motion); mobile horizontal-overflow
+check at all three widths (clean); a direct `pageerror`/`console.error`
+scan (clean — the only console errors present are this sandbox's
+pre-existing network egress restrictions on Google Fonts and Supabase
+REST calls, unrelated to this page's own code, confirmed by reproducing
+the same errors on an unrelated route). No `perf-verify.mjs` run: the
+added JS is a small, dependency-free vanilla script operating on rows
+already in the DOM (no new images, no new render-blocking resources, no
+motion/animation), so there's no plausible LCP/TBT mechanism for it to
+move — noted here rather than run for form's sake, consistent with how
+Phase 5B's static-markup-only change was handled.
 
 ## ⭐ 2026-09-11 — Phase 5B (visible admissions automation) shipped
 

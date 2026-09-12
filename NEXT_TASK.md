@@ -3,7 +3,7 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
-## ⭐ Status as of 2026-09-11 — read this section first, everything below it is history
+## ⭐ Status as of 2026-09-12 — read this section first, everything below it is history
 
 The site is mid-way through an "autonomous premium product builder"
 operating contract (owner-supplied, governs Phase 5 onward). Phases so
@@ -19,29 +19,34 @@ far, in order, all shipped and on `claude/website-premium-design-j6mphw`:
   `e654d23`. The five homepage sections now read as one connected
   Promise→Place→Proof→Practice→Path scroll story instead of five
   independent blocks. Full detail in `PROJECT_STATE.md`.
-- **Phase 5B** (visible admissions automation) — complete, this pass.
-  `/counseling`'s enquiry-success panel now shows the real near-term
-  follow-up sequence and the real 8-stage application lifecycle
+- **Phase 5B** (visible admissions automation) — complete, commit
+  `c787e0a`. `/counseling`'s enquiry-success panel now shows the real
+  near-term follow-up sequence and the real 8-stage application lifecycle
   (`src/data/journey-stages.json`, sourced from `portal.js`'s own
   `STAGES`), instead of two lines of generic reassurance. Full detail in
   `PROJECT_STATE.md`.
+- **Phase 5C** (interactive college discovery) — complete, this pass.
+  `/colleges` moves the map above the list (geographic understanding
+  before the list, reusing `CollegeMap.astro` completely unchanged — map
+  clicks still navigate straight to a college's detail page) and replaces
+  the two static grouped tables (government / private) with one unified,
+  server-rendered, searchable/filterable/sortable table plus a per-row
+  compare-selection flow that hands off to the existing `/colleges/compare`
+  tool via its own `?c=slug1,slug2` URL param. Full detail in
+  `PROJECT_STATE.md`.
 
-**Next approved task: Phase 5C — interactive college discovery** (search,
-filter, sort, map integration, meaningful comparison, progressive
-disclosure on `/colleges`). Per the operating contract, do not start it
-without a fresh short implementation plan grounded in the actual current
-`/colleges` and `CollegeMap.astro` code — both already reasonably strong
-(a real interactive SVG map, a working 4-way comparison tool at
-`/colleges/compare`), so the real gap is specifically that the college
-*list* itself is two static grouped tables with no filter/sort/search,
-not a rebuild of what already works.
+**Next approved tasks, per the roadmap, not yet started — do not begin
+any of these without a fresh explicit approval naming the phase:**
+Phase 5D (premium college-detail experience), Phase 5E (cinematic video
+experience), Phase 5F (dedicated counselling conversion experience),
+Phase 5G (second meaningful dataviz), Phase 5H (broad mobile/tablet
+cinematic QA).
 
 Also still queued, not started: `CONTENT_ASSET_PLAN.md` (cataloguing
 exactly what real per-college photography/video is missing, so the owner
-has something concrete to act on) — not part of Phase 5B and not
-bundled into it, since it's unrelated to admissions-automation
-visibility; worth its own short pass whenever there's a natural gap
-between phases.
+has something concrete to act on) — not bundled into any phase so far
+since it's orthogonal to each phase's specific product goal; worth its
+own short pass whenever there's a natural gap between phases.
 
 ## Status as of 2026-09-08 — superseded by the section above, kept for history
 
