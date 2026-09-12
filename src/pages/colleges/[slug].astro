@@ -6,6 +6,7 @@ import { getColleges } from '../../lib/colleges.js';
 import { SITE } from '../../lib/routes.js';
 import knowledge from '../../data/knowledge.json';
 import places from '../../data/places.json';
+import videoCategories from '../../data/video-categories.json';
 
 // One review date for the whole dataset, taken from the same file the
 // assistant answers from, so a page and an answer cannot claim different
@@ -26,6 +27,7 @@ const isGovt = c.type === 'govt';
 const path = `/colleges/${c.slug}`;
 const shortName = c.name.split('(')[0].trim();
 const hasCoord = !!places[c.location];
+const videoCategory = videoCategories[c.slug]?.code || '';
 // Computed once here (frontmatter can await; the template below cannot) —
 // how many of the 27 colleges the compact map actually plots, for its own
 // lead copy.
@@ -167,7 +169,36 @@ const schema = {
     </div>
   )}
 
-  {/* EXPERIENCE — the academic path and the hospital/clinical relationship,
+  {/* EXPERIENCE — real visual evidence, shown before the academic path is
+      described in words: this college's own video if the admin panel has
+      one on file (site_videos, filtered to this college's category — see
+      src/data/video-categories.json), populated client-side by
+      college-video.js exactly the way /videos itself renders one, or an
+      honest "none yet" state with a link into the fuller library. Never a
+      stock or generic clip: the empty state says plainly that nothing is
+      filed here yet, the same rule college-photo.js already follows for
+      the hero photo. Hidden until the script resolves either way; a
+      noscript fallback covers the no-JS case with a plain link instead of
+      silence. */}
+  <div class="doc rev" style="margin-top:28px">
+    <div class="doc-head">
+      <h2 class="doc-title">See {shortName}</h2>
+      <span class="doc-kicker">Campus &amp; clinical video</span>
+    </div>
+    <div class="doc-body">
+      <div id="college-video" data-video-category={videoCategory} data-college-name={shortName} hidden></div>
+      <noscript>
+        <div class="doc-empty">
+          <p class="doc-empty-body">
+            Video for {shortName}, where we have it, is in our
+            {' '}<a href={videoCategory ? `/videos?college=${encodeURIComponent(videoCategory)}` : '/videos'}>video library</a>.
+          </p>
+        </div>
+      </noscript>
+    </div>
+  </div>
+
+  {/* EXPERIENCE, continued — the academic path and the hospital/clinical relationship,
       as a sequence rather than as more rows in the record above. Every step
       is knowledge.json's own already-sourced answer, read in order; nothing
       here is specific to this one college except, where the college's own

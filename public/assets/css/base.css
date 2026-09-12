@@ -418,6 +418,24 @@ section.hero.sliding .hero-content{
 .vid-info h4{font-family:'Sora',sans-serif;font-size:14.5px;font-weight:700;color:var(--navy);margin-bottom:4px;line-height:1.4}
 .vid-info p{font-size:12px;color:var(--muted)}
 .vid-drive-card{background:linear-gradient(135deg,var(--off),#fff);border:2px dashed var(--border);border-radius:var(--r-lg);padding:32px;text-align:center}
+
+/* Phase 5E — the featured-video editorial treatment. .vid-featured wraps the
+   first video full-width and, from tablet up, side by side with its own
+   caption (read as a byline, not a tile label); .vid-grid below it keeps the
+   plain equal-size tile treatment for the rest. Both still use .vid-card's
+   existing premium.css skin — only size and layout differ here. */
+.vid-featured{margin-top:24px}
+.vid-featured .vid-card--featured{display:block}
+.vid-featured .vid-thumb{padding-bottom:42%}
+.vid-featured .vid-info{padding:20px 24px}
+.vid-featured .vid-info h4{font-size:18px}
+.vid-featured .vid-info p{font-size:13.5px;line-height:1.6}
+@media (min-width:56rem){
+  .vid-card--featured{display:grid !important;grid-template-columns:1.5fr 1fr}
+  .vid-card--featured .vid-thumb{padding-bottom:0;aspect-ratio:16/9}
+  .vid-card--featured .vid-info{display:flex;flex-direction:column;justify-content:center}
+}
+.vid-wrap .vid-grid{margin-top:20px}
 .vid-drive-card h4{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:8px}
 .vid-drive-card p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6}
 

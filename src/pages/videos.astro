@@ -1,6 +1,20 @@
 ---
 import GlassLayout from '../layouts/GlassLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
+import { getColleges } from '../lib/colleges.js';
+import videoCategories from '../data/video-categories.json';
+
+// Phase 5E: tabs generated from the shared video-categories.json (one
+// college → one code → one label, defined once) instead of 18 hand-typed
+// buttons — the previous markup only covered 18 of the 27 colleges, so 9
+// had no tab and therefore no way for a visitor to reach a video filed
+// under them at all, even if a staff member had already added one via the
+// admin panel. Ordered to match colleges.json (the site's own canonical
+// order) rather than the old list's original ad-hoc order.
+const colleges = await getColleges();
+const tabs = colleges
+  .filter((c) => videoCategories[c.slug])
+  .map((c) => ({ code: videoCategories[c.slug].code, label: videoCategories[c.slug].label }));
 ---
 <GlassLayout
   title="MBBS in Nepal — Campus Tours, Student Reviews & Process Videos | NepalMBBS.in"
@@ -19,24 +33,9 @@ import PageHeader from '../components/PageHeader.astro';
     <div class="college-sel-label">Select a College to Explore</div>
     <div class="college-tabs-wrap" id="college-tabs">
       <button class="college-tab on" data-act="click" data-do='[["selectCollege","@el","all"]]'>🏛️ All Videos</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","mcoms"]]'>Manipal MCOMS</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","cms"]]'>CMS Bharatpur</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","kusms"]]'>KUSMS Dhulikhel</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","kmc"]]'>KMC Kathmandu</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nobel"]]'>Nobel MC</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","kist"]]'>KIST MC</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","cmc"]]'>CMC Chitwan</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","gandaki"]]'>Gandaki MC</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","lmc"]]'>Lumbini MC</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","devdaha"]]'>Devdaha MC</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","birat"]]'>Birat MC</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","bpkihs"]]'>BPKIHS</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","iom"]]'>IOM</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nmcb"]]'>National MC</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","ucms"]]'>Universal MC</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nepalgunj"]]'>Nepalgunj MC</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","janaki"]]'>Janaki MC</button>
-      <button class="college-tab" data-act="click" data-do='[["selectCollege","@el","nmc"]]'>Nepal MC Jorpati</button>
+      {tabs.map((t) => (
+        <button class="college-tab" data-act="click" data-do={`[["selectCollege","@el","${t.code}"]]`}>{t.label}</button>
+      ))}
     </div>
   </div>
   <div id="videos-container" style="margin-top:20px">

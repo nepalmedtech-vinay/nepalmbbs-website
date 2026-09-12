@@ -34,11 +34,11 @@ far, in order, all shipped and on `claude/website-premium-design-j6mphw`:
   plus a per-row compare-selection flow that hands off to the existing
   `/colleges/compare` tool via its own `?c=slug1,slug2` URL param. Full
   detail in `PROJECT_STATE.md`.
-- **Phase 5D** (premium college detail experience) — complete, this pass.
-  `/colleges/[slug]` is rebuilt around a DISCOVER→UNDERSTAND→EXPERIENCE→
-  VERIFY→DECIDE→ENQUIRE narrative: a new `CollegeHero.astro` (identity +
-  a real asset-slot with a graphic, never-fabricated fallback), the
-  existing `CollegeMap.astro` reused via three new optional props
+- **Phase 5D** (premium college detail experience) — complete, commit
+  `f82e1e8`. `/colleges/[slug]` is rebuilt around a DISCOVER→UNDERSTAND→
+  EXPERIENCE→VERIFY→DECIDE→ENQUIRE narrative: a new `CollegeHero.astro`
+  (identity + a real asset-slot with a graphic, never-fabricated fallback),
+  the existing `CollegeMap.astro` reused via three new optional props
   (`highlight`/`variant="compact"`/`headOverride` — homepage and
   `/colleges` are unaffected) to show this one college highlighted among
   all 27, a new 4-step academic-path timeline sourced from
@@ -47,20 +47,37 @@ far, in order, all shipped and on `claude/website-premium-design-j6mphw`:
   defines the asset-slot architecture (7 slots, 0/27 photos filled today).
   Full detail, including a measured (not assumed) ~90-150ms TBT cost from
   reusing the map component, in `PROJECT_STATE.md` and `TECHNICAL_DEBT.md`.
+- **Phase 5E** (cinematic video / real media experience) — complete, this
+  pass. Found and fixed a real, blocking bug along the way (with explicit
+  approval before touching the schema): `site_videos` had no `category`
+  column despite the app already assuming one everywhere, so no video
+  could ever have been attached to a specific college — fixed with
+  `supabase/migrations/0007_site_videos_category.sql`. Extended video-tab
+  coverage from 18 to all 27 colleges (`src/data/video-categories.json`),
+  connected college detail pages to their own real videos (new
+  `college-video.js`, same pattern as `college-photo.js`), and added a
+  featured/editorial treatment to `/videos` itself. Verified live against
+  the real project: `site_videos` holds 0 rows today — the architecture is
+  confirmed correct end-to-end (via mocked responses) but has nothing real
+  to display yet. Full detail in `PROJECT_STATE.md` and
+  `CONTENT_ASSET_PLAN.md`'s Slot 6.
 
 **Next approved tasks, per the roadmap, not yet started — do not begin
 any of these without a fresh explicit approval naming the phase:**
-Phase 5E (cinematic video experience), Phase 5F (dedicated counselling
-conversion experience), Phase 5G (second meaningful dataviz), Phase 5H
-(broad mobile/tablet cinematic QA).
+Phase 5F (dedicated counselling conversion experience), Phase 5G (second
+meaningful dataviz), Phase 5H (broad mobile/tablet cinematic QA).
 
-Also still queued, not started: sourcing real per-college photography (now
-that `CONTENT_ASSET_PLAN.md` names exactly what's needed and where it goes
-— see that file); the Nepalgunj/`places.json` location-string mismatch
-(`TECHNICAL_DEBT.md`, Phase 5D section) — a content-verification task, not
-a code change; a dedicated performance pass on `CollegeMap`'s per-instance
-cost if it becomes a priority on its own terms rather than folded into a
-product-narrative phase.
+Also still queued, not started: sourcing real per-college photography and
+video (now that `CONTENT_ASSET_PLAN.md` names exactly what's needed, where
+it goes, and — for video — that the category field now actually works);
+the Nepalgunj/`places.json` location-string mismatch (`TECHNICAL_DEBT.md`,
+Phase 5D section) — a content-verification task, not a code change; a
+dedicated performance pass on `CollegeMap`'s per-instance cost if it
+becomes a priority on its own terms rather than folded into a
+product-narrative phase; pulling the 9 undocumented `exam_intelligence_*`
+migrations already applied to the live project down into this repo as
+local files (`TECHNICAL_DEBT.md`, Phase 5E section) — a real repo/database
+divergence, not something Phase 5E's own scope covered.
 
 ## Status as of 2026-09-08 — superseded by the section above, kept for history
 

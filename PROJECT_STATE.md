@@ -6,6 +6,98 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-12 — Phase 5E (cinematic video / real media experience) shipped
+
+The strategic question this phase actually answered wasn't "what video
+should we add" — it was "does the video system that already exists
+actually work, and is it connected to anything." `/videos` had a real,
+honest, admin-managed video system (`site_videos` table, click-to-play
+YouTube embeds, an honest per-college empty state) that predates this
+phase. What it lacked: coverage (9 of 27 colleges had no tab at all),
+connection (college detail pages had zero link to it), and editorial
+presentation (a flat grid, no featured treatment). One of those turned out
+to be a real, blocking bug rather than a gap — see below.
+
+**Investigated before coding**: `/videos.astro`, `colleges.js`'s video
+rendering (`renderVideoGrid`/`renderNoVideoState`/`playVid`), `admin.js`'s
+video-add form, `CONTENT_ASSET_PLAN.md`, `college-photo.js` (the pattern to
+match for a new per-college slot), `[slug].astro`'s existing asset slots
+from Phase 5D, and the site's CSP (confirmed `img.youtube.com`/
+`youtube-nocookie.com`/Supabase were already whitelisted — no CSP change
+needed for this phase's own additions).
+
+**Critical finding, not assumed**: using live Supabase MCP access to the
+real project (`fpzgcijbryvddtpegcmm`), confirmed `site_videos` has **zero
+rows** and, more importantly, its live schema **had no `category` column
+at all** — despite `/videos.astro`'s tabs, `admin.js`'s form, and
+`colleges.js`'s filter all already reading/writing one. Every per-college
+video filter in the app had been silently matching nothing since before
+this phase; any video an admin added would have landed with no way to
+attach it to a college. Flagged to the user before touching the schema
+(standing project rule); approved; fixed with a new, minimal, additive-only
+migration (`0007_site_videos_category.sql` — nullable `category text`, no
+RLS change, verified via `get_advisors` to introduce no new findings).
+Also discovered, not investigated further: the live project has 9 applied
+migrations (`exam_intelligence_01`-`09`) with no corresponding file
+anywhere in this repo — recorded as its own item in `TECHNICAL_DEBT.md`.
+
+**What shipped**:
+- **`src/data/video-categories.json`** (new) — the single source of truth
+  mapping all 27 colleges (up from 18) to the video category code and
+  display label. The missing 9 (Patan, Karnali, Nepalese Army, Pokhara,
+  Rapti, Madhesh, Madan Bhandari, Purbanchal, B&C) now have both.
+- **`/videos.astro`** generates its tabs from that file instead of 18
+  hand-typed buttons, and now supports `?college=<code>` to land
+  pre-filtered — the mechanism a "watch more from this college" link needs.
+- **`public/assets/js/college-video.js`** (new, loaded sitewide like
+  `college-photo.js`) — a college detail page's own video slot: fetches
+  `site_videos` filtered to that college's category, renders a featured
+  click-to-play card if any exist (with a "watch N more" link into the
+  fuller library), or an explicit "no video on file yet for [college]"
+  state otherwise. Verified against mocked Supabase responses (no real
+  video exists yet to test against naturally): thumbnail-first with zero
+  iframes loaded until click, exactly one iframe after a click, the
+  non-clicked video in a multi-video set never eagerly loads.
+- **`[slug].astro`** gained a "See [college]" section (EXPERIENCE, placed
+  before the academic-path timeline — evidence before explanation) hosting
+  the new slot, with a `<noscript>` fallback linking to `/videos` for the
+  no-JS case.
+- **Editorial "featured" treatment** (`.vid-featured`/`.vid-card--featured`,
+  `base.css`) — the first video of a set renders larger, with fuller
+  caption context, side-by-side with its thumbnail from tablet width up;
+  the rest stay in the existing plain grid. Used identically on `/videos`
+  and every college detail page — one visual language, not two.
+- Fixed in the same pass: `renderNoVideoState`'s college-name lookup used a
+  `[onclick*=...]` selector against buttons that have never carried
+  `onclick` (they use `data-act`/`data-do`), so it always silently fell
+  back to "this college." Now passed the clicked button directly. Also
+  fixed `playVid`'s embed URL, which always produced a malformed double
+  `?` (`...?rel=0?autoplay=1`) — found while verifying click-to-play
+  against a real embed URL.
+- **`CONTENT_ASSET_PLAN.md`** Slot 6 rewritten with the verified-real status
+  (0 rows, architecture now correct end-to-end) and the schema fix.
+
+**Deliberately not done**: no stock or generic video anywhere (there is
+none to show — every path either shows a real video or says plainly that
+none exists yet); no WebGL, GSAP, or Lenis; no autoplay; no per-college
+photo gallery (Slot 2 — still no real photography to display, per
+`CONTENT_ASSET_PLAN.md`); no fabricated testimonial or campus claim.
+
+**Verified**: production build (44 routes, clean); CSP unaffected
+(no inline-script changes this phase); Playwright checks at
+390/430/768/820/1024/1440 on both `/videos` and a college detail page
+(zero horizontal overflow at any width); the real (unmocked) empty-state
+path end-to-end on both pages; `?college=` deep-link pre-selection;
+keyboard reachability; a `prefers-reduced-motion: reduce` pass; a
+mocked-Supabase-response pass proving the featured/click-to-play/lazy-load
+mechanics actually work, not just compile; no `pageerror`s anywhere (the
+only console errors present are this sandbox's pre-existing, already-
+documented network egress restrictions on Google Fonts and Supabase).
+No dedicated performance run: this phase's JS is a small, dependency-free
+script mirroring `college-photo.js`'s existing footprint, and the only
+new images are click-gated YouTube thumbnails — no new render-blocking
+resource exists to move Core Web Vitals.
+
 ## ⭐ 2026-09-12 — Phase 5D (premium college detail experience) shipped
 
 The college detail page (`/colleges/[slug]`) was a generic `PageHeader` plus

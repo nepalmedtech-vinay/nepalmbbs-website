@@ -3,6 +3,35 @@
 Known, named debt. Per the master brief: document it here rather than
 leaving it as a silent TODO, and give each item a path to being resolved.
 
+## Newly identified 2026-09-12 (Phase 5E) — one fixed (approved), one flagged only
+
+- ~~**`site_videos` had no `category` column**, despite `/videos.astro`,
+  `admin.js` and `colleges.js` all already reading/writing one — every
+  per-college video filter had silently matched nothing since before this
+  phase.~~ **Fixed, with explicit user approval before touching the
+  schema**: `supabase/migrations/0007_site_videos_category.sql` adds a
+  nullable `category text` column; applied to the live project. No RLS
+  change, no data touched, no new items in `get_advisors` after applying.
+  Full account in `CONTENT_ASSET_PLAN.md`'s Slot 6.
+- **This repo's local `supabase/migrations/` is missing nine migrations
+  that are already applied to the live project.** `mcp__Supabase__list_migrations`
+  shows the live history as: security_baseline, admission_platform,
+  abuse_and_storage, lead_intake, revoke_internal_function_execute, then
+  **eight `exam_intelligence_0X_*` migrations** (tables, RLS, views/grading,
+  an exam report, an import path, a dashboard/cohort view, policies,
+  storage/templates, a revoke pass), then college_photos_storage. Only the
+  first five and the last exist as files in this repo
+  (`0001`-`0006`); the eight `exam_intelligence_*` migrations have no local
+  file at all. This means the repo and the live database have diverged —
+  a fresh clone of this repo, migrated from scratch, would not reproduce
+  the live schema. Not investigated further this pass: an entire
+  undocumented feature area (something exam/cohort/grading-related, going
+  by the migration names) is a large surface to characterise correctly,
+  and doing so was not what Phase 5E asked for. Worth a dedicated session:
+  pull the live schema for those nine migrations down as local files (or
+  at minimum document what `exam_intelligence_*` actually is), so this
+  repo stops being a lagging, incomplete record of its own database.
+
 ## Newly identified 2026-09-12 (Phase 5D) — not fixed, out of scope
 
 - **One college's `location` string does not match any `places.json` key.**

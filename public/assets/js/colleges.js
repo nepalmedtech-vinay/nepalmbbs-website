@@ -13,10 +13,10 @@ function selectCollege(btn, college) {
   document.querySelectorAll('.college-tab').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
   currentCollege = college;
-  renderCollegeContent(college);
+  renderCollegeContent(college, btn);
 }
 
-function renderCollegeContent(college) {
+function renderCollegeContent(college, btn) {
   const vidContainer = document.getElementById('videos-container');
   const photoShow = document.getElementById('college-photo-show');
 
@@ -39,53 +39,81 @@ function renderCollegeContent(college) {
     // the credibility of every other page — including the pages that are
     // accurate. An empty slot that says what is missing costs nothing.
     if (photoShow) photoShow.style.display = 'none';
-    renderNoVideoState(college, vidContainer);
+    renderNoVideoState(college, vidContainer, btn);
   }
 }
 
-function renderNoVideoState(college, container) {
+// Phase 5E: `btn` is the tab that was actually clicked (selectCollege has it
+// on hand already), so this reads the college's name straight off it rather
+// than an `[onclick*=...]` lookup that could never match — the tabs use
+// data-act/data-do, not onclick, so that selector was silently failing on
+// every call and this always fell back to "this college". Fixed by passing
+// the element through instead of re-finding it by an attribute it never had.
+function renderNoVideoState(college, container, btn) {
   if (!container) return;
-  const label = document.querySelector('.college-tab[onclick*="\'' + college + '\'"]');
-  const name = (label && label.textContent.trim()) || 'this college';
+  const name = college === 'all'
+    ? null
+    : ((btn && btn.textContent.trim()) || 'this college');
   const el = document.createElement('div');
   el.className = 'doc-empty';
   const title = document.createElement('p');
   title.className = 'doc-empty-title';
-  title.textContent = 'No video for ' + name + ' yet';
+  title.textContent = name ? ('No video for ' + name + ' yet') : 'No videos published yet';
   const body = document.createElement('p');
   body.className = 'doc-empty-body';
-  body.textContent = 'We publish footage only when we have filmed it ourselves or the '
-    + 'college has supplied it. Ask us and we will tell you what we have on '
-    + name + ' — including what we do not.';
+  body.textContent = name
+    ? ('We publish footage only when we have filmed it ourselves or the college has supplied it. '
+      + 'Ask us and we will tell you what we have on ' + name + ' — including what we do not.')
+    : 'We publish footage only when we have filmed it ourselves or a college has supplied it. Ask us — we will tell you what we hold, including where we hold nothing.';
   el.append(title, body);
   container.replaceChildren(el);
 }
 
+// Phase 5E: the first video gets a larger, editorial "featured" treatment —
+// a bigger frame and its full caption read as a byline, not just a card
+// title — instead of every video being an identically-sized grid tile. The
+// same click-to-play, thumbnail-first mechanism as every other card; only
+// the layout and copy prominence differ. Reuses the `.doc`/Record language
+// (doc-head/doc-kicker) rather than inventing a second "featured" style.
+// Phase 5E: hoisted out of renderVideoGrid so college-video.js (the college
+// detail page's own video slot) can build an identical card rather than a
+// second, slightly-different implementation of the same YouTube-URL-to-
+// thumbnail logic. Global on purpose — colleges.js loads before
+// college-video.js in GlassLayout, same ordering config.js/leads.js rely on.
+function vidCardHTML(v, featured) {
+  let embedUrl = v.url;
+  let thumbUrl = '';
+  const ytMatch = v.url.match(/(?:youtube(?:-nocookie)?\.com\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (ytMatch) {
+    embedUrl = `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?rel=0`;
+    thumbUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+  }
+  const cls = featured ? 'vid-card vid-card--featured' : 'vid-card';
+  return thumbUrl
+    ? `<div class="${cls}"><div class="vid-thumb"><div class="vid-placeholder" ${actAttr('click',[['playVid','@el',embedUrl]])}><img src="${thumbUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy" decoding="async"><div style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div><div class="play-btn" style="position:relative;z-index:1">▶</div></div></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div></div>`
+    : `<div class="${cls}"><div class="vid-thumb"><iframe src="${embedUrl}" loading="lazy" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div></div>`;
+}
+
 function renderVideoGrid(videos, container) {
   if (!container) return;
-  const grid = document.createElement('div');
-  grid.className = 'vid-grid';
-  videos.forEach(v => {
-    let embedUrl = v.url;
-    let thumbUrl = '';
-    const ytMatch = v.url.match(/(?:youtube(?:-nocookie)?\.com\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    if (ytMatch) {
-      embedUrl = `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?rel=0`;
-      thumbUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
-    }
-    const card = document.createElement('div');
-    card.className = 'vid-card';
-    card.innerHTML = thumbUrl
-      ? `<div class="vid-thumb"><div class="vid-placeholder" ${actAttr('click',[['playVid','@el',embedUrl]])}><img src="${thumbUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy"><div style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div><div class="play-btn" style="position:relative;z-index:1">▶</div></div></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`
-      : `<div class="vid-thumb"><iframe src="${embedUrl}" loading="lazy" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe></div><div class="vid-info"><h4>${v.title}</h4><p>${v.description||''}</p></div>`;
-    grid.appendChild(card);
-  });
+  const wrap = document.createElement('div');
+  wrap.className = 'vid-wrap';
+  let html = `<div class="vid-featured">${vidCardHTML(videos[0], true)}</div>`;
+  if (videos.length > 1) {
+    html += `<div class="vid-grid">${videos.slice(1).map(v => vidCardHTML(v, false)).join('')}</div>`;
+  }
+  wrap.innerHTML = html;
   container.innerHTML = '';
-  container.appendChild(grid);
+  container.appendChild(wrap);
 }
 
 function playVid(el, url) {
-  el.innerHTML = `<iframe src="${url}?autoplay=1" style="position:absolute;inset:0;width:100%;height:100%;border:none" allowfullscreen></iframe>`;
+  // vidCardHTML always hands this a URL that already carries `?rel=0`, so a
+  // bare `${url}?autoplay=1` silently produced a second `?` (…?rel=0?autoplay=1)
+  // — most players tolerate it, but it is not a valid query string. Found
+  // while verifying Phase 5E's click-to-play path against real embed URLs.
+  const sep = url.includes('?') ? '&' : '?';
+  el.innerHTML = `<iframe src="${url}${sep}autoplay=1" style="position:absolute;inset:0;width:100%;height:100%;border:none" allowfullscreen></iframe>`;
   el.style.pointerEvents = 'none';
 }
 
@@ -101,8 +129,16 @@ async function loadDynamicContent() {
   try {
     const vids = await sbR('/rest/v1/site_videos?select=*&is_active=eq.true&order=sort_order.asc,created_at.asc');
     allSiteVideos = vids || [];
-    // Show "all" by default
-    renderCollegeContent('all');
+    // Phase 5E: a college detail page's "watch more from this college" link
+    // points here as /videos?college=<code> — pre-select that tab instead of
+    // defaulting to "all" so the visitor lands already filtered to the
+    // college they came from, not back at the top of the whole library.
+    // Dispatched as a real click (not a direct renderCollegeContent call) so
+    // it goes through the exact same code path a manual tab click does.
+    const pre = new URLSearchParams(location.search).get('college');
+    const preBtn = pre && document.querySelector('.college-tab[data-do*=\'"' + pre + '"\']');
+    if (preBtn) preBtn.click();
+    else renderCollegeContent('all');
   } catch(e) { allSiteVideos = []; }
 
   // Load testimonials

@@ -5,6 +5,64 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-09-12 — Phase 5E: asked before adding a DB column; used real Supabase access instead of guessing; reused college-photo.js's shape for video
+
+Found, while wiring a college detail page to its real video record, that
+`site_videos`'s live schema had no `category` column at all — confirmed by
+querying the actual project via `mcp__Supabase__execute_sql`, not assumed
+from the sandbox's usual network-blocked state. This meant `/videos.astro`'s
+tabs, `admin.js`'s video-add form, and `colleges.js`'s client-side filter
+had all been silently reading and writing a field that never existed on
+the live table: every category filter had always matched nothing, and any
+video ever added would have landed with no way to attach it to a specific
+college. This predates Phase 5E and was not caused by it, but directly
+blocked the phase's own stated goal.
+
+This project's standing rule is never to touch `supabase/migrations/` or
+RLS without asking first. Rather than either silently working around the
+gap (e.g., building the whole per-college architecture around a column
+that would never actually filter anything, quietly matching the site's
+existing, already-broken behaviour) or unilaterally deciding to fix it,
+used `AskUserQuestion` to lay out the exact finding and three real options
+(add a migration; document only; let the owner add it) before writing any
+schema-touching code. Approved: add a new, additive-only migration.
+`supabase/migrations/0007_site_videos_category.sql` adds `category text`,
+nullable, no default — verified via `get_advisors` afterward that it
+introduced zero new security findings, and via `pg_policies` beforehand
+that the table's RLS is row-level (`site_videos_public_read`/
+`site_videos_staff_write`), so an added column needed no policy change at
+all. Applied to the live project directly via the Supabase MCP tools
+rather than left as a local file for the owner to run by hand, since the
+tools were available, the change was narrow and reviewed, and the user had
+just explicitly approved this specific fix.
+
+Separately decided to use the same live access to verify actual content
+status rather than continue the sandbox's standing (and, until now,
+accurate-by-necessity) assumption of "network-blocked, therefore unknown."
+Queried `site_videos` (0 rows) and `storage.objects` for the
+`college-photos` bucket (0 objects) directly. `CONTENT_ASSET_PLAN.md` now
+states these as confirmed facts with the query that confirmed them, not as
+carried-forward assumptions — a stronger evidentiary standard than earlier
+phases could reach, available specifically because this session's MCP
+access reaches the real project even though this sandbox's browser/HTTP
+layer does not.
+
+Decided the college detail page's new video slot should mirror
+`college-photo.js`'s existing shape exactly (a placeholder element with
+data-attributes, populated or left in an honest empty state by a small
+sitewide script, loaded unconditionally and no-op on any page without its
+target element) rather than inventing a different mechanism for video.
+Two real assets, two parallel small scripts, one shared pattern — matching
+"reusable media architecture" without adding a second one.
+
+Decided the featured-video treatment (`.vid-featured`/`.vid-card--featured`)
+belongs in `base.css` next to the rest of the `.vid-*` rules it extends,
+not as a page-scoped style in either `/videos.astro` or `[slug].astro`,
+since both pages use it via the same shared `vidCardHTML()` function
+(hoisted out of `renderVideoGrid` in `colleges.js` this pass specifically
+so `college-video.js` could call the identical card-building logic rather
+than a second, slightly different one).
+
 ## 2026-09-12 — Phase 5D: extend CollegeMap rather than build a second map; no crystal CTA per college; honest performance reporting
 
 Decided to extend `CollegeMap.astro` with three optional, additive props
