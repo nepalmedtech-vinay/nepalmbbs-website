@@ -890,7 +890,7 @@ section.hero, .hero {
    Same asymmetric recipe, mirrored (tall image on the right this time —
    two identical bands back to back should not also share a layout, or
    the second reads as a rerun of the first even with different photos). */
-.med-gallery-section { padding-block: var(--s-section, 5rem); }
+.med-gallery-section { position: relative; padding-block: var(--s-section, 5rem); }
 .med-gallery {
   display: grid;
   grid-template-columns: 1fr 1.3fr;

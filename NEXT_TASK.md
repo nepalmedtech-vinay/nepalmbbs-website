@@ -3,7 +3,87 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
-## ⭐ Status as of 2026-09-12 (autonomous execution mandate — continued design pass) — read this section first
+## ⭐ Status as of 2026-09-12 (cinematic depth pass) — read this section first
+
+The owner asked for a step up from "premium editorial" toward "cinematic
+digital experience" — richer per-section colour, spatial/3D interaction,
+scroll choreography — explicitly ruling out new WebGL/heavy animation
+libraries unless "genuinely superior AND performance remains acceptable."
+Given this project's own documented history (`PROJECT_STATE.md`'s
+"Critical finding" section: TBT was 30-58x over budget on every
+WebGL-carrying route before Phase 1's mount-gating rework), the judgment
+call was to deliver this entirely in CSS/SVG plus the site's own existing,
+already-running pointer-tilt system — zero new JS, zero new WebGL —
+rather than add a second 3D system on top of one the codebase has
+already had to fight for performance once.
+
+**Three atmospheric fields, one per homepage chapter that didn't have
+one**: Hero (Promise) and Trust (Proof) already had their own tinted
+grid-field (`.gh-field`/`.trust-field`); Place (the map) and Practice
+(the new `AcademicJourney` section) did not, reading as a flat drop
+between two atmospheric ones. Added `.map-field` (teal, `--brand-2` —
+the same colour the hero's own bottom-edge glow already previews, so
+Place arriving in it reads as a continuation) and `.practice-field`
+(navy, `--navy-accent` — the same pair `Footer.astro`'s WebGL scene
+already uses "on the owner's explicit ask", so the homepage's last two
+chapters close in the colour the footer then continues in). Same
+zero-dependency recipe as the existing two fields: two `linear-gradient`
+layers forming a lattice, radially masked so each is strongest in one
+corner and gone elsewhere, `pointer-events: none`. No new CSS technique,
+no new colours beyond tokens already in `engine.css` and already used
+elsewhere in this exact code for exactly this reason.
+
+**Mobile got more atmosphere, not less** — a real reversal of standing
+practice, made because this pass's own brief was explicit about it
+("mobile is not a shrunk desktop... 390px must still feel premium").
+`.trust-field` and `.gh-glow--handoff` previously `display: none`d below
+48rem entirely, on a documented "a phone-width field competes with the
+text more than it adds depth" rationale from an earlier session. Changed
+to a reduced opacity instead of removed — confirmed via screenshot at
+390px that the atmosphere is visible without crowding the text; the two
+new fields ship at a mobile-reduced opacity from the start, never fully
+off.
+
+**One genuine spatial-interaction addition**: `CollegeHero.astro`'s
+identity-mark panel (the "IM" monogram every college page leads with)
+now carries `.gl--live` — the pointer-tilt + moving-specular system
+`glass.css`/`runtime.js` already run sitewide (first built for the hero's
+own stat panes), extended to one more static element rather than a
+second implementation. Deliberately `gl--live` alone, not the base `.gl`
+class, which would have brought its own background/border over this
+panel's already-distinct ownership-tinted design. One correctness fix
+alongside it: `.gl-spec`'s default z-index (2) sat level with `.cph`
+(the real-photo slot, also z-index 2, later in the DOM) — without an
+explicit `z-index: 3` on `.gl-spec`, the shine would render *under* a
+real photo once any college finally has one uploaded, a bug that
+wouldn't have surfaced until then. Fixed before it could.
+
+**Verified**: build clean; CSP unaffected (pure CSS/markup, no new
+inline scripts); `console-verify` 34/34; `a11y-verify` 32/32 (twice);
+`auth-verify` 12/12; `compare-verify` 13/13; `assistant-verify` 18/18;
+`csp-verify` 11/11 (3118/3118 handlers); `audit.mjs` 0 low-contrast / 0
+overflow across 43 routes + assistant; `perf-verify.mjs` run and read
+carefully rather than skipped — TBT and LCP numbers are in the same
+shape already documented (LCP over budget everywhere, a known sandbox
+HTTP/1.1 artifact; TBT elevated only on routes mounting the existing
+Three.js footer scene, near-zero on `/staff`/`/portal` which don't) —
+consistent with this pass adding no new JS or render-blocking resource,
+so there is no mechanism by which it could have moved these numbers, the
+same reasoning this codebase has applied to CSS-only changes before
+(Phase 5B's own record explicitly skipped a redundant perf run on the
+same grounds). Additionally confirmed the pointer-tilt panel and both new
+fields render correctly at 390px with zero overflow and zero console
+errors.
+
+**Not done**: literal WebGL/3D additions (a spinning object, a depth-
+mapped image, a new Three.js scene) — ruled out deliberately, not
+overlooked, given this project's own performance history with exactly
+that category of effect. If a specific 3D moment is wanted badly enough
+to justify revisiting that trade-off, it needs the owner's explicit
+sign-off on the performance cost first, the same gate `PROJECT_STATE.md`
+already applies to the existing WebGL scenes.
+
+## Status as of 2026-09-12 (autonomous execution mandate — continued design pass) — still current, read next
 
 The owner handed over full autonomous execution authority ("you own the
 remaining execution... decide and execute... stop only when genuinely

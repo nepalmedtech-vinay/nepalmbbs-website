@@ -6,6 +6,48 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-12 — Cinematic depth pass (CSS/SVG only, no new WebGL)
+
+Full account in `NEXT_TASK.md`'s top section. The owner asked for a step
+up toward "cinematic digital experience" — richer colour, spatial/3D
+interaction, scroll choreography — while explicitly gating new WebGL on
+"genuinely superior AND performance remains acceptable." Given this
+project's own documented history of a severe WebGL performance
+regression (the "Critical finding" section above this one — TBT 30-58x
+over budget before Phase 1's mount-gating rework), delivered entirely
+with CSS/SVG and the site's own already-running pointer-tilt system:
+zero new JS, zero new WebGL, zero new dependencies.
+
+Added two atmospheric fields — `.map-field` (teal) for the homepage's
+Place chapter and `.practice-field` (navy) for the new Practice/
+`AcademicJourney` chapter — using the exact recipe `.gh-field`/
+`.trust-field` already established (two masked `linear-gradient` layers),
+so all five homepage chapters now have their own tonal register instead
+of two. Both colours are existing tokens already used elsewhere for
+related reasons (teal already previewed at the hero's own bottom edge;
+navy already the footer's own WebGL-scene pair), not new brand colours.
+Also reversed a standing mobile restraint: `.trust-field` and
+`.gh-glow--handoff` used to `display: none` below 48rem entirely: reduced
+to a lower opacity instead, since this pass's own brief was explicit that
+mobile should not lose the atmosphere.
+
+One genuine spatial-interaction addition: `CollegeHero.astro`'s identity-
+mark panel now carries `.gl--live`, the pointer-tilt + specular system
+already built for the hero's own stat panes, extended to one more static
+element. Found and fixed a real, not-yet-triggered bug while wiring it
+up: the specular highlight's default z-index would have rendered *under*
+a college's real photo once one is finally uploaded (0/27 today) — fixed
+before it could surface.
+
+**Verified**: build clean; CSP unaffected; full test suite green
+(console/a11y/auth/compare/assistant/csp-verify, `audit.mjs` 0 low-
+contrast / 0 overflow across 43 routes); `perf-verify.mjs` run and read
+against the existing documented baseline rather than skipped — TBT/LCP
+shape is unchanged (elevated only on WebGL-mounting routes, near-zero on
+`/staff`/`/portal`), consistent with a CSS-only change having no
+mechanism to move it. 390px screenshots confirm both new fields and the
+tilt panel render correctly with zero overflow.
+
 ## ⭐ 2026-09-12 — Autonomous execution mandate: continued design pass
 
 The owner handed over full autonomous execution authority after the

@@ -1970,10 +1970,13 @@ input:not(:placeholder-shown):invalid {
     animation: gh-drift calc(46s * max(var(--mo), 0.3)) ease-in-out infinite alternate-reverse;
   }
 }
-/* Same reasoning as .gh-grid/.gh-lines/.gh-icon just above: a phone-width
-   field competes with the text more than it adds depth. */
+/* Cinematic pass, 2026-09-12: this used to disable entirely below 48rem
+   ("a phone-width field competes with the text more than it adds
+   depth") — reduced instead of removed. Mobile is a first-class canvas
+   for this brief, not a place the atmosphere gets switched off; a
+   quieter version earns its place without fighting the headline. */
 @media (max-width: 48rem) {
-  .gh-glow--handoff { display: none; }
+  .gh-glow--handoff { opacity: 0.55; }
 }
 
 /* ── Map -> Trust: the register shift ─────────────────────────────────
@@ -2004,8 +2007,64 @@ input:not(:placeholder-shown):invalid {
 }
 .trust-in { position: relative; z-index: 1; }
 @media (max-width: 48rem) {
-  /* Same mobile restraint as the hero's own grid — see .gh-grid above. */
-  .trust-field { display: none; }
+  /* Cinematic pass, 2026-09-12: reduced rather than removed — see the
+     matching note on .gh-glow--handoff above. */
+  .trust-field { opacity: 0.32; }
+}
+
+/* ── Place: the map's own field ───────────────────────────────────────
+   Hero and Trust each already had an atmospheric field; the map — the
+   "Place" chapter — was the one full-width section between them with
+   none, a flat drop after Promise's blue glow. Same grid recipe, teal
+   (--brand-2) rather than blue: the hero's own .gh-glow--handoff already
+   previews this teal at its bottom edge, so Place arriving fully in it
+   reads as a continuation, not a fourth unrelated colour. Skipped for
+   the compact college-detail reuse of this component (see CollegeMap.astro) —
+   that mount is a supporting panel beside a page's own copy, not a
+   chapter in a homepage journey. */
+.map-section { position: relative; }
+.map-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(90deg, color-mix(in oklab, var(--brand-2) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in oklab, var(--brand-2) 7%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(120% 70% at 22% 15%, #000 0%, transparent 74%);
+          mask-image: radial-gradient(120% 70% at 22% 15%, #000 0%, transparent 74%);
+}
+.map-section > .container { position: relative; z-index: 1; }
+@media (max-width: 48rem) {
+  .map-field { opacity: 0.3; }
+}
+
+/* ── Practice: the deep-navy close ────────────────────────────────────
+   Third and last tonal register on the homepage: the navy/sky pair
+   Footer.astro's own WebGL scene already uses ("on the owner's explicit
+   ask" — see that component's comment), so Practice arriving in navy
+   means the homepage's last two chapters close in the same colour the
+   footer then continues in, rather than a fourth tone appearing once. */
+.practice-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image:
+    linear-gradient(90deg, color-mix(in oklab, var(--navy-accent) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in oklab, var(--navy-accent) 8%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(110% 80% at 82% 85%, #000 0%, transparent 72%);
+          mask-image: radial-gradient(110% 80% at 82% 85%, #000 0%, transparent 72%);
+}
+.med-gallery-section > .wrap { position: relative; z-index: 1; }
+@media (max-width: 48rem) {
+  .practice-field { opacity: 0.28; }
 }
 
 /* ── The chapter rail ─────────────────────────────────────────────────

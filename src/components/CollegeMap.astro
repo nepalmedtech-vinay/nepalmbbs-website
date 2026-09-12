@@ -69,6 +69,15 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
 ---
 
 <section class:list={['map-section', { 'map-section--compact': compact }]} id={sectionId}>
+  {/* Cinematic pass: the hero and Trust each carry their own atmospheric
+      field (.gh-field / .trust-field, brand-tinted); Place — this section
+      — was the one full-width chapter with none, reading as a flat drop
+      after Promise's blue glow. Teal (--brand-2) rather than repeating
+      the hero's blue, so the five-chapter homepage reads as a deliberate
+      tonal journey rather than one colour repeated five times. Skipped
+      entirely for the compact college-detail reuse — that's a supporting
+      panel beside a page's own copy, not a chapter of its own. */}
+  {!compact && <div class="map-field" aria-hidden="true"></div>}
   <div class:list={['container', { 'map-in--compact': compact }]}>
 
     {/* Phase 5A: .m-focus (motion.css) instead of the generic .m-rise the
