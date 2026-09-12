@@ -422,19 +422,36 @@
   text-wrap: pretty;
 }
 
-/* The three contact routes. White-on-dark tints became real cards. */
-.counsel-btn {
+/* The three contact routes. White-on-dark tints first became three
+   separate cards (each with its own border/radius/shadow); design pass
+   2026-09-12 found that three simultaneously-elevated cards for three
+   ways to reach the same team is exactly the "card, card, card" fatigue
+   this page — the site's highest-commercial-value one — shouldn't have.
+   The elevation moves to the shared .counsel-btns wrapper below; each
+   .counsel-btn is now a plain ruled row inside it, reusing the ruled-list
+   signature SectionNav and TrustSection already established rather than
+   inventing a fourth "quiet list" language. */
+.counsel-btns {
   background: var(--m-fill-solid) !important;
   border: 1px solid var(--m-hairline) !important;
   border-radius: var(--r-md) !important;
-  min-height: 72px;
-  transition: border-color .2s, box-shadow .2s, transform .2s !important;
-}
-.counsel-btn:hover {
-  background: var(--m-fill-solid) !important;
-  border-color: var(--brand-line) !important;
   box-shadow: var(--sd-2, 0 6px 20px rgba(15, 20, 32, .07));
-  transform: translateY(-1px) !important;
+  overflow: hidden;
+  gap: 0 !important;
+}
+.counsel-btn {
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--m-hairline) !important;
+  border-radius: 0 !important;
+  min-height: 72px;
+  transition: background .2s, transform .2s !important;
+}
+.counsel-btns > .counsel-btn:last-child { border-bottom: 0 !important; }
+.counsel-btn:hover {
+  background: color-mix(in oklab, var(--brand) 5%, transparent) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .counsel-btn-icon { border-radius: var(--r-sm) !important; }

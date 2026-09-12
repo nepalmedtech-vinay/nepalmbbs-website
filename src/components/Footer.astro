@@ -102,27 +102,20 @@
   }
   .foot-3d.is-ready { opacity: 0.55; }
 
-  /* Footer links as small crystal-glass tabs — the same internal-light-
-     gradient/lit-ring/tinted-shadow material the Book free counseling
-     button uses elsewhere, scaled down to text-link size and tinted with
-     this section's navy/light-blue pair instead of the site's default
-     brand blue. Filled solid navy with white text on hover/focus,
-     matching the FAQ page's hover language in this section's own colour,
-     with the light-blue accent as the lit-ring/glow detail. */
+  /* Design pass, 2026-09-12: this used to paint the crystal-tab fill at
+     rest, on every link, all the time — premium as a single hover moment,
+     but 20+ links doing it simultaneously on a single mobile column reads
+     as a wall of buttons, not a footer (the exact "card fatigue" the
+     redesign brief flagged). The material itself is worth keeping — moved
+     to :hover/:focus-visible only, where it was always meant to read as a
+     response to touch rather than as permanent chrome. A resting link is
+     now just ink-2 text (bridge.css), the way a footer link should be. */
   .foot-contacts a, .foot-col a {
     position: relative;
     overflow: hidden;
     border-radius: var(--r-sm);
     padding: 0.4em 0.65em;
     margin-inline: -0.65em;
-    background:
-      linear-gradient(180deg, rgba(255 255 255 / 0.35) 0%, transparent 55%),
-      color-mix(in oklab, var(--sky) 10%, transparent);
-    box-shadow:
-      inset 0 1px 0 rgba(255 255 255 / 0.4),
-      0 0 0 1px var(--navy-accent-line);
-    -webkit-backdrop-filter: blur(6px);
-            backdrop-filter: blur(6px);
     transition: background var(--d-2, 200ms) var(--ea-out, ease),
                 color var(--d-2, 200ms) var(--ea-out, ease),
                 box-shadow var(--d-2, 200ms) var(--ea-out, ease),
@@ -136,6 +129,8 @@
       inset 0 1px 0 rgba(255 255 255 / 0.35),
       0 0 0 1px color-mix(in oklab, var(--sky) 55%, transparent),
       0 6px 18px color-mix(in oklab, var(--navy-accent) 30%, transparent) !important;
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
     transform: translate3d(2px, -1px, 0);
   }
   .foot-contacts a:hover svg, .foot-contacts a:focus-visible svg {

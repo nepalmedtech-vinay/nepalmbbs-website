@@ -6,6 +6,63 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-12 — Design-led visual reconstruction pass (post-5F/5G)
+
+Full account, including how each finding was verified, is in
+`NEXT_TASK.md`'s top section. Short version: the owner reviewed real
+mobile screenshots and found the visual bar not met ("too many bordered
+cards... form/dashboard feeling"), and asked for an evidence-based audit
+followed by targeted fixes — not a rewrite.
+
+Screenshotted the main pages first, then verified every suspected problem
+against **computed style** before touching code — this caught two false
+positives (the homepage's "Navigate Sections" and "Verified & Trusted
+Sources" looked like stacked cards in a compressed screenshot but are
+already a deliberate ruled-index/masthead pattern with zero per-item
+border/shadow) before any code changed on them, and confirmed one problem
+was a genuine, wins-by-cascade CSS bug rather than a style choice worth
+just overriding again.
+
+**Four real fixes shipped**, in order of reach: (1) the footer's ~20
+mobile links carried an always-on crystal-glass pill at rest instead of
+on hover — moved the (already well-built) treatment to `:hover`/
+`:focus-visible` only, which also un-shadowed a dead, correctly-intentioned
+rule already sitting in `premium.css`; (2) `/colleges`' 27-college mobile
+list gave each of 6 fields per college its own border and 16px padding —
+a real bug (`trust.css`'s correct one-border-per-row mobile design was
+being silently overridden by a later, equally-specific `!important` rule
+in `premium.css`), fixed by restoring the original intent from the layer
+that was actually winning; (3) the homepage hero's three stat tiles were
+individually-glowing glass cards stacked full-width on mobile — reused
+the site's own existing `.stat-box` "no box, a rule, a number" language
+(built for the admin console, never brought to the public site) rather
+than inventing a second one, leaving the genuinely well-built desktop
+glass-pane treatment (a spinning conic-gradient rim light per stat)
+completely untouched; (4) `/counseling`'s three contact options were
+three separately-elevated cards in a column on the site's highest-
+commercial-value page — merged into one shared panel of ruled rows,
+reusing the same "one border, hairline dividers" language `SectionNav`
+and `TrustSection` already established.
+
+One suspected issue (the homepage's broken-looking "Clinical Training"
+image gallery) was checked and found to be a sandbox-only network
+artifact — the egress proxy stalls the Unsplash request rather than
+failing it, so the sitewide broken-image fallback never gets the chance
+to engage. Not fixed, because there was nothing to fix in the code;
+documented so it isn't re-diagnosed as a new bug.
+
+**Verified**: build clean, CSP unaffected (pure CSS/markup change,
+`gen-csp.mjs --check` current); `console-verify` 34/34; `a11y-verify`
+32/32; `auth-verify` 12/12; `compare-verify` 13/13; `assistant-verify`
+18/18; `csp-verify` 11/11 (3118/3118 handlers); `audit.mjs` 0 low-contrast
+/ 0 overflow across all 43 routes + assistant (188 gradient-skipped
+elements, down from 1090 earlier the same session — less ambiguous glass
+chrome, not just a smaller number). Additionally checked 430/768/820/1024
+directly on the three changed pages — zero overflow, zero console errors
+— including a specific screenshot at 768px confirming the hero-stat fix's
+breakpoint boundary renders the three glass panes side-by-side exactly as
+before above 40rem.
+
 ## ⭐ 2026-09-12 — Phase 5F (counselling conversion) + Phase 5G (second dataviz) shipped
 
 Full account, including every bug found and exactly how each was verified,

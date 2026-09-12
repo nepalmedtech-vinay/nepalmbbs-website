@@ -3,7 +3,140 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
-## ⭐ Status as of 2026-09-12 (Phase 5F + 5G shipped) — read this section first
+## ⭐ Status as of 2026-09-12 (design-led visual reconstruction pass) — read this section first
+
+The owner reviewed real mobile screenshots after Phase 5F/5G shipped and
+found the visual bar not yet met — "too many bordered cards... too much
+form/dashboard feeling... premium personality is not strong enough" — and
+asked for a design audit followed by 5-10 high-impact fixes, not a
+rewrite. Full design audit, evidence for each finding, and exactly what
+shipped is below; `PROJECT_STATE.md` has the short version.
+
+**Method, since it matters for how much to trust the findings below**:
+screenshotted home/counseling/colleges/college-detail/videos at 390 and
+1440 first, then verified every suspected problem against **computed
+style**, not the screenshot — this caught two false positives before any
+code changed (see items 5 below), which is exactly the discipline
+`DECISION_LOG.md` has needed before on this codebase (a naive screenshot
+and a real computed style have disagreed here more than once).
+
+### Design audit
+
+1. **Homepage hero stat tiles (27 / 734 / 10) are three individually-
+   glowing glass cards, stacked full-width on mobile.** Confirmed via
+   computed style (37.8px border-radius, layered coloured box-shadows,
+   28px backdrop-blur) — not a screenshot misread. Reads as three
+   dashboard KPI tiles directly under the headline, not a confident
+   editorial statement. *Principle: reduce card fatigue, let typography
+   carry hierarchy.* Affected: `GlassHero.astro`, mobile only (≤40rem).
+   **Fixed** — reused this site's own already-existing `.stat-box` "no
+   box, a rule, and a number" language (built for the admin console's
+   dashboard, never brought to the public site) instead of inventing a
+   second de-carded-stat pattern. Desktop's glass-pane treatment — a real
+   spinning conic-gradient rim light per stat, genuinely well-built — is
+   completely untouched; verified unchanged at 768/1024/1440.
+
+2. **Footer links carry an always-on crystal-glass pill (background,
+   border, shadow) at rest, not just on hover.** On a single mobile
+   column this is ~20 identically-styled rounded buttons stacked
+   end to end — the literal "link farm" the brief named, on the one
+   component every one of the 44 routes shares. *Principle: elevation
+   should be earned (hover/focus), not permanent chrome.* Affected:
+   `Footer.astro`, all routes.
+   **Fixed** — moved the crystal treatment to `:hover`/`:focus-visible`
+   only; the material itself (already well-designed — internal light
+   gradient, lit ring, a one-pass shine sweep) is unchanged, just no
+   longer shown at rest. This also un-shadowed a dead rule already
+   sitting in `premium.css` with the exact right intent ("the footer was
+   a four-column link farm... this turns it into a masthead") that a
+   later, more specific scoped style had been silently overriding the
+   whole time — confirmed by checking cascade/specificity, not guessed.
+
+3. **`/counseling`'s three contact options (Calendly / WhatsApp Chat /
+   WhatsApp Call) are three separately bordered, shadowed cards in a
+   column**, directly under the eligibility-checker card — "card → card
+   → card → card" on the site's single highest-commercial-value page.
+   *Principle: reuse an established visual signature instead of
+   repeating a card a fourth time.* Affected: `counseling.astro` /
+   `chrome.css`.
+   **Fixed** — the three options now sit inside one shared panel as
+   ruled rows (the same "one shared border, hairline row dividers"
+   language `SectionNav`'s `.tab-card` and `TrustSection`'s
+   `.trust-badge` already established), collapsing 4 separate cards in
+   that column to 2.
+
+4. **`/colleges`' 27-college mobile list gives every one of 6 fields per
+   college (Compare/College/Location/Affiliation/Ownership/Seats) its
+   own 16px padding and its own bottom hairline**, instead of one border
+   per college. Confirmed via computed style
+   (`padding: 16px; border-bottom: 1px solid …` on every `<td>`) — this
+   is a **real bug, not a style choice**: `trust.css` already had the
+   correct one-border-per-college mobile design (`padding: var(--s-1) 0;
+   border: 0`), but a later, equally-specific `!important` rule in
+   `premium.css` was silently winning over it. *Principle: let one
+   shared border carry the grouping on data-dense sections.* Affected:
+   `.doc-table`, shared with `/colleges/compare` and any future list
+   using the same component.
+   **Fixed** — restored `trust.css`'s original intent from the layer
+   that was actually winning, rather than editing the losing rule.
+   Verified `/colleges/compare` and `/documents` (both also use
+   `.doc-table`/similar) render correctly after the change.
+
+5. **Two suspected problems, checked and found to already be correct —
+   no change made.** The homepage's "Navigate Sections" (9-row list) and
+   "Verified & Trusted Sources" (6-badge row) looked like stacked
+   bordered cards in a compressed screenshot. Direct computed-style
+   checks on both (`background: transparent`, `border-radius: 0px`,
+   `box-shadow: none` on every item) showed they are **already** a
+   deliberate "ruled index"/"masthead credit" pattern — one shared
+   border, hairline dividers, no per-item card — with the codebase's own
+   comments explaining exactly this as a considered fix to an earlier
+   "badge wall"/"row of pills" version. Fixes 3 and 4 above deliberately
+   borrow this same already-proven language rather than inventing a
+   fourth version of it. Worth recording so a future pass doesn't
+   "fix" these two again on a screenshot alone.
+
+6. **Homepage's "Clinical Training" gallery renders as flat grey
+   gradient boxes with no photo, in this sandbox specifically.** Checked
+   directly (`img.complete === false`, `naturalWidth: 0`, `.img-broken`
+   class never applied even after an 8s wait) — the network egress
+   proxy here stalls the Unsplash request rather than failing it
+   cleanly, so the sitewide broken-image fallback (a considered blue/
+   teal brand gradient, `chrome.css`) never even gets the chance to
+   engage; what renders is the untouched pre-load background. **Not a
+   real defect to fix** — consistent with `PROJECT_STATE.md`'s existing,
+   pre-dating note that this sandbox cannot reach image CDNs at all. No
+   change made; flagged so a future session doesn't re-diagnose the same
+   grey boxes as a new bug.
+
+**Verified after implementing 1-4**: build clean (44 routes); CSP
+unaffected (pure CSS/markup, no inline-script changes, `gen-csp.mjs
+--check` current without regenerating); `console-verify` 34/34;
+`a11y-verify` 32/32 (the `/staff` flake from earlier in this session did
+not recur — confirming it really was timing flakiness, not a
+regression); `auth-verify` 12/12; `compare-verify` 13/13;
+`assistant-verify` 18/18; `csp-verify` 11/11 (45 routes, 3118/3118
+handlers); `audit.mjs` **0 low-contrast, 0 mobile overflow, across all 43
+routes + the assistant** (188 skipped-for-gradient elements, down from
+1090 earlier this session — fewer ambiguous surfaces is itself a sign of
+less glass/gradient chrome, not just a number). Additionally checked
+430/768/820/1024 directly (not just 390/1440) on `/`, `/counseling` and
+`/colleges` — zero overflow, zero console errors at every width, and the
+768px boundary case for the hero-stat fix specifically screenshotted to
+confirm the three glass panes still render side-by-side above 40rem
+exactly as before.
+
+**Not attempted this pass, and why**: a sitewide colour-token change (the
+"too much pale blue" note) — reducing the surface area of glass/card
+chrome across items 1-4 addresses this qualitatively without touching
+`engine.css`'s tokens, which would force re-verifying contrast across all
+44 routes for a much larger, harder-to-review diff. `/videos` and
+`/colleges/[slug]` were screenshotted during the audit and found already
+solid (the college detail page's monogram fallback in particular already
+matches everything this brief is asking for elsewhere) — no changes made
+there, consistent with not fixing what isn't broken.
+
+## Status as of 2026-09-12 (Phase 5F + 5G shipped) — still current, read next
 
 The owner explicitly approved Phase 5F, 5G and 5H by name this pass (the
 "fresh explicit approval naming the phase" the previous version of this

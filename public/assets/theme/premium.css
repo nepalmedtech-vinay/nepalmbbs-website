@@ -608,6 +608,36 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
 
 @media (max-width: 40rem) {
   .gh-stats { flex-direction: column; }
+
+  /* Design pass, 2026-09-12: three individually-glowing glass panes read as
+     dashboard tiles once they're stacked full-width with nothing beside
+     them to make the glass legible as glass — the effect needs room, which
+     this width doesn't have. Reapplies this site's own already-established
+     "no box, a rule and a number" stat treatment (.stat-box, below —
+     originally built for the admin console's own dashboard figures)
+     instead of inventing a second de-carded-stat language. Untouched above
+     this width, where the glow panes have the room to actually read as
+     individually lit objects. */
+  .gh-stat-float { animation: none !important; }
+  .gh-stat {
+    background: none !important;
+    border: 0 !important;
+    border-top: 1px solid var(--pr-hair-strong) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important;
+    padding: var(--s-4) 0 !important;
+    text-align: left !important;
+  }
+  .gh-stat::before { display: none !important; }
+  .gh-stat b {
+    background: none !important;
+    -webkit-text-fill-color: var(--g-ink) !important;
+    color: var(--g-ink) !important;
+    font-size: clamp(1.6rem, 1.3rem + 1.4vw, 2rem) !important;
+  }
+  .gh-stat dd, .gh-stat span { max-width: none !important; }
 }
 
 /* The legacy figure boxes, same treatment: no box, a rule and a number. */
@@ -869,6 +899,29 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
   background: var(--pr-sunk) !important;
 }
 .compare-table td strong { color: var(--g-ink) !important; font-weight: 600; }
+
+/* Design pass, 2026-09-12: trust.css already had the right idea for a
+   stacked mobile row — one border per college, tds as plain tight lines —
+   but this file's own base rule two blocks up sets padding/border-bottom
+   with !important on every <td>, which (loading after trust.css, same
+   specificity) silently won regardless of trust.css's own mobile
+   override underneath it. The result was never "27 rows of six lines
+   each" — it's "27 rows of six separately-bordered, 16px-padded fields
+   each", the exact spec-sheet feeling a browsable college list shouldn't
+   have. Restores trust.css's actual intent from the layer that was
+   overriding it. */
+@media (max-width: 48rem) {
+  .doc-table td {
+    padding: var(--s-1, 0.25rem) 0 !important;
+    border-bottom: 0 !important;
+  }
+  .doc-table tbody tr {
+    display: block !important;
+    padding: var(--s-4, 1rem) 0 !important;
+    border-bottom: 1px solid var(--pr-hair) !important;
+  }
+  .doc-table tbody tr:last-child { border-bottom: 0 !important; }
+}
 
 /* A table wider than its column scrolls inside its own box rather than
    pushing the page sideways — tests/audit.mjs measures horizontal overflow at
