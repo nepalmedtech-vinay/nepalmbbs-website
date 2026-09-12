@@ -33,22 +33,53 @@ async function submitLead(src){
 }
 
 // =====================================================
-// NEET CALCULATOR
+// NEET ELIGIBILITY CHECKER
+// -----------------------------------------------------
+// Was score-based against invented thresholds ({gen:400,obc:370,sc:320})
+// that do not exist in any published regulation — NEET's qualifying MARK
+// is reset every year against that year's results and NMC India does not
+// publish it in advance, so no fixed mark can ever be honest here. The
+// only two criteria the regulations actually fix in advance are NEET
+// PERCENTILE and 12th PCB aggregate — both cited in src/data/knowledge.json
+// (topics "neet-percentile", "eligibility-12th", source: NMC India — FMGL
+// Regulations 2021). This checks those two instead of marks.
 // =====================================================
 function checkEligibility(){
-  const score=parseInt(document.getElementById('calc-score').value)||0;
+  const pctEl=document.getElementById('calc-percentile');
   const cat=document.getElementById('calc-cat').value;
+  const pcb=document.getElementById('calc-pcb').value;
   const res=document.getElementById('calc-result');
-  if(!score||score<1||score>720){toast('Please enter a valid NEET score (1–720)','err');return;}
-  const mins={gen:400,obc:370,sc:320};
-  const min=mins[cat]||400;
-  let html='';
-  if(score>=min){
-    html=`<div class="result-card res-ok"><h4>✅ Likely Meets Basic Eligibility Threshold</h4><p>Your NEET score of <strong>${score}</strong> (${cat.toUpperCase()} category) appears to meet the indicative minimum threshold for Nepal MBBS eligibility. However, actual seat availability depends on MEC Nepal's annual seat matrix and specific college cutoffs. This is indicative guidance only.</p><span class="res-cta" data-act="click" data-do='[["switchTab","counsel"]]'>Book Free Counseling →</span><a href="https://mec.gov.np" target="_blank" rel="noopener" class="res-cta">Verify at MEC Nepal ↗</a></div>`;
+  const pct=pctEl.value===''?NaN:parseFloat(pctEl.value);
+  if(isNaN(pct)||pct<0||pct>100){toast('Enter your NEET percentile (0–100) — it\'s on your official NTA scorecard, not the same as your raw score.','err');return;}
+  if(!pcb){toast('Select your 12th PCB aggregate range.','err');return;}
+  const reserved=cat==='sc';
+  const pctMin=reserved?40:50;
+  const pctOk=pct>=pctMin;
+  const pcbState=pcb==='Below 50%'?(reserved?'unclear':'fail'):'ok';
+
+  const row=(state,label,detail)=>{
+    const icon=state==='ok'?'✅':state==='fail'?'⚠️':'❓';
+    return `<div class="elig-row elig-${state}"><span class="elig-icon">${icon}</span><div><strong>${label}</strong><p>${detail}</p></div></div>`;
+  };
+
+  let html='<div class="result-card elig-card">';
+  html+='<h4>Your eligibility, against the published rules</h4>';
+  html+=row(pctOk?'ok':'fail','NEET percentile',
+    `You entered the ${pct}th percentile. The qualifying threshold is the ${pctMin}th percentile for ${reserved?'SC/ST and reservation-covered OBC':'General and OBC'} candidates. ${pctOk?'This criterion is met.':'This criterion is not met at the percentile entered.'}`);
+  html+=row(pcbState,'12th PCB aggregate',
+    pcbState==='ok'
+      ? `Your selected range (${pcb}) meets the ${reserved?40:50}% aggregate required for ${reserved?'reservation-covered':'General/OBC'} candidates.`
+      : pcbState==='fail'
+        ? `Your selected range (${pcb}) is below the 50% aggregate required for General/OBC candidates.`
+        : `Your selected range (${pcb}) straddles the 40% reservation threshold — a range alone can't confirm this. Bring your exact percentage to your counsellor.`);
+  html+='</div>';
+
+  if(pctOk&&pcbState==='ok'){
+    html+=`<div class="result-card res-ok"><h4>✅ You meet the published eligibility criteria</h4><p>Seat availability still depends on MEC Nepal's annual seat matrix and college-specific cutoffs — this checks regulatory eligibility only, not a seat offer.</p><span class="res-cta" data-act="click" data-do='[["switchTab","counsel"]]'>Book Free Counseling →</span></div>`;
   }else{
-    html=`<div class="result-card res-warn"><h4>⚠️ Score May Be Below Typical Threshold</h4><p>Your NEET score of <strong>${score}</strong> (${cat.toUpperCase()} category) may be below the indicative minimum (~${min}+). This is general guidance only — actual eligibility depends on current NMC India and MEC Nepal regulations. Please speak with our counselor for accurate, personalised guidance.</p><span class="res-cta" data-act="click" data-do='[["switchTab","counsel"]]'>Talk to a Counselor →</span></div>`;
+    html+=`<div class="result-card res-warn"><h4>⚠️ Talk to a counselor before ruling anything out</h4><p>At least one criterion above isn't clearly met from what you entered. A counsellor can review your exact numbers and any exceptions that apply.</p><span class="res-cta" data-act="click" data-do='[["switchTab","counsel"]]'>Talk to a Counselor →</span></div>`;
   }
-  html+=`<p class="calc-dis" style="margin-top:8px">⚠️ Indicative only. Verify at <a href="https://nmc.org.in" target="_blank">nmc.org.in</a> & <a href="https://mec.gov.np" target="_blank">mec.gov.np</a></p>`;
+  html+=`<p class="calc-dis" style="margin-top:8px">Sources: NMC India — FMGL Regulations 2021 (<a href="https://nmc.org.in" target="_blank" rel="noopener">nmc.org.in</a>), Medical Education Commission, Nepal (<a href="https://mec.gov.np" target="_blank" rel="noopener">mec.gov.np</a>).</p>`;
   res.innerHTML=html;res.style.display='block';
 }
 

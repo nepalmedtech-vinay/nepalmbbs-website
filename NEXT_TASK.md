@@ -3,7 +3,39 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
-## ⭐ Status as of 2026-09-12 — read this section first, everything below it is history
+## ⭐ Status as of 2026-09-12 (later pass) — read this section first
+
+**NEET eligibility checker corrected to sourced criteria** (full account
+in `PROJECT_STATE.md` and `DECISION_LOG.md`, same date). Picked up
+in-progress, uncommitted work already sitting in the working tree at the
+start of this pass (`leads.js`, `neet-calculator.astro` already
+rewritten) and finished it: the old checker tested a raw NEET score
+against invented thresholds with no source; now tests NEET percentile +
+12th PCB aggregate, both already sourced in `knowledge.json`. Also
+finished embedding the same checker (compact variant) on `/counseling`,
+which the in-progress diff's own comment had labelled "Phase 5F" — read
+as the correctness fix reaching its second existing call site, not a
+start on Phase 5F's own scope (still gated below); revert
+`src/pages/counseling.astro`'s `calc-wrap--compact` block alone if that
+reading turns out wrong. Also fixed, because verification surfaced them and they were safe and
+one value/one line each: `tools/action-allowlist.json` had drifted from
+`actions.js`'s own runtime allow-list (3 missing names, zero effect on
+real users, but it was corrupting `csp-verify.mjs`'s own signal on 17
+pages); that same test file's NEET-calculator check used the pre-rewrite
+field id; and `CollegeHero.astro`'s fallback-asset caption failed AA
+contrast (3.89:1, needs 4.5:1) on all 27 college pages — `audit.mjs`
+never having run to completion in a recent session (it dies earlier in
+`npm run verify`'s chain on the rollback-tag issue) is presumably why
+nobody had caught it yet. Full result, run suite-by-suite rather than via
+`npm run verify`: `npm run build` clean (44 routes); `node tools/gen-csp.mjs`
+no diff; `tests/csp-verify.mjs` 11/11 (was 9/51); `tests/console-verify.mjs`
+34/34; `tests/a11y-verify.mjs` 32/32; `tests/compare-verify.mjs` 13/13;
+`tests/assistant-verify.mjs` 18/18; `tests/audit.mjs` 0 low-contrast / 0
+overflow across 43 routes (was 27 low-contrast before the `CollegeHero`
+fix). `build-verify.mjs` itself still hits the pre-existing rollback-tag
+403 (see "Blocked on the owner, not on work" far below).
+
+## Status as of 2026-09-12 (earlier pass) — still current, read next
 
 The site is mid-way through an "autonomous premium product builder"
 operating contract (owner-supplied, governs Phase 5 onward). Phases so

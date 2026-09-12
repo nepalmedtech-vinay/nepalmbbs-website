@@ -6,7 +6,49 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
-## ⭐ 2026-09-12 — Media-readiness follow-up (Phase 5E extension) shipped
+## ⭐ 2026-09-12 — NEET eligibility checker corrected to sourced criteria, embedded on /counseling
+
+The tool at `/neet-calculator` (`public/assets/js/leads.js`'s
+`checkEligibility()`) compared a student's raw NEET score against
+invented thresholds (`{gen:400, obc:370, sc:320}`) that trace to no
+published source — a direct instance of the rule 1 violation
+`CLAUDE.md` exists to prevent, present since long before this session.
+NMC India resets the qualifying *mark* every year against that year's
+results and does not publish it in advance, so no fixed-score check can
+ever be honest here. Rewrote it to check the two criteria the FMGL
+Regulations 2021 actually do fix in advance — NEET **percentile**
+(50th for General/OBC, 40th where reservation applies) and 12th PCB
+**aggregate** (same split) — both already sourced and dated in
+`src/data/knowledge.json`. The result now shows each criterion as its
+own row against the rule it's measured by, rather than one verdict.
+
+The same component (compact variant) is now also embedded on
+`/counseling`, above the enquiry form — "not sure you qualify, check
+first" as the moment before a student commits to the form. One
+function, one set of element ids per page (the two pages never overlap
+at runtime); no second calculator system. Added the CSS this needed
+using the site's actual current light-theme tokens (`--m-hairline`,
+`--g-ink-*`) rather than the component's own pre-Phase-3 dark-card
+assumption still sitting in `base.css` above it — `.calc-wrap` is one of
+`bridge.css`'s generically-aliased cards, so its rendered surface is
+already the light glass fill, not the dark navy gradient the
+un-migrated rule still declares.
+
+Three unrelated, pre-existing bugs found and fixed during verification —
+full account in `DECISION_LOG.md`'s entry of the same date:
+`tools/action-allowlist.json` had silently drifted from `actions.js`'s
+own runtime allow-list (three handlers added directly during the prior
+session, bypassing `tools/dehandler.py`); `tests/csp-verify.mjs`'s own
+NEET-calculator check used the pre-rewrite field id; and
+`CollegeHero.astro`'s fallback-asset caption failed AA contrast (3.89:1,
+needs 4.5:1) on all 27 college pages. All three fixed. Full suite, run
+individually since `npm run verify`'s own `build-verify.mjs` step still
+hits the pre-existing rollback-tag 403: `csp-verify` 11/11 (was 9/51),
+`console-verify` 34/34, `a11y-verify` 32/32, `compare-verify` 13/13,
+`assistant-verify` 18/18, `audit.mjs` 0 low-contrast / 0 overflow across
+43 routes (was 27 low-contrast before the `CollegeHero` fix).
+
+## 2026-09-12 — Media-readiness follow-up (Phase 5E extension) shipped
 
 A controlled, explicitly-scoped follow-up to Phase 5E: make the media
 system usable now, without waiting on the owner's own photo/video uploads,

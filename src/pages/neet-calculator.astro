@@ -9,18 +9,18 @@ import PageHeader from '../components/PageHeader.astro';
 >
 <div class="tab-pane on" id="pane-calculator">
 <div class="container">
-  <PageHeader eyebrow="Free Tool" center lead="General indicative guidance only. Always verify with official NMC India and MEC Nepal sources before any decision.">NEET Eligibility Checker</PageHeader>
+  <PageHeader eyebrow="Free Tool" center lead="Checked against the published NMC India and MEC Nepal eligibility rules — not a seat guarantee.">NEET Eligibility Checker</PageHeader>
   <div class="calc-wrap rev">
-    <h3>Check Your General Eligibility</h3>
-    <p>Enter your details for an indicative overview — not official admission advice.</p>
+    <h3>Check Your Eligibility</h3>
+    <p>Your NEET percentile is on your official NTA scorecard — it's not the same as your raw score, which can't be checked against a fixed number since the qualifying mark is reset every year.</p>
     <div class="calc-grid">
-      <div class="cfield"><label for="calc-score">NEET Score (out of 720)</label><input type="number" id="calc-score" placeholder="e.g. 380" min="0" max="720" inputmode="numeric"></div>
+      <div class="cfield"><label for="calc-percentile">NEET Percentile</label><input type="number" id="calc-percentile" placeholder="e.g. 62.5" min="0" max="100" step="0.01" inputmode="decimal"></div>
       <div class="cfield"><label for="calc-cat">Category</label><select id="calc-cat"><option value="gen">General</option><option value="obc">OBC</option><option value="sc">SC/ST</option></select></div>
-      <div class="cfield"><label for="calc-state">State (for context)</label><select id="calc-state"><option value="">Any State</option><option>Maharashtra</option><option>Delhi</option><option>UP</option><option>MP</option><option>Other</option></select></div>
+      <div class="cfield"><label for="calc-pcb">12th PCB Aggregate</label><select id="calc-pcb"><option value="">Select</option><option>90%+</option><option>80-89%</option><option>70-79%</option><option>60-69%</option><option>50-59%</option><option>Below 50%</option></select></div>
     </div>
     <button class="calc-btn" data-act="click" data-do='[["checkEligibility"]]'>Check My Eligibility →</button>
     <div class="calc-result" id="calc-result"></div>
-    <div class="calc-dis">⚠️ This tool provides general indicative guidance based on typical thresholds. It is NOT official admission advice. Always verify at <a href="https://nmc.org.in" target="_blank">nmc.org.in</a> and <a href="https://mec.gov.np" target="_blank">mec.gov.np</a> before making any decision.</div>
+    <div class="calc-dis">This checks your NEET percentile and 12th PCB aggregate against the regulatory thresholds below. It is NOT official admission advice and does not check seat availability. Always verify at <a href="https://nmc.org.in" target="_blank">nmc.org.in</a> and <a href="https://mec.gov.np" target="_blank">mec.gov.np</a> before making any decision.</div>
   </div>
 </div>
 </div>

@@ -376,6 +376,35 @@ section.hero.sliding .hero-content{
 .calc-dis{font-size:11px;color:var(--g-ink-4);margin-top:12px;text-align:center;line-height:1.6}
 .calc-dis a{color:var(--accent)}
 
+/* .calc-wrap--compact: same component embedded inline (counseling.astro,
+   above the enquiry form) rather than as a page's sole feature — tighter
+   padding/margins and a left-aligned (non-centered) heading to sit naturally
+   in a text column instead of dominating it. */
+.calc-wrap--compact{padding:26px;margin-top:24px;margin-bottom:28px}
+.calc-wrap--compact h3{font-size:17px}
+.calc-wrap--compact>p{margin-bottom:18px}
+.calc-wrap--compact .calc-grid{grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.calc-wrap--compact .calc-grid .cfield:last-child{grid-column:1 / -1}
+
+/* Eligibility breakdown rows (leads.js checkEligibility()) — each published
+   criterion (NEET percentile, 12th PCB aggregate) shown as its own row
+   against the rule it's measured by, so a "does not qualify" result reads as
+   "here is the rule and where you stand against it", not an opaque verdict.
+   NOTE: .calc-wrap is one of bridge.css's generic-aliased cards (line ~197
+   there) — its *rendered* surface is the light glass fill with dark ink
+   text, not the dark-navy gradient base.css still declares for it further
+   up this file. These rules use --m-hairline / dark-ink-tinted washes to
+   match that, not white-on-dark. */
+.elig-card{border-color:var(--m-hairline);background:rgba(16,25,43,.03)}
+.elig-card h4{font-family:'Sora',sans-serif;color:var(--g-ink);font-size:15px;font-weight:700;margin-bottom:14px}
+.elig-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid var(--m-hairline)}
+.elig-row:first-of-type{border-top:none}
+.elig-icon{flex-shrink:0;font-size:15px;line-height:1.5}
+.elig-row strong{display:block;font-size:13px;font-weight:700;color:var(--g-ink);margin-bottom:3px}
+.elig-row p{font-size:12.5px;color:var(--g-ink-3);line-height:1.6}
+.elig-fail strong{color:var(--gold)}
+.elig-unclear strong{color:var(--g-ink-2)}
+
 /* GUIDELINES */
 .guide-tabs{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap}
 .g-tab{padding:9px 20px;border-radius:9px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}

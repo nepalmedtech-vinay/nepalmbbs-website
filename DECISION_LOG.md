@@ -5,6 +5,91 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-09-12 — NEET eligibility checker rebuilt on sourced criteria; embedded on /counseling; two unrelated pre-existing bugs fixed during verification
+
+Picked up in-progress, uncommitted work from earlier in this session
+(`leads.js`, `neet-calculator.astro` already rewritten on disk) and
+finished it. The tool's original `checkEligibility()` compared a raw
+NEET score against invented thresholds (`{gen:400, obc:370, sc:320}`)
+that trace to no published regulation — a direct violation of this
+project's rule 1 ("never invent a fact"), since NMC India resets the
+qualifying *mark* every year against that year's results and does not
+publish it in advance. The two criteria the regulations actually fix in
+advance — NEET **percentile** (50th General/OBC, 40th reservation-
+covered) and 12th PCB **aggregate** (50%/40% same split) — were already
+sourced and dated in `src/data/knowledge.json` (topics `neet-percentile`,
+`eligibility-12th`, NMC India — FMGL Regulations 2021, checked
+2026-08-28). Rewrote the checker to test those two instead, with each
+criterion shown as its own row against the rule it's measured by, rather
+than a single opaque verdict.
+
+Also finished, not reverted: embedding the same component, compact
+variant, on `/counseling` above the enquiry form (the in-progress diff's
+own comment called this "Phase 5F"). Judged this to be the correctness
+fix reaching its second, already-existing call site — reusing one
+component and one function, nothing new designed — rather than a start
+on Phase 5F's own scope ("dedicated counselling conversion experience"),
+which `NEXT_TASK.md` explicitly gates on a fresh approval naming the
+phase. If that reading is wrong, the fix is one diff to revert
+(`src/pages/counseling.astro`'s `calc-wrap--compact` block) without
+touching the underlying correctness fix.
+
+Two real, pre-existing bugs found during verification (neither touched
+by this change, both predate it in already-committed code) and fixed
+because they were one-line, safe, and were actively corrupting this
+session's own test signal:
+
+1. **`tools/action-allowlist.json` had drifted from `actions.js`'s own
+   runtime `ALLOW` object** — `addOfficialPhotoRef`, `deletePhotoRef` and
+   `setVideoActive` (all three added directly to `actions.js` during the
+   prior "Media-readiness follow-up" session, not through
+   `tools/dehandler.py`) were missing from the JSON file `CLAUDE.md`
+   documents as the canonical CSP allow-list. Effect: real users were
+   never affected (the runtime dispatcher reads its own inline `ALLOW`),
+   but `tests/csp-verify.mjs`'s handler-dispatch check — which instruments
+   functions named in the JSON file — silently never instrumented these
+   three, so clicking their buttons during the test ran the *real* admin
+   functions instead of the test's recorder, registering as "0 calls"
+   on every one of the 17 pages carrying `AdminPanel`. Fixed by adding
+   the three names to the JSON file (alphabetical, matching existing
+   order); cross-checked both lists programmatically afterward — 0 names
+   differ either direction now.
+2. **`tests/csp-verify.mjs`'s own NEET-calculator end-to-end check used
+   the old field id** (`#neet-score, input[id*=score]`) and never set the
+   now-required 12th-PCB field, so it could never have caught this
+   session's own change breaking the feature. Updated to
+   `#calc-percentile`/`#calc-pcb`.
+
+A third, real, pre-existing bug — unrelated to the above, found only
+because `audit.mjs` finally got to run to completion this pass —
+**wasn't** left for later: `CollegeHero.astro`'s fallback-asset caption
+("Identity mark, not a photograph") measured 3.89:1 against its slot's
+light brand-tint gradient, short of the 4.5:1 AA minimum this project
+holds itself to, on all 27 college detail pages. Traced to the caption's
+`color-mix(in oklab, var(--g-ink) 55%, transparent)` — bumped to 72%,
+which `audit.mjs` confirms clears the bar with margin. Predates this
+session (already in the committed `ac1e13d`); fixed anyway because it
+was one CSS value, safe, and otherwise would have sat undiscovered
+indefinitely — `npm run verify`'s own chain dies earlier, at the
+documented rollback-tag issue, before ever reaching `audit.mjs`, so
+nothing in the normal verify path was going to catch it.
+
+`npm run build`: 44 routes, clean. `node tools/gen-csp.mjs`: no diff (no
+inline script touched). `tests/csp-verify.mjs`: 11/11, 3118/3118 handlers
+(was 9/51, 3078/3118, before the allowlist fix — the calculator-specific
+failure and the `addOfficialPhotoRef` drift were two independent causes
+of the same run going red). `tests/console-verify.mjs`: 34/34.
+`tests/a11y-verify.mjs`: 32/32. `tests/compare-verify.mjs`: 13/13.
+`tests/assistant-verify.mjs`: 18/18. `tests/audit.mjs`: 43 routes, **0
+low-contrast elements, 0 mobile overflow** (was 27 low-contrast, all on
+the pre-existing `CollegeHero.astro` bug above, before that fix).
+`npm run verify`'s own `build-verify.mjs` step still fails on the
+pre-existing, already-documented rollback-tag issue (`CLAUDE.md`: tags
+return 403 on push) — ran every other suite individually instead; not
+this change's regression.
+
+---
+
 ## 2026-09-12 — Media-readiness follow-up: no unverifiable video embedded; reference links over rehosted photos; draft/publish added only where it was missing
 
 Decided not to embed any of the specific CMC YouTube videos this session's

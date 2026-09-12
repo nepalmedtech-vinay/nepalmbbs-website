@@ -1,6 +1,7 @@
 [
   "addCollegeAdmin",
   "addFAQ",
+  "addOfficialPhotoRef",
   "addTestimonial",
   "addTicker",
   "addVideo",
@@ -15,6 +16,7 @@
   "deleteCollege",
   "deleteCollegePhoto",
   "deleteFAQ",
+  "deletePhotoRef",
   "deleteTest",
   "deleteVideo",
   "doAdminLogin",
@@ -39,6 +41,7 @@
   "selectCollege",
   "sendMsg",
   "setLang",
+  "setVideoActive",
   "submitLead",
   "switchATab",
   "switchGuide",

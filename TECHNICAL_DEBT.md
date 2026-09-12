@@ -32,6 +32,31 @@ leaving it as a silent TODO, and give each item a path to being resolved.
   at minimum document what `exam_intelligence_*` actually is), so this
   repo stops being a lagging, incomplete record of its own database.
 
+## Newly identified and fixed 2026-09-12 (NEET calculator correctness pass)
+
+- ~~**`CollegeHero.astro`'s fallback-asset caption failed AA contrast**~~
+  **Fixed**: "Identity mark, not a photograph" measured 3.89:1 (needs
+  4.5:1) against its slot's light brand-tint gradient, on all 27 college
+  detail pages — `color-mix(in oklab, var(--g-ink) 55%, transparent)`
+  bumped to 72%. Predates this pass (already in committed `ac1e13d`);
+  `audit.mjs` is the only check that measures contrast, and `npm run
+  verify`'s chain dies earlier, at the rollback-tag issue, before
+  reaching it — so a recent session's `git log` showing "audit ✅" is not
+  evidence this stayed true; re-run `audit.mjs` directly to know.
+- ~~**`tools/action-allowlist.json` had drifted from `actions.js`'s own
+  runtime `ALLOW` object**~~ **Fixed**: `addOfficialPhotoRef`,
+  `deletePhotoRef`, `setVideoActive` were added straight to `actions.js`
+  during the prior media-readiness session rather than through
+  `tools/dehandler.py`, and never reached the JSON file. Real users were
+  unaffected (the dispatcher reads its own inline object); the only
+  casualty was `tests/csp-verify.mjs`'s own signal, which instruments
+  functions by that file's contents and so never recorded these three,
+  misreporting unrelated real clicks as failures on all 17 pages carrying
+  `AdminPanel`. Worth remembering the next time a handler is added by
+  hand instead of through `dehandler.py`: it needs adding to this file
+  too, and nothing currently checks that automatically (`build-verify.mjs`
+  would have, once it runs — see the rollback-tag entry below).
+
 ## Newly identified 2026-09-12 (Phase 5D) — not fixed, out of scope
 
 - **One college's `location` string does not match any `places.json` key.**

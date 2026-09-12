@@ -179,12 +179,18 @@ await page.waitForTimeout(200);
 await page.goto(`http://localhost:${PORT}/neet-calculator`, { waitUntil: 'load' });
 await page.waitForTimeout(200);
 {
-  const sel = page.locator('#cat, select[id*=cat]').first();
-  const score = page.locator('#neet-score, input[id*=score]').first();
+  // The checker reads NEET percentile + 12th PCB aggregate (both cited in
+  // src/data/knowledge.json) rather than a raw score — there is no published
+  // fixed score to check against, since NMC India resets the qualifying
+  // mark every year. #calc-percentile replaced the old #calc-score field.
+  const sel = page.locator('#calc-cat, select[id*=cat]').first();
+  const pct = page.locator('#calc-percentile, input[id*=percentile]').first();
+  const pcb = page.locator('#calc-pcb, select[id*=pcb]').first();
   let ran = false;
-  if (await score.count()) {
-    await score.fill('450');
+  if (await pct.count()) {
+    await pct.fill('75');
     if (await sel.count()) await sel.selectOption({ index: 0 }).catch(() => {});
+    if (await pcb.count()) await pcb.selectOption({ index: 1 }).catch(() => {});
     const btn = page.locator('[data-do*="checkEligibility"]').first();
     if (await btn.count()) {
       await btn.click();

@@ -156,7 +156,9 @@ const factParts = [
     margin: 0;
     font-size: 11px;
     letter-spacing: 0.02em;
-    color: color-mix(in oklab, var(--g-ink) 55%, transparent);
+    /* 55% measured 3.89:1 against this slot's light brand-tint gradient —
+       short of the 4.5:1 AA text minimum audit.mjs checks for. */
+    color: color-mix(in oklab, var(--g-ink) 72%, transparent);
   }
   /* The moment a real photo reveals itself (college-photo.js removes
      [hidden]), the caption belongs to a photograph, not a mark — hide it
