@@ -248,6 +248,23 @@ const privAvg = Math.round(avg(privSeats));
     fig.addEventListener('focusout', function (e) {
       if (!fig.contains(e.relatedTarget)) hide();
     });
+
+    // Data points draw in as the chart enters view — a scale+fade cascade
+    // by index, not just already-plotted the instant the SVG renders. Same
+    // mechanism CollegeMap.astro's own points use (one IntersectionObserver
+    // toggling a single class, not one observer per point), reused here so
+    // the site's two data-plot graphics share one entrance language rather
+    // than one drawing itself in and the other simply appearing.
+    if ('IntersectionObserver' in window) {
+      var scIo = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (e.isIntersecting) { fig.classList.add('is-drawn'); scIo.disconnect(); }
+        });
+      }, { threshold: 0.18 });
+      scIo.observe(fig);
+    } else {
+      fig.classList.add('is-drawn');
+    }
   })();
 </script>
 
@@ -288,6 +305,38 @@ const privAvg = Math.round(avg(privSeats));
   .sc-pt.is-govt .sc-dot { fill: var(--brand); }
   .sc-pt:not(.is-govt) .sc-dot { fill: var(--brand-2); }
   .sc-hit { fill: transparent; cursor: pointer; }
+
+  /* Points draw in on entry, staggered by index — a college's mark grows
+     into place rather than the chart simply appearing already-plotted,
+     the same "data entering with depth" treatment CollegeMap.astro's own
+     points use. `transform-box: fill-box` matters here: without it, scale()
+     on an SVG <g> positioned by its children's own cx/cy (not by a
+     transform) scales from the outer viewBox's origin, so the point would
+     visibly slide in from the top-left corner while growing instead of
+     just emerging in place. Delay capped implicitly by --i's own range
+     (20-27 colleges here) so the last point does not arrive noticeably
+     after the first. */
+  .sc-pt {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+  }
+  .sc-figure.is-drawn .sc-pt {
+    animation: sc-pt-in var(--d-3, .3s) var(--ea-out, ease) forwards;
+    animation-delay: calc(var(--i) * 22ms);
+  }
+  @keyframes sc-pt-in {
+    from { opacity: 0; transform: scale(calc(1 - 0.35 * var(--mo, 1))); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sc-pt { opacity: 1 !important; animation: none !important; }
+  }
+  /* Same guarantee where scripting is off: .is-drawn is added by the
+     script above, so without JS nothing would ever add it. */
+  @media (scripting: none) {
+    .sc-pt { opacity: 1; }
+  }
 
   .sc-pt.is-active .sc-dot { r: 8; }
   .sc-pt:focus-visible { outline: none; }
