@@ -147,6 +147,25 @@ const groups = [
      tests/audit.mjs's overflow check already treats as intentional (it
      exempts any element with overflow-x:auto from the "page scrolls
      sideways" failure). */
+  /* Selection -> spatial response: the whole table is discarded and rebuilt
+     on every checkbox change (compare.js), so the fresh result gets a
+     depth pop rather than simply replacing the old one silently. A regular
+     (non-scroll-linked) animation, not one of motion.css's view()-timeline
+     primitives -- this fires on a state change, not on scrolling into
+     view, and a freshly-inserted element's `animation ... both` always
+     starts cleanly on insertion, no missed-frame risk the way a
+     scroll-timeline animation on a pre-existing element can have. */
+  #cmp-result :global(.cmp-pop) {
+    animation: cmp-pop var(--d-4, 0.42s) var(--ea-out, ease) both;
+  }
+  @keyframes cmp-pop {
+    from { opacity: 0; transform: scale(calc(1 - 0.04 * var(--mo, 1))) translate3d(0, calc(10px * var(--mo, 1)), 0); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #cmp-result :global(.cmp-pop) { animation: none; }
+  }
+
   @media (max-width: 48rem) {
     #cmp-result :global(.doc-body) {
       overflow-x: auto;

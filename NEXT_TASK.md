@@ -86,6 +86,55 @@ trusting either run's result, killed everything, and re-ran clean once the
 build was final. `run_in_background: true` already backgrounds the whole
 command; do not also append `&` inside it.
 
+**Two further additions, same session, after the first commit above shipped:**
+
+1. **`/colleges`' capacity-vs-experience scatter chart now draws its data
+   in with depth.** `CollegeScatter.astro`'s 20-27 points previously
+   appeared fully plotted the instant the chart's own `.m-rise` container
+   animation finished — no per-point motion at all, unlike the homepage
+   map's points (which already fade-and-scale in, staggered). Gave
+   `.sc-pt` the identical treatment: an `IntersectionObserver` (mirroring
+   `CollegeMap.astro`'s own, not reinvented) adds `.is-drawn` to
+   `.sc-figure` once visible, and each point scales up from `calc(1 -
+   0.35 * var(--mo))` while fading in, staggered `22ms * var(--i)`.
+   `transform-box: fill-box` is required — without it, `scale()` on an
+   SVG `<g>` positioned by its children's own `cx`/`cy` (not by a
+   transform) scales from the outer viewBox's corner, so the point would
+   visibly slide in from top-left while growing rather than emerging in
+   place. Kept the keyframe local to this component's own `<style>`
+   block (matching its existing self-contained convention) rather than
+   referencing `premium.css`'s identically-shaped `fade` keyframe by
+   name — untested whether Astro's scoped-CSS compiler leaves cross-file
+   keyframe references alone in this project's config, and there was no
+   need to find out for one small keyframe. CSP regenerated (the
+   component's inline script changed).
+
+2. **The compare-picker's result table now gives a real "selection →
+   spatial response."** `compare.js` tears down and rebuilds the entire
+   result table from scratch on every checkbox change (`replaceChildren`)
+   — previously the fresh table just silently replaced the old one. It
+   now carries a `.cmp-pop` class that pops in with a small scale+rise
+   (a plain, non-scroll-linked `animation`, since this fires on a state
+   change rather than a scroll position — a freshly-inserted element's
+   `animation … both` always starts cleanly, no missed-frame risk a
+   scroll-timeline animation on a pre-existing element can have). The
+   per-checkbox pointer-tilt considered earlier this session for the same
+   picker was reconsidered here too and rejected again for the same
+   reason (27 adjacent small targets tilting independently reads as
+   wobble); this achieves the same brief item ("selection → spatial
+   response") on the *result* of a selection instead, where it reads as
+   intentional. CSS lives in `compare.astro`'s own scoped `<style>` using
+   `:global(.cmp-pop)` — the same escape hatch that file's mobile-table
+   rules already use for elements this page's own JS creates at runtime,
+   which never carry Astro's build-time scope attribute.
+
+Both verified independently: build clean, CSP current (regenerated for
+#1, unaffected for #2 — `compare.js` is an external file, not inline),
+`console-verify` 34/34, `a11y-verify` 32/32, `compare-verify` 13/13,
+`assistant-verify` 18/18, `auth-verify` 12/12, and a `reducedMotion:
+'reduce'` Playwright check for each confirming the new element is
+immediately fully visible with no animation delay.
+
 **Not done from the round-2 brief**: further hero "dimensional typography"
 beyond what round 1 already shipped (line-by-line reveal, gradient text,
 3D-tumbling icon field, the existing Three.js medical scene); "warm
@@ -93,6 +142,13 @@ editorial highlights" (no warm token exists in `engine.css`'s palette —
 inventing one was judged out of scope for a targeted cinematic pass, not
 a "the brand needs a new colour" decision to make unilaterally); further
 scroll-story typography transforms beyond the parallax now in place.
+Also deliberately left alone: the Trust Section's six-badge masthead row
+— considered for a `.gl--live` hover-depth treatment (few enough items
+that the compare-picker's "wobble" objection wouldn't apply), but that
+row was deliberately de-carded in an earlier pass specifically to read as
+"a masthead credit, not a badge wall" (`premium.css`'s own comment);
+adding glass-panel tilt back onto each badge would undercut that
+already-deliberate restraint for a section this brief did not call out.
 
 ## ⭐ Status as of 2026-09-12 (cinematic depth pass) — read this section first
 

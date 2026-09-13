@@ -36,6 +36,19 @@ scroll screenshots that the new parallax never exposes a seam, and via a
 real college detail page that the map's `highlight`/compact-variant reuse
 still works with the new `.map-tilt` wrapper.
 
+Two further additions the same day, full detail in `NEXT_TASK.md`:
+`/colleges`' scatter chart points now scale+fade in staggered by index
+(the same "data entering with depth" treatment the map's own points use,
+reusing that pattern's `IntersectionObserver` approach rather than
+adding `animation-timeline: view()` to SVG children, which the map
+component had already implicitly avoided for the identical element
+type); and the compare-picker's result table now pops in with depth
+every time the selection changes and the table is rebuilt from scratch,
+a real "selection → spatial response" achieved on the table itself after
+a per-checkbox tilt was reconsidered and rejected again for the same
+wobble reason as before. Both independently verified green across the
+fast suite plus a reduced-motion check.
+
 ## ⭐ 2026-09-12 — Cinematic depth pass (CSS/SVG only, no new WebGL)
 
 Full account in `NEXT_TASK.md`'s top section. The owner asked for a step
