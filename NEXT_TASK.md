@@ -3,6 +3,82 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-13 (less density + photography stance) — read this section first
+
+Owner follow-up after the colour pass: "push toward real photography and
+less density." Two different kinds of ask — one squarely a design change,
+the other a content/rights decision this session cannot make unilaterally.
+Handled them accordingly rather than treating both the same way.
+
+**Density — done.** The single biggest offender was every college page's
+own Record panel: nine rows (`Ownership, Location, University
+affiliation, Established, Foreign-quota seats, Course duration, Admission
+route, Tuition fee, Official website`) landing as one flat table the
+instant a visitor scrolled to it — a wall of facts before anything told
+them which two numbers actually differ college to college.
+
+1. **`CollegeHero.astro`** — the two numbers a visitor actually compares
+   colleges by (foreign-quota seats, founding year) now lead the identity
+   moment as bold figures, using the site's own existing "no box, a rule
+   and a number" `.stat-box` language (already built for the admin
+   dashboard, already reused on the homepage hero — no new component).
+   Capped to a compact 2-column pair (`grid-template-columns: repeat(2,
+   minmax(0, 9rem))`) rather than `.stat-grid`'s default `auto-fit`, which
+   would have stretched two items across the whole copy column and left a
+   wide, empty-reading gap. "Established" dropped out of the one-line
+   `.ch-facts` sentence it used to close — repeating the same figure as
+   both a bold stat and inline text a few lines apart is exactly the
+   density this pass exists to remove, not a case for keeping both.
+2. **`.doc-row` padding loosened** (`--s-3` → `--s-4`) in `premium.css` —
+   a small, global increase in breathing room between every label/value
+   pair in every Record panel, the compare table's rows, guidelines,
+   privacy and documents. Nothing hidden, nothing removed from any of
+   these panels — the full record still shows every field, in full, for
+   every college. Less density here specifically means more air around
+   the same facts, not fewer of them: this is a sourced-evidence site
+   whose whole trust proposition is "we show you the field even when we
+   don't have the value" (`Not on record — ask us` rows stay), so hiding
+   facts behind a "show more" toggle to look sparser was ruled out
+   explicitly, not overlooked.
+
+**Photography — a content/rights decision, not a design one, flagged
+rather than worked around.** This session cannot source real,
+verified, rights-cleared photographs of 27 named medical institutions:
+`WebFetch` is blocked entirely in this environment, and even where
+`WebSearch` could locate a candidate image, using it would mean
+publishing another party's copyrighted photograph without a confirmed
+licence — the same category of "legal/copyright uncertainty" the
+standing autonomous mandate names as a genuine stop-and-ask case, not a
+judgment call to make alone. Generating an AI image to fill the gap
+would be worse, not a safe fallback: this site's `CollegeHero.astro`
+already deleted a "stock photo standing in for a campus" pattern once
+this session specifically because it contradicted the homepage's own
+promise ("no stock photographs standing in for a campus, no promise the
+Medical Education Commission has not made") — a fabricated photo of a
+specific, real, named institution is that same failure at a worse
+severity, not a lesser one.
+
+What already exists and needs no design work: `supabase/migrations/0008`
+(`site_photos`, with `alt_text`/`caption`/rights metadata) plus the admin
+panel's photo-upload workflow (Phase 5E/5F, see the `2026-09-1x` entries
+above) already let a staff member upload a real photo for any college,
+and `college-photo.js` already renders it automatically — full-bleed,
+`object-fit: cover`, with the `.gl--live` pointer-tilt and a gradient
+caption treatment already wired up (`CollegeHero.astro`'s `.ch-asset`) —
+the moment one exists. 0/27 colleges have one today. The blocker is
+sourcing verified images with confirmed rights, which is the owner's
+call: either supply photos directly (with the rights to use them
+confirmed), or point to which colleges' own sites/official channels have
+publishable images and on what terms.
+
+**Verified**: build clean (44 routes — `getStaticPaths()` re-ran across
+all 27 colleges without error); CSP unaffected; `console-verify` 34/34;
+`a11y-verify` 32/32; `compare-verify` 13/13; `assistant-verify` 18/18;
+`auth-verify` 12/12; full `audit.mjs` run against the changed build.
+Screenshots confirmed the stat pair and loosened row spacing at both
+1440px and 390px, on both a private and a government college (different
+`.ch-fallback` tint), with no overflow or wrapping issue.
+
 ## ⭐ Status as of 2026-09-13 (royal-premium colour pass) — read this section first
 
 The owner's follow-up brief, after the spatial-escalation work below: the

@@ -783,8 +783,14 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
   background: color-mix(in oklab, var(--brand-2) 6%, var(--pr-paper)) !important;
 }
 
-/* Label/value rows — the register's own table. */
+/* Label/value rows — the register's own table. Less-density pass: trust.css's
+   own --s-3 row padding read tight once a record panel was carrying eight or
+   nine rows in a row (every college's own page, plus compare/guidelines/
+   documents/privacy) — a wall of facts rather than a register a visitor can
+   scan at a glance. Loosened one step; nothing here hides a field, the extra
+   air is the only change. */
 .doc-row {
+  padding: var(--s-4) 0 !important;
   border-bottom: 1px solid var(--pr-hair-soft) !important;
   transition: background var(--d-2) var(--ea-out);
 }

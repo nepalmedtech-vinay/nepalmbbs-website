@@ -6,6 +6,27 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-13 — Less density; photography flagged as a content decision
+
+Full account in `NEXT_TASK.md`. Owner asked for "real photography and
+less density." Density is a design change, done: the two numbers that
+actually differentiate colleges (seats, founding year) now lead every
+college page's identity moment as bold `.stat-box` figures instead of
+being buried as rows 4 and 5 of a nine-row table; `.doc-row` padding
+loosened sitewide for more breathing room. Nothing hidden — every field
+in every Record panel is still shown in full.
+
+Photography is a content/rights decision this session flagged rather
+than acted on alone: no ability to source verified, rights-cleared
+photographs of 27 named real institutions here (`WebFetch` blocked, and
+even a `WebSearch`-located image carries unconfirmed copyright), and
+generating one would be the exact "stock/fabricated image standing in
+for a real campus" failure this site already reversed once this session.
+The upload infrastructure (`site_photos` migration 0008, the admin
+panel's photo workflow, `college-photo.js`'s auto-render) already exists
+and needs no further design work — it is waiting on real, rights-cleared
+images the owner supplies or points to.
+
 ## ⭐ 2026-09-13 — Royal-premium colour pass
 
 Full account in `NEXT_TASK.md`'s top section. The owner's complaint: the

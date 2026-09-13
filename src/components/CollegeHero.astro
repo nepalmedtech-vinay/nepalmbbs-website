@@ -33,10 +33,26 @@ const initials = (
 
 // A one-line identity sentence from fields that already exist — no new
 // facts, just the existing record read in order rather than as a table.
+// "Established" is deliberately left out here: it gets the bold stat-box
+// treatment just below instead, and repeating it in this sentence too
+// would be the exact kind of density the identity moment should avoid —
+// one fact, one place, not the same number twice within a few lines.
 const factParts = [
   c.location,
   c.affiliation && `affiliated to ${c.affiliation}`,
-  c.established && `established ${c.established}`,
+].filter(Boolean);
+
+// Less density, same facts: the two numbers a visitor actually scans the
+// full Record table for first (how many seats, how long has this college
+// existed) get pulled forward as a headline glance — the site's own
+// existing "no box, a rule and a number" .stat-box language (premium.css
+// §6, built for the admin dashboard, already reused on the homepage
+// hero) rather than a new component. The Record table below still shows
+// every field in full; nothing here is hidden, only repeated with more
+// visual weight where a visitor looks first.
+const headlineStats = [
+  c.seats && { n: c.seats, l: 'Foreign-quota seats' },
+  c.established && { n: c.established, l: 'Established' },
 ].filter(Boolean);
 ---
 <div class="rev">
@@ -48,6 +64,13 @@ const factParts = [
     <span class="eyebrow">{isGovt ? 'Government college' : 'Private college'} · MEC Nepal 2025-26</span>
     <h1 class="sec-title college-name ch-h1">{c.name}</h1>
     {factParts.length > 0 && <p class="ch-facts">{factParts.join(' · ')}</p>}
+    {headlineStats.length > 0 && (
+      <div class="stat-grid ch-stats">
+        {headlineStats.map((s) => (
+          <div class="stat-box"><strong>{s.n}</strong><span>{s.l}</span></div>
+        ))}
+      </div>
+    )}
     <EvidenceBadges college={c} />
   </div>
 
@@ -94,6 +117,16 @@ const factParts = [
     margin: 0 0 var(--s-4, 1rem);
     color: var(--g-ink-3, var(--muted));
     font-size: var(--t-sm, 0.95rem);
+  }
+
+  /* Two figures, not a row of them — .stat-grid's own auto-fit columns
+     would stretch a 2-item grid across the whole copy column on a wide
+     screen, leaving a wide gap between the number and its label that
+     reads as empty rather than spacious. Capped to a compact pair
+     instead, sized like the homepage hero's own stat ledger. */
+  .ch-stats {
+    grid-template-columns: repeat(2, minmax(0, 9rem)) !important;
+    margin: 0 0 var(--s-5, 1.5rem) !important;
   }
 
   .ch-asset {
