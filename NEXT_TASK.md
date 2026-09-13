@@ -3,6 +3,52 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## 🔷 Where things actually stand — read this one first, then the dated
+## entries below only if you need the reasoning behind a specific change
+
+**Branch**: `claude/website-premium-design-j6mphw`, clean, fully pushed to
+`origin`. No uncommitted changes, no open PR (never asked for, deploy is
+the owner's own step per `CLAUDE.md`).
+
+**What the site is now, after this session's full run**: a 44-route Astro
+public site (plus `/staff`, `/portal`, an assistant) that went from
+"clean-but-generic college website" through several deliberate passes —
+a design audit and card-fatigue cleanup, a cinematic depth pass (scroll
+parallax, pointer-tilt glass, per-chapter atmospheric fields), a
+royal-premium colour system (deep navy/blue/teal + a restrained warm
+accent, every value contrast-checked, not guessed), and a density pass
+(the two numbers that actually differentiate a college now lead its page
+as bold figures, not buried in a nine-row table). Every one of those
+passes was verified — full `audit.mjs` contrast/overflow run, a11y,
+console, and functional suites — before being committed. Nothing shipped
+unverified.
+
+**Explicitly flagged, not done, and why**: real photography. The upload
+infrastructure exists and works (`site_photos` table, admin panel,
+`college-photo.js` auto-renders a photo the moment one is uploaded) —
+0/27 colleges have one. This session cannot source verified, rights-
+cleared photos of real named institutions (no web fetch, and fabricating
+one would repeat the exact "stock photo standing in for a campus"
+failure this codebase already reversed once). That's the owner's call:
+supply photos with confirmed rights, or name which colleges' official
+channels have publishable images.
+
+**If the next prompt is "keep pushing the design further"**: the
+honest ceiling without real photography is already close — colour,
+motion and density are in good shape; further gains are marginal without
+either real photos or a genuinely different information architecture
+(this is fundamentally a dense, sourced admissions/comparison tool, not
+an editorial/brand site, and that's a deliberate trade-off, not an
+oversight — see this file's 2026-09-13 density entry).
+
+**If the next prompt is a new/different feature**: read `PROJECT_STATE.md`
+next for full architecture + history, `DECISION_LOG.md` for why things
+are the way they are, `CONTENT_SOURCE_LOG.md` before touching any factual
+claim, and skim `CLAUDE.md`'s non-negotiable rules (no invented facts, no
+fee calculator, RLS is the real access boundary, no inline `on*`
+handlers, never deploy/merge to `main`, never touch the two legacy
+tracker apps).
+
 ## ⭐ Status as of 2026-09-13 (less density + photography stance) — read this section first
 
 Owner follow-up after the colour pass: "push toward real photography and
