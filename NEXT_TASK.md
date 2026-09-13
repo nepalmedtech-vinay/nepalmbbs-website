@@ -3,6 +3,89 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## 🔷 Where things actually stand — read this one first, then the dated
+## entries below only if you need the reasoning behind a specific change
+
+**Branch**: `claude/website-premium-design-j6mphw`, clean, fully pushed to
+`origin`. No uncommitted changes, no open PR (never asked for, deploy is
+the owner's own step per `CLAUDE.md`).
+
+**What the site is now, after this session's full run**: a 44-route Astro
+public site (plus `/staff`, `/portal`, an assistant) that went from
+"clean-but-generic college website" through several deliberate passes —
+a design audit and card-fatigue cleanup, a cinematic depth pass (scroll
+parallax, pointer-tilt glass, per-chapter atmospheric fields), a
+royal-premium colour system (deep navy/blue/teal + a restrained warm
+accent, every value contrast-checked, not guessed), a density pass (the
+two numbers that actually differentiate a college now lead its page as
+bold figures, not buried in a nine-row table), and a final dark-register
+pass on the footer and every college page's identity panel (see the
+dated entry immediately below for the full account). Every one of those
+passes was verified — full `audit.mjs` contrast/overflow run, a11y,
+console, and functional suites — before being committed. Nothing shipped
+unverified.
+
+**Final end-to-end check, this session's last action**: re-ran the
+*entire* verify surface against the final combined build (all passes
+above, together) rather than trusting each pass's own isolated result —
+`console-verify` 34/34, `a11y-verify` 32/32, `auth-verify` 12/12,
+`compare-verify` 13/13, `assistant-verify` 18/18, a full `audit.mjs`
+pass, and `csp-verify`. Also ran `perf-verify.mjs` (Core Web Vitals,
+throttled) for the first time this session, since a long run of colour
+and motion changes had never been checked against it. It fails 12
+thresholds — TBT elevated only on the 5 routes that mount the footer's
+WebGL scene (`/staff`/`/portal`, which don't, measure 35-38ms, cleanly
+under the 200ms budget), and LCP over budget on every route including
+those two content-light, WebGL-free ones. Checked, not shipped-and-
+ignored: this exact pattern (TBT gated to WebGL-mounting routes, LCP
+over budget uniformly) matches `PROJECT_STATE.md`'s own pre-existing,
+already-investigated "Critical finding" baseline (a real regression
+from months ago, already mitigated by mount-gating; residual cost
+verified via `perf-verify.mjs` output here as `/staff` + `/portal`
+passing TBT cleanly with everything else identical). Also confirmed
+during the check: an earlier reading of this same run was contaminated
+by a second, concurrent Playwright browser this session had left running
+(a screenshot script) competing for real CPU while `perf-verify.mjs`
+was *also* simulating a 4x slowdown — killed it and re-ran in isolation,
+which meaningfully improved the numbers (e.g. `/` TBT 809ms → 431ms)
+without changing which routes passed or failed. No fix attempted here:
+removing or further gating the WebGL scenes is exactly the trade-off
+`PROJECT_STATE.md` already says needs the owner's explicit sign-off
+before being revisited, not a call to make unilaterally in a "wrap up
+and finalize" pass. Flagging it here is that sign-off request.
+
+**Explicitly flagged, not done, and why**: real photography. The upload
+infrastructure exists and works (`site_photos` table, admin panel,
+`college-photo.js` auto-renders a photo the moment one is uploaded) —
+0/27 colleges have one. Tested live during the footer/hero pass: this
+sandbox's network egress rejects every external host, including this
+project's own Supabase backend — not just arbitrary web content as
+previously documented, a strictly wider block. Confirmed technical
+incapability, not a judgment call: no photo can be fetched, and
+generating one would repeat the exact "stock photo standing in for a
+campus" failure this codebase already reversed once. Owner's call:
+supply photos with confirmed rights, or name which colleges' official
+channels have publishable images, for a future session with the network
+access this one didn't have.
+
+**If the next prompt is "keep pushing the design further"**: the
+honest ceiling without real photography is already close — colour,
+motion and density are in good shape; further gains are marginal without
+either real photos or a genuinely different information architecture
+(this is fundamentally a dense, sourced admissions/comparison tool, not
+an editorial/brand site, and that's a deliberate trade-off, not an
+oversight — see this file's density entry below). The one open item with
+real headroom is the `perf-verify.mjs` finding above, and that needs the
+owner's sign-off before any action, not more design work.
+
+**If the next prompt is a new/different feature**: read `PROJECT_STATE.md`
+next for full architecture + history, `DECISION_LOG.md` for why things
+are the way they are, `CONTENT_SOURCE_LOG.md` before touching any factual
+claim, and skim `CLAUDE.md`'s non-negotiable rules (no invented facts, no
+fee calculator, RLS is the real access boundary, no inline `on*`
+handlers, never deploy/merge to `main`, never touch the two legacy
+tracker apps).
+
 ## ⭐ Status as of 2026-09-13 (footer + college-hero dark finale) — read this section first
 
 The owner's brief for this pass: a full "final production lock" asking for a
@@ -107,52 +190,6 @@ fetched, and no image-generation tool is available either. Not a judgment
 call declined; a tested technical incapability, reported to the owner
 rather than worked around with a fabricated or mislabeled substitute (which
 this file's own history has already reversed once, for the same reason).
-
-## 🔷 Where things actually stand — read this one first, then the dated
-## entries below only if you need the reasoning behind a specific change
-
-**Branch**: `claude/website-premium-design-j6mphw`, clean, fully pushed to
-`origin`. No uncommitted changes, no open PR (never asked for, deploy is
-the owner's own step per `CLAUDE.md`).
-
-**What the site is now, after this session's full run**: a 44-route Astro
-public site (plus `/staff`, `/portal`, an assistant) that went from
-"clean-but-generic college website" through several deliberate passes —
-a design audit and card-fatigue cleanup, a cinematic depth pass (scroll
-parallax, pointer-tilt glass, per-chapter atmospheric fields), a
-royal-premium colour system (deep navy/blue/teal + a restrained warm
-accent, every value contrast-checked, not guessed), and a density pass
-(the two numbers that actually differentiate a college now lead its page
-as bold figures, not buried in a nine-row table). Every one of those
-passes was verified — full `audit.mjs` contrast/overflow run, a11y,
-console, and functional suites — before being committed. Nothing shipped
-unverified.
-
-**Explicitly flagged, not done, and why**: real photography. The upload
-infrastructure exists and works (`site_photos` table, admin panel,
-`college-photo.js` auto-renders a photo the moment one is uploaded) —
-0/27 colleges have one. This session cannot source verified, rights-
-cleared photos of real named institutions (no web fetch, and fabricating
-one would repeat the exact "stock photo standing in for a campus"
-failure this codebase already reversed once). That's the owner's call:
-supply photos with confirmed rights, or name which colleges' official
-channels have publishable images.
-
-**If the next prompt is "keep pushing the design further"**: the
-honest ceiling without real photography is already close — colour,
-motion and density are in good shape; further gains are marginal without
-either real photos or a genuinely different information architecture
-(this is fundamentally a dense, sourced admissions/comparison tool, not
-an editorial/brand site, and that's a deliberate trade-off, not an
-oversight — see this file's 2026-09-13 density entry).
-
-**If the next prompt is a new/different feature**: read `PROJECT_STATE.md`
-next for full architecture + history, `DECISION_LOG.md` for why things
-are the way they are, `CONTENT_SOURCE_LOG.md` before touching any factual
-claim, and skim `CLAUDE.md`'s non-negotiable rules (no invented facts, no
-fee calculator, RLS is the real access boundary, no inline `on*`
-handlers, never deploy/merge to `main`, never touch the two legacy
-tracker apps).
 
 ## ⭐ Status as of 2026-09-13 (less density + photography stance) — read this section first
 
