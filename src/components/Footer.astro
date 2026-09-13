@@ -79,6 +79,53 @@
 </footer>
 
 <style>
+  /* Final-pass, royal-premium brief: the footer was the one place on every
+     one of 44 routes that never got a genuine dark "closing chapter" — the
+     rest of the site deliberately stayed on a light, clinical ground (see
+     DECISION_LOG.md 2026-09-08) but the footer was always meant to read as
+     where the light narrative resolves, and it was reading as one more
+     pale-blue band instead. Every colour below is computed against
+     --navy-accent (#0D2648), not eyeballed, the same discipline the
+     royal-premium pass used for .doc-head: white text 14.27:1, the muted
+     72%-white ink used for secondary/tertiary copy ~8.5-9.7:1, --sky
+     (already this exact section's own WebGL accent) 6.44:1 as a link
+     colour — all comfortably past the 4.5:1 AA floor with real margin.
+     Overriding on the scoped selector + !important, the same technique
+     this file's own hover rule already uses to win against bridge.css's
+     `footer { background: transparent !important }` (a rule written for
+     the light-footer era) and chrome.css/premium.css's light-ground text
+     colours — see the comments on those files for why a bare, unscoped
+     selector there cannot out-specificity a component style. */
+  footer {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(165deg,
+      var(--navy-accent),
+      color-mix(in oklab, var(--navy-accent) 72%, black 20%)) !important;
+    color: color-mix(in oklab, white 72%, var(--navy-accent) 28%) !important;
+  }
+  .foot-inner { position: relative; z-index: 1; }
+  .foot-top { border-top: 1px solid rgba(255 255 255 / 0.14) !important; }
+  .foot-logo { color: #fff !important; }
+  .foot-logo span { color: var(--sky) !important; }
+  .foot-desc,
+  .foot-contacts a,
+  .foot-col a,
+  .foot-bottom p,
+  .foot-bottom a {
+    color: color-mix(in oklab, white 72%, var(--navy-accent) 28%) !important;
+  }
+  .foot-h, .foot-col-title {
+    color: color-mix(in oklab, var(--sky) 55%, white 45%) !important;
+  }
+  .foot-note {
+    border-color: rgba(255 255 255 / 0.16) !important;
+    border-left-color: var(--sky) !important;
+    background: rgba(255 255 255 / 0.05) !important;
+    color: color-mix(in oklab, white 78%, var(--navy-accent) 22%) !important;
+  }
+  .foot-note a { color: var(--sky) !important; }
+
   /* The footer's own WebGL layer — the same medical-icons scene the hero
      and four page headers already use, recoloured navy + light blue (a
      third accent pair used only here, on the owner's explicit ask — an
@@ -88,8 +135,6 @@
      footer, so it needs `footer` to actually establish a stacking/
      clipping context — it did not have `position: relative` before,
      since it never needed one. */
-  footer { position: relative; overflow: hidden; }
-  .foot-inner { position: relative; z-index: 1; }
   .foot-3d {
     position: absolute;
     inset: 0;
@@ -99,8 +144,19 @@
     opacity: 0;
     transition: opacity 900ms ease;
     pointer-events: none;
+    /* Final pass: the object was free to drift under the Navigate/Official
+       Sites/Contact columns' text, reading as clutter rather than
+       atmosphere — confirmed by screenshot, a real composition issue
+       independent of the sandbox's software-rendered material quality.
+       Masked to a soft field behind the brand column only, fading out
+       before the three link columns begin (roughly the .foot-top grid's
+       own 2.5fr-of-6fr first-column share), so it now reads as ambient
+       light behind the identity block rather than an object crossing the
+       navigation. */
+    -webkit-mask-image: linear-gradient(90deg, black 0%, black 38%, transparent 64%);
+            mask-image: linear-gradient(90deg, black 0%, black 38%, transparent 64%);
   }
-  .foot-3d.is-ready { opacity: 0.55; }
+  .foot-3d.is-ready { opacity: 0.6; }
 
   /* Design pass, 2026-09-12: this used to paint the crystal-tab fill at
      rest, on every link, all the time — premium as a single hover moment,

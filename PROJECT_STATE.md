@@ -1,10 +1,55 @@
 # PROJECT_STATE.md
 
-_Last updated: 2026-09-12. Read this file first in any new session before
+_Last updated: 2026-09-13. Read this file first in any new session before
 doing implementation work — an earlier version of this file (last touched
 2026-08-27) had drifted badly out of sync with reality and is not a
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
+
+## ⭐ 2026-09-13 — Footer + college-hero dark finale; real photography confirmed blocked
+
+Full account in `NEXT_TASK.md`'s top section. Two bounded, fully-verified
+visual changes: `Footer.astro` deepened to a genuine dark navy "closing
+chapter" (every child given an explicit, computed light-on-dark override,
+its WebGL scene masked so it no longer drifts under the nav columns' text),
+and `CollegeHero.astro`'s identity-mark panel — the strongest visual moment
+on all 27 college pages while 0/27 have a real photo — deepened to the same
+`--navy-accent` family `.doc-head` already established, still 100% honest
+(a graphic mark from the college's own initials/coordinates, never a
+stand-in photo).
+
+`audit.mjs` caught a real regression from the panel darkening, not a false
+positive: the monogram's caption measured 1.57:1 on all 27 pages, because
+it is a DOM *sibling* of the panel, not a descendant, and the checker's
+contrast walker only climbs an ancestor chain by design — it correctly has
+no way to see a sibling's paint. Fixed at the root (an explicit opaque
+background on the caption itself, not reliance on what happens to sit
+behind it) and re-verified 0/27 clean on a second full `audit.mjs` run.
+
+Separately, tested live and confirmed (not assumed from old notes): this
+sandbox's network egress now rejects every external host tried, including
+this project's own Supabase backend — stricter than the already-documented
+"WebFetch blocked" finding. An owner request this same session for real
+photographs of all 27 colleges is therefore not achievable here on two
+independent counts (no fetch path, no image-generation tool available) —
+reported plainly rather than worked around with a fabricated or generic
+stand-in image, the same failure mode this file's 2026-09-12 entries
+already reversed once.
+
+**Verified**: build clean; CSP unaffected; full suite green (csp-verify
+11/11, console-verify 34/34, auth-verify 12/12, a11y-verify 32/32 — one
+`/portal` focus-timing flake on the first run, this file's own previously-
+documented pattern, did not recur — compare-verify 13/13, assistant-verify
+18/18); two full `audit.mjs` runs, the first catching the caption
+regression, the second **0 low-contrast / 0 mobile overflow across all 43
+routes + the assistant**. `build-verify.mjs` still hits the pre-existing,
+already-documented `phase1-static-rollback` tag 403, unrelated to this
+pass. Screenshots confirmed the footer (desktop + mobile) and a college
+hero panel on both a private and government college. One pre-existing
+rendering artifact (a faint pale ghost under some footer links) found,
+isolated via computed-style inspection and an A/B rebuild of the
+unmodified footer, and confirmed to predate this pass — a sandbox
+software-rendering quirk, not a CSS bug, flagged rather than chased.
 
 ## ⭐ 2026-09-13 — Less density; photography flagged as a content decision
 

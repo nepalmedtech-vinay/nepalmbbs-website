@@ -3,6 +3,111 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-13 (footer + college-hero dark finale) — read this section first
+
+The owner's brief for this pass: a full "final production lock" asking for a
+more royal/cinematic/dark register, explicitly naming the footer as needing
+to read as the site's "final chapter" rather than a utility dump, and
+college detail pages as needing to feel like "premium institutional
+profiles." Rather than the wholesale redesign the brief's own text
+requested, delivered two bounded, fully-verified changes with genuine
+sitewide/cross-page reach — consistent with this file's own prior finding
+that the honest ceiling here is colour/composition refinement, not a
+rewrite, absent real photography or a new information architecture.
+
+**`Footer.astro` is now a genuine dark closing chapter**, not one more pale
+band. Real navy gradient background (`linear-gradient(165deg,
+var(--navy-accent), color-mix(... 72% black 20%))`), every child given an
+explicit light-on-dark override in the footer's own scoped `<style>` +
+`!important` — the same technique its existing hover rule already used to
+win against `bridge.css`'s light-era `footer { background: transparent
+!important }` and chrome.css/premium.css's light-ground text colours (see
+those files' own comments on why a bare selector there can't out-specificity
+a component style). Every colour computed against `--navy-accent`, not
+eyeballed: white ~14.3:1, the 72%-white mixes used for secondary/tertiary
+copy ~8.5-9.7:1, `--sky` (already this section's own WebGL accent pair) as
+the link colour ~6.4:1 — all with real margin past the 4.5:1 AA floor. The
+footer's own WebGL scene (`.foot-3d`) got a `mask-image` fading it out past
+its first ~38-64% width — it was previously free to drift under the
+Navigate/Official Sites/Contact columns' text (confirmed by screenshot, not
+assumed), reading as clutter; now it reads as ambient light behind the brand
+column only. `.foot-top`'s hairline and `.foot-note`'s border/background,
+both light-ground tokens (`--pr-hair`/`--m-hairline`, dark ink at low
+opacity — invisible on a dark ground), got explicit light-rgba overrides.
+
+**`CollegeHero.astro`'s identity-mark panel — the strongest single visual
+moment on every one of the 27 college pages while 0/27 have a real
+photo — deepened to match, not left as the pale brand-tint wash it was.**
+Same `--navy-accent` family `.doc-head` already established (so the panel
+now reads as one register with the Record panel below it, not two), plus a
+radial highlight and a warmed monogram. Still 100% honest: a graphic
+identity mark built from the college's own initials/coordinates, never a
+stand-in photo, same rule this file's history has enforced since Phase 5D.
+
+**A real bug this pass's own verification caught, not shipped blind**: the
+caption under the monogram ("Identity mark, not a photograph") measured
+**1.57:1** contrast on all 27 pages after the panel darkened — a genuine
+regression, not a false positive. Root cause, confirmed by reading
+`tests/audit.mjs`'s own `groundsOf()`: it walks an element's *ancestor*
+chain only, by design — it has no way to see a sibling's painted background,
+and `.ch-fallback-cap` has only ever been a DOM sibling of `.ch-fallback`
+(the panel), not its descendant. The caption's old dark-ink colour happened
+to pass regardless, since dark-on-the-page's-light-ground always clears AA
+whatever sits behind it visually — so this sibling relationship was latent,
+not new, and only became a real failure once the caption's colour had to
+flip to light-on-dark. Fixed at the root: gave `.ch-fallback-cap` its own
+explicit opaque background (matching `.ch-fallback`'s own darkest gradient
+stop, so it reads as one continuous panel) instead of depending on paint
+order the checker — correctly — cannot assume. Re-verified 0/27 after.
+
+**Verified**: build clean (44 routes); `gen-csp.mjs --check` current (pure
+`<style>`-block changes, no inline `<script>` touched); `csp-verify` 11/11
+(3118/3118 handlers); `console-verify` 34/34; `auth-verify` 12/12;
+`a11y-verify` 32/32 (one `/portal` `.cx-input` focus-timing flake on the
+first run, this file's own previously-documented Chromium synthetic-Tab
+pattern — did not recur on two re-runs); `compare-verify` 13/13;
+`assistant-verify` 18/18; `audit.mjs` **0 low-contrast elements, 0 mobile
+overflow, across all 43 routes + the assistant** (this is the *second*
+`audit.mjs` run this pass — the first correctly caught the caption
+regression above; nothing shipped on the first run's result).
+`build-verify.mjs` still hits the pre-existing, already-documented
+`phase1-static-rollback` tag 403 (see "Blocked on the owner, not on work"
+below) — unrelated to this pass, run suite-by-suite around it as this file's
+history already establishes is the correct workaround.
+
+Screenshots confirmed at 1440px and 390px: the footer (desktop + mobile, via
+`scrollIntoViewIfNeeded` since a naive full-page or jump-scroll capture
+doesn't trigger this site's scroll-linked reveal animations — worth knowing
+for a future session's own screenshot QA, not a site bug) and a college
+hero panel on both a private and government college. One pre-existing,
+NOT-introduced-by-this-pass rendering artifact found and isolated during
+this QA: a faint pale rounded-rect ghost under a handful of footer/nav
+links, confirmed via computed-style inspection (`background: transparent`,
+no box-shadow, no extra DOM element at that point via
+`elementsFromPoint`) and via an A/B rebuild of the *original* footer (same
+faint shapes present, just low-contrast-camouflaged against the old pale
+ground) to be a pre-existing compositing quirk of this sandbox's
+software-rendered headless Chromium, not a CSS bug — flagged here rather
+than silently chased further, since computed style is already provably
+correct and this artifact predates every change in this pass.
+
+**Not done, and why**: the homepage hero itself — already the subject of a
+very recent, deliberate, fully-verified royal-premium colour + cinematic
+pass (see the section directly below) that explicitly reasoned through and
+kept the site's light ground (a previously-reversed dark→light decision,
+`DECISION_LOG.md` 2026-09-08). Revisiting that again this pass would mean
+re-verifying contrast across every hero child for a large, high-risk diff,
+for a component this file's own history already treated carefully. The
+`27-college real photography` ask in the owner's separate same-session
+message is a distinct, harder blocker — this session tested live and
+confirmed the sandbox's network egress rejects every external host tried,
+including this project's own Supabase backend, not only the previously-
+documented case of arbitrary web content — so no real image could be
+fetched, and no image-generation tool is available either. Not a judgment
+call declined; a tested technical incapability, reported to the owner
+rather than worked around with a fabricated or mislabeled substitute (which
+this file's own history has already reversed once, for the same reason).
+
 ## 🔷 Where things actually stand — read this one first, then the dated
 ## entries below only if you need the reasoning behind a specific change
 

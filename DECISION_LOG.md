@@ -5,6 +5,40 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-09-13 — Declined to fabricate real-college photography; confirmed the blocker live rather than citing old notes
+
+The owner asked, in the same session as the footer/college-hero dark pass
+below, for real photographs sourced and integrated for all 27 colleges
+(official sites, teaching hospitals, Wikimedia, social media, with AI
+generation only as a last-resort representational fallback, never
+mislabeled as a real campus). `CLAUDE.md` and this file's own 2026-09-13
+entries already document `WebFetch` as blocked for every domain tried in
+earlier sessions — but rather than cite that as settled without checking,
+tested it live this session: `curl` to a Wikimedia Commons asset returned
+`403` at the proxy's own CONNECT step, and the proxy's status endpoint
+showed the same `403 policy denial` against Google, Google Fonts, and —
+notably new information — this project's **own Supabase backend**
+(`fpzgcijbryvddtpegcmm.supabase.co`). This session's network policy is
+stricter than the prior "WebFetch blocked" finding: it is not one tool
+being restricted, it is the environment rejecting essentially all outbound
+connections except a small package-registry/Anthropic-API allowlist. No
+image-generation tool is available in this session's toolset either (only
+an SVG/vector-drawing tool, unsuited to photographic institutional imagery).
+
+Given both required capabilities are absent — not a difficult judgement
+call, a tested incapability — reported this to the owner directly rather
+than either (a) silently producing a "27/27 complete" result built on
+generic stock photos mislabeled as real campuses (the exact failure this
+file's 2026-09-12 entries already reversed once, and which the owner's own
+brief explicitly ruled out too), or (b) quietly doing nothing. Offered the
+two real paths forward: the owner supplies real, rights-cleared files
+directly (the upload pipeline — `site_photos`, the admin panel, `college-
+photo.js`'s auto-render — already exists and works, verified and improved
+its fallback treatment this same session), or the existing honest graphic
+identity-mark system remains the production answer until real photos exist.
+
+---
+
 ## 2026-09-12 — NEET eligibility checker rebuilt on sourced criteria; embedded on /counseling; two unrelated pre-existing bugs fixed during verification
 
 Picked up in-progress, uncommitted work from earlier in this session

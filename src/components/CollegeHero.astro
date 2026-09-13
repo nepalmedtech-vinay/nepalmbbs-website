@@ -162,27 +162,48 @@ const headlineStats = [
     background: linear-gradient(0deg, rgba(0 0 0 / 0.55), transparent);
   }
 
+  /* Final pass: this panel is every college's single strongest visual
+     moment while 0/27 have a real photo (CONTENT_ASSET_PLAN.md), and the
+     pale brand-tint wash it used to be read as thin/empty next to the
+     dark .doc-head band lower on the same page — two different registers
+     on one page. Deepened to the same navy-accent family .doc-head
+     already established, still 100% honest (a graphic identity mark, not
+     a stand-in photo — nothing here claims to depict a real place), and
+     now dark enough that .gl--live's specular sweep (glass.css, already
+     wired to this element) reads as real light catching a lit panel
+     instead of a faint shimmer nobody notices on a pale ground. Colours
+     computed against --navy-accent the same way .doc-head's were: white
+     ~14.3:1, the 78-88% white mixes below ~9-12:1, --sky ~6.4:1 — all
+     comfortably past the 4.5:1 AA floor a caption/monogram needs. */
   .ch-fallback {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(155deg,
-      color-mix(in oklab, var(--brand) 16%, var(--g-base, #fff)),
-      color-mix(in oklab, var(--brand-2, var(--brand)) 10%, var(--g-base, #fff)));
+    background:
+      radial-gradient(130% 140% at 22% 12%,
+        color-mix(in oklab, var(--brand) 60%, var(--navy-accent) 40%) 0%,
+        transparent 55%),
+      linear-gradient(165deg,
+        var(--navy-accent),
+        color-mix(in oklab, var(--navy-accent) 74%, black 20%));
   }
   .ch-asset.is-govt .ch-fallback {
-    background: linear-gradient(155deg,
-      color-mix(in oklab, var(--brand-2, var(--brand)) 18%, var(--g-base, #fff)),
-      color-mix(in oklab, var(--brand) 10%, var(--g-base, #fff)));
+    background:
+      radial-gradient(130% 140% at 22% 12%,
+        color-mix(in oklab, var(--brand-2, var(--brand)) 60%, var(--navy-accent) 40%) 0%,
+        transparent 55%),
+      linear-gradient(165deg,
+        var(--navy-accent),
+        color-mix(in oklab, var(--navy-accent) 74%, black 20%));
   }
   .ch-fallback-lines {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    stroke: color-mix(in oklab, var(--g-ink) 12%, transparent);
+    stroke: rgba(255 255 255 / 0.14);
     stroke-width: 0.4;
   }
   .ch-mono {
@@ -191,21 +212,38 @@ const headlineStats = [
     font-weight: var(--ty-weight-d, 800);
     font-size: clamp(3.5rem, 2.5rem + 4vw, 5.5rem);
     letter-spacing: 0.01em;
-    color: color-mix(in oklab, var(--g-ink) 78%, var(--brand) 22%);
-    opacity: 0.85;
+    color: color-mix(in oklab, white 90%, var(--accent-warm) 10%);
+    text-shadow: 0 2px 24px color-mix(in oklab, var(--brand) 45%, transparent);
+    opacity: 0.94;
   }
   .ch-fallback-cap {
     position: absolute;
-    left: var(--s-3, 0.75rem);
-    bottom: var(--s-3, 0.75rem);
-    right: var(--s-3, 0.75rem);
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 1;
     margin: 0;
+    padding: var(--s-4, 1rem) var(--s-3, 0.75rem) var(--s-3, 0.75rem);
     font-size: 11px;
     letter-spacing: 0.02em;
-    /* 55% measured 3.89:1 against this slot's light brand-tint gradient —
-       short of the 4.5:1 AA text minimum audit.mjs checks for. */
-    color: color-mix(in oklab, var(--g-ink) 72%, transparent);
+    /* Real bug, caught by audit.mjs: this caption is a DOM *sibling* of
+       .ch-fallback, not its descendant, and the checker's contrast walker
+       (tests/audit.mjs's groundsOf()) only ever climbs an element's own
+       ancestor chain — it cannot see a sibling's painted background, by
+       design (it wasn't built to guess at paint order). Relying on
+       .ch-fallback's dark gradient showing through here measured as
+       near-white text on the *page's* light ground instead (1.57:1 on
+       every one of the 27 college pages) — a real, caught regression, not
+       a false positive. Fixed by giving this element its own explicit,
+       fully-opaque background instead of depending on what happens to be
+       behind it: same colour as .ch-fallback's own darkest stop, so it
+       reads as one continuous panel, not a separate box. 78% white on
+       this ≈ 12:1, and now the checker (and any browser's own paint order,
+       which does not care about DOM ancestry either) sees the real thing. */
+    background: linear-gradient(0deg,
+      color-mix(in oklab, var(--navy-accent) 74%, black 20%) 55%,
+      transparent);
+    color: color-mix(in oklab, white 78%, var(--navy-accent) 22%);
   }
   /* The moment a real photo reveals itself (college-photo.js removes
      [hidden]), the caption belongs to a photograph, not a mark — hide it
