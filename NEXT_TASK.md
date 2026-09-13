@@ -3,6 +3,112 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-13 (royal-premium colour pass) — read this section first
+
+The owner's follow-up brief, after the spatial-escalation work below: the
+colour system still read "too pale/generic," explicit target "this looks
+expensive," a named palette (royal navy, deep blue, refined cyan,
+controlled teal, a restrained warm champagne/gold accent, crisp white,
+deep ink), explicitly "not gold-heavy," explicitly no audit-first, execute
+and verify after. Delivered as a token-level pass in `engine.css` plus
+three targeted, high-leverage surface changes — not a redesign of every
+component, which the brief's own "still unmistakably one brand" item
+argued against anyway.
+
+**Every colour decision here was computed, not eyeballed** — this file's
+own header warns that a hand-picked ramp once shipped ~890 broken
+contrast checks; the discipline that prevents a repeat is checking WCAG
+contrast math before committing to a hex, the same way `--brand-text`
+was originally "solved, not chosen."
+
+**Token changes (`engine.css`)**:
+- `--brand` #2464E0 → **#1B4CC7** (deep royal blue). White-on-fill
+  contrast 5.28:1 → 7.23:1 — deepening only widened the safety margin,
+  it was never at risk. Every derived token (`--brand-soft/-line/-deep/
+  -lift`, `--sd-brand`, the focus ring) picks this up automatically —
+  the whole point of the token architecture.
+- `--brand-2` #20B78E → **#0F9B87** (controlled teal). Confirmed by
+  grepping every `color:`/`fill:` consumer sitewide before changing it:
+  used only decoratively (dot fills, thin borders, low-opacity tints),
+  never as body text, so the stricter 4.5:1 text-contrast bar doesn't
+  apply to it the way it does to `--brand`.
+- `--navy-accent` #173F73 → **#0D2648** (true royal navy). White text
+  10.53:1 → 14.27:1. `--sky` (its paired literal — read directly by
+  `mount-medical-scene.js`'s Three.js material, hence plain hex) #5B9BD5
+  → **#4FB3E8**, a more electric cyan-blue companion.
+- Aurora tints (`--au-1..4`) each deepened one step — still soft, still
+  blurred 88px behind glass, just richer than the original half-strength
+  wash.
+- **New**: `--accent-warm` (#C9A876, decorative-only: borders, glows,
+  icon strokes — never a large fill) and `--accent-warm-text` (#8A6C34,
+  separately darkened and verified — 4.91:1 on white, 4.65:1 on
+  `--g-base` — for the rare case this accent needs to be actual text),
+  plus derived `-soft/-line/-glow` variants. Used sparingly, per the
+  brief's own "not gold-heavy": the hero's primary glow's core, the
+  primary CTA's sheen and hover glow, and the scatter chart's three
+  superlative labels ("Oldest on record", "Most seats") — genuine
+  "increases perceived hierarchy" moments, not decoration for its own
+  sake.
+
+**Deliberately NOT touched**: `--g-base`/`--g-ink`/`--g-ink-2/3/4`/
+`--brand-text` — the "solved" ramp this file's own header warns against
+hand-editing. The perceived-paleness complaint is addressed by enriching
+the accent/atmosphere layer against an unchanged, contrast-safe ground,
+not by risking that ramp. Also deliberately not reversed: the hero's
+light ground itself. This file's own history records the owner
+explicitly moving the whole site dark → light and back again in one
+2026-09-08 session, settling on light because "a medical admissions
+platform reads as clinical and trustworthy on a light ground" — reversing
+that again on this brief's "give the hero a stronger royal/deep cinematic
+atmosphere" would have meant walking back an explicit prior decision
+un-asked, for a large, hard-to-fully-re-verify change (every hero child
+element would need new light-on-dark contrast checks). The atmosphere
+request was met a lighter-weight way instead (below).
+
+**Three targeted surface changes**:
+
+1. **`.gl-crystal` (the primary CTA)** — fill unchanged (still the
+   contrast-proven `--brand` → `--brand-deep` gradient text sits on), only
+   the highlight layer on top warmed a few percent toward `--accent-warm`,
+   and the hover glow now blends the existing brand-blue glow with a
+   faint warm outer ring — two superimposed light sources rather than one
+   recoloured flat tint, which is what "luminous, not an ordinary blue
+   button" was actually asking for.
+2. **The hero's atmosphere** — `.gh-glow`/`.gh-glow--handoff` went from
+   2-stop to 4-5-stop radial gradients that settle into a whisper of
+   `--navy-accent` at the outer edge instead of dropping straight to
+   transparent (the difference between "atmosphere" and "a light left
+   on"), plus one faint `--accent-warm` glint at the primary glow's core
+   only — "not gold-heavy" applies per-glow, one moment per hero, not
+   two. Added a new low-opacity navy pool to `.gh-field` anchored low-
+   left, behind the CTA row rather than the headline or stat ledger,
+   both of which already sit under their own light.
+3. **`.doc-head` — by far the highest-leverage single change.** This
+   pale-gray-on-white header was the single most-repeated "generic
+   college website" surface on the entire site: 16 instances across every
+   college's Record panel (×3 per college × 27 colleges), the compare
+   picker, guidelines, privacy and documents. Now a deep navy-gradient
+   band with white/warm-tinted text — reads as a deliberate "ledger"
+   signature every info panel opens with. Every child that can appear
+   inside it was enumerated by grep before touching it (`.doc-title`,
+   `.doc-kicker`, and — guidelines.astro only — `.ev--verified`), each
+   given an explicit dark-ground override rather than leaving one to
+   silently render dark-on-dark; the mint-green verified-badge text
+   (#6EE7B7) and white title both independently verified against
+   `--navy-accent` (9.93:1 and 15.13:1).
+
+**Verified**: build clean; CSP unaffected (no inline-script content
+changed); `console-verify` 34/34; `a11y-verify` 32/32; `compare-verify`
+13/13; `assistant-verify` 18/18; `auth-verify` 12/12; two full `audit.mjs`
+runs — one checkpointing the token-only change, one final run against the
+complete pass including `.doc-head` — both **0 low-contrast elements, 0
+mobile overflow across all 43 routes + assistant**. Screenshots confirmed
+at 1440px and 390px: hero, a college Record panel, guidelines, the
+compare picker and privacy all render correctly with the new palette,
+mobile included (item 10's explicit requirement — the `.doc-head` navy
+band and kicker pill both hold up correctly at 390px, confirmed by
+screenshot, not assumed).
+
 ## ⭐ Status as of 2026-09-13 (cinematic spatial escalation, round 2) — read this section first
 
 The owner's follow-up brief was explicit that round 1 (below) was a good

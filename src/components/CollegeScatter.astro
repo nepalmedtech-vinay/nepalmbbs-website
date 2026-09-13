@@ -342,8 +342,15 @@ const privAvg = Math.round(avg(privSeats));
   .sc-pt:focus-visible { outline: none; }
   .sc-pt:focus-visible .sc-ring { stroke: var(--g-ink); stroke-width: 2.5; }
 
+  /* Royal-premium pass: these three labels are literally superlatives
+     ("Oldest on record", "Most seats") — the one place on this chart a
+     restrained warm accent increases perceived hierarchy rather than
+     just adding colour for its own sake. --accent-warm-text is the
+     separately-darkened, AA-verified variant of the new warm token
+     (4.91:1 on white / 4.65:1 on --g-base, this chart's own ground),
+     not the decorative --accent-warm used for glows/borders elsewhere. */
   .sc-pt-label {
-    fill: var(--g-ink-3);
+    fill: var(--accent-warm-text);
     font-family: var(--ty-body);
     font-size: 12px;
     font-weight: 600;

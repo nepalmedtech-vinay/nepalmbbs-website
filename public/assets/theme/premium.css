@@ -688,14 +688,41 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
 .doc:hover { box-shadow: 0 0 0 1px var(--pr-hair-strong), var(--sd-3) !important; }
 .doc + .doc { margin-top: var(--s-5) !important; }
 
+/* Royal-premium pass: this pale-gray-on-white header was the single most
+   repeated "generic college website" surface on the site — 16 instances
+   across college Record panels (x3 per college x27 colleges), the
+   compare picker, guidelines, privacy and documents. One consistent
+   premium treatment here has more sitewide reach than almost anything
+   else that could be touched, and reads as a deliberate signature (a
+   "ledger" band every info panel opens with) rather than a decoration
+   applied unevenly. Every child confirmed by grep before this change —
+   .doc-title, .doc-kicker, and (guidelines.astro only) .ev--verified are
+   the complete set that ever appears inside a .doc-head — so all three
+   get an explicit dark-ground override below rather than leaving one to
+   silently render dark-on-dark. */
 .doc-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--s-4);
   padding: var(--s-4) var(--s-5) !important;
-  background: linear-gradient(180deg, var(--pr-sunk), transparent) !important;
-  border-bottom: 1px solid var(--pr-hair) !important;
+  background: linear-gradient(135deg, var(--navy-accent), color-mix(in oklab, var(--navy-accent) 78%, black 14%)) !important;
+  border-bottom: 1px solid var(--accent-warm-line) !important;
+}
+.doc-head .doc-title { color: var(--navy-accent-ink) !important; }
+.doc-head .doc-kicker {
+  color: color-mix(in oklab, var(--accent-warm) 55%, white 45%) !important;
+  background: rgba(255 255 255 / 0.12) !important;
+  border-color: rgba(255 255 255 / 0.28) !important;
+}
+/* Verified against --navy-accent, not --g-base: 9.93:1 for the mint,
+   15.13:1 for white — both far past AA, checked the same way every
+   other colour decision this session made was (computed contrast, not
+   "looks about right"). */
+.doc-head .ev--verified {
+  color: #6EE7B7 !important;
+  background: rgba(255 255 255 / 0.12) !important;
+  border-color: rgba(255 255 255 / 0.3) !important;
 }
 .doc-title {
   font-family: var(--ty-display) !important;
@@ -1539,9 +1566,17 @@ input:not(:placeholder-shown):invalid {
      primary action: white label text over the --brand-lift end measures
      ~3.8:1, failing AA. This component predates that sweep, so it never
      got the same fix. Same remedy — run the gradient from --brand into
-     --brand-deep only, which chrome.css already proved holds 5.09:1. */
+     --brand-deep only, which chrome.css already proved holds 5.09:1.
+
+     Royal-premium pass: the fill itself is untouched (still --brand ->
+     --brand-deep, still the contrast-proven pair) — only the highlight on
+     top of it changed, from a flat white sheen to one warmed a few
+     percent toward --accent-warm. The distinction the brief drew between
+     "luminous" and "an ordinary blue button": the surface catches a hint
+     of warm light rather than reflecting plain white, without the label
+     text itself ever sitting on anything but the verified fill. */
   background:
-    linear-gradient(180deg, rgba(255 255 255 / 0.24) 0%, transparent 46%),
+    linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--accent-warm) 10%, white) 26%, transparent) 0%, transparent 46%),
     linear-gradient(148deg, var(--brand), var(--brand-deep));
   box-shadow:
     inset 0 1px 0 rgba(255 255 255 / 0.55),
@@ -1556,12 +1591,17 @@ input:not(:placeholder-shown):invalid {
 
 .gl-crystal:hover .gl-crystal-face {
   transform: translate3d(0, -2px, 0) scale(1);
+  /* The hover glow blends the brand's own light with a faint warm outer
+     ring — two glows superimposed rather than one recoloured, so the
+     button reads as lit from more than one direction (what "luminous"
+     is asking for) instead of just switching to a different flat tint. */
   box-shadow:
     inset 0 1px 0 rgba(255 255 255 / 0.65),
     inset 0 -1px 0 rgba(0 0 0 / 0.16),
     0 0 0 1px color-mix(in oklab, var(--brand-lift) 70%, transparent),
     var(--sd-3),
-    0 0 calc(34px * var(--fx-glow)) color-mix(in oklab, var(--brand) calc(38% * var(--fx-glow)), transparent);
+    0 0 calc(34px * var(--fx-glow)) color-mix(in oklab, var(--brand) calc(38% * var(--fx-glow)), transparent),
+    0 0 calc(52px * var(--fx-glow)) color-mix(in oklab, var(--accent-warm) calc(14% * var(--fx-glow)), transparent);
 }
 .gl-crystal:active .gl-crystal-face {
   transform: translate3d(0, 1px, 0) scale(0.983);
@@ -1643,6 +1683,15 @@ input:not(:placeholder-shown):invalid {
   pointer-events: none;
   -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 96%);
           mask-image: linear-gradient(180deg, #000 55%, transparent 96%);
+  /* Royal-premium pass: a soft navy pool anchored low-left, behind the CTA
+     row rather than the headline (which sits top-left, already on plain
+     ground) or the stat ledger (top-right, already under .gh-glow's blue).
+     At 8% mix this is closer to a held breath than a visible shape — the
+     point is that the hero has more than one light source in it, not
+     that a visitor can trace this gradient's edge. */
+  background: radial-gradient(140% 100% at 15% 100%,
+    color-mix(in oklab, var(--navy-accent) 8%, transparent) 0%,
+    transparent 55%);
 }
 .gh-in { position: relative; z-index: 1; }
 
@@ -1665,10 +1714,23 @@ input:not(:placeholder-shown):invalid {
   top: -14rem;
   right: -8rem;
   border-radius: 50%;
+  /* Royal-premium pass: a 2-stop wash read as a flat coloured disc once
+     blurred — the "cheap gradient blob" the brief explicitly warned
+     against. Five stops instead: a barely-there warm glint at the very
+     core (light catching something, not a gold fill — 6% is close to
+     imperceptible on its own, and only reads once the eye has the deep
+     navy ring further out to compare it against), building through the
+     brand blue at slightly more strength than before, and settling into
+     a whisper of the royal navy at the outer edge rather than dropping
+     straight to transparent — the field now fades into a deeper colour
+     instead of just fading out, which is most of the difference between
+     "atmosphere" and "a light left on". */
   background: radial-gradient(circle,
-    color-mix(in oklab, var(--brand) 16%, transparent) 0%,
-    color-mix(in oklab, var(--brand) 5%, transparent) 46%,
-    transparent 72%);
+    color-mix(in oklab, var(--accent-warm) 6%, transparent) 0%,
+    color-mix(in oklab, var(--brand) 20%, transparent) 24%,
+    color-mix(in oklab, var(--brand) 8%, transparent) 50%,
+    color-mix(in oklab, var(--navy-accent) 5%, transparent) 70%,
+    transparent 84%);
   filter: blur(6px);
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -1960,10 +2022,14 @@ input:not(:placeholder-shown):invalid {
   left: 6%;
   width: 32rem;
   height: 32rem;
+  /* Same layered-fade treatment as .gh-glow above, teal rather than blue
+     and no warm core — the brief's "not gold-heavy" applies per-glow, not
+     just sitewide; one glint per hero is a moment, two is a mannerism. */
   background: radial-gradient(circle,
-    color-mix(in oklab, var(--brand-2) 15%, transparent) 0%,
-    color-mix(in oklab, var(--brand-2) 4%, transparent) 46%,
-    transparent 72%);
+    color-mix(in oklab, var(--brand-2) 19%, transparent) 0%,
+    color-mix(in oklab, var(--brand-2) 7%, transparent) 46%,
+    color-mix(in oklab, var(--navy-accent) 4%, transparent) 68%,
+    transparent 82%);
 }
 @media (prefers-reduced-motion: no-preference) {
   .gh-glow--handoff {

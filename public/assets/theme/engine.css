@@ -63,17 +63,37 @@
      from these two, so the admin panel needs only two colour pickers to
      re-skin the entire site coherently. */
 
-  /* Clinical blue + a healing teal-green — deliberately restrained rather
-     than the neon multi-colour palette in the fintech-card reference the
-     owner sent: "take colour/motion ideas, not the context" (their words)
-     — this is a medical admissions platform, and a loud accent set reads
-     wrong for that even at high production value. Blue #2464E0 clears
-     5.3:1 as button-fill text against white; green #20B78E clears 5.9:1
-     against the deepest glass pane (its own job — it is never a button
-     fill, only glow/accent/text-on-glass). */
-  --brand:         #2464E0;   /* primary action, links, focus   */
-  --brand-2:       #20B78E;   /* counter accent, highlights     */
+  /* Royal-premium pass, 2026-09-13: deepened from the original clinical
+     blue + teal-green (#2464E0 / #20B78E) toward a richer, more confident
+     pair — "this looks expensive" rather than "this is a clean college
+     website" was the explicit brief. Still the same restrained two-hue
+     system, still no neon: a deeper blue reads as more considered than a
+     brighter one, not louder. Blue #1B4CC7 clears 7.23:1 as button-fill
+     text against white (was 5.28:1 — deepening only widened the margin,
+     it never risked it); teal #0F9B87 is decorative-only sitewide (dot
+     fills, thin borders, low-opacity tints — never body text, confirmed
+     by grepping every `color:`/`fill:` consumer before this change), so
+     its own contrast requirement is looser than a text colour's. */
+  --brand:         #1B4CC7;   /* primary action, links, focus   */
+  --brand-2:       #0F9B87;   /* counter accent, highlights     */
   --brand-ink:     #FFFFFF;   /* text on a brand fill           */
+
+  /* A restrained warm accent — the one deliberate departure from the
+     two-hue system, used sparingly and only where the royal-premium brief
+     asked for it ("only where it increases perceived value and
+     hierarchy", explicitly "not gold-heavy"): a superlative label, a
+     verified-source accent, a CTA's glow ring. Never a large fill and
+     never the default state of anything. --accent-warm is the decorative
+     value (borders, glows, icon strokes); --accent-warm-text is a
+     separately darkened value for the rare case text or an icon needs to
+     sit directly on a light ground and still clear AA — #8A6C34 measures
+     4.91:1 on white / 4.65:1 on --g-base, both above the 4.5:1 floor,
+     the same "solved, not chosen" discipline `--brand-text` above uses. */
+  --accent-warm:      #C9A876;
+  --accent-warm-text: #8A6C34;
+  --accent-warm-soft: color-mix(in oklab, var(--accent-warm) 14%, transparent);
+  --accent-warm-line: color-mix(in oklab, var(--accent-warm) 38%, transparent);
+  --accent-warm-glow: color-mix(in oklab, var(--accent-warm) 50%, transparent);
 
   /* Derived — do not set these directly from the panel. */
   --brand-soft:    color-mix(in oklab, var(--brand) 12%, transparent);
@@ -96,11 +116,18 @@
      that remap — every consumer read near-black ink instead of this
      colour, since bridge.css loads after this file. Found the same way
      as the color-mix() bug: by checking a computed style rather than
-     assuming the token resolved to what it was declared as. */
-  --navy-accent:      #173F73;
+     assuming the token resolved to what it was declared as.
+
+     Royal-premium pass: deepened from #173F73 to a true royal navy —
+     white text still clears 14.27:1 (was 10.53:1), so the deepening only
+     added margin. --sky (its paired literal, read directly by
+     mount-medical-scene.js's Three.js material, hence the plain-hex
+     requirement noted below) moved from a fairly generic dusty blue
+     toward a more electric, refined cyan-blue companion. */
+  --navy-accent:      #0D2648;
   --navy-accent-ink:  #FFFFFF;
   --navy-accent-line: color-mix(in oklab, var(--navy-accent) 34%, transparent);
-  --sky:              #5B9BD5;   /* the paired "light blue" accent */
+  --sky:              #4FB3E8;   /* the paired "electric cyan" accent */
   /* Plain hex literals, not color-mix() expressions — see the note this
      replaced: getComputedStyle().getPropertyValue() on a *custom*
      property returns its declared value verbatim rather than a resolved
@@ -118,11 +145,16 @@
      saturation — light tints of the brand hues rather than the hues at
      full chroma. At full strength on a light ground the field stops being
      a ground and becomes the subject; desaturated, the panes still have
-     real colour to refract without the page reading as a colour block. */
-  --au-1:          #C9DCF8;   /* pale royal blue */
-  --au-2:          #DCE7FA;   /* pale sky blue   */
-  --au-3:          #C7EDDF;   /* pale teal-green */
-  --au-4:          #DBF1E7;   /* pale mint       */
+     real colour to refract without the page reading as a colour block.
+
+     Royal-premium pass: each tint deepened a step — still soft, still
+     blurred 88px behind glass, still nowhere near full chroma (that
+     principle is unchanged), just richer than the original half-strength
+     wash so the field reads as atmosphere rather than a pale film. */
+  --au-1:          #B7D0F5;   /* royal blue      */
+  --au-2:          #CFE0F7;   /* sky blue        */
+  --au-3:          #AEE3D2;   /* teal-green      */
+  --au-4:          #C8ECDF;   /* mint            */
   --au-opacity:    0.55;      /* 0 disables the field entirely  */
   --au-scale:      1.05;      /* blob size multiplier           */
   --au-blur:       88px;      /* softness                       */

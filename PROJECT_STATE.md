@@ -6,6 +6,45 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-13 — Royal-premium colour pass
+
+Full account in `NEXT_TASK.md`'s top section. The owner's complaint: the
+colour system still read "too pale/generic"; target "this looks
+expensive," not "clean college website." A token-level pass in
+`engine.css` (every value computed against WCAG contrast math before
+being chosen — this file's own header records a past incident where a
+hand-picked ramp shipped ~890 broken contrast checks) plus three targeted
+surface changes, not a full redesign.
+
+Deepened `--brand` (#2464E0→#1B4CC7), `--brand-2` (#20B78E→#0F9B87,
+confirmed decorative-only sitewide by grep before touching it),
+`--navy-accent`/`--sky` (the footer's Three.js pair), and the aurora
+tints — all derived tokens (`--brand-soft/-line/-deep/-lift`, `--sd-
+brand`, the focus ring) update automatically. Added a new restrained
+warm accent (`--accent-warm` decorative, `--accent-warm-text` a
+separately-verified AA-safe variant) used sparingly: the hero's primary
+glow core, the CTA's sheen/hover glow, and the scatter chart's three
+superlative labels. Deliberately left `--g-base`/`--g-ink` ramp and the
+hero's light ground untouched — the former is the exact "solved" ramp
+this file warns against hand-editing, the latter is a previously
+reversed dark→light decision this file's own history already argued out
+(2026-09-08 entries) and reversing it again wasn't this brief's call to
+make unilaterally.
+
+Highest-leverage single change: `.doc-head` (the header band on every
+college Record panel, the compare picker, guidelines, privacy and
+documents — 16 instances sitewide) went from pale-gray-on-white to a
+deep navy gradient with white/warm-tinted text, with every possible
+nested child (title, kicker, and guidelines.astro's verified badge)
+given an explicit, independently contrast-checked dark-ground override.
+
+**Verified**: build clean; CSP unaffected; full fast suite green
+(console/a11y/compare/assistant/auth); two full `audit.mjs` runs — one
+checkpointing the token-only change, one after `.doc-head` — both 0
+low-contrast / 0 mobile overflow across all 43 routes. Screenshots
+confirmed the palette at both 1440px and 390px on the hero, a college
+Record panel, guidelines and the compare picker.
+
 ## ⭐ 2026-09-13 — Cinematic spatial escalation, round 2
 
 Full account in `NEXT_TASK.md`'s top section. Two additions, both still
