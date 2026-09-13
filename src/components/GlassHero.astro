@@ -30,7 +30,14 @@ const stats = [
       static icons don't. Motion stays the same register as before: one
       very slow (26s+) drift, nothing that resolves into something a
       visitor would stop to watch. */}
-  <div class="gh-field" aria-hidden="true">
+  {/* Cinematic pass: m-para-shift drifts the whole field a little slower
+      than the page scrolls — real scroll-driven parallax between this
+      background layer and the foreground copy in .gh-in, not just the
+      ambient drift the grid/glow already had independently of scroll
+      position. Translate-only (see motion.css's own note on why) and
+      gated by --mo-parallax like every other parallax primitive here, so
+      reduced motion collapses it to a static field exactly as before. */}
+  <div class="gh-field m-para-shift" style="--m-depth: 34px" aria-hidden="true">
     <div class="gh-grid"></div>
     <div class="gh-glow"></div>
     {/* Phase 5A: a second, fainter, teal-tinted glow anchored to the

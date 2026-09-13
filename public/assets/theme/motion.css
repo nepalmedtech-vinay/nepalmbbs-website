@@ -64,8 +64,8 @@
        proportional to scroll rather than to elapsed time. --m-depth sets how
        far it lags: negative moves against the scroll. --m-para-scale (default
        1, a no-op) lets a caller pre-scale the element so the translate never
-       exposes the edge of a clipped image — used first by the homepage
-       medical-training gallery. */
+       exposes the edge of a clipped image — the technique the college-page
+       and homepage image treatments use. */
 
     .m-para {
       animation: m-para linear both;
@@ -76,6 +76,24 @@
     @keyframes m-para {
       from { transform: scale(var(--m-para-scale, 1)) translate3d(0, calc(var(--m-depth, 40px) * var(--mo-parallax)), 0); }
       to   { transform: scale(var(--m-para-scale, 1)) translate3d(0, calc(var(--m-depth, 40px) * -1 * var(--mo-parallax)), 0); }
+    }
+
+    /* Translate-only sibling of .m-para, no scale. Two callers need this
+       instead of the pre-scaled version above: an SVG group (CSS `scale()`
+       on SVG defaults to the viewport origin, not the element's own centre,
+       so a scaled SVG layer can drift sideways in a way a scaled HTML image
+       never does) and any element, like the atmospheric field layers below,
+       that already fills its container edge-to-edge and has nothing to
+       clip a scale against anyway. */
+    .m-para-shift {
+      animation: m-para-shift linear both;
+      animation-timeline: view();
+      animation-range: cover;
+      will-change: transform;
+    }
+    @keyframes m-para-shift {
+      from { transform: translate3d(0, calc(var(--m-depth, 24px) * var(--mo-parallax)), 0); }
+      to   { transform: translate3d(0, calc(var(--m-depth, 24px) * -1 * var(--mo-parallax)), 0); }
     }
 
     /* ── Mask reveal ──────────────────────────────────────────────────

@@ -77,7 +77,7 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
       tonal journey rather than one colour repeated five times. Skipped
       entirely for the compact college-detail reuse — that's a supporting
       panel beside a page's own copy, not a chapter of its own. */}
-  {!compact && <div class="map-field" aria-hidden="true"></div>}
+  {!compact && <div class="map-field m-para-shift" style="--m-depth: 26px" aria-hidden="true"></div>}
   <div class:list={['container', { 'map-in--compact': compact }]}>
 
     {/* Phase 5A: .m-focus (motion.css) instead of the generic .m-rise the
@@ -107,63 +107,81 @@ const totalSeats = points.reduce((n, p) => n + p.seats, 0);
     </div>
 
     <figure class="map-figure m-focus">
-      <svg
-        class="map-svg"
-        class:list={[{ 'has-highlight': !!highlight }]}
-        style="color:var(--brand)"
-        viewBox={`0 0 ${W} ${H}`}
-        role="img"
-        aria-label={`Relative positions of ${colleges.length} medical colleges across Nepal`}
-      >
-        <defs>
-          <radialGradient id="mapHalo">
-            <stop offset="0" stop-color="currentColor" stop-opacity="0.34" />
-            <stop offset="1" stop-color="currentColor" stop-opacity="0" />
-          </radialGradient>
-          <filter id="mapGlow" x="-70%" y="-70%" width="240%" height="240%">
-            <feGaussianBlur stdDeviation="5" />
-          </filter>
-        </defs>
+      {/* Cinematic pass: the site's one signature graphic gets the same
+          pointer-tilt + specular treatment CollegeHero's photo pane already
+          uses (glass.css's `.gl--live`, not the full `.gl` panel) — as one
+          continuous physical surface reacting to the pointer, rather than
+          27 small independent wobbling targets, which is why this reads as
+          depth and the rejected comparison-picker treatment would not have.
+          `.gl--live` sits on this inner wrapper rather than on `.map-figure`
+          itself: `.m-focus`'s own scroll-driven entrance animation ends by
+          setting `transform: none` with `fill: both`, and a CSS animation's
+          value for a property always wins over a plain declaration on the
+          same element — so the tilt would be permanently dead-on-arrival
+          once the figure had scrolled past its entry range. Same split
+          GlassHero.astro already uses for its stat cards (float animation
+          and pointer-tilt on separate elements) so the two transforms don't
+          fight. The readout card and legend stay outside this wrapper so
+          hovering a point does not tilt the text panel that names it. */}
+      <div class="map-tilt gl--live">
+        <svg
+          class="map-svg"
+          class:list={[{ 'has-highlight': !!highlight }]}
+          style="color:var(--brand)"
+          viewBox={`0 0 ${W} ${H}`}
+          role="img"
+          aria-label={`Relative positions of ${colleges.length} medical colleges across Nepal`}
+        >
+          <defs>
+            <radialGradient id="mapHalo">
+              <stop offset="0" stop-color="currentColor" stop-opacity="0.34" />
+              <stop offset="1" stop-color="currentColor" stop-opacity="0" />
+            </radialGradient>
+            <filter id="mapGlow" x="-70%" y="-70%" width="240%" height="240%">
+              <feGaussianBlur stdDeviation="5" />
+            </filter>
+          </defs>
 
-        <!-- Graticule. Real degree lines, labelled — the element that keeps
-             this readable as a coordinate plot rather than a decorative blob. -->
-        <g class="map-grid">
-          {[82, 84, 86, 88].map((lon) => (
-            <>
-              <line pathLength="1" x1={x(lon)} y1={PAD - 14} x2={x(lon)} y2={H - PAD + 14} />
-              <text x={x(lon)} y={H - PAD + 30} text-anchor="middle">{lon}°E</text>
-            </>
-          ))}
-          {[27, 28, 29].map((lat) => (
-            <>
-              <line pathLength="1" x1={PAD - 14} y1={y(lat)} x2={W - PAD + 14} y2={y(lat)} />
-              <text x={PAD - 20} y={y(lat) + 4} text-anchor="end">{lat}°N</text>
-            </>
-          ))}
-        </g>
+          <!-- Graticule. Real degree lines, labelled — the element that keeps
+               this readable as a coordinate plot rather than a decorative blob. -->
+          <g class="map-grid">
+            {[82, 84, 86, 88].map((lon) => (
+              <>
+                <line pathLength="1" x1={x(lon)} y1={PAD - 14} x2={x(lon)} y2={H - PAD + 14} />
+                <text x={x(lon)} y={H - PAD + 30} text-anchor="middle">{lon}°E</text>
+              </>
+            ))}
+            {[27, 28, 29].map((lat) => (
+              <>
+                <line pathLength="1" x1={PAD - 14} y1={y(lat)} x2={W - PAD + 14} y2={y(lat)} />
+                <text x={PAD - 20} y={y(lat) + 4} text-anchor="end">{lat}°N</text>
+              </>
+            ))}
+          </g>
 
-        <g class="map-points">
-          {points.map((p, i) => (
-            <g
-              class:list={['map-pt', { 'is-govt': p.govt, 'is-highlight': p.slug === highlight }]}
-              style={`--i:${i}`}
-              data-name={p.name}
-              data-loc={p.location}
-              data-seats={p.seats}
-              data-href={`/colleges/${p.slug}`}
-              tabindex="0"
-              role="link"
-              aria-label={`${p.name}, ${p.location}, ${p.seats} seats`}
-            >
-              <circle class="map-halo" cx={p.cx} cy={p.cy} r={p.r * 2.6} fill="url(#mapHalo)" filter="url(#mapGlow)" />
-              <circle class="map-ping" cx={p.cx} cy={p.cy} r={p.r} />
-              <circle class="map-ring" cx={p.cx} cy={p.cy} r={p.r} />
-              <circle class="map-dot"  cx={p.cx} cy={p.cy} r={Math.max(2, p.r * 0.34)} />
-              <circle class="map-hit"  cx={p.cx} cy={p.cy} r={Math.max(p.r + 12, 18)} />
-            </g>
-          ))}
-        </g>
-      </svg>
+          <g class="map-points">
+            {points.map((p, i) => (
+              <g
+                class:list={['map-pt', { 'is-govt': p.govt, 'is-highlight': p.slug === highlight }]}
+                style={`--i:${i}`}
+                data-name={p.name}
+                data-loc={p.location}
+                data-seats={p.seats}
+                data-href={`/colleges/${p.slug}`}
+                tabindex="0"
+                role="link"
+                aria-label={`${p.name}, ${p.location}, ${p.seats} seats`}
+              >
+                <circle class="map-halo" cx={p.cx} cy={p.cy} r={p.r * 2.6} fill="url(#mapHalo)" filter="url(#mapGlow)" />
+                <circle class="map-ping" cx={p.cx} cy={p.cy} r={p.r} />
+                <circle class="map-ring" cx={p.cx} cy={p.cy} r={p.r} />
+                <circle class="map-dot"  cx={p.cx} cy={p.cy} r={Math.max(2, p.r * 0.34)} />
+                <circle class="map-hit"  cx={p.cx} cy={p.cy} r={Math.max(p.r + 12, 18)} />
+              </g>
+            ))}
+          </g>
+        </svg>
+      </div>
 
       <div class="map-card" id="map-card" aria-live="polite" hidden>
         <p class="map-card-name"></p>

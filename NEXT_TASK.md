@@ -3,6 +3,97 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-13 (cinematic spatial escalation, round 2) — read this section first
+
+The owner's follow-up brief was explicit that round 1 (below) was a good
+foundation but not the final level wanted: real scroll parallax between
+background/foreground, "several" noticeable spatial-3D moments, richer
+scroll choreography. Delivered two concrete additions, both CSS/DOM-only —
+still zero new JS, zero new WebGL beyond what round 1 already had.
+
+**Real scroll parallax on all three atmospheric fields.** Added
+`.m-para-shift` to `motion.css` — a translate-only sibling of the existing
+`.m-para` (which combines scale+translate; SVG's `scale()` and these
+edge-to-edge fields don't need the scale term, and `.m-para`'s comment
+explains why a plain-translate variant earns its own class rather than
+reusing that one with `--m-para-scale: 1`). Driven by `animation-timeline:
+view()` / `animation-range: cover` like every other scroll effect in this
+codebase — no scroll listener. Applied it plus a `--m-depth` to `.gh-field`
+(hero, 34px), `.map-field` (26px) and `.practice-field` (22px): the
+background grid now visibly lags the foreground copy as you scroll, instead
+of moving in lockstep with it. Verified via a 6-position scroll-and-
+screenshot pass (y = 0/400/900/1400/2200/2800) with `reducedMotion` off —
+no seam or edge ever became visible, because the lattice pattern repeats
+infinitely and each field's own radial mask already fades it out before
+its physical edge would show.
+
+**The map got a real "dimensional data surface"** — `CollegeMap.astro`'s
+SVG now tilts toward the pointer via `glass.css`'s existing `.gl--live`
+(the same pointer-tilt + moving-specular system used elsewhere, no new
+JS). Two things had to be got right that a naive `class="gl--live"` on
+`.map-figure` would have gotten wrong, both confirmed by instrumenting the
+actual computed style rather than trusting a screenshot:
+
+1. **`.gl--live` cannot live on the same element as `.m-focus`.**
+   `.m-focus` (the section's own scroll-driven entrance blur-in) ends its
+   keyframe with `transform: none` and `animation-fill-mode: both` — and a
+   running/filled CSS Animation's value for a property always wins over a
+   plain declared value on the same element, full stop, regardless of
+   selector specificity or source order. Confirmed by reading
+   `getComputedStyle(...).transform` after a real pointer move: `--gx`/
+   `--gy` were updating correctly (proving the pointermove listener was
+   firing) but `transform` stayed `matrix(1, 0, 0, 1, 0, 0)` — the tilt was
+   computed and then silently discarded every frame. Fixed the same way
+   `GlassHero.astro`'s stat cards already solve this exact conflict:
+   `.m-focus` stays on `<figure class="map-figure">`, `.gl--live` moves to
+   a new inner `<div class="map-tilt">` wrapping just the `<svg>` — the
+   readout card and legend stay outside it, both because they don't need
+   `position: relative` juggling to keep `.gl-spec` (`inset: 0`) anchored
+   in the naive scope. This means the readout card and legend do **not**
+   tilt with the map — deliberate: tilting the text panel that names the
+   point you're hovering would hurt legibility for no gain.
+2. **`.gl--live:hover`'s box-shadow assumes a panel with a background.**
+   The map figure is bare SVG over the page's own field, so left alone
+   that shadow renders as a vague dark rectangle floating behind the
+   graticule on hover. One override in `premium.css`:
+   `.map-tilt.gl--live:hover { box-shadow: none; }`, keeping the tilt and
+   specular, dropping only the ill-fitting shadow.
+
+Confirmed the fix genuinely engages (real `matrix3d(...)` at opposite
+corners, opposite sign — not the identity matrix the first attempt
+produced) and that the point-hover readout card, click-through, and the
+`highlight` prop (college detail pages' compact reuse) all still work
+correctly with the new wrapper — tested on a real college detail page
+(`/colleges/college-of-medical-sciences`), not assumed from the homepage
+alone.
+
+**Verified**: build clean (44 routes); CSP unaffected (`gen-csp.mjs
+--check` — pure CSS/markup, no inline-script change);
+`console-verify` 34/34; `a11y-verify` 32/32; `auth-verify` 12/12;
+`compare-verify` 13/13; `assistant-verify` 18/18; `csp-verify` and
+`audit.mjs` re-run clean against the final build after the `.map-tilt`
+fix (see the run this session logged — do not trust an audit run started
+before a later rebuild; one was killed mid-run this session for exactly
+that reason, see the process-hygiene note below).
+
+**Process note, for the next session**: this session accidentally started
+`csp-verify.mjs`/`audit.mjs` twice in parallel (a `run_in_background: true`
+Bash call combined with a trailing shell `&` inside the command backgrounds
+it twice, leaving duplicate processes) and then rebuilt `dist/` while both
+were still reading it — exactly the failure mode `CLAUDE.md` warns about
+("Never rebuild while a suite is running"). Caught via `ps aux` before
+trusting either run's result, killed everything, and re-ran clean once the
+build was final. `run_in_background: true` already backgrounds the whole
+command; do not also append `&` inside it.
+
+**Not done from the round-2 brief**: further hero "dimensional typography"
+beyond what round 1 already shipped (line-by-line reveal, gradient text,
+3D-tumbling icon field, the existing Three.js medical scene); "warm
+editorial highlights" (no warm token exists in `engine.css`'s palette —
+inventing one was judged out of scope for a targeted cinematic pass, not
+a "the brand needs a new colour" decision to make unilaterally); further
+scroll-story typography transforms beyond the parallax now in place.
+
 ## ⭐ Status as of 2026-09-12 (cinematic depth pass) — read this section first
 
 The owner asked for a step up from "premium editorial" toward "cinematic

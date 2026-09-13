@@ -6,6 +6,36 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-13 — Cinematic spatial escalation, round 2
+
+Full account in `NEXT_TASK.md`'s top section. Two additions, both still
+CSS/DOM-only: (1) real scroll parallax (`.m-para-shift`, new in
+`motion.css`, `animation-timeline: view()`-driven like everything else
+here) between the three atmospheric fields and their foreground content;
+(2) the homepage map now tilts toward the pointer via the existing
+`.gl--live` system, on a new `.map-tilt` wrapper rather than `.map-figure`
+itself.
+
+That second one surfaced a genuine, non-obvious CSS interaction worth
+remembering: a scroll-driven CSS Animation with `animation-fill-mode:
+both` permanently wins the cascade for whatever property it animates,
+over *any* plain declared value for that property on the same element,
+regardless of specificity — so `.m-focus`'s entrance animation (ends on
+`transform: none`) silently killed `.gl--live`'s tilt transform on the
+same element. Confirmed by reading `getComputedStyle(...).transform`
+after a real pointer move rather than trusting a screenshot (a tilt of a
+few degrees doesn't read clearly in a static image anyway). Fixed by
+splitting the two transforms onto separate elements — the same pattern
+`GlassHero.astro`'s stat cards already use for the identical reason.
+
+**Verified**: build clean; CSP unaffected; full fast suite green
+(console/a11y/auth/compare/assistant); `csp-verify`/`audit.mjs` re-run
+clean against the final build (a first pass was invalidated by a rebuild
+mid-run — see `NEXT_TASK.md`'s process note). Confirmed via 6-position
+scroll screenshots that the new parallax never exposes a seam, and via a
+real college detail page that the map's `highlight`/compact-variant reuse
+still works with the new `.map-tilt` wrapper.
+
 ## ⭐ 2026-09-12 — Cinematic depth pass (CSS/SVG only, no new WebGL)
 
 Full account in `NEXT_TASK.md`'s top section. The owner asked for a step

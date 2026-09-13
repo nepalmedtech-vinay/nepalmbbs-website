@@ -2042,6 +2042,19 @@ input:not(:placeholder-shown):invalid {
   .map-field { opacity: 0.3; }
 }
 
+/* .map-tilt wraps just the SVG (see CollegeMap.astro's own comment on why
+   it is a separate element from `.map-figure`) so the site's signature
+   graphic reads as one physical plane you can tilt toward the pointer, not
+   just a static drawing. Needs `position: relative` for glass.css's
+   `.gl-spec` (position: absolute; inset: 0) to anchor against — `.gl--live`
+   panels elsewhere already have it from their own panel/photo styling,
+   this bare wrapper does not. `.gl--live:hover`'s box-shadow assumes a
+   solid-looking panel with a background to cast it from; this wrapper has
+   none, so left alone that shadow renders as a vague dark rectangle
+   floating behind bare graticule lines on hover. */
+.map-tilt { position: relative; }
+.map-tilt.gl--live:hover { box-shadow: none; }
+
 /* ── Practice: the deep-navy close ────────────────────────────────────
    Third and last tonal register on the homepage: the navy/sky pair
    Footer.astro's own WebGL scene already uses ("on the owner's explicit
