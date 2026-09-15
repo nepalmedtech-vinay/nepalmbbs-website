@@ -88,17 +88,65 @@ const headlineStats = [
         graphic mark to real photograph needs no script change here. */}
     <div class="cph" id="college-photo" data-college-slug={c.slug} hidden></div>
 
+    {/* Informatics pass: the plain initials mark had nothing to hold a
+        visitor's attention while 0/27 colleges have a real photo — a
+        watermark and not much else. Replaced with a small "at a glance"
+        data card built entirely from this college's own already-sourced
+        fields (nothing new invented for this panel): founding year, the
+        foreign-quota seat count, and ownership. The monogram stays, but
+        demoted to a large low-opacity watermark behind the facts rather
+        than the star of the panel — still 100% honest, still never a
+        stand-in photo, just no longer the only thing here. Stops
+        completely, not merely covered, the instant a real photo loads:
+        `.cph:not([hidden]) ~ .ch-fallback` below sets display:none on the
+        whole thing, the same sibling-selector technique
+        `.ch-fallback-cap` already used, extended to the card so its
+        counter/entrance animation don't keep running for nothing behind
+        a photo that has already replaced it. */}
     <div class="ch-fallback" aria-hidden="true">
       <svg class="ch-fallback-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
         <line x1="0" y1="22" x2="100" y2="22" />
         <line x1="14" y1="0" x2="14" y2="100" />
       </svg>
       <span class="ch-mono">{initials}</span>
+      <div class="ch-facts-card">
+        {c.established && (
+          <div class="ch-fact">
+            <svg class="ch-fact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="17" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="9" x2="21" y2="9"/>
+            </svg>
+            <div class="ch-fact-text">
+              <span class="ch-fact-val">{c.established}</span>
+              <span class="ch-fact-lbl">Established</span>
+            </div>
+          </div>
+        )}
+        {c.seats && (
+          <div class="ch-fact">
+            <svg class="ch-fact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 19V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v13"/><path d="M3 19h18"/><path d="M5 19v-4h6v4"/>
+            </svg>
+            <div class="ch-fact-text">
+              <span class="ch-fact-val" data-count={c.seats}>0</span>
+              <span class="ch-fact-lbl">Foreign-quota seats</span>
+            </div>
+          </div>
+        )}
+        <div class="ch-fact">
+          <svg class="ch-fact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2 3 7v2h18V7z"/><path d="M5 9v9M9 9v9M15 9v9M19 9v9"/><path d="M3 21h18"/>
+          </svg>
+          <div class="ch-fact-text">
+            <span class="ch-fact-val">{isGovt ? 'Government' : 'Private'}</span>
+            <span class="ch-fact-lbl">Ownership</span>
+          </div>
+        </div>
+      </div>
     </div>
     <p class="ch-fallback-cap">
       {coord
-        ? <>Identity mark, not a photograph · {coord.lat.toFixed(2)}°N, {coord.lon.toFixed(2)}°E</>
-        : <>Identity mark, not a photograph</>}
+        ? <>Verified college record, not a photograph · {coord.lat.toFixed(2)}°N, {coord.lon.toFixed(2)}°E</>
+        : <>Verified college record, not a photograph</>}
     </p>
   </div>
 </section>
@@ -179,8 +227,11 @@ const headlineStats = [
     position: absolute;
     inset: 0;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
+    gap: var(--s-5, 1.5rem);
+    padding: var(--s-6, 2rem) var(--s-5, 1.5rem) calc(var(--s-7, 3rem) + var(--s-4, 1rem));
+    overflow: hidden;
     background:
       radial-gradient(130% 140% at 22% 12%,
         color-mix(in oklab, var(--brand) 60%, var(--navy-accent) 40%) 0%,
@@ -198,6 +249,11 @@ const headlineStats = [
         var(--navy-accent),
         color-mix(in oklab, var(--navy-accent) 74%, black 20%));
   }
+  /* The instant a real photo exists (college-photo.js removes [hidden] on
+     .cph), the whole card stops — display:none, not just visually
+     covered, so its entrance animation and counter aren't still doing
+     work behind a photo that already replaced them. */
+  .cph:not([hidden]) ~ .ch-fallback { display: none; }
   .ch-fallback-lines {
     position: absolute;
     inset: 0;
@@ -206,16 +262,94 @@ const headlineStats = [
     stroke: rgba(255 255 255 / 0.14);
     stroke-width: 0.4;
   }
+  /* Demoted from the panel's whole reason for being to a watermark behind
+     the facts card below — large enough to still read as a mark, quiet
+     enough not to compete with real data for attention. */
   .ch-mono {
-    position: relative;
+    position: absolute;
+    right: var(--s-4, 1rem);
+    bottom: var(--s-4, 1rem);
+    z-index: 0;
     font-family: var(--ty-display);
     font-weight: var(--ty-weight-d, 800);
-    font-size: clamp(3.5rem, 2.5rem + 4vw, 5.5rem);
+    font-size: clamp(2.6rem, 2rem + 3.5vw, 4.4rem);
     letter-spacing: 0.01em;
     color: color-mix(in oklab, white 90%, var(--accent-warm) 10%);
-    text-shadow: 0 2px 24px color-mix(in oklab, var(--brand) 45%, transparent);
-    opacity: 0.94;
+    opacity: 0.16;
+    pointer-events: none;
   }
+
+  /* The facts card: three real, already-sourced figures rather than the
+     bare monogram alone — "informatics" the brief asked for, not a stock
+     photo standing in and not a fabricated one either.
+
+     Real contrast bug, caught by audit.mjs and NOT by hand-estimating the
+     background colour first (74 low-contrast elements, worst 2.33:1):
+     the panel's own radial highlight (`.ch-fallback`'s background, "60%
+     brand-mixed" at its centre near 22% 12%) bleeds directly through the
+     area this card sits in, especially for the first row and especially
+     on the teal govt variant — a much lighter, more saturated background
+     than the plain navy gradient stop this file's own colour comments
+     were computed against. Confirmed by sampling the actual rendered
+     pixels (a cropped screenshot of the label in place), not by
+     recomputing the estimate more carefully — an estimate is exactly
+     what produced the bug. Fixed by giving the card a guaranteed-dark
+     scrim of its own rather than trusting whatever decorative gradient
+     happens to be behind it at any given scroll/highlight position. */
+  .ch-facts-card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4, 1rem);
+    margin: calc(-1 * var(--s-4, 1rem));
+    padding: var(--s-4, 1rem);
+    border-radius: var(--r-md, 12px);
+    background: color-mix(in oklab, black 34%, transparent);
+  }
+  .ch-fact { display: flex; align-items: center; gap: var(--s-3, 0.75rem); }
+  .ch-fact-icon {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    color: var(--sky);
+    opacity: 0.9;
+  }
+  .ch-fact-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ch-fact-val {
+    font-family: var(--ty-display);
+    font-weight: var(--ty-weight-d, 700);
+    font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.6rem);
+    line-height: 1.1;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+  .ch-fact-lbl {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, white 66%, var(--navy-accent) 34%);
+  }
+  /* One staggered rise per row on load — the same cascade language
+     .gh-in-1..6 already uses for the homepage hero, sized down to three
+     short delays since this card has three rows, not six. Visible at
+     rest (opacity: 1 outside the media query) so reduced-motion and
+     no-JS visitors see the finished card immediately, never a stuck
+     half-faded row. */
+  @media (prefers-reduced-motion: no-preference) {
+    .ch-fact {
+      opacity: 0;
+      animation: ch-fact-in var(--d-4, 0.5s) var(--ea-out, ease) both;
+    }
+    .ch-fact:nth-child(1) { animation-delay: calc(160ms * var(--mo)); }
+    .ch-fact:nth-child(2) { animation-delay: calc(280ms * var(--mo)); }
+    .ch-fact:nth-child(3) { animation-delay: calc(400ms * var(--mo)); }
+  }
+  @keyframes ch-fact-in {
+    from { opacity: 0; transform: translate3d(0, calc(10px * var(--mo)), 0); }
+    to   { opacity: 1; transform: none; }
+  }
+
   .ch-fallback-cap {
     position: absolute;
     left: 0;
@@ -249,8 +383,4 @@ const headlineStats = [
      [hidden]), the caption belongs to a photograph, not a mark — hide it
      rather than have it caption someone's real campus. */
   .cph:not([hidden]) ~ .ch-fallback-cap { display: none; }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .ch-mono { transition: opacity var(--d-4, 0.5s) var(--ea-out, ease); }
-  }
 </style>

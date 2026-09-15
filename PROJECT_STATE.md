@@ -1,10 +1,45 @@
 # PROJECT_STATE.md
 
-_Last updated: 2026-09-13. Read this file first in any new session before
+_Last updated: 2026-09-15. Read this file first in any new session before
 doing implementation work — an earlier version of this file (last touched
 2026-08-27) had drifted badly out of sync with reality and is not a
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
+
+## ⭐ 2026-09-15 — Institutional data card; two more photo uploads rejected
+
+Full account in `NEXT_TASK.md`. Two zips arrived claiming to be real
+college photos; both checked and both rejected before anything was
+uploaded — one was 27 byte-identical blank rectangles, the other had an
+AI-generator watermark on one file and an unconfirmed-rights third-party
+image as the other. `site_photos` stays at 0/27.
+
+Built the thing actually requested instead: `CollegeHero.astro`'s empty
+photo slot now shows a small "institutional data card" — founding year,
+seat count (with the existing counter animation), ownership, each with
+an icon, staggered in on load — built entirely from fields already
+sourced elsewhere on the same page, not new content. The old initials
+monogram survives as a low-opacity watermark behind it rather than
+disappearing. Extended the existing sibling-selector pattern so the
+whole card (not just its caption, as before) fully stops — `display:
+none`, confirmed via computed style, not assumed — the instant a real
+photo is uploaded for that college.
+
+Caught a real contrast bug in the process, worth remembering: the first
+version's colours were computed against an *estimated* background (the
+panel's own darkest gradient stop) rather than the actual composited
+one — the panel's decorative radial highlight bleeds a much lighter
+colour through the area the card sits in, and `audit.mjs` returned 74
+low-contrast elements on the first run. Fixed with a guaranteed-dark
+scrim behind the card rather than trusting the gradient; re-verified at
+0. The lesson: computing contrast against an assumed background is still
+guessing — measure the actual rendered pixels or verify with the real
+checker before calling a pair safe.
+
+**Verified**: build clean, CSP unaffected, full fast suite green, two
+full `audit.mjs` runs (first catching the regression, second clean at 0
+low-contrast / 0 overflow), screenshots at both breakpoints plus the
+missing-field, real-photo-present, and contrast-fix edge cases.
 
 ## ⭐ 2026-09-13 — Footer + college-hero dark finale; real photography confirmed blocked
 

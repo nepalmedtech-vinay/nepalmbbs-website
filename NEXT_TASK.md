@@ -3,6 +3,102 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-15 (institutional data card; two photo uploads rejected)
+
+**Two photo uploads arrived this session, both checked and both rejected —
+neither uploaded, per the owner's own explicit ask to verify before
+publishing anything.**
+
+1. `nepal_medical_colleges_hd.zip` — 27 files, every one **byte-identical**
+   (same MD5 hash) and every one an empty dark-navy rectangle with a
+   cyan border, not a photograph of anything. Confirmed by opening one
+   and diffing hashes across all 27, not assumed from file size alone.
+2. `nepal_medical_colleges_real_hd.zip` — 2 files, not 27. One
+   (`01_BPKIHS_Dharan.jpg`) carries a visible **`pollinations.ai`
+   watermark** and a distorted human figure — an AI-generated image, not
+   a real campus photo. The other (`02_IOM_Maharajgunj.jpg`) looks like a
+   genuine photograph at real HD resolution (1920×1080), but carries a
+   pre-baked caption banner suggesting it was lifted from a third-party
+   site — no confirmed rights to publish it, so it wasn't used either.
+   Uploading either would have repeated the exact "fabricated or
+   unlicensed image standing in for a real campus" failure this codebase
+   has now reversed multiple times in one session. `site_photos`
+   (migration 0008) and `college-photo.js` remain 0/27 populated,
+   waiting on real, rights-cleared images.
+
+**Built instead: an "institutional data card" for the photo slot**
+(`CollegeHero.astro`), replacing the plain initials monogram with real,
+already-sourced per-college facts while the slot has no photo —
+addressing the owner's explicit ask ("valuable informatics in place of
+[the] college image... so the whole website looks ultra premium") without
+inventing or faking any content:
+
+- Three rows — founding year, foreign-quota seat count, ownership — each
+  with a small inline-SVG icon (calendar / building-with-columns /
+  government-building), built entirely from fields `[slug].astro`'s own
+  `record` array already sources. Conditionally rendered per field
+  (confirmed against real data: 7 of 27 colleges are missing
+  `established`, so that row simply doesn't render for those — no
+  "undefined" or empty row, screenshotted and verified on
+  `nepalese-army-institute-of-health-sciences`, one of the 7).
+  Seats gets `runtime.js`'s existing `[data-count]` counter animation
+  (no new JS — the same mechanism `GlassHero.astro`'s own stats already
+  use); the founding year deliberately does *not* count up — a year
+  ticking rapidly from 0 reads as a glitch, not a quantity accumulating.
+- The initials monogram survives, demoted from the panel's whole reason
+  for being to a large, low-opacity watermark behind the facts — still
+  100% honest (a graphic mark, never a stand-in photo), just no longer
+  competing with real data for attention.
+- Staggered load-in per row (three delays, same cascade language
+  `GlassHero.astro`'s own `.gh-in-1..6` already uses), gated by
+  `prefers-reduced-motion` the same way every other animation on this
+  site is — visible immediately, no animation, when reduced motion is on.
+- **Stops completely, not just visually covered, the instant a real photo
+  is uploaded**: extended the exact sibling-selector technique
+  `.ch-fallback-cap` already used (`.cph:not([hidden]) ~ .ch-fallback-cap
+  { display: none; }`) to the whole new card
+  (`.cph:not([hidden]) ~ .ch-fallback { display: none; }`), so its
+  counter and entrance animation don't keep running behind a photo that
+  has already replaced them — verified by scripting a fake photo into
+  the DOM and confirming `getComputedStyle` reports `display: none` on
+  both, not just an assumption from the layering.
+- **A real contrast bug this pass's own `audit.mjs` run caught, worth
+  recording accurately rather than glossing over**: the first version
+  computed contrast against an *estimated* background (the panel's own
+  darkest linear-gradient stop, ≈7.3–17:1, comfortably past AA on paper)
+  and shipped it. `audit.mjs` returned **74 low-contrast elements**,
+  worst 2.33:1. Root cause: `.ch-fallback`'s own decorative radial
+  highlight (`60%` brand-mixed at its centre, `22% 12%`) bleeds a much
+  lighter, more saturated colour directly through the area the facts
+  card sits in — especially the first row, especially on the teal govt
+  variant — nothing like the plain dark gradient stop the estimate used.
+  Confirmed by cropping an actual rendered screenshot of the label in
+  place before touching any code, not by re-deriving the estimate more
+  carefully (an estimate is exactly what produced the bug). Fixed by
+  giving the card its own guaranteed-dark scrim
+  (`background: color-mix(in oklab, black 34%, transparent)` on
+  `.ch-facts-card` itself) rather than trusting whatever gradient
+  happens to be behind it — re-verified with a second `audit.mjs` run:
+  **0 low-contrast elements**. The lesson, for the next session: this
+  file's own established discipline is "compute contrast, don't guess,"
+  and computing against an *assumed* background is still guessing —
+  measure the actual rendered pixels, or verify with the real checker,
+  before calling a contrast pair safe.
+
+**Verified**: build clean (44 routes); CSP unaffected (no inline-script
+content changed); `console-verify` 34/34; `a11y-verify` 32/32 (one
+`/portal` focus-timing flake on a re-run, this file's own already-
+documented Chromium synthetic-Tab pattern, clean on immediate retry);
+`compare-verify` 13/13; `auth-verify` 12/12; `assistant-verify` 18/18;
+two full `audit.mjs` runs — the first catching the regression above, the
+second (after the scrim fix) clean at 0 low-contrast / 0 mobile overflow
+across all 43 routes. Screenshots confirmed at 1440px (private college)
+and 390px (government college, teal tint) with the counter settled, the
+missing-`established` edge case, the real-photo-present state with both
+the card and caption confirmed `display: none` via computed style, and
+the contrast fix itself confirmed via a cropped before/after screenshot
+of the actual rendered label.
+
 ## 🔷 Where things actually stand — read this one first, then the dated
 ## entries below only if you need the reasoning behind a specific change
 
