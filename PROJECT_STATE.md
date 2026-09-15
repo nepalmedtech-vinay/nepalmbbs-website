@@ -6,6 +6,26 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-15 — Content pass: fabricated testimonials found and removed
+
+Full account in `NEXT_TASK.md`. Owner asked for richer, non-repetitive,
+corporate-style copy sitewide, sourced facts only. A survey of the site's
+prose found `/why-nepal` shipping three invented student testimonials
+(names, quotes, colleges, years — none sourced) as static HTML, sitting
+outside the site's real `site_testimonials` table + admin workflow. Removed
+them; replaced with an honest empty-state that auto-hides the instant a real
+testimonial is added (via `boot.js`/`colleges.js`/`admin.js`, same pattern as
+the college-photo slots). Also fixed an unsourced claim in `index.astro`'s
+meta description, de-duplicated four near-identical "verify at nmc.org.in"
+disclaimers into page-specific phrasing, and surfaced three FAQ answers
+(agents/scholarships/refunds) and TrustSection badge descriptions that
+already existed in `knowledge.json`/`guidelines.astro` but weren't shown
+anywhere. No new facts invented anywhere in this pass.
+
+**Verified**: build clean (44 routes), CSP regenerated as a safety net (no
+inline-script content changed), `tests/audit.mjs` clean — 0 low-contrast
+elements, 0 mobile overflow, across all 44 routes + assistant.
+
 ## ⭐ 2026-09-15 — Institutional data card; two more photo uploads rejected
 
 Full account in `NEXT_TASK.md`. Two zips arrived claiming to be real

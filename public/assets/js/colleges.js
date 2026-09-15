@@ -161,6 +161,8 @@ async function loadDynamicContent() {
     const tests = await sbR('/rest/v1/site_testimonials?select=*&is_active=eq.true&order=sort_order.asc,created_at.asc');
     if (tests && tests.length) {
       const c = document.getElementById('testimonials-container');
+      const empty = document.getElementById('testimonials-empty');
+      if (empty) empty.remove();
       if (c) tests.forEach(t => {
         const d = document.createElement('div');
         d.className = 'test-card rev';

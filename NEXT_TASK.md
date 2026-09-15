@@ -3,6 +3,71 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-15 (content pass — fabricated testimonials caught and removed)
+
+Owner asked for a content-writing pass: richer, non-repetitive, corporate-style
+copy sitewide, drawn only from already-sourced facts, plus targeted premium
+animation polish — "don't put anything cheap in the whole website." A research
+subagent surveyed prose across every page first; the most serious finding was
+on `/why-nepal`: three testimonial cards with **invented** named students
+(Priya Sharma, Rahul Deshmukh, Anjali Patil), invented quotes, invented
+colleges and years, none traceable to any source — sitting as static HTML
+entirely outside the real `site_testimonials` Supabase table and admin
+workflow already built for genuine ones. This is CLAUDE.md's "never invent a
+fact" rule broken, just in prose rather than a fee or seat count.
+
+**Fixed:**
+- Removed the three fabricated cards from `why-nepal.astro`. Replaced with a
+  premium, honest empty-state (`#testimonials-empty`) — the same "real
+  informatics, not a fake stand-in" pattern already used for empty
+  college-photo slots — explaining none are published yet and inviting a real
+  student to share one via WhatsApp.
+- `boot.js`, `colleges.js` and `admin.js` — the three places that load real
+  rows from `site_testimonials` — now remove `#testimonials-empty` the
+  instant a real testimonial loads or is added via the admin panel. Same
+  auto-stop discipline as the photo slots, applied to a second feature.
+- `index.astro`'s meta description carried an unsourced claim ("Trusted by
+  students from Mumbai, Nagpur, Nanded, Nashik, Latur") with no entry in
+  `CONTENT_SOURCE_LOG.md` or `knowledge.json` — rewritten to something
+  accurate.
+
+**Repetition reduced** (the "don't repeat it in so many places" part of the
+ask): reworded the near-identical "Always verify at nmc.org.in..."
+disclaimers on `guidelines.astro` / `neet-calculator.astro` / `faq.astro` so
+each reads as page-specific copy rather than a copy-pasted template — same
+facts, distinct sentences. Dropped an empty rhetorical flourish ("No false
+promises. Ever.") from `counseling.astro`'s hero paragraph that added no
+information.
+
+**Thin sections enriched from data that already existed, unused, elsewhere
+in the repo** — no new facts invented:
+- `TrustSection.astro`'s six homepage source badges went from bare logo+name
+  to logo+name+one-line description of what each body actually governs,
+  pulled from `guidelines.astro`'s own existing descriptions of the same six
+  bodies. Header line changed from generic "Verified & Trusted Sources"
+  filler to the site's real claim: "Every Fact On This Site Traces To One Of
+  These Six."
+- `faq.astro` gained three questions (agents / scholarships / refunds) whose
+  answers were already fully written and sourced in `knowledge.json` but
+  never surfaced on the page.
+- `life-in-nepal.astro`'s Monthly Cost and Hostel cards now carry the same
+  honest "our estimate, not an official figure" / "ask a current student"
+  framing `knowledge.json` already uses for these exact facts, instead of
+  stating them flatly as if official.
+
+**Verified**: production build clean across all 44 routes. `npm run csp` run
+as a safety net (no inline-script content actually changed). Full
+`tests/audit.mjs` run clean: 0 low-contrast elements, 0 mobile overflow,
+across all 44 routes + assistant.
+
+**Not done this pass** (lower priority, not reached): `guidelines.astro`'s
+ALL-CAPS spec-sheet register still sits apart from the rest of the site's
+essayistic voice — a candidate for a future pass, not fixed here.
+`preview.astro` hand-duplicates `GlassHero`'s hero markup instead of
+importing the component (a maintenance smell on an internal design-preview
+route, not a visitor-facing bug) — left alone to avoid scope creep on a
+route nobody outside the team sees.
+
 ## ⭐ Status as of 2026-09-15 (institutional data card; two photo uploads rejected)
 
 **Two photo uploads arrived this session, both checked and both rejected —

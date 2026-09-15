@@ -419,6 +419,14 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
   background: var(--pr-hair);
 }
 
+.trust-sub {
+  margin: calc(-1 * var(--s-4)) 0 var(--s-5);
+  font-size: var(--t-xs);
+  line-height: var(--lh-body);
+  color: var(--g-ink-3);
+  max-width: 56ch;
+}
+
 .trust-grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
@@ -467,14 +475,29 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
 }
 .trust-badge:hover .trust-badge-icon { filter: none; }
 
+.trust-badge-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .trust-badge-name {
   font-size: var(--t-xs) !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   color: var(--g-ink-2) !important;
   text-align: left !important;
   letter-spacing: 0.01em;
 }
 .trust-badge:hover .trust-badge-name { color: var(--g-ink) !important; }
+
+.trust-badge-desc {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--g-ink-3);
+  transition: color var(--d-3) var(--ea-out);
+}
+.trust-badge:hover .trust-badge-desc { color: var(--g-ink-2); }
 
 @media (max-width: 60rem) {
   .trust-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }

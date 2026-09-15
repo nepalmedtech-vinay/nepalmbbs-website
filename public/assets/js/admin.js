@@ -370,6 +370,8 @@ async function addTestimonial(){
     await loadAdminTests();
     // Show immediately
     const c=document.getElementById('testimonials-container');
+    const empty=document.getElementById('testimonials-empty');
+    if(empty)empty.remove();
     if(c){const d=document.createElement('div');d.className='test-card rev';d.innerHTML=`<div class="test-quote-icon">"</div><div class="test-stars">${'★'.repeat(stars)}</div><div class="test-text">${quote}</div><div class="test-author"><div class="test-avatar">${name[0]}</div><div><div class="test-name">${name}</div><div class="test-college">${city}</div><span class="test-year">${year}</span></div></div>`;c.appendChild(d);revObs.observe(d);}
   } else toast('Error. Check Supabase write policies.','err');
 }

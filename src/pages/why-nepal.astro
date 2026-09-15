@@ -38,14 +38,60 @@ import PageHeader from '../components/PageHeader.astro';
   </div>
   <!-- TESTIMONIALS -->
   <div style="margin-top:64px">
-    <div class="tc rev"><div class="eyebrow">Student Stories</div><div class="sec-title">What Students Say</div><div class="sec-sub" style="margin:0 auto">Representative experiences. Individual experiences may vary. We recommend speaking directly with current students at your shortlisted college.</div></div>
+    <div class="tc rev"><div class="eyebrow">Student Stories</div><div class="sec-title">What Students Say</div><div class="sec-sub" style="margin:0 auto">Written by students, not by us — published exactly as submitted, with the college and year attached.</div></div>
     <div class="test-grid" id="testimonials-container">
-      <div class="test-card rev"><div class="test-quote-icon">"</div><div class="test-stars">★★★★★</div><div class="test-text">The counseling was genuinely honest — they told me exactly what to expect, not just what I wanted to hear. MEC process was transparent and I got into my preferred college without any hassle.</div><div class="test-author"><div class="test-avatar">P</div><div><div class="test-name">Priya Sharma</div><div class="test-college">Mumbai → Kathmandu Medical College</div><span class="test-year">2nd Year MBBS</span></div></div></div>
-      <div class="test-card rev"><div class="test-quote-icon">"</div><div class="test-stars">★★★★★</div><div class="test-text">NEET mein 380 tha. India mein private ka option bahut expensive tha. Nepal mein official MEC route se admission mila. Food, hostel sab manageable hai. Studies bhi achhi chal rahi hain.</div><div class="test-author"><div class="test-avatar">R</div><div><div class="test-name">Rahul Deshmukh</div><div class="test-college">Nagpur → KIST Medical College</div><span class="test-year">1st Year MBBS</span></div></div></div>
-      <div class="test-card rev"><div class="test-quote-icon">"</div><div class="test-stars">★★★★★</div><div class="test-text">Parents were worried about safety. After visiting campus they felt comfortable. Hindi understood everywhere. Clinical exposure is genuinely strong from Year 1 — better than I expected.</div><div class="test-author"><div class="test-avatar">A</div><div><div class="test-name">Anjali Patil</div><div class="test-college">Pune → Gandaki Medical College</div><span class="test-year">3rd Year MBBS</span></div></div></div>
+      <div class="test-empty rev" id="testimonials-empty">
+        <div class="test-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
+        <h4>None published yet</h4>
+        <p>We would rather show nothing than write these ourselves. When a current or recent Nepal MBBS student shares theirs, it appears here unedited. If that's you, we'd like to hear it.</p>
+        <a href="https://wa.me/917080800888?text=I%27d%20like%20to%20share%20my%20Nepal%20MBBS%20experience." target="_blank" rel="noopener" class="test-empty-cta">Share your experience →</a>
+      </div>
     </div>
-    <p style="text-align:center;font-size:12px;color:var(--muted);font-style:italic;margin-top:16px">* Testimonials are representative. We recommend speaking with current students directly. Individual experiences may vary.</p>
   </div>
 </div>
 </div>
+
+<style>
+  .test-empty {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--s-3, 0.75rem);
+    max-width: 46ch;
+    margin: 0 auto;
+    padding: var(--s-7, 3rem) var(--s-5, 1.5rem);
+  }
+  .test-empty-icon {
+    width: 34px;
+    height: 34px;
+    color: var(--g-ink-3);
+    opacity: 0.6;
+  }
+  .test-empty h4 {
+    margin: 0;
+    font-family: var(--ty-display);
+    font-size: var(--t-lg);
+    color: var(--g-ink);
+  }
+  .test-empty p {
+    margin: 0;
+    font-size: var(--t-sm);
+    line-height: var(--lh-body);
+    color: var(--g-ink-3);
+  }
+  .test-empty-cta {
+    margin-top: var(--s-2, 0.5rem);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    color: var(--brand-text);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in oklab, var(--brand) 40%, transparent);
+    transition: border-color var(--d-2, 0.15s) var(--ea-out, ease);
+  }
+  .test-empty-cta:hover, .test-empty-cta:focus-visible {
+    border-color: var(--brand);
+  }
+</style>
 </GlassLayout>
