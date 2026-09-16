@@ -290,6 +290,21 @@ const stats = [
     opacity: 0;
     transition: opacity var(--d-5, 720ms) var(--ea-out, ease);
     pointer-events: none;
+    /* Design pass, 2026-09-16: repositioning the six objects in
+       medical-icons-scene.js to clear the copy column got close but not
+       exact — a perspective camera's screen position for a given local x
+       also depends on each object's own z depth, which hand-tuned trial
+       positions kept under- or over-shooting across several passes,
+       confirmed by screenshot each time rather than assumed fixed. A mask
+       is the robust fix underneath that: the same technique the footer's
+       own 3D layer already uses (masked to fade out before its nav
+       columns) applied here in reverse — transparent over the text
+       column, opaque over the gap and the stat cards, so nothing can
+       render over copy regardless of how precisely the 3D positions land.
+       Measured against the real rendered `.gh-copy` column (right edge at
+       66% of hero width at 1440px), not guessed. */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 55%, black 72%, black 100%);
+            mask-image: linear-gradient(90deg, transparent 0%, transparent 55%, black 72%, black 100%);
   }
   .gh-medical-3d.is-ready { opacity: 1; }
   /* Toggled on .gh-field directly by the mount script below, not via a CSS

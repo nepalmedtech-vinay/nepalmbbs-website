@@ -3,18 +3,19 @@
 // Genuine WebGL 3D: real geometry (not sprites, not a skybox), real
 // lighting via a generated environment map (so the crystal material
 // actually reflects/refracts something), floating and rotating on their
-// own gentle cycles. Five shapes, each built procedurally from Three.js
+// own gentle cycles. Six shapes, each built procedurally from Three.js
 // primitives/curves rather than an imported model file — there is no
 // licensed medical 3D asset in this repository, and shipping one without
 // a source would be exactly the kind of unsourced asset this project's own
 // content rules already forbid for photography. What is here is honest
-// about what it is: five considered, hand-built shapes, not photoreal
+// about what it is: six considered, hand-built shapes, not photoreal
 // scans.
 //
 //   1. A stethoscope — a tube swept along a curved path (the tubing) plus
 //      a flattened cylinder (the chest piece) and two small tori (the
-//      earpieces). Redrawn rounder in this pass to actually read as a
-//      stethoscope at a glance, matching the 2D fallback icon.
+//      earpieces). Tube radii bumped a second time (2026-09-16) after the
+//      owner flagged it as reading thin/insubstantial at the size this
+//      scene actually renders at — same proportions, bolder line.
 //   2. A pulse/ECG trace — a tube swept along the classic heartbeat
 //      zigzag, extruded into 3D rather than drawn flat.
 //   3. A capsule — medicine's own shape (THREE.CapsuleGeometry), standing
@@ -23,6 +24,9 @@
 //      rungs between them, standing in for "biology" the way the cross
 //      stands in for "medical".
 //   5. A medical cross — an extruded, bevelled 2D cross shape.
+//   6. A syringe — glass barrel, steel plunger and needle. Added
+//      2026-09-16 on the owner's explicit ask for more medical icons in
+//      the field.
 //
 // Material: MeshPhysicalMaterial with transmission (real glass, not a
 // blurred-rectangle approximation) — the same "crystal" language the
@@ -125,10 +129,10 @@ function buildStethoscope(color, transmission, tint, lite = false) {
   const s = (n) => (lite ? Math.max(4, Math.round(n / 2)) : n);
 
   const steel = lite
-    ? new THREE.MeshStandardMaterial({ color: 0xcbd3da, metalness: 0.7, roughness: 0.3 })
+    ? new THREE.MeshStandardMaterial({ color: 0xcbd3da, metalness: 0.75, roughness: 0.24 })
     : new THREE.MeshPhysicalMaterial({
-        color: 0xcbd3da, metalness: 0.85, roughness: 0.22,
-        clearcoat: 0.4, clearcoatRoughness: 0.15,
+        color: 0xcbd3da, metalness: 0.9, roughness: 0.16,
+        clearcoat: 0.6, clearcoatRoughness: 0.1,
       });
   const c = new THREE.Color(color).lerp(new THREE.Color(0xffffff), tint ?? 0.05);
   const tubeMat = lite
@@ -143,21 +147,28 @@ function buildStethoscope(color, transmission, tint, lite = false) {
 
   // Binaurals — steel, each ear to the yoke, angled apart in Z so they
   // read as two separate tubes rather than one flattened loop.
+  //
+  // Radii bumped a further ~25% over the previous pass (0.024→0.03 here,
+  // 0.03→0.038 on the main tubing below): at the on-screen size this
+  // scene actually renders at, thin tubes anti-alias into a faint grey
+  // smear rather than a clean line — read as "abstract loop", exactly
+  // what the two-material split above was trying to avoid. A bolder tube
+  // is a legibility fix, not a proportion change.
   [
     { ear: new THREE.Vector3(-0.4, 0.64, -0.06), mid: new THREE.Vector3(-0.34, 0.32, 0.08) },
     { ear: new THREE.Vector3(0.4, 0.64, 0.06), mid: new THREE.Vector3(0.34, 0.32, -0.08) },
   ].forEach(({ ear, mid }) => {
     const curve = new THREE.CatmullRomCurve3([ear, mid, yoke], false, 'catmullrom', 0.35);
-    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, s(32), 0.024, s(10), false), steel));
+    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, s(32), 0.03, s(10), false), steel));
     // Ear tip — a small rubber cap, the one place the binaural touches skin.
-    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.045, s(14), s(14)), tubeMat);
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.05, s(14), s(14)), tubeMat);
     tip.position.copy(ear);
     group.add(tip);
   });
 
   // The yoke — a short steel sleeve where both binaurals meet the tubing,
   // not the two curves simply touching at a point.
-  const yokeMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.09, s(16)), steel);
+  const yokeMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.09, s(16)), steel);
   yokeMesh.position.copy(yoke);
   group.add(yokeMesh);
 
@@ -168,7 +179,7 @@ function buildStethoscope(color, transmission, tint, lite = false) {
     new THREE.Vector3(-0.05, -0.18, 0.04),
     new THREE.Vector3(0.03, -0.42, -0.02),
   ]);
-  group.add(new THREE.Mesh(new THREE.TubeGeometry(tubing, s(32), 0.03, s(10), false), tubeMat));
+  group.add(new THREE.Mesh(new THREE.TubeGeometry(tubing, s(32), 0.038, s(10), false), tubeMat));
 
   // Chest piece — steel rim and stem, a coloured rubber diaphragm face
   // (the part that would actually be a different, softer material on a
@@ -260,6 +271,56 @@ function buildDnaHelix(color, transmission, tint, lite = false) {
   }
 
   group.scale.setScalar(0.74);
+  return group;
+}
+
+// A syringe — barrel, plunger and a fine needle. Added on the owner's
+// explicit ask for more medical icons in the field, built the same way as
+// every other shape here: procedural primitives, split into steel
+// (needle, plunger rod) and the crystal/glass material (barrel) so the
+// needle actually reads as metal rather than the same translucent glass
+// as everything around it.
+function buildSyringe(color, transmission, tint, lite = false) {
+  const group = new THREE.Group();
+  const s = (n) => (lite ? Math.max(4, Math.round(n / 2)) : n);
+
+  const steel = lite
+    ? new THREE.MeshStandardMaterial({ color: 0xcbd3da, metalness: 0.75, roughness: 0.24 })
+    : new THREE.MeshPhysicalMaterial({
+        color: 0xcbd3da, metalness: 0.9, roughness: 0.16,
+        clearcoat: 0.6, clearcoatRoughness: 0.1,
+      });
+
+  // Barrel — clear glass, the syringe's own defining shape.
+  const barrel = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.09, 0.09, 0.62, s(24), 1, true),
+    crystalMaterial(color, tint ?? 0.28, transmission, lite),
+  );
+  group.add(barrel);
+
+  // Finger-flange at the barrel's open end.
+  const flange = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.025, s(24)), steel);
+  flange.position.y = 0.31;
+  group.add(flange);
+
+  // Plunger rod, extending out through the flange, plus its thumb-rest disc.
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.4, s(10)), steel);
+  rod.position.y = 0.5;
+  group.add(rod);
+  const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.025, s(20)), steel);
+  thumb.position.y = 0.7;
+  group.add(thumb);
+
+  // Tip taper and needle — steel, thin, deliberately the most slender
+  // thing in the whole set (a syringe needle is meant to read as fine).
+  const tip = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.09, 0.08, s(24)), steel);
+  tip.position.y = -0.35;
+  group.add(tip);
+  const needle = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.34, s(10)), steel);
+  needle.position.y = -0.56;
+  group.add(needle);
+
+  group.scale.setScalar(0.78);
   return group;
 }
 
@@ -361,25 +422,43 @@ export function mountMedicalIconsScene(canvas, colorVars) {
   const field = new THREE.Group();
   scene.add(field);
 
+  // Design pass, 2026-09-16: all six repositioned into the right-hand
+  // third of the field, clear of the headline/lead copy that lives in
+  // the left ~55% of the hero. The previous spread (stethoscope out to
+  // x=-1.7) put objects directly underneath "Your MBBS in Nepal" and the
+  // lead paragraph — visible in a real screenshot, not assumed — which
+  // read as a rendering glitch rather than an ambient background, and is
+  // very likely a real part of why the stethoscope specifically got
+  // flagged as looking cheap: a shape crossing through body text looks
+  // broken regardless of how the shape itself is built. Clustered tighter
+  // together now too (previous x-spread of ~3.45 units, now ~1.15) as
+  // its own contribution to "smaller", on top of the FIELD_SCALE cut
+  // below — the formation reads as a considered group beside the copy,
+  // not scattered across it.
   const stetho = buildStethoscope(brand, transmission, tint, lite);
-  stetho.position.set(-1.7, 0.7, 0);
+  stetho.position.set(1.85, 0.75, 0);
   field.add(stetho);
 
   const pulse = buildPulseTrace(brand2, transmission, tint, lite);
-  pulse.position.set(0.15, -0.85, -0.5);
+  pulse.position.set(1.95, -0.85, -0.5);
   field.add(pulse);
 
   const capsule = buildCapsule(brand, transmission, tint, lite);
-  capsule.position.set(1.75, 0.85, -0.2);
+  capsule.position.set(2.6, 0.7, -0.2);
   field.add(capsule);
 
   const dna = buildDnaHelix(brand2, transmission, tint, lite);
-  dna.position.set(-1.6, -0.75, -0.4);
+  dna.position.set(1.9, -0.2, -0.4);
   field.add(dna);
 
   const cross = buildCross(brand.clone().lerp(brand2, 0.5), transmission, tint, lite);
-  cross.position.set(1.3, -1.25, -0.3);
+  cross.position.set(2.65, -1.0, -0.3);
   field.add(cross);
+
+  const syringe = buildSyringe(brand2, transmission, tint, lite);
+  syringe.position.set(2.15, 0.0, 0.25);
+  syringe.rotation.z = 0.35;
+  field.add(syringe);
 
   const objects = [
     { mesh: stetho, spin: 0.05, floatAmp: 0.16, floatSpeed: 0.35, phase: 0 },
@@ -387,6 +466,7 @@ export function mountMedicalIconsScene(canvas, colorVars) {
     { mesh: capsule, spin: 0.08, floatAmp: 0.15, floatSpeed: 0.33, phase: 1.3 },
     { mesh: dna, spin: -0.04, floatAmp: 0.12, floatSpeed: 0.24, phase: 3.4 },
     { mesh: cross, spin: 0.06, floatAmp: 0.17, floatSpeed: 0.31, phase: 4.2 },
+    { mesh: syringe, spin: -0.05, floatAmp: 0.14, floatSpeed: 0.29, phase: 1.8 },
   ];
 
   // Adaptive DPR cap, reusing the same `cores`/`narrow` signal `lite` was
@@ -410,6 +490,12 @@ export function mountMedicalIconsScene(canvas, colorVars) {
   // unaffected. Floored so the icons never shrink to invisible on a very
   // tall narrow header.
   const REF_ASPECT = 1.6;
+  // Overall field size, on the owner's explicit ask to make the icons
+  // smaller — a flat multiplier on top of the aspect-ratio scaling below
+  // rather than shrinking each shape's own internal scale, so the
+  // relative sizing between shapes (and the aspect-ratio floor for narrow
+  // headers) is unchanged, just the whole formation sits smaller in frame.
+  const FIELD_SCALE = 0.56;
 
   function resize() {
     const w = canvas.clientWidth || 1;
@@ -418,7 +504,8 @@ export function mountMedicalIconsScene(canvas, colorVars) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    field.scale.setScalar(camera.aspect < REF_ASPECT ? Math.max(0.34, camera.aspect / REF_ASPECT) : 1);
+    const aspectScale = camera.aspect < REF_ASPECT ? Math.max(0.34, camera.aspect / REF_ASPECT) : 1;
+    field.scale.setScalar(aspectScale * FIELD_SCALE);
   }
 
   const ro = new ResizeObserver(resize);

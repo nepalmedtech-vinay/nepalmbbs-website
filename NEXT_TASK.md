@@ -3,6 +3,87 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-16, part 4 (3D hero scene, "bottom tabs" colour, magnetic CTAs)
+
+Owner flagged the hero's 3D stethoscope as "looking cheap," asked for the
+3D icons smaller with more variety, the homepage's bottom "Navigate
+Sections" tab grid recoloured, and magnetic/crystal-shine interactions
+pushed further — then explicitly granted broad UI/UX latitude while
+capping it to "no new frameworks" (a Next.js/React/Framer/R3F/Lenis
+migration was proposed via pasted snippets and explicitly declined — this
+is and stays a zero-dependency Astro build; see the conversation for the
+reasoning, not repeated here).
+
+**The real finding, not assumed**: screenshotting the hero (with the
+local test server's MIME types fixed — the first attempt silently failed
+to execute the module script and would have produced a false "looks
+fine" read) showed the stethoscope, DNA helix and medical cross weren't
+just "badly built", they were rendering **on top of the headline and
+lead paragraph text** — a hero-copy collision, not a styling-taste
+problem. That is very likely the real substance of "looks cheap": a 3D
+object crossing through body text reads as broken regardless of how the
+shape itself is modelled.
+
+**Fixed in `medical-icons-scene.js`**:
+- All six shapes repositioned into the right-hand portion of the field
+  (previous spread went out to x=-1.7, directly under "Your MBBS in
+  Nepal, decided on evidence."); overall `FIELD_SCALE` cut to 0.56 (was
+  effectively 1 on wide viewports) — both the position and size changes
+  the owner asked for.
+- A sixth shape added — a syringe (glass barrel, steel plunger/needle) —
+  for "more medical icons", built the same procedural, two-material way
+  as the rest, not an imported asset.
+- Stethoscope tube/steel radii bumped (~25-30%) and the steel material's
+  clearcoat/roughness tightened, on the theory that thin tubes
+  anti-alias into a grey smear at the size this scene actually renders
+  at ("reads as an abstract loop", the file's own pre-existing comment
+  already worried about this).
+- Hand-tuned position math alone didn't converge cleanly after three
+  screenshot passes (a perspective camera's screen position for a given
+  local x also depends on each object's own z depth, which flat
+  trial-and-error kept under/over-shooting) — the robust fix underneath
+  the position tuning is a `mask-image` on `.gh-medical-3d`
+  (`GlassHero.astro`) transparent over the measured copy-column width
+  (right edge at 952px of 1440, queried via `getBoundingClientRect()`,
+  not guessed) fading to opaque over the gap and stat cards. Same
+  technique the footer's own 3D layer already uses in reverse. This is
+  the part that actually guarantees no future drift here re-introduces
+  the same collision.
+
+**"Bottom tabs" (the homepage's `SectionNav.astro` "Navigate Sections"
+grid, `.tab-card` in premium.css) — the likely target of "not appropriate
+colour combination"**: icon colour was `var(--g-ink-3)`, the same flat
+muted ink every other at-rest icon uses; nine of them on screen at once
+read as institutional grey rather than a medical brand's own index.
+Retinted to a brand-mixed colour at rest (full brand still on hover).
+Also added the crystal-shine sweep every other "tab" surface on the site
+already has (trust badges, footer links, guidelines' g-tab) — this grid
+was the one surface missing it. Caught and fixed a real cascade bug in
+the process: bridge.css has `.tab-card .tab-svg { color: var(--g-ink)
+!important; }`, and premium.css's retint didn't carry `!important` —
+confirmed via computed style query (still flat ink after the "fix"), not
+assumed fixed from the CSS diff alone.
+
+**Magnetic CTAs**: found the site already ships a complete, tested,
+reduced-motion-aware, pointer-only magnetic-hover system (`.m-magnet` in
+motion.css/motion.js) — only wired to the hero's own primary CTA. Added
+it to the nav bar's "Free Counseling" button (present on all 44 routes)
+and the college-detail page's "Enquire about X College" button, rather
+than writing a new one — the owner's own pasted magnetic-button reference
+was a full React/Framer component; this achieves the same feel with zero
+new code.
+
+**Verified**: build clean, four full screenshot passes on the hero (the
+local static server's missing MIME types produced a false-clean first
+screenshot that had to be caught and re-verified with a proper
+`Content-Type` map — noted so a future session doesn't trust an
+un-instrumented local server's screenshot either), full `audit.mjs`
+clean (0 low-contrast, 0 mobile overflow, 44 routes), CSP regenerated.
+**Not run this pass**: `perf-verify.mjs` — the added syringe geometry is
+modest (a handful of cylinders, cheaper than the DNA helix already in
+the scene) but wasn't re-measured against the project's own documented
+WebGL/TBT sensitivity; flagging rather than assuming it's free.
+
 ## ⭐ Status as of 2026-09-16, part 3 (full-site premium audit — one real fix, several deliberately not made)
 
 Owner asked for a full re-audit against "ultra premium" quality with instant

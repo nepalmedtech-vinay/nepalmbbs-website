@@ -325,17 +325,49 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
 }
 .tab-card:hover::after, .tab-card:focus-visible::after { opacity: 1; }
 
-/* The left edge lights instead. One rule, drawn on demand. */
+/* The left edge lights instead. One rule, drawn on demand.
+   Design pass, 2026-09-16: was var(--g-ink-3), the same flat muted ink
+   every other at-rest icon on the site uses — but this grid is the last
+   thing on the homepage before the footer, all nine icons on screen at
+   once, and nine identical grey glyphs in a row read as institutional
+   rather than as a medical brand's own index. A soft brand tint at rest
+   (full brand still arrives on hover, unchanged) costs nothing in
+   restraint — it is a third the way to the hover colour, not the whole
+   way there. */
 .tab-card .tab-svg {
   position: relative;
   z-index: 1;
   width: 20px; height: 20px;
   opacity: 1 !important;
-  color: var(--g-ink-3);
+  color: color-mix(in oklab, var(--brand) 45%, var(--g-ink-3) 55%) !important;
   filter: none !important;
   transition: color var(--d-2) var(--ea-out), transform var(--d-3) var(--ea-spring);
 }
-.tab-card:hover .tab-svg { color: var(--brand); transform: none !important; }
+.tab-card:hover .tab-svg { color: var(--brand) !important; transform: none !important; }
+
+/* Crystal shine — reuses the site's own cx-sweep keyframe rather than a
+   second copy. One pass on hover, matching every other "tab" surface on
+   the site (guidelines' g-tab, the trust badges, the footer links). */
+.tab-card { overflow: hidden; }
+.tab-card > .tab-shine {
+  position: absolute;
+  top: -40%;
+  bottom: -40%;
+  left: 0;
+  width: 32%;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255 255 255 / 0.7),
+    transparent);
+  transform: translate3d(-220%, 0, 0) skewX(-18deg);
+  pointer-events: none;
+  z-index: 2;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tab-card:hover > .tab-shine, .tab-card:focus-visible > .tab-shine {
+    animation: cx-sweep calc(0.85s * max(var(--mo), 0.001)) var(--ea-out, ease);
+  }
+}
 
 .tab-card .tab-label {
   position: relative;

@@ -6,6 +6,30 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-16, part 2 — Hero 3D collision fixed; bottom-tabs colour; magnetic CTAs
+
+Full account in `NEXT_TASK.md`. Owner flagged the hero's 3D stethoscope as
+cheap-looking; screenshotting it (after fixing a local test server that was
+silently failing to execute the WebGL module script) showed the real issue:
+the stethoscope, DNA helix and cross were rendering on top of the headline
+and lead paragraph, not just poorly modelled. Repositioned all six shapes
+(added a syringe, on request) into the field's right-hand portion, cut the
+overall scale, and — since hand-tuned position math didn't converge
+cleanly against a perspective camera — added a `mask-image` on the hero
+canvas transparent over the measured copy-column width, same technique the
+footer's 3D layer already uses. Also fixed the homepage's "Navigate
+Sections" bottom-tab grid (flat grey icons at rest, no crystal shine — the
+one tab-like surface missing it) and caught a real `!important` cascade
+bug in the same fix (bridge.css was silently overriding the retint).
+Wired the site's existing, previously-unused-outside-the-hero magnetic-
+hover system onto the nav CTA and the college-enquire button. Declined a
+proposed Next.js/React/Framer Motion/R3F/Lenis migration — stays a
+zero-dependency Astro build.
+
+**Verified**: build clean, `audit.mjs` clean (0 low-contrast, 0 mobile
+overflow, 44 routes), CSP regenerated. perf-verify.mjs not re-run for the
+added 3D geometry — flagged, not assumed free.
+
 ## ⭐ 2026-09-16 — Colour pass: grey trust-badge icons and "paper" panels tinted blue
 
 Full account in `NEXT_TASK.md`. Owner asked to eliminate grey sitewide and
