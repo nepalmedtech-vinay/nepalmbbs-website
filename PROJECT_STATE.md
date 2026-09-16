@@ -1,10 +1,31 @@
 # PROJECT_STATE.md
 
-_Last updated: 2026-09-15. Read this file first in any new session before
+_Last updated: 2026-09-16. Read this file first in any new session before
 doing implementation work — an earlier version of this file (last touched
 2026-08-27) had drifted badly out of sync with reality and is not a
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
+
+## ⭐ 2026-09-16 — Colour pass: grey trust-badge icons and "paper" panels tinted blue
+
+Full account in `NEXT_TASK.md`. Owner asked to eliminate grey sitewide and
+push toward a medical colour theme with crystal shines. Found one literal
+offender (`.trust-badge-icon`'s `grayscale(1)` filter, flattening the six
+homepage source badges' own official colours) and one systemic cause (two
+independent token families — premium.css's `--pr-paper*` and bridge.css's
+`--doc-bg*` — both derive panel surfaces by mixing plain `--g-ink` into
+`--g-base`, which desaturates toward grey at the low percentages a hairline
+or card fill needs). Removed the grayscale filter (badges now show real
+colour, plus a crystal-shine hover sweep reusing the existing `cx-sweep`
+keyframe). Added one shared `--g-ink-tint` token (ink blended 65/35 with
+`--brand`) that both token families now derive from instead of raw ink.
+Investigated and ruled out — not assumed — a second suspected issue
+(apparent grey "boxes" behind some footer links in a screenshot) as a
+screenshot-viewing artifact, not a real bug.
+
+**Verified**: two full `audit.mjs` runs (one per tint ratio tried), both
+0 low-contrast elements, 0 mobile overflow, all 44 routes + assistant.
+Build clean, CSP regenerated.
 
 ## ⭐ 2026-09-15 — Content pass: fabricated testimonials found and removed
 

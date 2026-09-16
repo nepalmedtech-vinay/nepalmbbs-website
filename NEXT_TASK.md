@@ -3,6 +3,53 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-16 (colour pass — grey trust-badge icons, "paper" tokens tinted blue)
+
+Owner asked to stop using grey anywhere and push the palette further toward
+a "medical colour theme with crystal shines," sitewide. Investigated rather
+than guessed at what actually reads as grey:
+
+- **Real, literal offender**: `.trust-badge-icon` (the six homepage source
+  badges — NMC India, MEC Nepal, etc.) carried `filter: grayscale(1)
+  opacity(0.62)`, flattening each body's own official colours (India's
+  tricolour, Nepal's flag blue, a WHO-style teal) to flat grey at rest,
+  revealing colour only on hover. For a platform whose whole case is these
+  bodies' own authority, hiding their colours read as evasive, not
+  restrained. Removed the filter; full colour now, at 0.88 opacity resting
+  and 1 on hover with a slight scale lift. Added a crystal-shine sweep on
+  hover (`::after`, reusing the site's own `cx-sweep` keyframe already used
+  by the nav CTA and footer links — not a second copy).
+- **Systemic, structural cause**: two independent token families —
+  `premium.css`'s `--pr-paper`/`--pr-sunk`/`--pr-hair*` (the FAQ panel,
+  `.doc-row` hover) and `bridge.css`'s `--doc-bg`/`--doc-rule` (the college
+  Record table, `trust.css`'s whole "document register") — both derive
+  their neutral panel surfaces the same way: `color-mix(in oklab, var(--g-ink)
+  N%, var(--g-base))`. `--g-ink` (#10192B) is technically blue-tinted, but
+  its chroma is low enough that at the small percentages a hairline or
+  panel fill needs (3.5–15%), the result desaturates toward what reads as
+  flat grey — confirmed by eye against the actual rendered FAQ panel and
+  Record table, not assumed. Added one new token, `--g-ink-tint` (`engine.css`,
+  next to `--g-ink`): ink blended 65/35 with `--brand`, so both `--pr-*`
+  and `--doc-*` derive from this instead of raw ink — one shared source,
+  per the file's own "change one input, everything downstream moves"
+  discipline, rather than patching each family separately.
+- Verified the "paper" register is deliberately restrained rather than
+  under-fixed: `trust.css`'s own stated philosophy is "no blur, no glow, no
+  gradient... an effect on a fact makes it look sold" — the Record table is
+  *supposed* to read as a plain document, not a campaign surface, so this
+  tints it, it does not saturate it. The dramatic, unambiguous win is the
+  trust badges; the paper tokens are a smaller, correct-in-kind shift.
+- Also investigated and ruled out as non-bugs: what first looked like grey
+  "pill" backgrounds behind several footer nav links in a screenshot turned
+  out to be a screenshot-viewing artifact (anti-aliased light footer-link
+  text against dark navy, downsampled) — confirmed via computed-style diffs
+  (zero CSS difference between the links that looked boxed and the ones
+  that didn't) and raw pixel sampling before ruling it out, not assumed.
+
+**Verified**: two full `tests/audit.mjs` runs, one per tint ratio tried
+(80/20, then 65/35) — both 0 low-contrast elements, 0 mobile overflow,
+across all 44 routes + assistant. Build clean, `npm run csp` regenerated.
+
 ## ⭐ Status as of 2026-09-15 (content pass — fabricated testimonials caught and removed)
 
 Owner asked for a content-writing pass: richer, non-repetitive, corporate-style
