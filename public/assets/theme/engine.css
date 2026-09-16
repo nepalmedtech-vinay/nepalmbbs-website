@@ -58,7 +58,7 @@
      by name (not inlined at each call site) so the whole "paper" register
      moves together if the brand hue ever changes — the same one-input
      principle as every other derived token in this file. */
-  --g-ink-tint:    color-mix(in oklab, var(--g-ink) 65%, var(--brand) 35%);
+  --g-ink-tint:    color-mix(in oklab, var(--g-ink) 35%, var(--brand) 65%);
   /* The ramp is solved, not chosen. engine.js recomputes these per theme by
      fading ink toward the ground until it hits a contrast target against
      the deepest surface text actually sits on; these are that solve for

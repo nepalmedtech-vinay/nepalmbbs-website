@@ -53,9 +53,9 @@
   /* Hairlines. The whole layer is built from these rather than from borders:
      a 1px ink-tinted rule reads as a printed rule, a 1px grey border reads as
      a div. */
-  --pr-hair:        color-mix(in oklab, var(--g-ink-tint) 9%,  transparent);
-  --pr-hair-soft:   color-mix(in oklab, var(--g-ink-tint) 5.5%, transparent);
-  --pr-hair-strong: color-mix(in oklab, var(--g-ink-tint) 15%, transparent);
+  --pr-hair:        color-mix(in oklab, var(--g-ink-tint) 11%, transparent);
+  --pr-hair-soft:   color-mix(in oklab, var(--g-ink-tint) 7%,  transparent);
+  --pr-hair-strong: color-mix(in oklab, var(--g-ink-tint) 18%, transparent);
 
   /* Surfaces that are not glass. Glass is for things that float; a record
      sits on the page.
@@ -70,9 +70,9 @@
      instead lifts the ground a little in whichever direction reads as
      "elevated" for that theme — lighter on dark, darker on light — the
      same idea --pr-sunk already uses below, just less of it. */
-  --pr-paper:      color-mix(in oklab, var(--g-ink-tint) 8%, var(--g-base));
-  --pr-paper-2:    color-mix(in oklab, var(--g-ink-tint) 4%, var(--g-base));
-  --pr-sunk:       color-mix(in oklab, var(--g-ink-tint) 3.5%, transparent);
+  --pr-paper:      color-mix(in oklab, var(--g-ink-tint) 11%, var(--g-base));
+  --pr-paper-2:    color-mix(in oklab, var(--g-ink-tint) 6%, var(--g-base));
+  --pr-sunk:       color-mix(in oklab, var(--g-ink-tint) 5%, transparent);
 
   /* The editorial grid. One rail width, used by every page that opts in, so
      headings line up down the whole site rather than per page. */

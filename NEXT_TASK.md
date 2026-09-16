@@ -3,6 +3,31 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-16, part 2 (pushed the "paper" tint further, on explicit ask)
+
+Owner saw the first tint pass and asked for it "more visibly blue." Two
+changes compound rather than one alone, since oklab color-mix showed
+diminishing returns from the ratio alone at low dilution:
+
+1. `--g-ink-tint` (engine.css) flipped from ink-dominant to brand-dominant:
+   65% ink / 35% brand → **35% ink / 65% brand**.
+2. Every consumer's own dilution percentage bumped too — `--pr-hair` family
+   9/5.5/15% → 11/7/18%, `--pr-paper`/`--pr-paper-2`/`--pr-sunk` 8/4/3.5% →
+   11/6/5%, `--doc-bg`/`--doc-bg-alt`/`--doc-border`/`--doc-rule` 4/9/12/8%
+   → 6/12/15/10%, `--off`/`--gray`/`--bg-overlay` similarly. `--bg-overlay`
+   was also caught still reading raw `--g-ink` instead of the tint token —
+   fixed in passing.
+
+Confirmed by eye before running the full audit, not assumed from the ratio
+change alone: cropped screenshots of the actual rendered FAQ panel and the
+college Record table both show a clearly cooler, visibly blue panel now,
+not the earlier subtle shift.
+
+**Verified**: full `audit.mjs` run, 0 low-contrast elements, 0 mobile
+overflow, all 44 routes + assistant. Build clean, CSP regenerated. This is
+the third `audit.mjs` run across the two colour-tint passes today, each
+one gating the next code change rather than assuming safety.
+
 ## ⭐ Status as of 2026-09-16 (colour pass — grey trust-badge icons, "paper" tokens tinted blue)
 
 Owner asked to stop using grey anywhere and push the palette further toward
