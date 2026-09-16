@@ -204,10 +204,11 @@
     position: absolute;
     top: -40%;
     bottom: -40%;
+    left: 0;
     width: 45%;
     background: linear-gradient(90deg,
       transparent,
-      rgba(255 255 255 / 0.75),
+      color-mix(in oklab, var(--sky) 55%, white 45%),
       transparent);
     transform: translate3d(-180%, 0, 0) skewX(-18deg);
     pointer-events: none;

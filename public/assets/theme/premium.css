@@ -334,16 +334,38 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
    (full brand still arrives on hover, unchanged) costs nothing in
    restraint — it is a third the way to the hover colour, not the whole
    way there. */
+/* A raised badge behind the glyph rather than a flat line-icon floating in
+   the row — the "3D, realistic tab" pass: an inset top highlight plus a
+   soft cast shadow reads as a small lens of glass sitting proud of the
+   row, and lifts a touch further on hover the way a pressed key would. */
 .tab-card .tab-svg {
   position: relative;
   z-index: 1;
   width: 20px; height: 20px;
+  padding: 7px;
+  box-sizing: content-box;
+  border-radius: 50%;
+  background: linear-gradient(160deg,
+    color-mix(in oklab, var(--brand) 9%, var(--pr-paper) 91%),
+    color-mix(in oklab, var(--brand) 3%, var(--pr-paper) 97%));
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.75),
+    0 1px 2px color-mix(in oklab, var(--g-ink) 12%, transparent),
+    0 4px 10px color-mix(in oklab, var(--g-ink) 7%, transparent);
   opacity: 1 !important;
   color: color-mix(in oklab, var(--brand) 45%, var(--g-ink-3) 55%) !important;
   filter: none !important;
-  transition: color var(--d-2) var(--ea-out), transform var(--d-3) var(--ea-spring);
+  transition: color var(--d-2) var(--ea-out), transform var(--d-3) var(--ea-spring),
+              box-shadow var(--d-3) var(--ea-out), background var(--d-3) var(--ea-out);
 }
-.tab-card:hover .tab-svg { color: var(--brand) !important; transform: none !important; }
+.tab-card:hover .tab-svg {
+  color: var(--brand) !important;
+  transform: translate3d(0, -2px, 0) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.85),
+    0 2px 4px color-mix(in oklab, var(--brand) 20%, transparent),
+    0 10px 20px color-mix(in oklab, var(--brand) 22%, transparent);
+}
 
 /* Crystal shine — reuses the site's own cx-sweep keyframe rather than a
    second copy. One pass on hover, matching every other "tab" surface on
@@ -357,7 +379,7 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
   width: 32%;
   background: linear-gradient(90deg,
     transparent,
-    rgba(255 255 255 / 0.7),
+    color-mix(in oklab, var(--sky) 75%, transparent),
     transparent);
   transform: translate3d(-220%, 0, 0) skewX(-18deg);
   pointer-events: none;
@@ -411,7 +433,15 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
   transform: none !important;
 }
 .tab-card.on .tab-label { color: var(--g-ink) !important; font-weight: 600 !important; }
-.tab-card.on .tab-svg { color: var(--brand) !important; filter: none !important; }
+.tab-card.on .tab-svg {
+  color: #fff !important;
+  filter: none !important;
+  background: linear-gradient(160deg, var(--sky), var(--navy-accent)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.5),
+    0 2px 4px color-mix(in oklab, var(--brand) 24%, transparent),
+    0 8px 16px color-mix(in oklab, var(--brand) 22%, transparent) !important;
+}
 .tab-card.on::before { color: var(--brand-text); }
 
 @media (max-width: 52rem) {
@@ -507,7 +537,7 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
   width: 45%;
   background: linear-gradient(90deg,
     transparent,
-    rgba(255 255 255 / 0.55),
+    color-mix(in oklab, var(--sky) 70%, transparent),
     transparent);
   transform: translate3d(-180%, 0, 0) skewX(-18deg);
   pointer-events: none;
@@ -1709,10 +1739,11 @@ input:not(:placeholder-shown):invalid {
   position: absolute;
   top: -30%;
   bottom: -30%;
+  left: 0;
   width: 40%;
   background: linear-gradient(90deg,
     transparent,
-    rgba(255 255 255 / 0.6),
+    color-mix(in oklab, var(--sky) 70%, transparent),
     transparent);
   transform: translate3d(-180%, 0, 0) skewX(-18deg);
   pointer-events: none;
@@ -2301,15 +2332,20 @@ input:not(:placeholder-shown):invalid {
   outline-offset: 4px;
 }
 .hp-story-dot {
-  width: 7px;
-  height: 7px;
+  width: 22px;
+  height: 22px;
   flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  background: color-mix(in oklab, var(--g-ink) 16%, transparent);
-  border: 1px solid color-mix(in oklab, var(--g-ink) 26%, transparent);
+  background: color-mix(in oklab, var(--g-ink) 6%, transparent);
+  border: 1px solid color-mix(in oklab, var(--g-ink) 22%, transparent);
+  color: var(--g-ink-3);
   transition: background var(--d-3) var(--ea-out), border-color var(--d-3) var(--ea-out),
-              transform var(--d-3) var(--ea-spring);
+              color var(--d-3) var(--ea-out), transform var(--d-3) var(--ea-spring);
 }
+.hp-story-dot svg { width: 12px; height: 12px; flex: none; }
 .hp-story-label {
   font-size: var(--t-label);
   font-weight: 600;
@@ -2329,11 +2365,13 @@ input:not(:placeholder-shown):invalid {
 .hp-story a:hover .hp-story-dot,
 .hp-story a:focus-visible .hp-story-dot {
   border-color: color-mix(in oklab, var(--brand) 55%, transparent);
+  color: var(--brand);
 }
 .hp-story a.is-current .hp-story-dot {
   background: var(--brand);
   border-color: var(--brand);
-  transform: scale(1.4);
+  color: #fff;
+  transform: scale(1.15);
 }
 .hp-story a.is-current { color: var(--g-ink); }
 

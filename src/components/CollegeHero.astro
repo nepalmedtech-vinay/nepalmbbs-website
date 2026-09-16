@@ -62,7 +62,7 @@ const headlineStats = [
 <section class="ch rev">
   <div class="ch-copy">
     <span class="eyebrow">{isGovt ? 'Government college' : 'Private college'} · MEC Nepal 2025-26</span>
-    <h1 class="sec-title college-name ch-h1">{c.name}</h1>
+    <h1 class="sec-title college-name ch-h1"><span class="gl-line"><span>{c.name}</span></span></h1>
     {factParts.length > 0 && <p class="ch-facts">{factParts.join(' · ')}</p>}
     {headlineStats.length > 0 && (
       <div class="stat-grid ch-stats">

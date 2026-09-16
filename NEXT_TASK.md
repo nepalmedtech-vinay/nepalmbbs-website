@@ -3,6 +3,87 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-16, part 5 (real browser screenshots — a genuine crystal-shine bug found, not an artifact)
+
+Owner sent 5 real Chrome/Windows screenshots of their own deployed Netlify
+preview with a numbered Hinglish punch list: (1) background icons
+disappearing, tabs still cheap; (2)(3)(5) no visible crystal shine on
+hover, wanted it light-blue; (4) "make it more attractive"; (6) cinematic
+heading motion on every page. Two follow-ups: the homepage `.hp-story`
+chapter rail's plain dots wanted real icons; tabs' "3D effect" wanted to
+look more realistic.
+
+**The footer "background box" mystery from part 3/4, finally resolved —
+it was real, not a screenshot artifact.** Four of the site's seven
+crystal-shine `::after`/`.tab-shine` implementations
+(`.gl-crystal-sheen`, `.g-tab::after`, `.college-tab::after`,
+`.foot-contacts a::after`/`.foot-col a::after`) were missing an explicit
+`left: 0`. Without it, the browser's static-position fallback for an
+absolutely-positioned pseudo-element with no sibling content put its
+resting `left` near the *far* edge of the link (confirmed via
+`getComputedStyle(a, '::after')`: `left: 138px` on a 225px-wide link, not
+`0`), so the `-180%` hide-offset only pulled the shine back to
+roughly `-44px` — a good quarter of the 101px-wide gradient bar was still
+sitting inside the visible link at rest. That is the box the owner's
+screenshots showed. The other three implementations
+(`.trust-badge::after`, `.tab-card > .tab-shine`) already had `left: 0`
+and were never affected — which is why the bug looked inconsistent
+across the site and why an earlier pass concluded "screenshot artifact"
+without a real repro. Fixed by adding `left: 0` to all four; re-screenshot
+of the footer, guidelines tabs and the video-library college pills
+confirms clean at rest now.
+
+**Crystal shine colour → light blue**, all seven locations
+(`.trust-badge::after`, `.gl-crystal-sheen`, `.tab-card > .tab-shine`,
+`.g-tab::after`, `.college-tab::after`, footer's link shine): plain
+`rgba(255 255 255 / …)` white replaced with
+`color-mix(in oklab, var(--sky) 70-75%, transparent)` (white mixed in only
+on the footer's own dark background, where a pure sky-blue read too dim).
+
+**Cinematic heading motion, sitewide**: the homepage hero already had a
+per-line mask-reveal (`.gl-line`/`gl-rise` in glass.css — CSS-only,
+`prefers-reduced-motion`-safe via the `--mo` scale trick, `backwards` fill
+so a heading is still readable if the animation never runs) that wasn't
+used anywhere else. Wired the same wrapper into `PageHeader.astro`'s h1
+(covers 9 routes: guidelines, FAQ, NEET calculator, why-nepal, videos,
+colleges index, documents, admission-process, privacy) and
+`CollegeHero.astro`'s h1 (all 27 college detail pages), layered on top of
+each component's existing fade/blur entrance rather than replacing it.
+
+**`.hp-story` chapter rail → real icons**: the five plain
+`.hp-story-dot` circles (Promise/Place/Proof/Practice/Path) now each hold
+a small inline SVG (shield-check / map-pin / document-check / stethoscope
+/ flag) inside a raised badge — `.hp-story-dot` grew from a flat 7px
+filled circle to a 22px glass badge with its own inset highlight and cast
+shadow, filling solid brand with a white icon when its section is current.
+
+**"Tabs ka 3D effect aur realistic banao"**: `.g-tab`, `.college-tab` and
+`.tab-card`'s icon were all flat — no shadow at rest, colour-only hover.
+Added real elevation to all three: `.g-tab`/`.college-tab` get an inset
+top highlight + soft cast shadow at rest, a deeper lift on hover, and
+their `.on`/active state now reads as physically raised (bigger shadow,
+`translate3d(0,-2px,0)`) rather than just a colour swap.
+`.tab-card`'s icon gained a small raised glass badge behind it (matching
+the `.hp-story-dot` language) instead of floating as a flat line-icon in
+the row — its `.on` state fills solid brand-gradient with a white icon.
+The row itself stays deliberately flat (a ruled table, per the existing
+design note) — only the icon and the two literal tab components gained
+depth.
+
+**Verified**: production build clean; screenshots (reduced-motion
+emulated, via a corrected local static server with real MIME types —
+same lesson from part 4, checked again rather than assumed) of the
+homepage hero, `.hp-story` rail, footer, `/guidelines`, `/videos` and
+`/colleges` all confirm the fixes; `getComputedStyle` used to confirm the
+`left: 0` fix numerically, not just visually. `npm run csp` re-run (no
+inline-script content changed, hashes unchanged). Full `npm run verify`
+kicked off in the background per house rule — see its result before
+treating this pass as closed if this note wasn't updated after.
+
+**Not addressed this pass**: point 4 ("more attractive") was treated as
+covered by the concrete fixes above rather than as its own separate task,
+since it named no specific element.
+
 ## ⭐ Status as of 2026-09-16, part 4 (3D hero scene, "bottom tabs" colour, magnetic CTAs)
 
 Owner flagged the hero's 3D stethoscope as "looking cheap," asked for the

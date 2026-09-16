@@ -6,6 +6,36 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-16, part 3 — Crystal-shine `left:0` bug found (the real cause of the footer "boxes"); cinematic headings; hp-story icons; tab depth
+
+Full account in `NEXT_TASK.md`. Owner sent real Chrome/Windows screenshots
+of their own Netlify preview. The footer-link "background box" appearance
+flagged in part 2 and previously written off as a screenshot artifact
+turned out to be a real, reproducible CSS bug: 4 of the site's 7
+crystal-shine `::after` elements had no explicit `left: 0`, so their
+resting position (computed via `getComputedStyle(el, '::after')`) sat near
+the far edge of the link rather than at its start, leaving the `-180%`
+hide-offset short of actually clearing the visible box. Fixed all four
+(`.gl-crystal-sheen`, `.g-tab::after`, `.college-tab::after`, Footer's
+link shine); the three that already had `left: 0` were never affected,
+which is why the bug read as inconsistent. Also: all seven shine
+gradients recoloured from plain white to a light-blue `color-mix`: the
+homepage's `.gl-line`/`gl-rise` masked heading reveal (previously
+hero-only) wired into `PageHeader.astro` (9 routes) and `CollegeHero.astro`
+(27 college pages); `.hp-story`'s five plain dots replaced with real inline
+SVG icons in raised badges; `.g-tab`/`.college-tab`/`.tab-card`'s icon
+given real elevation (inset highlight + cast shadow, deeper on hover/on)
+instead of a flat colour-only hover.
+
+**Verified**: build clean; reduced-motion screenshots of hero, hp-story
+rail, footer, `/guidelines`, `/videos`, `/colleges` all confirm; CSP
+regenerated (no inline-script changes, hashes unchanged). `npm run
+verify`'s `build-verify.mjs` step still fails on the pre-existing,
+documented missing `phase1-static-rollback` git tag (unrelated to this
+pass) — ran the remaining checks (`csp-verify`, `console-verify`,
+`auth-verify`, `a11y-verify`, `compare-verify`, `assistant-verify`,
+`audit.mjs`) directly instead.
+
 ## ⭐ 2026-09-16, part 2 — Hero 3D collision fixed; bottom-tabs colour; magnetic CTAs
 
 Full account in `NEXT_TASK.md`. Owner flagged the hero's 3D stethoscope as

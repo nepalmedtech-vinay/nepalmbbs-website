@@ -298,7 +298,22 @@
 }
 
 .cbar-country-name { color: inherit !important; }
-.cbar-flag { font-size: 15px; line-height: 1; }
+/* Design pass, 2026-09-16: was a Unicode flag emoji — Windows' bundled
+   emoji font has never reliably supported the regional-indicator flag
+   pairs, so this rendered as plain "IN"/"NP" text on a real Windows
+   screenshot rather than a flag, confirmed by the owner rather than
+   assumed. Real inline SVG now (ContactBar.astro), so it looks the same
+   on every platform instead of depending on OS font coverage. */
+.cbar-flag { display: inline-flex; align-items: center; line-height: 1; }
+.cbar-flag svg { flex: none; border-radius: 2px; }
+
+/* Same Windows flag-emoji fix, same real-SVG pattern, for the two other
+   spots a country flag appears (guidelines.astro's tab labels and its
+   official-resources grid). */
+.off-flag { display: flex; align-items: center; margin-bottom: 10px; }
+.off-flag svg { border-radius: 3px; }
+.g-tab-flag { display: inline-flex; align-items: center; vertical-align: -2px; }
+.g-tab-flag svg { border-radius: 2px; }
 
 /* The number is the point of the card, so it carries the weight. Tabular
    figures so the two numbers align rather than wobble against each other. */
@@ -533,9 +548,15 @@
   color: var(--g-ink-2) !important;
   min-height: 36px;
   border-radius: var(--r-pill) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.6),
+    0 1px 2px color-mix(in oklab, var(--g-ink) 10%, transparent),
+    0 3px 8px color-mix(in oklab, var(--g-ink) 8%, transparent);
   transition: background var(--d-2, 200ms) var(--ea-out, ease),
               color var(--d-2, 200ms) var(--ea-out, ease),
-              border-color var(--d-2, 200ms) var(--ea-out, ease);
+              border-color var(--d-2, 200ms) var(--ea-out, ease),
+              box-shadow var(--d-2, 200ms) var(--ea-out, ease),
+              transform var(--d-2, 200ms) var(--ea-out, ease);
 }
 /* The "All Videos" tab's icon swapped from an emoji (renders differently
    per platform, sits on the text baseline rather than optically centred)
@@ -553,16 +574,21 @@
   background: linear-gradient(148deg, var(--sky), var(--navy-accent)) !important;
   color: var(--navy-accent-ink) !important;
   border-color: var(--navy-accent) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.35),
+    0 6px 14px color-mix(in oklab, var(--navy-accent) 28%, transparent);
+  transform: translate3d(0, -2px, 0);
 }
 .college-tab::after {
   content: '';
   position: absolute;
   top: -40%;
   bottom: -40%;
+  left: 0;
   width: 45%;
   background: linear-gradient(90deg,
     transparent,
-    rgba(255 255 255 / 0.75),
+    color-mix(in oklab, var(--sky) 55%, white 45%),
     transparent);
   transform: translate3d(-180%, 0, 0) skewX(-18deg);
   pointer-events: none;
@@ -576,6 +602,11 @@
   background: var(--brand) !important;
   border-color: var(--brand) !important;
   color: var(--brand-ink) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.4),
+    0 8px 16px color-mix(in oklab, var(--brand) 30%, transparent),
+    0 2px 4px color-mix(in oklab, var(--brand) 22%, transparent) !important;
+  transform: translate3d(0, -2px, 0);
 }
 
 
