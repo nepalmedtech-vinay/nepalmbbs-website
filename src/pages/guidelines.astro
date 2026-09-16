@@ -12,9 +12,9 @@ import PageHeader from '../components/PageHeader.astro';
   <PageHeader eyebrow="Official Documentation" lead="Key regulations from official government sources only. For full documents, use the official links provided." threeD>Official Guidelines — NMC India &amp; Nepal NMC</PageHeader>
   <div style="margin-top:28px">
     <div class="guide-tabs">
-      <button class="g-tab on" data-act="click" data-do='[["switchGuide","@el","gp-india"]]'><span class="g-tab-flag"><svg width="18" height="13" viewBox="0 0 18 13" aria-hidden="true"><rect width="18" height="13" rx="1.5" fill="#fff"/><path d="M1.5 0h15A1.5 1.5 0 0118 1.5v2.83H0V1.5A1.5 1.5 0 011.5 0z" fill="#FF9933"/><path d="M0 8.67h18v2.83A1.5 1.5 0 0116.5 13h-15A1.5 1.5 0 010 11.5V8.67z" fill="#128807"/><circle cx="9" cy="6.5" r="1.5" fill="none" stroke="#000088" stroke-width="0.25"/><circle cx="9" cy="6.5" r="0.28" fill="#000088"/></svg></span> NMC India Guidelines</button>
-      <button class="g-tab" data-act="click" data-do='[["switchGuide","@el","gp-nepal"]]'><span class="g-tab-flag"><svg width="13" height="16" viewBox="0 0 13 16" aria-hidden="true"><path d="M1 0.8 L1 15.2 L1 8.3 L10.5 4.9 L1 1.6 Z" fill="#003893"/><path d="M1.7 1.6 L1.7 14.2 L1.7 8.3 L9 5.1 L1.7 2.5 Z" fill="#DC143C"/></svg></span> Nepal NMC Guidelines</button>
-      <button class="g-tab" data-act="click" data-do='[["switchGuide","@el","gp-resources"]]'>🔗 All Official Resources</button>
+      <button class="g-tab on" data-act="click" data-do='[["switchGuide","@el","gp-india"]]'><span class="g-tab-flag"><svg width="18" height="13" viewBox="0 0 18 13" aria-hidden="true"><rect width="18" height="13" rx="1.5" fill="#fff"/><path d="M1.5 0h15A1.5 1.5 0 0118 1.5v2.83H0V1.5A1.5 1.5 0 011.5 0z" fill="#FF9933"/><path d="M0 8.67h18v2.83A1.5 1.5 0 0116.5 13h-15A1.5 1.5 0 010 11.5V8.67z" fill="#128807"/><circle cx="9" cy="6.5" r="1.5" fill="none" stroke="#000088" stroke-width="0.25"/><circle cx="9" cy="6.5" r="0.28" fill="#000088"/></svg></span><span class="g-tab-label"> NMC India Guidelines</span></button>
+      <button class="g-tab" data-act="click" data-do='[["switchGuide","@el","gp-nepal"]]'><span class="g-tab-flag"><svg width="13" height="16" viewBox="0 0 13 16" aria-hidden="true"><path d="M1 0.8 L1 15.2 L1 8.3 L10.5 4.9 L1 1.6 Z" fill="#003893"/><path d="M1.7 1.6 L1.7 14.2 L1.7 8.3 L9 5.1 L1.7 2.5 Z" fill="#DC143C"/></svg></span><span class="g-tab-label"> Nepal NMC Guidelines</span></button>
+      <button class="g-tab" data-act="click" data-do='[["switchGuide","@el","gp-resources"]]'><span class="g-tab-label">🔗 All Official Resources</span></button>
     </div>
     <div class="g-pane on" id="gp-india">
       <div class="doc-note"><div>Regulations change, and this page won't always catch up the moment they do. Confirm the current text at <a href="https://nmc.org.in" target="_blank" rel="noopener" style="color:#92400e;font-weight:700">nmc.org.in</a> before acting on it. Source: NMC FMGL Regulations, 2021 (Gazette Notification, 18 Nov 2021).</div></div>
@@ -122,10 +122,30 @@ import PageHeader from '../components/PageHeader.astro';
     width: 45%;
     background: linear-gradient(90deg,
       transparent,
-      color-mix(in oklab, var(--sky) 55%, white 45%),
+      color-mix(in oklab, var(--parrot) 60%, white 30%),
       transparent);
     transform: translate3d(-180%, 0, 0) skewX(-18deg);
     pointer-events: none;
+  }
+  /* 3D letter-pop on the label, same technique as the main nav links —
+     a real perspective tilt plus a stacked, offset text-shadow rather than
+     a flat colour swap. */
+  .g-tab-label {
+    display: inline-block;
+    position: relative;
+    z-index: 1;
+    transform-style: preserve-3d;
+    transition: transform var(--d-3, 250ms) var(--ea-spring, ease),
+                text-shadow var(--d-3, 250ms) var(--ea-out, ease);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .g-tab:not(.on):hover .g-tab-label, .g-tab:not(.on):focus-visible .g-tab-label {
+      transform: perspective(300px) rotateX(14deg) translate3d(0, calc(-2px * var(--mo, 1)), 0);
+      text-shadow:
+        0 1px 0 color-mix(in oklab, var(--parrot) 60%, white 40%),
+        0 2px 0 color-mix(in oklab, var(--parrot) 40%, var(--navy-accent) 60%),
+        0 4px 8px rgba(0, 0, 0, 0.25);
+    }
   }
   @media (prefers-reduced-motion: no-preference) {
     .g-tab:not(.on):hover::after, .g-tab:not(.on):focus-visible::after {

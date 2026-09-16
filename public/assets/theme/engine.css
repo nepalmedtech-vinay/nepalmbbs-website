@@ -141,6 +141,11 @@
   --navy-accent-ink:  #FFFFFF;
   --navy-accent-line: color-mix(in oklab, var(--navy-accent) 34%, transparent);
   --sky:              #4FB3E8;   /* the paired "electric cyan" accent */
+  /* A third accent, on explicit request — "light parrot green" — reserved
+     for the tab/fact-panel crystal-shine family (.doc-row, .doc-table,
+     .nl-btn, .doc-step, .g-tab) so that family reads as its own distinct
+     interaction language from the badge/card family's --sky shine. */
+  --parrot:           #7CC93B;
   /* Plain hex literals, not color-mix() expressions — see the note this
      replaced: getComputedStyle().getPropertyValue() on a *custom*
      property returns its declared value verbatim rather than a resolved

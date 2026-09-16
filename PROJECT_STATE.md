@@ -6,6 +6,27 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-16, part 5 — Parrot-green tab family, 3D letter-pop, scroll-triggered cinematic headings
+
+Full account in `NEXT_TASK.md`. Follow-up round: added crystal shine to
+the main nav links (`.nl-btn` — the one tab row on the site with none),
+recoloured part 4's `.doc-row`/`.doc-table` shine from royal blue to a
+new `--parrot` token (`#7CC93B`) on explicit ask, extended that colour to
+`.doc-step-title` (admission-process's numbered sequence, the closest
+thing that page has to sub-tabs) and `.g-tab` (guidelines' own switcher,
+previously `--sky`). Added a real CSS 3D-letter-pop hover
+(`perspective()`+`rotateX()` + stacked offset text-shadow) to all three
+tab labels. Built a new scroll-triggered cinematic heading class,
+`.hl-cine` (`clip-path` mask-wipe on `animation-timeline: view()`,
+same mechanism `.rev` already uses), for below-fold section headings the
+load-time `.gl-line` can't reach — applied to 4 genuinely-prominent
+section h2s, deliberately not to `.doc-title`'s 16 small utility labels
+or to `CollegeMap`'s `.map-title` (which already has its own bespoke
+entrance). Also caught two page H1s that build their own header markup
+instead of using `PageHeader.astro` and had been missed by part 5's
+sweep — `admission-process.astro`, `colleges/compare.astro` — both now
+wrapped in `.gl-line` too.
+
 ## ⭐ 2026-09-16, part 4 — Royal-blue crystal shine on the "Record" fact panels
 
 Full account in `NEXT_TASK.md`. Owner asked for the same crystal-shine

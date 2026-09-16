@@ -3,6 +3,92 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-16, part 7 (parrot-green tab family, 3D letter-pop, and a scroll-triggered cinematic heading class)
+
+Owner's follow-up on part 6: add crystal shine to the main nav links too
+(shown in a screenshot of "Admission Process / Why Nepal / Guidelines /
+Videos / FAQ" — the one row of tabs on the site with none); change part
+6's royal-blue crystal shine to "light parrot green"; apply that same
+effect to admission-process's and guidelines's own sub-tabs; add a 3D
+font hover motion to all of the above; and extend cinematic heading
+motion to every "main heading" sitewide, not just page H1s.
+
+**New token**: `--parrot: #7CC93B` (engine.css), reserved for the tab/
+fact-panel crystal-shine family — `.doc-row`, `.doc-table`/
+`.compare-table` (recoloured from `--brand` per this request), `.nl-btn`
+(new), `.doc-step-title` (new), `.g-tab` (recoloured from `--sky`). Kept
+deliberately separate from `--sky`, which stays the badge/card family's
+own register (trust badges, `.tab-card`, `.gl-crystal-sheen`) —
+two distinct accent registers rather than one colour doing everything.
+
+**"faq-subtabs" turned out to be the main nav links** (`.nl-btn` in
+Navbar.astro) — the screenshot showed the navbar's own link row, the one
+tab-like surface on every route with no shine and no hover motion at
+all. Added position/overflow + a `::after` sweep, plus wrapped each
+label in `<span class="nl-label">` for the 3D effect below.
+
+**"Admission process subtabs"**: no dedicated tab-switcher exists on
+that page — its closest equivalent is `.doc-step`, the six-item numbered
+sequence (its own "one step active at a time" structure). `.doc-step`
+already spends both `::before` (the ordinal ring) and `::after` (the
+connecting spine) on its own pseudo-elements, so the shine and 3D pop
+live on `.doc-step-title` instead — a separate element, its own
+`::after`. Reused by `colleges/[slug].astro`'s academic-journey steps
+too, so that page's steps get the same shine for free.
+
+**"Guidelines subtabs"** = `.g-tab` (already had a `--sky` shine from an
+earlier round) — recoloured to `--parrot`, label wrapped in
+`<span class="g-tab-label">` for the same 3D pop.
+
+**3D font hover** — real CSS, no image or WebGL text: `perspective()` +
+`rotateX()` on the label span plus a stacked, vertically-offset
+`text-shadow` in parrot tones underneath, so the letters read as tilting
+back and lifting off the surface rather than just changing colour.
+Applied to `.nl-label`, `.g-tab-label`, `.doc-step-title` (the latter two
+already tab-like; `.doc-row`/`.doc-table` kept the shine only — a dense
+fact row's small-caps label popping in 3D would read as noise, not
+polish, at that density).
+
+**Cinematic heading motion, the rest of the site**: part 5 wired the
+existing load-time `.gl-line`/`gl-rise` mask-reveal (built for the hero)
+into `PageHeader.astro` and `CollegeHero.astro`, but two page H1s build
+their own header markup instead of using `PageHeader` and were missed —
+`admission-process.astro` and `colleges/compare.astro` — both now wrapped
+the same way.
+
+For headings further down a page, a load-time animation is pointless
+(by the time a visitor scrolls to it, the animation finished seconds
+ago before they ever saw it) — CSS Scroll-Driven Animations
+(`animation-timeline: view()`) do the actual work here, the same
+mechanism `.rev`'s own `pr-arrive` fade already uses, so no new JS. New
+class **`.hl-cine`**: fully `clip-path`-masked at rest, unclips top-down
+across the element's own `entry 0%–45%` scroll range with a slight rise
+and blur, gated behind the same `@supports`/`prefers-reduced-motion`
+pair as `.rev`. Applied to the site's genuinely-prominent below-fold
+section headings — not every heading; `.doc-title`'s 16 small utility
+labels ("Record", etc.) stay on the plain `.rev` arrival, since a dozen
+masked-wipe headings firing down one page would read as flicker, not
+cinema:
+- `admission-process.astro`'s "Nepal MBBS vs India private MBBS" (h2)
+- `AcademicJourney.astro`'s "What medical training actually looks like"
+  (h2, homepage)
+- `why-nepal.astro`'s "What Students Say"
+- `CollegeScatter.astro`'s h2 (colleges listing page)
+
+**Deliberately not touched**: `CollegeMap.astro`'s `.map-title` — it
+already has its own bespoke `.m-focus` entrance (blur + rise, "resolving
+out of the hero's own field" per that component's own comment); stacking
+`.hl-cine`'s own blur on top would double it into something muddier, not
+more cinematic. A considered skip, not a miss.
+
+**Verified**: build clean; hover screenshots of the navbar link, a
+guidelines tab, and an admission-process step all show the parrot shine
+and 3D pop; reduced-motion screenshots of both newly-wrapped H1s
+(admission-process, compare) confirm no layout break; a scrolled-into-
+view screenshot of `why-nepal`'s "What Students Say" confirms `.hl-cine`
+renders correctly. `tests/audit.mjs` re-run — see its result before
+treating this pass as closed if this note wasn't updated after.
+
 ## ⭐ Status as of 2026-09-16, part 6 (royal-blue crystal shine on the "Record" fact panels — `.doc-row`/`.doc-table`)
 
 Owner sent a screenshot of a college page's "Record" panel (the
