@@ -3,6 +3,31 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-16, part 8 (the 3D letter-pop from part 7 was blurry — fixed)
+
+Owner sent a screenshot of the navbar links' hover: "Admission Process"
+in a bold, visibly doubled/ghosted print — the 3D-letter-pop text-shadow
+part 7 shipped was a real regression, not a taste disagreement. Root
+cause: three stacked, coloured, offset `text-shadow` layers at a 14–16°
+`rotateX()` tilt, tuned by eye rather than verified in a real screenshot
+at the label's actual size (14px nav text) — small type plus multiple
+overlapping colour layers fringes into mush; the technique needed a much
+larger display size than a nav link to read as "depth" rather than
+"blur".
+
+**Fixed the same way in all three places** (`.nl-label`, `.g-tab-label`,
+`.doc-step-title`): one crisp, neutral (uncoloured) shadow — no
+stacking — at a shallower 7–9° tilt with a longer `perspective()`
+distance (less distortion). The "premium" signal moved off the shadow
+and onto a clean parrot-green hairline underline that grows in under the
+nav links on hover — precise reads as premium where a smudged multi-
+shadow does not.
+
+**Verified**: build clean; hover screenshots of the navbar, a guidelines
+tab and an admission-process step all confirm crisp, non-blurry text
+with a clean lift and shadow. `tests/audit.mjs` re-run — see its result
+before treating this pass as closed if this note wasn't updated after.
+
 ## ⭐ Status as of 2026-09-16, part 7 (parrot-green tab family, 3D letter-pop, and a scroll-triggered cinematic heading class)
 
 Owner's follow-up on part 6: add crystal shine to the main nav links too

@@ -128,8 +128,11 @@ import PageHeader from '../components/PageHeader.astro';
     pointer-events: none;
   }
   /* 3D letter-pop on the label, same technique as the main nav links —
-     a real perspective tilt plus a stacked, offset text-shadow rather than
-     a flat colour swap. */
+     a real perspective tilt with ONE crisp shadow, not a stacked coloured
+     one. The first version stacked three colour layers at a 14° tilt, and
+     at this label's font size that fringed into a blurry double-print
+     rather than reading as depth — corrected the same way the nav links
+     were, after seeing it in a real screenshot. */
   .g-tab-label {
     display: inline-block;
     position: relative;
@@ -140,11 +143,8 @@ import PageHeader from '../components/PageHeader.astro';
   }
   @media (hover: hover) and (pointer: fine) {
     .g-tab:not(.on):hover .g-tab-label, .g-tab:not(.on):focus-visible .g-tab-label {
-      transform: perspective(300px) rotateX(14deg) translate3d(0, calc(-2px * var(--mo, 1)), 0);
-      text-shadow:
-        0 1px 0 color-mix(in oklab, var(--parrot) 60%, white 40%),
-        0 2px 0 color-mix(in oklab, var(--parrot) 40%, var(--navy-accent) 60%),
-        0 4px 8px rgba(0, 0, 0, 0.25);
+      transform: perspective(600px) rotateX(9deg) translate3d(0, calc(-1.5px * var(--mo, 1)), 0);
+      text-shadow: 0 3px 5px rgba(0, 0, 0, 0.28);
     }
   }
   @media (prefers-reduced-motion: no-preference) {

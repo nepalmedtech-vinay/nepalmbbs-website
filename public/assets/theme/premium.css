@@ -1042,11 +1042,8 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
 }
 @media (hover: hover) and (pointer: fine) {
   .doc-step:hover .doc-step-title, .doc-step:focus-within .doc-step-title {
-    transform: perspective(500px) rotateX(8deg) translate3d(0, calc(-2px * var(--mo)), 0);
-    text-shadow:
-      0 1px 0 color-mix(in oklab, var(--parrot) 45%, var(--g-ink) 55%),
-      0 2px 0 color-mix(in oklab, var(--parrot) 28%, var(--g-ink) 72%),
-      0 5px 10px color-mix(in oklab, var(--g-ink) 15%, transparent);
+    transform: perspective(600px) rotateX(7deg) translate3d(0, calc(-1.5px * var(--mo)), 0);
+    text-shadow: 0 4px 8px color-mix(in oklab, var(--g-ink) 22%, transparent);
   }
 }
 .doc-step-body {
@@ -1894,11 +1891,16 @@ input:not(:placeholder-shown):invalid {
 
 /* Main nav links — "Admission Process / Why Nepal / Guidelines / Videos /
    FAQ" — were plain text with a colour-only hover; the one row of tabs on
-   the site with no crystal shine at all. Same light-parrot-green language
-   as .doc-row/.doc-table, plus a 3D letter-pop on the label: a real
-   `perspective()`/`rotateX()` tilt with a stacked, offset text-shadow that
-   reads as extruded depth rather than a flat colour swap — CSS's own
-   version of "3D font", no image or WebGL text needed. */
+   the site with no crystal shine at all.
+   Design pass, 2026-09-16 (2): the first version of this used a stacked,
+   three-layer coloured text-shadow at a 16° tilt to fake letter depth —
+   at 14px nav-text size that just fringed into a blurry double-print, the
+   opposite of "premium", confirmed from a real screenshot. Replaced with
+   the sharper, more restrained version real interface type actually uses:
+   one crisp neutral shadow (no colour, no stacking) at a much shallower
+   tilt, plus the "premium" signal moved to a hairline underline that
+   grows in — a clean line reads as precise where a second, third and
+   fourth shadow layer reads as smudged. */
 .nl-btn {
   position: relative;
   overflow: hidden;
@@ -1931,13 +1933,26 @@ input:not(:placeholder-shown):invalid {
   transform-style: preserve-3d;
   transition: transform var(--d-3) var(--ea-spring), text-shadow var(--d-3) var(--ea-out);
 }
+.nl-label::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--parrot);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--d-3) var(--ea-out);
+}
+.nl-btn:hover .nl-label::after, .nl-btn:focus-visible .nl-label::after {
+  transform: scaleX(1);
+}
 @media (hover: hover) and (pointer: fine) {
   .nl-btn:hover .nl-label, .nl-btn:focus-visible .nl-label {
-    transform: perspective(300px) rotateX(16deg) translate3d(0, calc(-2px * var(--mo)), 0);
-    text-shadow:
-      0 1px 0 color-mix(in oklab, var(--parrot) 55%, var(--g-ink) 45%),
-      0 2px 0 color-mix(in oklab, var(--parrot) 35%, var(--g-ink) 65%),
-      0 4px 8px color-mix(in oklab, var(--g-ink) 20%, transparent);
+    transform: perspective(600px) rotateX(9deg) translate3d(0, calc(-1.5px * var(--mo)), 0);
+    text-shadow: 0 3px 5px color-mix(in oklab, var(--g-ink) 22%, transparent);
   }
 }
 
