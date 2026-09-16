@@ -906,12 +906,40 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
    documents/privacy) — a wall of facts rather than a register a visitor can
    scan at a glance. Loosened one step; nothing here hides a field, the extra
    air is the only change. */
+/* Crystal shine, royal blue — the same sweep-on-hover language as the
+   tabs and trust badges, added here on explicit ask: this label/value
+   row is the site's most-reused "fact panel" (every college's own page,
+   plus compare/guidelines/documents/privacy all render the same
+   `.doc-row`), so one fix here reaches every one of those surfaces. A
+   real element would need markup changes in four separate files; `::after`
+   gets the same result from this one rule. */
 .doc-row {
+  position: relative;
+  overflow: hidden;
   padding: var(--s-4) 0 !important;
   border-bottom: 1px solid var(--pr-hair-soft) !important;
   transition: background var(--d-2) var(--ea-out);
 }
-.doc-row:hover { background: var(--pr-sunk); }
+.doc-row:hover { background: color-mix(in oklab, var(--brand) 7%, var(--pr-sunk)); }
+.doc-row::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 30%;
+  background: linear-gradient(90deg,
+    transparent,
+    color-mix(in oklab, var(--brand) 70%, transparent),
+    transparent);
+  transform: translate3d(-220%, 0, 0) skewX(-18deg);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .doc-row:hover::after, .doc-row:focus-within::after {
+    animation: cx-sweep calc(0.85s * max(var(--mo), 0.001)) var(--ea-out, ease);
+  }
+}
 .doc-label {
   font-size: var(--t-label) !important;
   font-weight: 600 !important;
@@ -1044,9 +1072,35 @@ p, .sec-sub, .doc-step-body, .doc-value, li { text-wrap: pretty; }
   background: transparent !important;
 }
 .compare-table tr:last-child td, .doc-table tr:last-child td { border-bottom: 0 !important; }
-.compare-table tbody tr, .doc-table tbody tr { transition: background var(--d-2) var(--ea-out); }
+.compare-table tbody tr, .doc-table tbody tr {
+  position: relative;
+  transition: background var(--d-2) var(--ea-out);
+}
 .compare-table tbody tr:hover td, .doc-table tbody tr:hover td {
-  background: var(--pr-sunk) !important;
+  background: color-mix(in oklab, var(--brand) 7%, var(--pr-sunk)) !important;
+}
+/* Same royal-blue crystal-shine sweep as `.doc-row` — this table is the
+   same "fact panel" pattern, just with columns instead of a stacked
+   label/value pair (the compare page, and the document checklists). */
+.compare-table tbody tr::after, .doc-table tbody tr::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 18%;
+  background: linear-gradient(90deg,
+    transparent,
+    color-mix(in oklab, var(--brand) 70%, transparent),
+    transparent);
+  transform: translate3d(-350%, 0, 0) skewX(-18deg);
+  pointer-events: none;
+  z-index: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .compare-table tbody tr:hover::after, .doc-table tbody tr:hover::after {
+    animation: cx-sweep calc(0.85s * max(var(--mo), 0.001)) var(--ea-out, ease);
+  }
 }
 .compare-table td strong { color: var(--g-ink) !important; font-weight: 600; }
 

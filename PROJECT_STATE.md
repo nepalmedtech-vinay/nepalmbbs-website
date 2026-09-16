@@ -6,6 +6,20 @@ doing implementation work — an earlier version of this file (last touched
 reliable starting point; if this one starts to feel that way too, verify
 against the actual repo rather than trusting it._
 
+## ⭐ 2026-09-16, part 4 — Royal-blue crystal shine on the "Record" fact panels
+
+Full account in `NEXT_TASK.md`. Owner asked for the same crystal-shine
+hover motion on the college "Record" panel's label/value rows, in royal
+blue, everywhere that pattern appears. `.doc-row` turned out to already
+be shared across 27 college pages, `/colleges`, `/guidelines` and
+`/privacy` — one CSS fix reaches all of them. Used `var(--brand)`
+(`#1B4CC7`), already royal blue in hue, rather than the `--sky` accent
+the earlier "light blue" pass used — a deliberately different, richer
+register for this ask. Same treatment extended to `.doc-table`/
+`.compare-table` (`<tr>` rows — /colleges/compare, the document-
+checklist tables). Verified with hover screenshots; `audit.mjs` re-run
+given the shared-class blast radius.
+
 ## ⭐ 2026-09-16, part 3 — Crystal-shine `left:0` bug found (the real cause of the footer "boxes"); cinematic headings; hp-story icons; tab depth
 
 Full account in `NEXT_TASK.md`. Owner sent real Chrome/Windows screenshots

@@ -3,6 +3,45 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-16, part 6 (royal-blue crystal shine on the "Record" fact panels — `.doc-row`/`.doc-table`)
+
+Owner sent a screenshot of a college page's "Record" panel (the
+Ownership/Location/University Affiliation/… label-value rows) asking for
+the same crystal-shine hover motion added there, in royal blue
+specifically, and "wherever this kind of sub-tab information exists" —
+site-wide, at premium standard.
+
+`.doc-row` (the label/value row itself) turned out to already be the
+single shared component behind that panel: it's reused verbatim by every
+college's own page (27 routes), `/colleges` (its own two-fact intro
+panel), `/guidelines` and `/privacy` — one CSS-only fix (a `::after`
+sweep, `position:relative; overflow:hidden` added to the row) reaches
+all of them without touching four separate `.astro` files. Colour is
+`var(--brand)` (`#1B4CC7`) — the site's own primary blue is already
+royal blue in hue, so this reuses the existing token rather than adding
+a new one; the earlier "light blue" crystal-shine work this session used
+`--sky` (a paler cyan accent) instead, a deliberately different, lighter
+register for that ask.
+
+Extended the same treatment to `.doc-table`/`.compare-table` (`<tr>`
+rows — the /colleges/compare table and the document-checklist tables on
+`/documents` and `/admission-process`), the other half of the same
+"fact panel" family, sized to the full row rather than the narrower
+label-column sweep `.doc-row` uses.
+
+**Verified**: build clean; hover screenshots (mid-sweep, Playwright
+`.hover()` + a short wait) of a college's Record panel and the
+`/colleges` compare table both show the royal-blue sweep and background
+tint correctly. `tests/audit.mjs` re-run in the background given this
+touches shared CSS classes across ~30 routes at once — see its result
+before treating this pass as closed if this note wasn't updated after.
+
+**Not extended**: the mouse-follow radial "specular" glow already on
+`.college-card`/`.why-card`/`.off-card`/`.guide-card`/`.faq-item`/
+`.cx-card` (a different, already-premium hover language, not the flat
+colour-only pattern the owner's screenshot was pointing at) — left as-is
+rather than replaced.
+
 ## ⭐ Status as of 2026-09-16, part 5 (real browser screenshots — a genuine crystal-shine bug found, not an artifact)
 
 Owner sent 5 real Chrome/Windows screenshots of their own deployed Netlify
