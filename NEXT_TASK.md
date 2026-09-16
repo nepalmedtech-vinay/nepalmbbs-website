@@ -3,6 +3,59 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-16, part 9 (the hero's cinematic reveal was real but too fast to register; 2 dead Unsplash hotlinks on /life-in-nepal)
+
+Owner reported the hero heading "still isn't animated" despite part 5
+wiring `.gl-line` into it (and it having shipped with the original
+build, in fact). **Verified in-browser with `performance.now()` polling
+rather than trusting it either way**: the animation genuinely fires —
+the first debug pass used `page.waitForTimeout()` between per-frame
+`screenshot()`/`evaluate()` calls, and the overhead of those calls (slow
+under this sandbox's software-rendered Chromium) silently ate most of
+the nominal delay, making the animation look like it had already
+finished by "150ms" when the real elapsed time was much later. Once
+measured properly, the real timing was: 0.85s duration, ~95ms stagger,
+first frame of visible motion by ~150ms, fully settled by ~1s — technically
+correct, but genuinely too quick for a person glancing at a fresh page
+load to register as "an animation happened" rather than "the page
+appeared."
+
+**Fixed by making it actually cinematic, not just technically present**:
+`gl-rise`'s duration 0.85s → 1.15s, per-line stagger 95ms → 220ms,
+initial delay 150ms → 280ms, and a blur-to-focus pull layered under the
+rise (`filter: blur(7px)→0`, the same "focus pulling" language `.rev`'s
+own `pr-arrive` keyframe already uses) so each line visibly resolves
+rather than just appearing. One shared keyframe (`glass.css`), so this
+improves every `.gl-line` instance at once — the hero, every inner-page
+H1 via `PageHeader`/`CollegeHero`, and the two hand-built H1s
+(admission-process, colleges/compare) from part 7. Re-verified with
+accurate in-browser timing (not the flawed screenshot-loop method): now
+takes ~2s total for both lines to fully resolve, genuinely visible.
+
+**Separately, mid-turn the owner flagged 2 broken images** on
+`/life-in-nepal`'s three-photo gallery ("Everyday Nepal" and "Local
+Food" tiles showing the site's own tokened-gradient fallback instead of
+a photo — confirmed as a real dead-link failure, not a false positive:
+`chrome.js`'s `.img-broken` handler only fires on the native `<img>`
+`error` event, and the third tile in the same grid loaded fine at the
+same time). Both were external `images.unsplash.com` hotlinks (an
+existing pattern from the original build, also used 8 more times on
+`/why-nepal` — not touched, no report against those). This sandbox
+cannot reach `images.unsplash.com` at all (egress proxy `connect_rejected`
+on every one of the three URLs in this gallery, including the one that
+works in a real browser) — so the dead ones could not be confirmed dead
+from here, only replaced on the strength of a `WebSearch` (restricted to
+`unsplash.com`) turning up two real, live Unsplash photos matching the
+same subjects (prayer flags at a stupa; a momo/dumpling dish), reusing
+the exact same CDN URL parameter pattern the working photo already
+uses. **This substitution has not been visually confirmed** — verify on
+the next real deploy and swap again if either is still broken; say so
+plainly rather than claiming this fixed if it hasn't been checked.
+
+**Verified**: build clean; `tests/audit.mjs` re-run — see its result
+before treating this pass as closed if this note wasn't updated after.
+The image fix specifically still needs a real-browser check post-deploy.
+
 ## ⭐ Status as of 2026-09-16, part 8 (the 3D letter-pop from part 7 was blurry — fixed)
 
 Owner sent a screenshot of the navbar links' hover: "Admission Process"

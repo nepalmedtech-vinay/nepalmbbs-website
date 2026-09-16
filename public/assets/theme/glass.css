@@ -373,15 +373,35 @@ body {
   color: transparent;
 }
 
-/* Per-line mask reveal. The hidden state lives in the keyframe, never on the
-   element, so if the animation never runs the headline is still readable. */
+/* Per-line mask reveal — the site's "cinematic" heading entrance, used on
+   every H1 (this hero, every inner page via PageHeader/CollegeHero) and
+   now on scroll-triggered section headings too (`.hl-cine`, premium.css
+   §14). The hidden state lives in the keyframe, never on the element, so
+   if the animation never runs the headline is still readable.
+   Design pass, 2026-09-16 (3): the first version (108% rise only, 0.85s,
+   95ms stagger, starting 150ms after load) was reported as reading like
+   "no animation at all" — a fair complaint once measured: two short
+   lines finishing inside ~1s, one right after the other, is nearly a
+   blink at a glance. Slower, with a longer stagger between lines and a
+   blur-to-focus pull layered under the rise (the same "focus pulling"
+   language `.rev`'s own `pr-arrive` already uses elsewhere), so each
+   line visibly resolves rather than just appearing. */
 .gl-line { display: block; overflow: hidden; }
 .gl-line > span {
   display: block;
-  animation: gl-rise calc(0.85s * max(var(--mo), 0.001)) var(--ea-enter) backwards;
-  animation-delay: calc(var(--i, 0) * 95ms * var(--mo) + 150ms * var(--mo));
+  animation: gl-rise calc(1.15s * max(var(--mo), 0.001)) var(--ea-enter) backwards;
+  animation-delay: calc(var(--i, 0) * 220ms * var(--mo) + 280ms * var(--mo));
 }
-@keyframes gl-rise { from { transform: translate3d(0, 108%, 0); } to { transform: none; } }
+@keyframes gl-rise {
+  from {
+    transform: translate3d(0, 108%, 0);
+    filter: blur(calc(7px * var(--mo, 1)));
+  }
+  to {
+    transform: none;
+    filter: blur(0);
+  }
+}
 
 
 /* ══ Scroll entrance ═════════════════════════════════════════════════════
