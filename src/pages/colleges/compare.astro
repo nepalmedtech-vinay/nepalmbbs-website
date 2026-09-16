@@ -38,7 +38,7 @@ const groups = [
   <div class="rev">
     <a href="/colleges" class="college-link" style="display:inline-block;margin-bottom:18px">← All Nepal medical colleges</a>
     <div class="eyebrow">MEC Nepal 2025-26</div>
-    <h1 class="sec-title" style="margin-bottom:12px">Compare medical colleges</h1>
+    <h1 class="sec-title" style="margin-bottom:12px"><span class="gl-line"><span>Compare medical colleges</span></span></h1>
     <p class="sec-sub" style="max-width:66ch">
       Pick up to 4 colleges below to see their record side by side. Every field
       here is the same one published on that college's own page — nothing is
@@ -110,11 +110,23 @@ const groups = [
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 4px;
+    padding: 6px 8px;
+    margin: 0 -8px;
+    border-radius: var(--r-xs, 6px);
     font-size: var(--t-sm, 0.9rem);
     color: var(--doc-text);
     cursor: pointer;
+    transition: background var(--d-2, 0.15s) var(--ea-out, ease);
   }
+  /* A picker with no feedback beyond the native tickbox is easy to lose
+     track of past a handful of options — the whole point of this page is
+     picking, so the checked state gets the same brand wash .tab-card
+     already uses for "this one" elsewhere on the site, not a new one. */
+  .cmp-option:hover { background: color-mix(in oklab, var(--brand) 6%, transparent); }
+  .cmp-option:has(.cmp-check:checked) {
+    background: color-mix(in oklab, var(--brand) 9%, transparent);
+  }
+  .cmp-option:has(.cmp-check:checked) span { color: var(--g-ink); font-weight: 600; }
   .cmp-check { width: 17px; height: 17px; flex: none; accent-color: var(--brand); }
   .cmp-check:disabled { opacity: 0.4; cursor: not-allowed; }
   .cmp-check:disabled + span { opacity: 0.5; }
@@ -135,6 +147,25 @@ const groups = [
      tests/audit.mjs's overflow check already treats as intentional (it
      exempts any element with overflow-x:auto from the "page scrolls
      sideways" failure). */
+  /* Selection -> spatial response: the whole table is discarded and rebuilt
+     on every checkbox change (compare.js), so the fresh result gets a
+     depth pop rather than simply replacing the old one silently. A regular
+     (non-scroll-linked) animation, not one of motion.css's view()-timeline
+     primitives -- this fires on a state change, not on scrolling into
+     view, and a freshly-inserted element's `animation ... both` always
+     starts cleanly on insertion, no missed-frame risk the way a
+     scroll-timeline animation on a pre-existing element can have. */
+  #cmp-result :global(.cmp-pop) {
+    animation: cmp-pop var(--d-4, 0.42s) var(--ea-out, ease) both;
+  }
+  @keyframes cmp-pop {
+    from { opacity: 0; transform: scale(calc(1 - 0.04 * var(--mo, 1))) translate3d(0, calc(10px * var(--mo, 1)), 0); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #cmp-result :global(.cmp-pop) { animation: none; }
+  }
+
   @media (max-width: 48rem) {
     #cmp-result :global(.doc-body) {
       overflow-x: auto;

@@ -298,7 +298,22 @@
 }
 
 .cbar-country-name { color: inherit !important; }
-.cbar-flag { font-size: 15px; line-height: 1; }
+/* Design pass, 2026-09-16: was a Unicode flag emoji — Windows' bundled
+   emoji font has never reliably supported the regional-indicator flag
+   pairs, so this rendered as plain "IN"/"NP" text on a real Windows
+   screenshot rather than a flag, confirmed by the owner rather than
+   assumed. Real inline SVG now (ContactBar.astro), so it looks the same
+   on every platform instead of depending on OS font coverage. */
+.cbar-flag { display: inline-flex; align-items: center; line-height: 1; }
+.cbar-flag svg { flex: none; border-radius: 2px; }
+
+/* Same Windows flag-emoji fix, same real-SVG pattern, for the two other
+   spots a country flag appears (guidelines.astro's tab labels and its
+   official-resources grid). */
+.off-flag { display: flex; align-items: center; margin-bottom: 10px; }
+.off-flag svg { border-radius: 3px; }
+.g-tab-flag { display: inline-flex; align-items: center; vertical-align: -2px; }
+.g-tab-flag svg { border-radius: 2px; }
 
 /* The number is the point of the card, so it carries the weight. Tabular
    figures so the two numbers align rather than wobble against each other. */
@@ -422,19 +437,36 @@
   text-wrap: pretty;
 }
 
-/* The three contact routes. White-on-dark tints became real cards. */
-.counsel-btn {
+/* The three contact routes. White-on-dark tints first became three
+   separate cards (each with its own border/radius/shadow); design pass
+   2026-09-12 found that three simultaneously-elevated cards for three
+   ways to reach the same team is exactly the "card, card, card" fatigue
+   this page — the site's highest-commercial-value one — shouldn't have.
+   The elevation moves to the shared .counsel-btns wrapper below; each
+   .counsel-btn is now a plain ruled row inside it, reusing the ruled-list
+   signature SectionNav and TrustSection already established rather than
+   inventing a fourth "quiet list" language. */
+.counsel-btns {
   background: var(--m-fill-solid) !important;
   border: 1px solid var(--m-hairline) !important;
   border-radius: var(--r-md) !important;
-  min-height: 72px;
-  transition: border-color .2s, box-shadow .2s, transform .2s !important;
-}
-.counsel-btn:hover {
-  background: var(--m-fill-solid) !important;
-  border-color: var(--brand-line) !important;
   box-shadow: var(--sd-2, 0 6px 20px rgba(15, 20, 32, .07));
-  transform: translateY(-1px) !important;
+  overflow: hidden;
+  gap: 0 !important;
+}
+.counsel-btn {
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--m-hairline) !important;
+  border-radius: 0 !important;
+  min-height: 72px;
+  transition: background .2s, transform .2s !important;
+}
+.counsel-btns > .counsel-btn:last-child { border-bottom: 0 !important; }
+.counsel-btn:hover {
+  background: color-mix(in oklab, var(--brand) 5%, transparent) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .counsel-btn-icon { border-radius: var(--r-sm) !important; }
@@ -508,15 +540,30 @@
 .college-tab {
   position: relative;
   overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: var(--m-fill-solid) !important;
   border: 1px solid var(--m-hairline) !important;
   color: var(--g-ink-2) !important;
   min-height: 36px;
   border-radius: var(--r-pill) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.6),
+    0 1px 2px color-mix(in oklab, var(--g-ink) 10%, transparent),
+    0 3px 8px color-mix(in oklab, var(--g-ink) 8%, transparent);
   transition: background var(--d-2, 200ms) var(--ea-out, ease),
               color var(--d-2, 200ms) var(--ea-out, ease),
-              border-color var(--d-2, 200ms) var(--ea-out, ease);
+              border-color var(--d-2, 200ms) var(--ea-out, ease),
+              box-shadow var(--d-2, 200ms) var(--ea-out, ease),
+              transform var(--d-2, 200ms) var(--ea-out, ease);
 }
+/* The "All Videos" tab's icon swapped from an emoji (renders differently
+   per platform, sits on the text baseline rather than optically centred)
+   to inline SVG, matching the sitewide convention (Footer.astro,
+   life-in-nepal.astro). */
+.college-tab svg { flex: none; opacity: 0.8; }
+.college-tab.on svg { opacity: 1; }
 /* Same navy-blue crystal hover as the Guidelines page's `.g-tab` — this is
    the identical tab-switcher pattern (button, `.on` active state, one
    filter group) and was the one place on the site still using the plain
@@ -527,16 +574,21 @@
   background: linear-gradient(148deg, var(--sky), var(--navy-accent)) !important;
   color: var(--navy-accent-ink) !important;
   border-color: var(--navy-accent) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.35),
+    0 6px 14px color-mix(in oklab, var(--navy-accent) 28%, transparent);
+  transform: translate3d(0, -2px, 0);
 }
 .college-tab::after {
   content: '';
   position: absolute;
   top: -40%;
   bottom: -40%;
+  left: 0;
   width: 45%;
   background: linear-gradient(90deg,
     transparent,
-    rgba(255 255 255 / 0.75),
+    color-mix(in oklab, var(--sky) 55%, white 45%),
     transparent);
   transform: translate3d(-180%, 0, 0) skewX(-18deg);
   pointer-events: none;
@@ -550,6 +602,11 @@
   background: var(--brand) !important;
   border-color: var(--brand) !important;
   color: var(--brand-ink) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255 255 255 / 0.4),
+    0 8px 16px color-mix(in oklab, var(--brand) 30%, transparent),
+    0 2px 4px color-mix(in oklab, var(--brand) 22%, transparent) !important;
+  transform: translate3d(0, -2px, 0);
 }
 
 
@@ -864,7 +921,7 @@ section.hero, .hero {
    Same asymmetric recipe, mirrored (tall image on the right this time —
    two identical bands back to back should not also share a layout, or
    the second reads as a rerun of the first even with different photos). */
-.med-gallery-section { padding-block: var(--s-section, 5rem); }
+.med-gallery-section { position: relative; padding-block: var(--s-section, 5rem); }
 .med-gallery {
   display: grid;
   grid-template-columns: 1fr 1.3fr;
@@ -873,6 +930,12 @@ section.hero, .hero {
 }
 .med-gallery .why-img { height: 100%; margin: 0; border-radius: var(--r-lg); }
 .med-gallery-lg { grid-row: 1 / 3; grid-column: 2; }
+/* The .m-para scroll-parallax animation (motion.css) drives `transform`
+   continuously; base.css's `transition: transform .4s` on .why-img img is
+   meant for the hover-zoom case (.why-card:hover, which this gallery's
+   bare .why-img never triggers) and would otherwise add a lag between the
+   scroll position and the rendered offset. */
+.med-gallery .why-img img.m-para { transition: none; }
 @media (max-width: 48rem) {
   .med-gallery { grid-template-columns: 1fr; grid-template-rows: none; }
   .med-gallery-lg { grid-row: auto; grid-column: auto; }

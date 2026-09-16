@@ -5,6 +5,413 @@ user, and why, per the autonomy rules in the master brief.
 
 ---
 
+## 2026-09-13 — Declined to fabricate real-college photography; confirmed the blocker live rather than citing old notes
+
+The owner asked, in the same session as the footer/college-hero dark pass
+below, for real photographs sourced and integrated for all 27 colleges
+(official sites, teaching hospitals, Wikimedia, social media, with AI
+generation only as a last-resort representational fallback, never
+mislabeled as a real campus). `CLAUDE.md` and this file's own 2026-09-13
+entries already document `WebFetch` as blocked for every domain tried in
+earlier sessions — but rather than cite that as settled without checking,
+tested it live this session: `curl` to a Wikimedia Commons asset returned
+`403` at the proxy's own CONNECT step, and the proxy's status endpoint
+showed the same `403 policy denial` against Google, Google Fonts, and —
+notably new information — this project's **own Supabase backend**
+(`fpzgcijbryvddtpegcmm.supabase.co`). This session's network policy is
+stricter than the prior "WebFetch blocked" finding: it is not one tool
+being restricted, it is the environment rejecting essentially all outbound
+connections except a small package-registry/Anthropic-API allowlist. No
+image-generation tool is available in this session's toolset either (only
+an SVG/vector-drawing tool, unsuited to photographic institutional imagery).
+
+Given both required capabilities are absent — not a difficult judgement
+call, a tested incapability — reported this to the owner directly rather
+than either (a) silently producing a "27/27 complete" result built on
+generic stock photos mislabeled as real campuses (the exact failure this
+file's 2026-09-12 entries already reversed once, and which the owner's own
+brief explicitly ruled out too), or (b) quietly doing nothing. Offered the
+two real paths forward: the owner supplies real, rights-cleared files
+directly (the upload pipeline — `site_photos`, the admin panel, `college-
+photo.js`'s auto-render — already exists and works, verified and improved
+its fallback treatment this same session), or the existing honest graphic
+identity-mark system remains the production answer until real photos exist.
+
+---
+
+## 2026-09-12 — NEET eligibility checker rebuilt on sourced criteria; embedded on /counseling; two unrelated pre-existing bugs fixed during verification
+
+Picked up in-progress, uncommitted work from earlier in this session
+(`leads.js`, `neet-calculator.astro` already rewritten on disk) and
+finished it. The tool's original `checkEligibility()` compared a raw
+NEET score against invented thresholds (`{gen:400, obc:370, sc:320}`)
+that trace to no published regulation — a direct violation of this
+project's rule 1 ("never invent a fact"), since NMC India resets the
+qualifying *mark* every year against that year's results and does not
+publish it in advance. The two criteria the regulations actually fix in
+advance — NEET **percentile** (50th General/OBC, 40th reservation-
+covered) and 12th PCB **aggregate** (50%/40% same split) — were already
+sourced and dated in `src/data/knowledge.json` (topics `neet-percentile`,
+`eligibility-12th`, NMC India — FMGL Regulations 2021, checked
+2026-08-28). Rewrote the checker to test those two instead, with each
+criterion shown as its own row against the rule it's measured by, rather
+than a single opaque verdict.
+
+Also finished, not reverted: embedding the same component, compact
+variant, on `/counseling` above the enquiry form (the in-progress diff's
+own comment called this "Phase 5F"). Judged this to be the correctness
+fix reaching its second, already-existing call site — reusing one
+component and one function, nothing new designed — rather than a start
+on Phase 5F's own scope ("dedicated counselling conversion experience"),
+which `NEXT_TASK.md` explicitly gates on a fresh approval naming the
+phase. If that reading is wrong, the fix is one diff to revert
+(`src/pages/counseling.astro`'s `calc-wrap--compact` block) without
+touching the underlying correctness fix.
+
+Two real, pre-existing bugs found during verification (neither touched
+by this change, both predate it in already-committed code) and fixed
+because they were one-line, safe, and were actively corrupting this
+session's own test signal:
+
+1. **`tools/action-allowlist.json` had drifted from `actions.js`'s own
+   runtime `ALLOW` object** — `addOfficialPhotoRef`, `deletePhotoRef` and
+   `setVideoActive` (all three added directly to `actions.js` during the
+   prior "Media-readiness follow-up" session, not through
+   `tools/dehandler.py`) were missing from the JSON file `CLAUDE.md`
+   documents as the canonical CSP allow-list. Effect: real users were
+   never affected (the runtime dispatcher reads its own inline `ALLOW`),
+   but `tests/csp-verify.mjs`'s handler-dispatch check — which instruments
+   functions named in the JSON file — silently never instrumented these
+   three, so clicking their buttons during the test ran the *real* admin
+   functions instead of the test's recorder, registering as "0 calls"
+   on every one of the 17 pages carrying `AdminPanel`. Fixed by adding
+   the three names to the JSON file (alphabetical, matching existing
+   order); cross-checked both lists programmatically afterward — 0 names
+   differ either direction now.
+2. **`tests/csp-verify.mjs`'s own NEET-calculator end-to-end check used
+   the old field id** (`#neet-score, input[id*=score]`) and never set the
+   now-required 12th-PCB field, so it could never have caught this
+   session's own change breaking the feature. Updated to
+   `#calc-percentile`/`#calc-pcb`.
+
+A third, real, pre-existing bug — unrelated to the above, found only
+because `audit.mjs` finally got to run to completion this pass —
+**wasn't** left for later: `CollegeHero.astro`'s fallback-asset caption
+("Identity mark, not a photograph") measured 3.89:1 against its slot's
+light brand-tint gradient, short of the 4.5:1 AA minimum this project
+holds itself to, on all 27 college detail pages. Traced to the caption's
+`color-mix(in oklab, var(--g-ink) 55%, transparent)` — bumped to 72%,
+which `audit.mjs` confirms clears the bar with margin. Predates this
+session (already in the committed `ac1e13d`); fixed anyway because it
+was one CSS value, safe, and otherwise would have sat undiscovered
+indefinitely — `npm run verify`'s own chain dies earlier, at the
+documented rollback-tag issue, before ever reaching `audit.mjs`, so
+nothing in the normal verify path was going to catch it.
+
+`npm run build`: 44 routes, clean. `node tools/gen-csp.mjs`: no diff (no
+inline script touched). `tests/csp-verify.mjs`: 11/11, 3118/3118 handlers
+(was 9/51, 3078/3118, before the allowlist fix — the calculator-specific
+failure and the `addOfficialPhotoRef` drift were two independent causes
+of the same run going red). `tests/console-verify.mjs`: 34/34.
+`tests/a11y-verify.mjs`: 32/32. `tests/compare-verify.mjs`: 13/13.
+`tests/assistant-verify.mjs`: 18/18. `tests/audit.mjs`: 43 routes, **0
+low-contrast elements, 0 mobile overflow** (was 27 low-contrast, all on
+the pre-existing `CollegeHero.astro` bug above, before that fix).
+`npm run verify`'s own `build-verify.mjs` step still fails on the
+pre-existing, already-documented rollback-tag issue (`CLAUDE.md`: tags
+return 403 on push) — ran every other suite individually instead; not
+this change's regression.
+
+---
+
+## 2026-09-12 — Media-readiness follow-up: no unverifiable video embedded; reference links over rehosted photos; draft/publish added only where it was missing
+
+Decided not to embed any of the specific CMC YouTube videos this session's
+`WebSearch` surfaced ("CHITWAN MEDICAL COLLEGE TOUR | CAMPUS & HOSPITAL |
+NEPAL | Episode #2", "CMC Virtual Tour | Jan 2024," others), even though the
+task explicitly asked to identify and use the best official CMC video.
+`WebFetch` is blocked for youtube.com in this sandbox (confirmed directly,
+not assumed from `CLAUDE.md`'s note), so a specific video's actual
+uploader/channel could not be independently verified — only its title and
+a search engine's summary. Several other results for the same search were
+explicitly third-party (a named individual's "campus review," a separate
+consultancy's own "Episode #2" series), which is direct evidence that not
+everything surfacing for "Chitwan Medical College" is CMC's own upload.
+Embedding one specific video as this college's official evidence, on
+search-snippet confidence alone, would have been exactly the kind of
+misattribution `DECISION_LOG.md`/`TECHNICAL_DEBT.md`/`CONTENT_SOURCE_LOG.md`
+already document standing rules against for text and photography — this is
+that same rule, applied to video, holding even under explicit instruction
+to "use what's available now," because the instruction's own rule 1
+("if reuse rights are unclear, do not copy the asset — use the official
+source as a reference/link instead") already anticipated exactly this
+case and named the fallback to use.
+
+Extended that same reasoning to authenticity, not only reuse rights: the
+task's rule 1 explicitly addresses unclear *rights*, but the identical
+logic applies when what's unclear is whether an asset is genuinely the
+institution's own at all. Used the safer, lower-stakes reference-link
+pattern for both situations rather than treating them as different
+problems needing different tools.
+
+Decided against downloading and rehosting any CMC website photograph for
+the same reason, independent of the rights-status field's `unknown`
+default even existing: a college's own photography is presumptively
+copyrighted to the college, and "publicly viewable on their site" is not
+"licensed for a third party's commercial admissions-consultancy site" —
+the task's own rule 1 says this explicitly. The three verified presences
+(website, Facebook page, YouTube channel — corroborated by matching phone/
+email across independent listings, not merely "this page's own claim")
+are recorded as outbound reference links instead, which carries none of
+that risk: the visitor goes and judges CMC's own page for themselves,
+rather than this site vouching for a specific asset.
+
+Decided to introduce a genuine draft-then-publish step for new video
+(`is_active: false` at insert, a separate Publish action) but explicitly
+*not* retrofit the same gate onto the hero-photo upload flow, even though
+both now share a metadata table. The photo flow's "upload → live
+immediately" behaviour is a pre-existing, already-documented, working
+design choice (its own on-page copy says so) — changing it was not asked
+for and was not the bug this pass was fixing. The video flow, by contrast,
+had literally never had any review step at all (every prior insert was
+`is_active: true` unconditionally) and was the one part of this system
+just discovered to have shipped a real, silent, months-old bug — a
+stronger case for adding a safety gate than "we now have a shared table."
+Applying the same policy everywhere a table is shared would have been
+uniformity for its own sake, not a decision serving either flow's actual
+risk profile.
+
+Found and fixed a second, independent instance of Phase 5E's own
+category-mismatch bug, this time in the admin panel's own UI rather than
+the database: `AdminPanel.astro`'s `#a-vid-college` dropdown had 13
+hand-typed options with codes that were never aligned with
+`video-categories.json` (4 actively wrong, 9 colleges missing outright).
+This meant that even after Phase 5E's migration fixed the missing
+`category` column, a staff member using the *existing, already-shipped*
+admin form to add a Chitwan Medical College video today would have saved
+it under `category: "chitwan"` — which nothing on the public site reads,
+since the real code is `cmc`. Not something the task asked to look for
+specifically, but it directly and silently blocks the exact goal ("make
+the media system usable now") the task named — fixed in the same pass
+rather than filed as a separate finding to revisit later, since leaving a
+freshly-discovered, actively-blocking bug unfixed while shipping
+adjacent work in the same file would not meet the task's own bar.
+
+## 2026-09-12 — Phase 5E: asked before adding a DB column; used real Supabase access instead of guessing; reused college-photo.js's shape for video
+
+Found, while wiring a college detail page to its real video record, that
+`site_videos`'s live schema had no `category` column at all — confirmed by
+querying the actual project via `mcp__Supabase__execute_sql`, not assumed
+from the sandbox's usual network-blocked state. This meant `/videos.astro`'s
+tabs, `admin.js`'s video-add form, and `colleges.js`'s client-side filter
+had all been silently reading and writing a field that never existed on
+the live table: every category filter had always matched nothing, and any
+video ever added would have landed with no way to attach it to a specific
+college. This predates Phase 5E and was not caused by it, but directly
+blocked the phase's own stated goal.
+
+This project's standing rule is never to touch `supabase/migrations/` or
+RLS without asking first. Rather than either silently working around the
+gap (e.g., building the whole per-college architecture around a column
+that would never actually filter anything, quietly matching the site's
+existing, already-broken behaviour) or unilaterally deciding to fix it,
+used `AskUserQuestion` to lay out the exact finding and three real options
+(add a migration; document only; let the owner add it) before writing any
+schema-touching code. Approved: add a new, additive-only migration.
+`supabase/migrations/0007_site_videos_category.sql` adds `category text`,
+nullable, no default — verified via `get_advisors` afterward that it
+introduced zero new security findings, and via `pg_policies` beforehand
+that the table's RLS is row-level (`site_videos_public_read`/
+`site_videos_staff_write`), so an added column needed no policy change at
+all. Applied to the live project directly via the Supabase MCP tools
+rather than left as a local file for the owner to run by hand, since the
+tools were available, the change was narrow and reviewed, and the user had
+just explicitly approved this specific fix.
+
+Separately decided to use the same live access to verify actual content
+status rather than continue the sandbox's standing (and, until now,
+accurate-by-necessity) assumption of "network-blocked, therefore unknown."
+Queried `site_videos` (0 rows) and `storage.objects` for the
+`college-photos` bucket (0 objects) directly. `CONTENT_ASSET_PLAN.md` now
+states these as confirmed facts with the query that confirmed them, not as
+carried-forward assumptions — a stronger evidentiary standard than earlier
+phases could reach, available specifically because this session's MCP
+access reaches the real project even though this sandbox's browser/HTTP
+layer does not.
+
+Decided the college detail page's new video slot should mirror
+`college-photo.js`'s existing shape exactly (a placeholder element with
+data-attributes, populated or left in an honest empty state by a small
+sitewide script, loaded unconditionally and no-op on any page without its
+target element) rather than inventing a different mechanism for video.
+Two real assets, two parallel small scripts, one shared pattern — matching
+"reusable media architecture" without adding a second one.
+
+Decided the featured-video treatment (`.vid-featured`/`.vid-card--featured`)
+belongs in `base.css` next to the rest of the `.vid-*` rules it extends,
+not as a page-scoped style in either `/videos.astro` or `[slug].astro`,
+since both pages use it via the same shared `vidCardHTML()` function
+(hoisted out of `renderVideoGrid` in `colleges.js` this pass specifically
+so `college-video.js` could call the identical card-building logic rather
+than a second, slightly different one).
+
+## 2026-09-12 — Phase 5D: extend CollegeMap rather than build a second map; no crystal CTA per college; honest performance reporting
+
+Decided to extend `CollegeMap.astro` with three optional, additive props
+(`highlight`, `variant="compact"`, `headOverride`) rather than build a
+second, detail-page-specific map component. The alternative — a small,
+bespoke "locator" widget showing just one point — would have been cheaper
+to render but would have invented a second visual language for the same
+underlying fact this component already presents perfectly well, working
+directly against "ownable design language: extend the existing... language,
+do not introduce a new one." The three props are all optional and default
+to today's exact behaviour, so the homepage and `/colleges` render
+byte-for-byte the same as before this phase — verified, not assumed.
+
+Decided the highlighted point needs its own class (`is-highlight`),
+separate from the component's existing transient `is-active` (the class
+`show()`/`hide()` already move between whichever point has hover/focus).
+Marking the highlighted point `is-active` directly would have worked
+visually at first render, but the *first hover on any other point* would
+immediately strip it via `hide()`'s `active.classList.remove('is-active')`
+— losing the "this is the college you're on" signal exactly when a visitor
+starts comparing it against neighbours, which is the one moment it matters
+most. `is-highlight` never enters that toggle logic, so it survives
+regardless of what else on the map is being hovered.
+
+Decided against putting the enquire CTA in `CollegeHero.astro` or anywhere
+before the record/academic-path sections. The brief's own conversion
+requirement (§9) asked for the CTA to read as "the natural next step after
+understanding the college," which argues for placing it after the record
+and the academic path, not before them — and premium.css §17's own comment
+already reserves the `.gl-crystal` treatment for exactly two sitewide
+conversion points (nav + homepage hero), a restraint Phase 4's own audit
+already respected once. Reusing it a third time, once per college (27
+more), would be precisely the dilution that restraint was written to
+prevent. The enquire button stays `.college-enquire`, moved to a closing
+band at the end of the page instead.
+
+Found, while investigating "hospital ecosystem" data before writing
+anything: `knowledge.json` has one general, regulation-level fact sourced
+to Nepal Medical Council (every MEC-approved college is attached to a
+teaching hospital where clinical training and internship happen) but no
+per-college hospital name, bed count, or case mix for any of the 27
+colleges beyond what a college's own name happens to state (many literally
+contain "Teaching Hospital"). Decided to surface the general fact,
+explicitly say when a specific hospital isn't on file, and treat filling
+that gap as a future content-research task (recorded as Slot 3 in
+`CONTENT_ASSET_PLAN.md`) rather than infer or approximate a hospital
+identity per college from its name alone.
+
+Measured a real, reproducible ~90-150ms Total Blocking Time cost from
+reusing `CollegeMap` on the detail route, via a git-stash isolated
+before/after comparison on the same route under the same throttled-mobile
+harness (two runs per side: baseline 324ms/353ms, Phase 5D 436ms/447ms —
+non-overlapping ranges, not noise). Tried one targeted fix — deferring the
+highlighted point's card-reveal off the `IntersectionObserver` callback via
+double-`requestAnimationFrame`, since `show()` does two `getBoundingClientRect`
+calls that force layout — and it did not measurably reduce the number
+(460ms/509ms after). Decided to keep the deferral anyway, on the
+independent correctness argument that a purely cosmetic reveal shouldn't
+force synchronous layout inside a callback that fires during initial page
+settle, regardless of whether it moves this specific measurement — but
+explicitly did NOT report it as a fix, and recorded the real, un-improved
+number in `PROJECT_STATE.md`/`TECHNICAL_DEBT.md` rather than omit it or
+claim a false resolution. The project's own `tests/perf-verify.mjs`, run
+against the finished build, shows the detail route's absolute TBT
+(~500-545ms) below `/colleges`' own TBT (~975-980ms) in the same run — a
+route this phase never touched — which is why this is recorded as
+disclosed, pre-existing-environment-adjacent debt rather than treated as a
+blocking regression unique to this phase.
+
+## 2026-09-12 — Phase 5C: discovery table stays server-rendered; compare bar fixed, not sticky
+
+Decided the entire discovery experience (search/filter/sort) runs
+client-side over rows the server already rendered from `colleges.json`,
+rather than fetching or re-rendering from a JS data model. Reasons: (1)
+zero risk of the client list drifting from the committed data source of
+truth; (2) the page stays a complete, correctly ordered 27-college list
+with JavaScript disabled — search/filter/sort become progressive
+enhancement rather than the only way to see the data; (3) 27 rows is
+trivially small, so there is no performance reason to do otherwise.
+
+Asked the owner (via `AskUserQuestion`, not assumed) whether a map click
+on `/colleges` should navigate to the college detail page or highlight
+the corresponding list row in place, since `CollegeMap.astro` was about to
+be reused on a page that now also has a filterable list it could
+plausibly cross-highlight with. Answer: navigate — matching the
+homepage's existing, unmodified behaviour. This meant `CollegeMap.astro`
+needed zero code changes, which is why it was simply dropped in rather
+than extended.
+
+Found, mid-implementation, that `.doc` (`premium.css`/`trust.css`) sets
+`overflow: hidden !important`, which silently defeats `position: sticky`
+on any descendant — the compare-selection bar was originally sticky
+inside the `.doc.cd` panel and simply never stuck. Rather than special-
+case `.doc`'s overflow (used by many other ruled panels sitewide for a
+legitimate reason — the ruled-corner visual), moved the bar to `position:
+fixed`, outside `.doc.cd` entirely. This is also the more correct pattern
+for what the bar is: a persistent, page-level selection affordance, not
+content that belongs inside one record panel.
+
+That fix then exposed a second, real collision: `.wa-float` and
+`.chat-wrap` (base.css's persistent call/WhatsApp/chat widgets, both
+`position: fixed`, bottom-right) claim nearly the entire bottom band of a
+phone-width viewport once their labels are expanded — verified by
+measuring both widgets' actual rendered bounding boxes, not assumed.
+There is no reliable pixel gap to target that wouldn't be one more
+build's `bottom`/height tweak in those widgets away from breaking again.
+Decided against hard-coding a bottom offset guessed from today's
+measurements, and against modifying `.wa-float`/`.chat-wrap` themselves
+(out of this phase's scope, and they serve every other page too).
+Instead, `college-discovery.js` toggles a single `cd-compare-active`
+class on `<body>` exactly while 1+ rows are checked; a `:global()` rule
+scoped to this page's own `<style>` block hides those two widgets only
+while that class is present, and only on this route (the class is never
+set anywhere else). Verified both that they disappear while the compare
+bar is showing and that they reappear the instant the selection is
+cleared.
+
+## 2026-09-11 — Phase 5B: visible admissions automation, scoped to one real surface
+
+Decided the *only* public integration point for "what happens after you
+enquire" is `/counseling`'s post-submit success panel — not a new page,
+not a homepage addition. The homepage hero's own inline lead-form fields
+(`leads.js`'s `submitLead('hero')` branch, `#hform-area`/`#hform-success`)
+are dead code: `GlassHero.astro`'s Phase 3 rewrite replaced the inline
+form with two CTA links, so those ids don't exist in the current markup.
+Left `leads.js` untouched rather than either wiring the dead branch back
+up (out of scope) or deleting it (real risk of missing a caller
+somewhere; not this phase's job to audit).
+
+Decided against exposing the real `sequences`/`sequence_steps` data via a
+new public API or RLS-relaxed view, even though that would make the
+"visible automation" more literally live. Reasons: (1) this session's own
+standing rule against touching `supabase/migrations/` or RLS without
+asking; (2) the step *templates* contain internal coaching language
+("Never quote a number we cannot source") that must never reach a public
+response even if only the titles were meant to be exposed — a narrow
+view is exactly the kind of thing that's easy to widen by mistake later;
+(3) the real value — showing an honest shape of what happens — doesn't
+require live data, since the shape of a seeded, rarely-changed sequence
+is stable enough to describe in static, reviewed copy. Built
+`src/data/journey-stages.json` instead: a small, explicitly-flagged
+static copy of the *stage labels* only (not the sequence steps, not the
+templates), sourced from `portal.js`'s own already-public `STAGES` array
+wording — the one part of this system already shown to a real user, just
+never to a prospective one.
+
+Decided to generalise the near-term follow-up steps' timing rather than
+quote the seeded sequence's exact hour offsets (1h / 24h / 72h / 168h).
+Those offsets live in an admin-editable table (`sequence_steps.delay_hours`)
+and can be retuned by a counsellor without a deploy; a public promise
+quoting them verbatim would drift out of sync with reality with nobody
+noticing until a family complained. The existing "within two working
+hours" headline promise was kept verbatim since it's the site's own
+already-standing commitment, not something this pass introduced.
+
+---
+
 ## 2026-08-28 — Chunk 6: the assistant becomes data-driven and sourced
 
 The owner asked for maximum automation, corporate content, and for me to
@@ -959,3 +1366,73 @@ be unused in any page's markup.
 
 `console-verify.mjs`: 34/34. `a11y-verify.mjs`: 32/32. `npm run build`:
 44 pages, clean. Full `audit.mjs` run queued next.
+
+**2026-09-10 — Phase 0 forensic audit for an "ultra-premium transformation"
+brief; real TBT regression found and partially fixed.** Owner sent a large,
+explicit-execution-mode brief (10 phases, cinematic hero, new 3D systems,
+decision tools, etc.) and asked for it to be carried out. Did the Phase 0
+audit it asked for first (read-only), which surfaced:
+
+- `PROJECT_STATE.md` was two weeks stale and described a different
+  branch's reality entirely (unpublished site, missing features that now
+  exist — e.g. it claimed no college-comparison tool existed; `/colleges/
+  compare` does). Rewritten to match verified current state, since a
+  future session trusting the old version would start from false
+  assumptions. `ULTRA_PREMIUM_ROADMAP.md` added with the full Phase 0
+  findings (top problems/opportunities, dependency/3D/motion/photography
+  recommendations, phased implementation order).
+- Two direct conflicts between the brief and standing rules, flagged
+  rather than built: a "cost planner" would override the documented
+  no-fee-calculator decision (`CLAUDE.md` rule 2, `DECISION_LOG.md`
+  2026-08-28); the brief's photography requirements need real
+  campus/hospital assets this sandbox cannot source or fabricate (all
+  current photography is Unsplash stock — 13 images, zero real photos of
+  any of the 27 actual colleges).
+- **`tests/perf-verify.mjs` (real Core Web Vitals, 4x CPU throttle +
+  slow-4G, 390×844 — i.e. an actual budget-Android/Indian-mobile-data
+  simulation) was failing badly**: Total Blocking Time 30-58x over the
+  200ms budget on every route that mounts the medical-icons Three.js
+  scene (9357ms on `/`, 11104ms on `/faq`), against near-zero TBT (33-
+  43ms) on `/staff`/`/portal`, which use `bare={true}` and skip the scene
+  entirely — a clean before/after isolating the cause.
+
+Root-caused rather than guessed, with two real A/B measurements:
+
+1. `PMREMGenerator.fromScene(new RoomEnvironment())` — a genuinely
+   expensive, synchronous, multi-mip-level GPU prefilter — was being
+   recomputed independently by every scene mount (footer runs on all 44
+   routes; up to three renderer instances on one page since each mount
+   owns its own WebGL context and can't share the resulting texture
+   across contexts). Replaced `RoomEnvironment` with a cheap, hand-built
+   single-sphere gradient scene fed through the same `PMREMGenerator`
+   call, so the material still gets a real, non-fabricated environment to
+   reflect — just one costing a fraction as much to compute. Measured
+   effect: homepage TBT 9357ms → 7114ms (~24%), zero visual difference
+   (screenshotted before/after).
+2. A/B test with `transmission` forced to 0 (removing Three.js's
+   per-frame backdrop-render pass for transmissive materials) recovered a
+   further ~1900ms (7114ms → 5232ms) — confirming transmission is a real
+   contributor, but not the dominant one. **Reverted this** rather than
+   shipping it: the remaining ~5200ms floor, present even on
+   `/colleges/institute-of-medicine` with exactly one scene mount
+   (footer only, no page-header `threeD`), shows the irreducible cost is
+   Three.js library execution + procedural-geometry construction itself
+   under 4x CPU throttle — not something a material-property tweak
+   solves, and losing the real-glass look for a partial, non-decisive
+   win wasn't judged worth it without the owner's sign-off.
+
+Kept the first fix (real, free improvement, no visual cost); reverted the
+second (real cost, only partial win). The performance problem is **not
+resolved** — TBT is still far over budget on every WebGL-carrying route.
+This is now an architectural question (does the footer's ambient scene
+need to run on all 44 routes and on mobile, given the measured cost on
+the hardware this audience actually uses) rather than a tuning one, and
+is written up for the owner's decision in `ULTRA_PREMIUM_ROADMAP.md`
+rather than acted on unilaterally, since it bears directly on this
+week's mobile-3D-parity decision (made without this throttled-CPU data).
+
+`console-verify.mjs`: 34/34. `a11y-verify.mjs`: 31/32 (the same
+pre-existing `:focus-visible` timing flake on `/staff`'s `.cx-input`
+documented 2026-09-10 earlier — confirmed same signature, unrelated to
+this change, which never touches `/staff` or `/portal`). `npm run
+build`: 44 pages, clean. Full `audit.mjs` run queued next.

@@ -3,6 +3,105 @@
 Known, named debt. Per the master brief: document it here rather than
 leaving it as a silent TODO, and give each item a path to being resolved.
 
+## Newly identified 2026-09-12 (Phase 5E) — one fixed (approved), one flagged only
+
+- ~~**`site_videos` had no `category` column**, despite `/videos.astro`,
+  `admin.js` and `colleges.js` all already reading/writing one — every
+  per-college video filter had silently matched nothing since before this
+  phase.~~ **Fixed, with explicit user approval before touching the
+  schema**: `supabase/migrations/0007_site_videos_category.sql` adds a
+  nullable `category text` column; applied to the live project. No RLS
+  change, no data touched, no new items in `get_advisors` after applying.
+  Full account in `CONTENT_ASSET_PLAN.md`'s Slot 6.
+- **This repo's local `supabase/migrations/` is missing nine migrations
+  that are already applied to the live project.** `mcp__Supabase__list_migrations`
+  shows the live history as: security_baseline, admission_platform,
+  abuse_and_storage, lead_intake, revoke_internal_function_execute, then
+  **eight `exam_intelligence_0X_*` migrations** (tables, RLS, views/grading,
+  an exam report, an import path, a dashboard/cohort view, policies,
+  storage/templates, a revoke pass), then college_photos_storage. Only the
+  first five and the last exist as files in this repo
+  (`0001`-`0006`); the eight `exam_intelligence_*` migrations have no local
+  file at all. This means the repo and the live database have diverged —
+  a fresh clone of this repo, migrated from scratch, would not reproduce
+  the live schema. Not investigated further this pass: an entire
+  undocumented feature area (something exam/cohort/grading-related, going
+  by the migration names) is a large surface to characterise correctly,
+  and doing so was not what Phase 5E asked for. Worth a dedicated session:
+  pull the live schema for those nine migrations down as local files (or
+  at minimum document what `exam_intelligence_*` actually is), so this
+  repo stops being a lagging, incomplete record of its own database.
+
+## Newly identified and fixed 2026-09-12 (NEET calculator correctness pass)
+
+- ~~**`CollegeHero.astro`'s fallback-asset caption failed AA contrast**~~
+  **Fixed**: "Identity mark, not a photograph" measured 3.89:1 (needs
+  4.5:1) against its slot's light brand-tint gradient, on all 27 college
+  detail pages — `color-mix(in oklab, var(--g-ink) 55%, transparent)`
+  bumped to 72%. Predates this pass (already in committed `ac1e13d`);
+  `audit.mjs` is the only check that measures contrast, and `npm run
+  verify`'s chain dies earlier, at the rollback-tag issue, before
+  reaching it — so a recent session's `git log` showing "audit ✅" is not
+  evidence this stayed true; re-run `audit.mjs` directly to know.
+- ~~**`tools/action-allowlist.json` had drifted from `actions.js`'s own
+  runtime `ALLOW` object**~~ **Fixed**: `addOfficialPhotoRef`,
+  `deletePhotoRef`, `setVideoActive` were added straight to `actions.js`
+  during the prior media-readiness session rather than through
+  `tools/dehandler.py`, and never reached the JSON file. Real users were
+  unaffected (the dispatcher reads its own inline object); the only
+  casualty was `tests/csp-verify.mjs`'s own signal, which instruments
+  functions by that file's contents and so never recorded these three,
+  misreporting unrelated real clicks as failures on all 17 pages carrying
+  `AdminPanel`. Worth remembering the next time a handler is added by
+  hand instead of through `dehandler.py`: it needs adding to this file
+  too, and nothing currently checks that automatically (`build-verify.mjs`
+  would have, once it runs — see the rollback-tag entry below).
+
+## Newly identified 2026-09-12 (Phase 5D) — not fixed, out of scope
+
+- **One college's `location` string does not match any `places.json` key.**
+  `nepalgunj-medical-college`'s `location` is `"Kohalpur, Banke"`;
+  `places.json` has coordinates filed under `"Nepalgunj"` instead. This
+  college was already silently excluded from `CollegeMap` (the component
+  filters to `places[c.location]`); Phase 5D's detail-page map reuse
+  inherits the same exclusion rather than introducing a new one, and the
+  page handles it correctly (no map section renders for this one college,
+  rather than a broken or empty one). Not fixed here since correcting a
+  college's recorded location is a content-verification task, not a code
+  change, and touching `colleges.json`/`places.json` values without
+  re-checking the source is exactly the kind of drift `CONTENT_SOURCE_LOG.md`
+  exists to prevent.
+- **Reusing `CollegeMap` on 27 detail pages costs a measured, real ~90-150ms
+  of Total Blocking Time** under this test harness's 4x CPU throttle
+  (isolated via a git-stash before/after comparison, not a single noisy
+  reading — see `PROJECT_STATE.md`'s Phase 5D entry and `DECISION_LOG.md`
+  for the full numbers). This is a disclosed cost of the phase's own "map
+  continuity" requirement, not a bug: the map is real, sourced,
+  content-bearing evidence, not decoration. The college detail route's
+  absolute TBT (~500-545ms via the project's own `tests/perf-verify.mjs`)
+  is, at the time of this measurement, still lower than `/colleges`'
+  own TBT (~975-980ms) — a route this phase did not touch — so it is not
+  an outlier against the rest of the site's current, already-over-budget
+  state in this sandbox. Worth a real fix (e.g. lazy-mounting the map's
+  interaction script until the figure is closer to the viewport, beyond
+  the existing IntersectionObserver-gated *draw*) in a future pass focused
+  on performance specifically, rather than folded into a product-narrative
+  phase.
+
+## Newly identified 2026-09-11 (Phase 5B) — not fixed, out of scope
+
+- **`AdminPanel.astro`'s "Hero Lead Form" toggle (`#sw-form`) targets an
+  element that no longer exists.** It calls
+  `toggleFeature('@el','show_lead_form','hform-area')`, but `hform-area`
+  (and `#h-name`/`#hform-success`, the rest of that inline form) isn't in
+  `GlassHero.astro` — confirmed by a repo-wide search, the only other hit
+  is this same admin toggle. The homepage hero was rewritten in Phase 3
+  to two CTA links instead of an inline form; this admin control was
+  never removed to match. Flipping the switch today does nothing
+  observable. Not fixed here since it's unrelated to Phase 5B and touches
+  the admin panel, not the public site — a future session doing admin-
+  panel work should either remove the toggle or restore what it controls.
+
 ## Fixed this session
 
 - ~~`tests/build-verify.mjs`, `tests/auth-verify.mjs`, `tests/regression.mjs`

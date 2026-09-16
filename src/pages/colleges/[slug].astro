@@ -1,15 +1,19 @@
 ---
 import GlassLayout from '../../layouts/GlassLayout.astro';
-import EvidenceBadges from '../../components/EvidenceBadges.astro';
-import PageHeader from '../../components/PageHeader.astro';
+import CollegeHero from '../../components/CollegeHero.astro';
+import CollegeMap from '../../components/CollegeMap.astro';
 import { getColleges } from '../../lib/colleges.js';
 import { SITE } from '../../lib/routes.js';
 import knowledge from '../../data/knowledge.json';
+import places from '../../data/places.json';
+import videoCategories from '../../data/video-categories.json';
+import officialSources from '../../data/official-sources.json';
 
 // One review date for the whole dataset, taken from the same file the
 // assistant answers from, so a page and an answer cannot claim different
 // freshness for the same record.
 const REVIEWED = knowledge.reviewed;
+const topic = (id) => knowledge.topics.find((t) => t.id === id);
 
 export async function getStaticPaths() {
   const colleges = await getColleges();
@@ -23,6 +27,13 @@ const { college: c } = Astro.props;
 const isGovt = c.type === 'govt';
 const path = `/colleges/${c.slug}`;
 const shortName = c.name.split('(')[0].trim();
+const hasCoord = !!places[c.location];
+const videoCategory = videoCategories[c.slug]?.code || '';
+const sources = officialSources[c.slug];
+// Computed once here (frontmatter can await; the template below cannot) —
+// how many of the 27 colleges the compact map actually plots, for its own
+// lead copy.
+const plottedCount = (await getColleges()).filter((x) => places[x.location]).length;
 
 // Every row comes from the site's own data. Nothing is inferred, rounded or
 // filled in — an admissions page that invents a fee or a ranking is worse than
@@ -36,6 +47,42 @@ const record = [
   ['Foreign-quota seats', c.seats],
   ['Course duration',     c.duration || '5.5 years, including internship'],
   ['Admission route',     c.admission || 'NEET qualified, through MEC Nepal'],
+];
+
+// Phase 5D — "your years here": the same four-stage academic path is true of
+// every MEC-approved college (it is set by Nepal Medical Council / NMC India
+// regulation, not by the individual institution), so this is not a per-
+// college fact invented for this page — it is knowledge.json's own already-
+// sourced topics, read in chronological order instead of as separate FAQ
+// answers. The one truly per-college fact — whether this college's own name
+// names its teaching hospital — is added to step 2 only when it's actually
+// there to read.
+const hospitalInName = /teaching hospital/i.test(c.name);
+// Paraphrased directly from knowledge.json's own already-sourced answers
+// (each `source` below is that same topic's own citation) rather than
+// derived by slicing their prose — the four-stage structure is regulation,
+// true of every MEC-approved college, not a fact invented for this one.
+const academicSteps = [
+  {
+    title: 'Pre-clinical years',
+    body: 'Anatomy, Physiology and Biochemistry — the same pre-clinical sequence the Indian MBBS curriculum follows.',
+    source: topic('curriculum').source,
+  },
+  {
+    title: 'Clinical years',
+    body: `Medicine, Surgery, Obstetrics & Gynaecology and Paediatrics. ${topic('teaching-hospital').answer}`,
+    source: topic('teaching-hospital').source,
+  },
+  {
+    title: 'Internship in Nepal',
+    body: `${topic('duration').answer} ${topic('provisional-registration').answer}`,
+    source: topic('duration').source,
+  },
+  {
+    title: 'NMC screening, in India',
+    body: topic('next-fmge').answer,
+    source: topic('next-fmge').source,
+  },
 ];
 
 const schema = {
@@ -57,22 +104,12 @@ const schema = {
 <div class="tab-pane on">
 <div class="container">
 
-  <div class="rev">
-    <a href="/colleges" class="college-link" style="display:inline-block;margin-bottom:18px">← All Nepal medical colleges</a>
+  {/* DISCOVER — identity: which college, and the handful of real facts
+      that place it, before anything else. */}
+  <CollegeHero college={c} />
 
-    <PageHeader eyebrow={`${isGovt ? 'Government college' : 'Private college'} · MEC Nepal 2025-26`}>{c.name}</PageHeader>
-
-    {/* Empty and hidden until college-photo.js finds a real, staff-uploaded
-        photo for this slug in Supabase Storage (migrations/0006). No photo
-        exists for any college yet — this renders nothing today, on every
-        college page, until one is actually uploaded through the admin panel.
-        Never a stock image: absence here means "no photo yet," not "insert
-        one," and the page is already correct without this element. */}
-    <div class="cph" id="college-photo" data-college-slug={c.slug} hidden></div>
-
-    <EvidenceBadges college={c} />
-  </div>
-
+  {/* UNDERSTAND — the record itself, unchanged in substance from before
+      this phase; still the page's single source of verified fact. */}
   <div class="doc rev" style="margin-top:28px">
     <div class="doc-head">
       <h2 class="doc-title">Record</h2>
@@ -114,12 +151,108 @@ const schema = {
     </p>
   </div>
 
-  {/* This block used to say the seat figure was unverified, because it was.
-      It has since been checked line by line against the Commission's own
-      published matrix, so the note now says what the number actually is —
-      which category and which round — rather than warning it might be wrong.
-      The caveat that remains is real: a first-matching allocation is not a
-      standing figure, and later rounds move. */}
+  {/* UNDERSTAND, continued — the same real-data map every other page uses,
+      reused rather than rebuilt, now opened straight to this one college
+      among the other 26. Skipped entirely for the one college whose
+      location string doesn't currently match a places.json entry (see
+      TECHNICAL_DEBT.md) rather than showing a map with nothing marked. */}
+  {hasCoord && (
+    <div class="rev" style="margin-top:28px">
+      <CollegeMap
+        highlight={c.slug}
+        variant="compact"
+        sectionId="college-map"
+        headOverride={{
+          eyebrow: 'Where it is',
+          title: shortName,
+          lead: `${c.location} — one of ${plottedCount} MEC-approved colleges plotted here by where they actually sit. Hover any other point to compare positions, or open its own record.`,
+        }}
+      />
+    </div>
+  )}
+
+  {/* EXPERIENCE — real visual evidence, shown before the academic path is
+      described in words: this college's own video if the admin panel has
+      one on file (site_videos, filtered to this college's category — see
+      src/data/video-categories.json), populated client-side by
+      college-video.js exactly the way /videos itself renders one, or an
+      honest "none yet" state with a link into the fuller library. Never a
+      stock or generic clip: the empty state says plainly that nothing is
+      filed here yet, the same rule college-photo.js already follows for
+      the hero photo. Hidden until the script resolves either way; a
+      noscript fallback covers the no-JS case with a plain link instead of
+      silence. */}
+  <div class="doc rev" style="margin-top:28px">
+    <div class="doc-head">
+      <h2 class="doc-title">See {shortName}</h2>
+      <span class="doc-kicker">Campus &amp; clinical video</span>
+    </div>
+    <div class="doc-body">
+      <div id="college-video" data-video-category={videoCategory} data-college-name={shortName} hidden></div>
+      <noscript>
+        <div class="doc-empty">
+          <p class="doc-empty-body">
+            Video for {shortName}, where we have it, is in our
+            {' '}<a href={videoCategory ? `/videos?college=${encodeURIComponent(videoCategory)}` : '/videos'}>video library</a>.
+          </p>
+        </div>
+      </noscript>
+      {/* Media-readiness follow-up (2026-09-12): a distinct third state,
+          neither "we have this evidence" nor "we have nothing" — this
+          college has a verified real institutional presence elsewhere, and
+          the honest thing is to point there rather than either embed
+          something we cannot confirm the rights/authorship of, or say
+          nothing at all. Renders only for the one college with a verified
+          entry today (see src/data/official-sources.json and
+          DECISION_LOG.md); absent for every other college, exactly like
+          every other unfilled slot on this page. */}
+      {sources && (
+        <div class="doc-note" style="margin-top:16px">
+          <strong>Official {shortName} sources.</strong> Verified {sources.verifiedAt} — {sources.verificationNote}
+          {' '}
+          {sources.links.map((l, i) => (
+            <>
+              <a href={l.url} target="_blank" rel="noopener">{l.label} ↗</a>
+              {i < sources.links.length - 1 ? ' · ' : ''}
+            </>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+
+  {/* EXPERIENCE, continued — the academic path and the hospital/clinical relationship,
+      as a sequence rather than as more rows in the record above. Every step
+      is knowledge.json's own already-sourced answer, read in order; nothing
+      here is specific to this one college except, where the college's own
+      name says so, that it names its own teaching hospital. */}
+  <div class="doc rev" style="margin-top:28px">
+    <div class="doc-head">
+      <h2 class="doc-title">Your years at {shortName}</h2>
+      <span class="doc-kicker">5.5 years, in order</span>
+    </div>
+    <div class="doc-body">
+      <ol class="doc-steps">
+        {academicSteps.map((s) => (
+          <li class="doc-step">
+            <h3 class="doc-step-title">{s.title}</h3>
+            <p class="doc-step-body">{s.body}</p>
+            <a href={s.source.url} target="_blank" rel="noopener" class="card-link">{s.source.name} ↗</a>
+          </li>
+        ))}
+      </ol>
+    </div>
+    <p class="doc-source">
+      This sequence is set by Nepal Medical Council and National Medical
+      Commission (India) regulation, not by {shortName} individually — it is
+      the same for every MEC-approved college. {hospitalInName
+        ? <>{shortName}'s own name names its teaching hospital; we have no further detail on file about its size or case mix.</>
+        : <>We do not have this college's specific teaching hospital on file — ask us, or ask the college directly.</>}
+    </p>
+  </div>
+
+  {/* VERIFY — the caveats that keep the record above honest. Unchanged in
+      substance from before this phase. */}
   {c.seatsSource && (
     <div class="doc-note rev" style="margin-top:24px">
       <strong>About the seat figure.</strong> {c.seats} is this college's
@@ -142,12 +275,36 @@ const schema = {
     will give you the current structure in writing on a call.
   </div>
 
+  {/* DECIDE — the natural place to leave this one record and either see it
+      next to others (comparison) or go back to choosing among all of them
+      (discovery). Both already exist; this just connects them here. */}
   <div class="rev" style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
-    <button class="college-enquire" data-act="click"
-            data-do={JSON.stringify([["enquireCollege", c.enquiryName || c.name]])}>
-      Enquire about {shortName}
-    </button>
-    <a href="/admission-process" class="college-link">How the MEC process works →</a>
+    <a href={`/colleges/compare?c=${encodeURIComponent(c.slug)}`} class="college-link">Compare {shortName} with other colleges →</a>
+    <a href="/colleges" class="college-link">← Back to all colleges</a>
+  </div>
+
+  {/* ENQUIRE — the one conversion moment on this page, placed after the
+      record, the years and the caveats rather than before them, so it reads
+      as the next step once you understand the college, not a sales button
+      competing with the facts above it. Deliberately still .college-enquire,
+      not the site's reserved .gl-crystal treatment — premium.css §17 keeps
+      that crystal fill to the two highest-visibility, sitewide conversion
+      points (nav + homepage hero); using it again here, once per college,
+      would be exactly the dilution that restraint exists to prevent. */}
+  <div class="doc rev" style="margin-top:32px">
+    <div class="doc-body" style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+      <p style="margin:0;max-width:44ch">
+        Considered the record, the path and the caveats above? The next step
+        is a call, not another page.
+      </p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+        <button class="college-enquire m-magnet" data-pull="0.18" data-act="click"
+                data-do={JSON.stringify([["enquireCollege", c.enquiryName || c.name]])}>
+          Enquire about {shortName}
+        </button>
+        <a href="/admission-process" class="college-link">How the MEC process works →</a>
+      </div>
+    </div>
   </div>
 
 </div>

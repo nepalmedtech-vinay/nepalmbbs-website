@@ -86,7 +86,7 @@ const comparison = [
       <canvas class="ph-3d" aria-hidden="true"></canvas>
       <div class="ph-in">
         <p class="eyebrow ph-in-1">Step by step</p>
-        <h1 class="sec-title ph-in-2">From NEET to Nepal MBBS</h1>
+        <h1 class="sec-title ph-in-2"><span class="gl-line"><span>From NEET to Nepal MBBS</span></span></h1>
         <p class="sec-sub ph-in-3">
           The complete official roadmap. Every step below is verified against
           NMC India and MEC Nepal sources, and each one carries the link it was
@@ -122,7 +122,7 @@ const comparison = [
   <section class="pr-rail pr-compare rev">
     <div class="pr-rail-head">
       <p class="eyebrow">Quick comparison</p>
-      <h2 class="sec-title">Nepal MBBS vs India private MBBS</h2>
+      <h2 class="sec-title hl-cine">Nepal MBBS vs India private MBBS</h2>
       <p class="sec-sub">
         A factual comparison to support an informed decision. Individual
         factors vary by college and by year.
@@ -208,30 +208,23 @@ const comparison = [
     pointer-events: none;
   }
   .ph-3d.is-ready { opacity: 0.8; }
+  /* See PageHeader.astro's own version of this rule: below 48rem this
+     canvas spans the whole header, over the lead paragraph rather than
+     beside it, so the same opacity that works on desktop reads as clutter
+     over body text on a phone. */
+  @media (max-width: 48rem) {
+    .ph-3d.is-ready { opacity: 0.32; }
+  }
   .ph.ph--3d-active .ph-field { opacity: 0; transition: opacity 420ms ease; }
 </style>
 
 <script>
-  const canvas = document.querySelector('.ph-3d');
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (canvas && !reduce) {
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
-    idle(async () => {
-      try {
-        const { mountMedicalIconsScene } = await import('../lib/medical-icons-scene.js');
-        const handle = mountMedicalIconsScene(canvas);
-        if (handle) {
-          canvas.classList.add('is-ready');
-          canvas.closest('.ph')?.classList.add('ph--3d-active');
-          canvas.addEventListener('webglcontextlost', (e) => {
-            e.preventDefault();
-            handle.stop();
-            canvas.classList.remove('is-ready');
-            canvas.closest('.ph')?.classList.remove('ph--3d-active');
-          }, { once: true });
-        }
-      } catch (e) {}
+  import('../lib/mount-medical-scene.js').then(({ mountMedicalSceneWhenVisible }) => {
+    const canvas = document.querySelector('.ph-3d');
+    mountMedicalSceneWhenVisible(canvas, {
+      onReady: () => canvas.closest('.ph')?.classList.add('ph--3d-active'),
+      onLost: () => canvas.closest('.ph')?.classList.remove('ph--3d-active'),
     });
-  }
+  });
 </script>
 </GlassLayout>

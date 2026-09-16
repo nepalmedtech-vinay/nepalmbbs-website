@@ -1,0 +1,386 @@
+---
+import EvidenceBadges from './EvidenceBadges.astro';
+import places from '../data/places.json';
+
+// Phase 5D — the college detail page's identity moment. Establishes which
+// college this is and why it matters before anything else on the page:
+// name, the handful of facts that place it, and the evidence badges that
+// were previously stranded below a generic PageHeader.
+//
+// The right-hand panel is an asset slot, not a photo: `#college-photo`
+// (college-photo.js, unchanged) already looks for a real staff-uploaded
+// photo in Supabase Storage and reveals itself the moment one exists for
+// this slug — nothing here changes that mechanism. Until a college has one,
+// the slot shows a graphic fallback built entirely from this college's own
+// real fields (its initials, its ownership, its actual coordinates where
+// known) — never a stock or generic campus image standing in for a real
+// one, per the standing content rule.
+interface Props { college: Record<string, any> }
+const { college: c } = Astro.props;
+const isGovt = c.type === 'govt';
+const shortName = c.name.split('(')[0].trim();
+const coord = places[c.location];
+
+const STOP = new Set(['of', 'the', 'and', '&', 'for']);
+const initials = (
+  shortName
+    .split(/\s+/)
+    .filter((w) => w && !STOP.has(w.toLowerCase()))
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('') || shortName.slice(0, 2)
+).toUpperCase();
+
+// A one-line identity sentence from fields that already exist — no new
+// facts, just the existing record read in order rather than as a table.
+// "Established" is deliberately left out here: it gets the bold stat-box
+// treatment just below instead, and repeating it in this sentence too
+// would be the exact kind of density the identity moment should avoid —
+// one fact, one place, not the same number twice within a few lines.
+const factParts = [
+  c.location,
+  c.affiliation && `affiliated to ${c.affiliation}`,
+].filter(Boolean);
+
+// Less density, same facts: the two numbers a visitor actually scans the
+// full Record table for first (how many seats, how long has this college
+// existed) get pulled forward as a headline glance — the site's own
+// existing "no box, a rule and a number" .stat-box language (premium.css
+// §6, built for the admin dashboard, already reused on the homepage
+// hero) rather than a new component. The Record table below still shows
+// every field in full; nothing here is hidden, only repeated with more
+// visual weight where a visitor looks first.
+const headlineStats = [
+  c.seats && { n: c.seats, l: 'Foreign-quota seats' },
+  c.established && { n: c.established, l: 'Established' },
+].filter(Boolean);
+---
+<div class="rev">
+  <a href="/colleges" class="college-link" style="display:inline-block;margin-bottom:18px">← All Nepal medical colleges</a>
+</div>
+
+<section class="ch rev">
+  <div class="ch-copy">
+    <span class="eyebrow">{isGovt ? 'Government college' : 'Private college'} · MEC Nepal 2025-26</span>
+    <h1 class="sec-title college-name ch-h1"><span class="gl-line"><span>{c.name}</span></span></h1>
+    {factParts.length > 0 && <p class="ch-facts">{factParts.join(' · ')}</p>}
+    {headlineStats.length > 0 && (
+      <div class="stat-grid ch-stats">
+        {headlineStats.map((s) => (
+          <div class="stat-box"><strong>{s.n}</strong><span>{s.l}</span></div>
+        ))}
+      </div>
+    )}
+    <EvidenceBadges college={c} />
+  </div>
+
+  {/* Cinematic pass: gl--live alone (not the base .gl class, which brings
+      its own background/border this panel's own ownership-tinted design
+      already replaces) — the pointer-tilt + specular system glass.css and
+      runtime.js already run sitewide, extended to this one static element
+      for free rather than writing a second tilt implementation. runtime.js
+      injects the .gl-spec span itself when missing (same as GlassHero's
+      own `.gh-stat.gl.gl--live` usage — no markup needed here either).
+      Applies equally whether a real photo has swapped in or not. */}
+  <div class="ch-asset gl--live" class:list={[{ 'is-govt': isGovt }]}>
+    {/* Empty and hidden until college-photo.js finds a real photo for this
+        slug. Absolutely positioned over the fallback below so the swap from
+        graphic mark to real photograph needs no script change here. */}
+    <div class="cph" id="college-photo" data-college-slug={c.slug} hidden></div>
+
+    {/* Informatics pass: the plain initials mark had nothing to hold a
+        visitor's attention while 0/27 colleges have a real photo — a
+        watermark and not much else. Replaced with a small "at a glance"
+        data card built entirely from this college's own already-sourced
+        fields (nothing new invented for this panel): founding year, the
+        foreign-quota seat count, and ownership. The monogram stays, but
+        demoted to a large low-opacity watermark behind the facts rather
+        than the star of the panel — still 100% honest, still never a
+        stand-in photo, just no longer the only thing here. Stops
+        completely, not merely covered, the instant a real photo loads:
+        `.cph:not([hidden]) ~ .ch-fallback` below sets display:none on the
+        whole thing, the same sibling-selector technique
+        `.ch-fallback-cap` already used, extended to the card so its
+        counter/entrance animation don't keep running for nothing behind
+        a photo that has already replaced it. */}
+    <div class="ch-fallback" aria-hidden="true">
+      <svg class="ch-fallback-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <line x1="0" y1="22" x2="100" y2="22" />
+        <line x1="14" y1="0" x2="14" y2="100" />
+      </svg>
+      <span class="ch-mono">{initials}</span>
+      <div class="ch-facts-card">
+        {c.established && (
+          <div class="ch-fact">
+            <svg class="ch-fact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="17" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="9" x2="21" y2="9"/>
+            </svg>
+            <div class="ch-fact-text">
+              <span class="ch-fact-val">{c.established}</span>
+              <span class="ch-fact-lbl">Established</span>
+            </div>
+          </div>
+        )}
+        {c.seats && (
+          <div class="ch-fact">
+            <svg class="ch-fact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 19V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v13"/><path d="M3 19h18"/><path d="M5 19v-4h6v4"/>
+            </svg>
+            <div class="ch-fact-text">
+              <span class="ch-fact-val" data-count={c.seats}>0</span>
+              <span class="ch-fact-lbl">Foreign-quota seats</span>
+            </div>
+          </div>
+        )}
+        <div class="ch-fact">
+          <svg class="ch-fact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2 3 7v2h18V7z"/><path d="M5 9v9M9 9v9M15 9v9M19 9v9"/><path d="M3 21h18"/>
+          </svg>
+          <div class="ch-fact-text">
+            <span class="ch-fact-val">{isGovt ? 'Government' : 'Private'}</span>
+            <span class="ch-fact-lbl">Ownership</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="ch-fallback-cap">
+      {coord
+        ? <>Verified college record, not a photograph · {coord.lat.toFixed(2)}°N, {coord.lon.toFixed(2)}°E</>
+        : <>Verified college record, not a photograph</>}
+    </p>
+  </div>
+</section>
+
+<style>
+  .ch { display: grid; gap: var(--s-6, 2rem); }
+  @media (min-width: 56rem) {
+    .ch {
+      grid-template-columns: minmax(0, 1fr) 19rem;
+      align-items: start;
+      gap: clamp(2rem, 1rem + 3vw, 3.5rem);
+    }
+  }
+  .ch-h1 { margin: var(--s-4, 1rem) 0 var(--s-3, 0.75rem); }
+  .ch-facts {
+    margin: 0 0 var(--s-4, 1rem);
+    color: var(--g-ink-3, var(--muted));
+    font-size: var(--t-sm, 0.95rem);
+  }
+
+  /* Two figures, not a row of them — .stat-grid's own auto-fit columns
+     would stretch a 2-item grid across the whole copy column on a wide
+     screen, leaving a wide gap between the number and its label that
+     reads as empty rather than spacious. Capped to a compact pair
+     instead, sized like the homepage hero's own stat ledger. */
+  .ch-stats {
+    grid-template-columns: repeat(2, minmax(0, 9rem)) !important;
+    margin: 0 0 var(--s-5, 1.5rem) !important;
+  }
+
+  .ch-asset {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--r-md, 12px);
+    overflow: hidden;
+    box-shadow: 0 0 0 1px var(--pr-hair, var(--border));
+  }
+  @media (min-width: 56rem) {
+    .ch-asset { aspect-ratio: 3 / 4; }
+  }
+
+  .cph { position: absolute; inset: 0; z-index: 2; }
+  /* .gl-spec (glass.css) is z-index:2 by default, same as .cph above and
+     earlier in the DOM — same-level siblings paint in DOM order, so
+     without this the specular highlight would sit *under* a real photo
+     once one is uploaded, invisible. Above both photo and fallback so the
+     tilt's shine cue survives either state. */
+  .ch-asset > .gl-spec { z-index: 3; }
+  .cph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Media-readiness follow-up: shown only when college-photo.js finds a real
+     caption on the photo's site_photos metadata row — most uploads won't
+     have one, and the slot works exactly as before when it doesn't. */
+  .cph-caption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    margin: 0;
+    padding: var(--s-3, 0.75rem);
+    font-size: 12px;
+    line-height: 1.4;
+    color: #fff;
+    background: linear-gradient(0deg, rgba(0 0 0 / 0.55), transparent);
+  }
+
+  /* Final pass: this panel is every college's single strongest visual
+     moment while 0/27 have a real photo (CONTENT_ASSET_PLAN.md), and the
+     pale brand-tint wash it used to be read as thin/empty next to the
+     dark .doc-head band lower on the same page — two different registers
+     on one page. Deepened to the same navy-accent family .doc-head
+     already established, still 100% honest (a graphic identity mark, not
+     a stand-in photo — nothing here claims to depict a real place), and
+     now dark enough that .gl--live's specular sweep (glass.css, already
+     wired to this element) reads as real light catching a lit panel
+     instead of a faint shimmer nobody notices on a pale ground. Colours
+     computed against --navy-accent the same way .doc-head's were: white
+     ~14.3:1, the 78-88% white mixes below ~9-12:1, --sky ~6.4:1 — all
+     comfortably past the 4.5:1 AA floor a caption/monogram needs. */
+  .ch-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--s-5, 1.5rem);
+    padding: var(--s-6, 2rem) var(--s-5, 1.5rem) calc(var(--s-7, 3rem) + var(--s-4, 1rem));
+    overflow: hidden;
+    background:
+      radial-gradient(130% 140% at 22% 12%,
+        color-mix(in oklab, var(--brand) 60%, var(--navy-accent) 40%) 0%,
+        transparent 55%),
+      linear-gradient(165deg,
+        var(--navy-accent),
+        color-mix(in oklab, var(--navy-accent) 74%, black 20%));
+  }
+  .ch-asset.is-govt .ch-fallback {
+    background:
+      radial-gradient(130% 140% at 22% 12%,
+        color-mix(in oklab, var(--brand-2, var(--brand)) 60%, var(--navy-accent) 40%) 0%,
+        transparent 55%),
+      linear-gradient(165deg,
+        var(--navy-accent),
+        color-mix(in oklab, var(--navy-accent) 74%, black 20%));
+  }
+  /* The instant a real photo exists (college-photo.js removes [hidden] on
+     .cph), the whole card stops — display:none, not just visually
+     covered, so its entrance animation and counter aren't still doing
+     work behind a photo that already replaced them. */
+  .cph:not([hidden]) ~ .ch-fallback { display: none; }
+  .ch-fallback-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    stroke: rgba(255 255 255 / 0.14);
+    stroke-width: 0.4;
+  }
+  /* Demoted from the panel's whole reason for being to a watermark behind
+     the facts card below — large enough to still read as a mark, quiet
+     enough not to compete with real data for attention. */
+  .ch-mono {
+    position: absolute;
+    right: var(--s-4, 1rem);
+    bottom: var(--s-4, 1rem);
+    z-index: 0;
+    font-family: var(--ty-display);
+    font-weight: var(--ty-weight-d, 800);
+    font-size: clamp(2.6rem, 2rem + 3.5vw, 4.4rem);
+    letter-spacing: 0.01em;
+    color: color-mix(in oklab, white 90%, var(--accent-warm) 10%);
+    opacity: 0.16;
+    pointer-events: none;
+  }
+
+  /* The facts card: three real, already-sourced figures rather than the
+     bare monogram alone — "informatics" the brief asked for, not a stock
+     photo standing in and not a fabricated one either.
+
+     Real contrast bug, caught by audit.mjs and NOT by hand-estimating the
+     background colour first (74 low-contrast elements, worst 2.33:1):
+     the panel's own radial highlight (`.ch-fallback`'s background, "60%
+     brand-mixed" at its centre near 22% 12%) bleeds directly through the
+     area this card sits in, especially for the first row and especially
+     on the teal govt variant — a much lighter, more saturated background
+     than the plain navy gradient stop this file's own colour comments
+     were computed against. Confirmed by sampling the actual rendered
+     pixels (a cropped screenshot of the label in place), not by
+     recomputing the estimate more carefully — an estimate is exactly
+     what produced the bug. Fixed by giving the card a guaranteed-dark
+     scrim of its own rather than trusting whatever decorative gradient
+     happens to be behind it at any given scroll/highlight position. */
+  .ch-facts-card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4, 1rem);
+    margin: calc(-1 * var(--s-4, 1rem));
+    padding: var(--s-4, 1rem);
+    border-radius: var(--r-md, 12px);
+    background: color-mix(in oklab, black 34%, transparent);
+  }
+  .ch-fact { display: flex; align-items: center; gap: var(--s-3, 0.75rem); }
+  .ch-fact-icon {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    color: var(--sky);
+    opacity: 0.9;
+  }
+  .ch-fact-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ch-fact-val {
+    font-family: var(--ty-display);
+    font-weight: var(--ty-weight-d, 700);
+    font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.6rem);
+    line-height: 1.1;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+  .ch-fact-lbl {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, white 66%, var(--navy-accent) 34%);
+  }
+  /* One staggered rise per row on load — the same cascade language
+     .gh-in-1..6 already uses for the homepage hero, sized down to three
+     short delays since this card has three rows, not six. Visible at
+     rest (opacity: 1 outside the media query) so reduced-motion and
+     no-JS visitors see the finished card immediately, never a stuck
+     half-faded row. */
+  @media (prefers-reduced-motion: no-preference) {
+    .ch-fact {
+      opacity: 0;
+      animation: ch-fact-in var(--d-4, 0.5s) var(--ea-out, ease) both;
+    }
+    .ch-fact:nth-child(1) { animation-delay: calc(160ms * var(--mo)); }
+    .ch-fact:nth-child(2) { animation-delay: calc(280ms * var(--mo)); }
+    .ch-fact:nth-child(3) { animation-delay: calc(400ms * var(--mo)); }
+  }
+  @keyframes ch-fact-in {
+    from { opacity: 0; transform: translate3d(0, calc(10px * var(--mo)), 0); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .ch-fallback-cap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    margin: 0;
+    padding: var(--s-4, 1rem) var(--s-3, 0.75rem) var(--s-3, 0.75rem);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    /* Real bug, caught by audit.mjs: this caption is a DOM *sibling* of
+       .ch-fallback, not its descendant, and the checker's contrast walker
+       (tests/audit.mjs's groundsOf()) only ever climbs an element's own
+       ancestor chain — it cannot see a sibling's painted background, by
+       design (it wasn't built to guess at paint order). Relying on
+       .ch-fallback's dark gradient showing through here measured as
+       near-white text on the *page's* light ground instead (1.57:1 on
+       every one of the 27 college pages) — a real, caught regression, not
+       a false positive. Fixed by giving this element its own explicit,
+       fully-opaque background instead of depending on what happens to be
+       behind it: same colour as .ch-fallback's own darkest stop, so it
+       reads as one continuous panel, not a separate box. 78% white on
+       this ≈ 12:1, and now the checker (and any browser's own paint order,
+       which does not care about DOM ancestry either) sees the real thing. */
+    background: linear-gradient(0deg,
+      color-mix(in oklab, var(--navy-accent) 74%, black 20%) 55%,
+      transparent);
+    color: color-mix(in oklab, white 78%, var(--navy-accent) 22%);
+  }
+  /* The moment a real photo reveals itself (college-photo.js removes
+     [hidden]), the caption belongs to a photograph, not a mark — hide it
+     rather than have it caption someone's real campus. */
+  .cph:not([hidden]) ~ .ch-fallback-cap { display: none; }
+</style>

@@ -1,0 +1,12 @@
+{
+  "_note": "Verified official institutional presences, used only as outbound reference links — never embedded, never claimed as this site's own media. Populated per college only after specific research (see DECISION_LOG.md, media-readiness follow-up, 2026-09-12); most colleges have no entry yet, which renders nothing rather than a placeholder. WebFetch is blocked in this sandbox for these domains, so verification here means cross-checking published contact details (phone/email/website) across independent sources, not reading each page's own content or rights terms directly — treat `verifiedAt` as 'these presences appear genuine as of this date,' not 'every asset on them is confirmed reusable.'",
+  "chitwan-medical-college": {
+    "verifiedAt": "2026-09-12",
+    "verificationNote": "Website, Facebook and YouTube channel names/contact details cross-checked against each other via WebSearch; individual pages could not be fetched directly to verify specific media or rights terms.",
+    "links": [
+      { "label": "Official website", "url": "https://www.cmc.edu.np" },
+      { "label": "Official Facebook page", "url": "https://www.facebook.com/cmcteachinghospital/" },
+      { "label": "YouTube channel", "url": "https://www.youtube.com/channel/UCaAANsFw3kpDVC7BDq5pF0A" }
+    ]
+  }
+}

@@ -3,18 +3,19 @@
 // Genuine WebGL 3D: real geometry (not sprites, not a skybox), real
 // lighting via a generated environment map (so the crystal material
 // actually reflects/refracts something), floating and rotating on their
-// own gentle cycles. Five shapes, each built procedurally from Three.js
+// own gentle cycles. Six shapes, each built procedurally from Three.js
 // primitives/curves rather than an imported model file — there is no
 // licensed medical 3D asset in this repository, and shipping one without
 // a source would be exactly the kind of unsourced asset this project's own
 // content rules already forbid for photography. What is here is honest
-// about what it is: five considered, hand-built shapes, not photoreal
+// about what it is: six considered, hand-built shapes, not photoreal
 // scans.
 //
 //   1. A stethoscope — a tube swept along a curved path (the tubing) plus
 //      a flattened cylinder (the chest piece) and two small tori (the
-//      earpieces). Redrawn rounder in this pass to actually read as a
-//      stethoscope at a glance, matching the 2D fallback icon.
+//      earpieces). Tube radii bumped a second time (2026-09-16) after the
+//      owner flagged it as reading thin/insubstantial at the size this
+//      scene actually renders at — same proportions, bolder line.
 //   2. A pulse/ECG trace — a tube swept along the classic heartbeat
 //      zigzag, extruded into 3D rather than drawn flat.
 //   3. A capsule — medicine's own shape (THREE.CapsuleGeometry), standing
@@ -23,6 +24,9 @@
 //      rungs between them, standing in for "biology" the way the cross
 //      stands in for "medical".
 //   5. A medical cross — an extruded, bevelled 2D cross shape.
+//   6. A syringe — glass barrel, steel plunger and needle. Added
+//      2026-09-16 on the owner's explicit ask for more medical icons in
+//      the field.
 //
 // Material: MeshPhysicalMaterial with transmission (real glass, not a
 // blurred-rectangle approximation) — the same "crystal" language the
@@ -39,16 +43,59 @@
 // screen. This is the middle setting: still soft glass, not solid colour,
 // but present enough that the float/rotation is actually visible.
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+// A cheap stand-in for `RoomEnvironment` (the addon Three.js ships for this
+// exact purpose). RoomEnvironment builds a small multi-plane lit room and
+// PMREMGenerator then prefilters it across several roughness mip levels —
+// correct for a hero-focal product render, but this scene mounts up to
+// three times on one page (page-header + footer, sometimes both), each
+// with its own WebGLRenderer/GL context, so the cost is paid twice or
+// three times per page load and cannot be shared across those contexts.
+// Measured with `tests/perf-verify.mjs` under 4x CPU throttle: this was
+// the dominant cost behind Total Blocking Time being 30-58x over budget
+// on every route that mounts this scene (see DECISION_LOG.md 2026-09-10).
+// A single softly-lit sphere prefilters in a fraction of the time and is
+// visually indistinguishable for small ambient background objects — the
+// crystal material still gets a real, non-fabricated environment to
+// reflect, just a much cheaper one to compute.
+function cheapEnvironmentScene() {
+  const scene = new THREE.Scene();
+  const geo = new THREE.SphereGeometry(6, 12, 8);
+  const mat = new THREE.MeshBasicMaterial({ side: THREE.BackSide, vertexColors: true });
+  const colors = geo.attributes.position;
+  const c = new Float32Array(colors.count * 3);
+  const top = new THREE.Color(0xf5f8ff);
+  const bottom = new THREE.Color(0xc9d6ee);
+  for (let i = 0; i < colors.count; i++) {
+    const y = colors.getY(i) / 6; // -1..1
+    const mixed = bottom.clone().lerp(top, (y + 1) / 2);
+    c[i * 3] = mixed.r; c[i * 3 + 1] = mixed.g; c[i * 3 + 2] = mixed.b;
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(c, 3));
+  scene.add(new THREE.Mesh(geo, mat));
+  return scene;
+}
 
 // A soft physical-glass material shared by every shape, parameterised only
 // by colour — keeps the five objects visually consistent (same "material
 // language") and keeps this file from repeating the same six properties
 // five times.
-function crystalMaterial(color, tint = 0.18, transmission = 0.4) {
+//
+// `lite`: `transmission` on MeshPhysicalMaterial costs Three.js an extra
+// full-scene backdrop render pass per frame per object — measured as a
+// real, if secondary, contributor to the TBT regression documented in
+// 3D_ARCHITECTURE.md. On a route where this scene mounts above the fold
+// (paying its cost immediately, not deferrable the way the footer's is),
+// lite mode swaps to MeshStandardMaterial — no transmission, clearcoat or
+// IOR — same colour language, same lit-glass reading from the scene's
+// own lights, just without the per-frame backdrop pass.
+function crystalMaterial(color, tint = 0.18, transmission = 0.4, lite = false) {
   const c = new THREE.Color(color).lerp(new THREE.Color(0xffffff), tint);
+  if (lite) {
+    return new THREE.MeshStandardMaterial({ color: c, metalness: 0.08, roughness: 0.32 });
+  }
   return new THREE.MeshPhysicalMaterial({
     color: c, metalness: 0.04, roughness: 0.22,
     transmission, thickness: 0.55, ior: 1.4,
@@ -72,39 +119,56 @@ function crystalMaterial(color, tint = 0.18, transmission = 0.4) {
 // True Y-geometry too: two binaural curves converge on a yoke, one tube
 // continues down to the chestpiece — not one continuous loop standing in
 // for both ears at once.
-function buildStethoscope(color, transmission, tint) {
+function buildStethoscope(color, transmission, tint, lite = false) {
   const group = new THREE.Group();
+  // Segment counts halved (floored, minimum kept round-looking) in lite
+  // mode — invisible at the on-screen size these objects render at, real
+  // savings in geometry construction cost on a route paying it above the
+  // fold. `s(n)` keeps every call below readable rather than repeating
+  // the ternary at each site.
+  const s = (n) => (lite ? Math.max(4, Math.round(n / 2)) : n);
 
-  const steel = new THREE.MeshPhysicalMaterial({
-    color: 0xcbd3da, metalness: 0.85, roughness: 0.22,
-    clearcoat: 0.4, clearcoatRoughness: 0.15,
-  });
+  const steel = lite
+    ? new THREE.MeshStandardMaterial({ color: 0xcbd3da, metalness: 0.75, roughness: 0.24 })
+    : new THREE.MeshPhysicalMaterial({
+        color: 0xcbd3da, metalness: 0.9, roughness: 0.16,
+        clearcoat: 0.6, clearcoatRoughness: 0.1,
+      });
   const c = new THREE.Color(color).lerp(new THREE.Color(0xffffff), tint ?? 0.05);
-  const tubeMat = new THREE.MeshPhysicalMaterial({
-    color: c, metalness: 0, roughness: 0.55,
-    transmission: (transmission ?? 0.55) * 0.25, thickness: 0.4, ior: 1.4,
-    clearcoat: 0.25, clearcoatRoughness: 0.4,
-  });
+  const tubeMat = lite
+    ? new THREE.MeshStandardMaterial({ color: c, metalness: 0, roughness: 0.6 })
+    : new THREE.MeshPhysicalMaterial({
+        color: c, metalness: 0, roughness: 0.55,
+        transmission: (transmission ?? 0.55) * 0.25, thickness: 0.4, ior: 1.4,
+        clearcoat: 0.25, clearcoatRoughness: 0.4,
+      });
 
   const yoke = new THREE.Vector3(0, 0.08, 0);
 
   // Binaurals — steel, each ear to the yoke, angled apart in Z so they
   // read as two separate tubes rather than one flattened loop.
+  //
+  // Radii bumped a further ~25% over the previous pass (0.024→0.03 here,
+  // 0.03→0.038 on the main tubing below): at the on-screen size this
+  // scene actually renders at, thin tubes anti-alias into a faint grey
+  // smear rather than a clean line — read as "abstract loop", exactly
+  // what the two-material split above was trying to avoid. A bolder tube
+  // is a legibility fix, not a proportion change.
   [
     { ear: new THREE.Vector3(-0.4, 0.64, -0.06), mid: new THREE.Vector3(-0.34, 0.32, 0.08) },
     { ear: new THREE.Vector3(0.4, 0.64, 0.06), mid: new THREE.Vector3(0.34, 0.32, -0.08) },
   ].forEach(({ ear, mid }) => {
     const curve = new THREE.CatmullRomCurve3([ear, mid, yoke], false, 'catmullrom', 0.35);
-    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.024, 10, false), steel));
+    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, s(32), 0.03, s(10), false), steel));
     // Ear tip — a small rubber cap, the one place the binaural touches skin.
-    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.045, 14, 14), tubeMat);
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.05, s(14), s(14)), tubeMat);
     tip.position.copy(ear);
     group.add(tip);
   });
 
   // The yoke — a short steel sleeve where both binaurals meet the tubing,
   // not the two curves simply touching at a point.
-  const yokeMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.09, 16), steel);
+  const yokeMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.09, s(16)), steel);
   yokeMesh.position.copy(yoke);
   group.add(yokeMesh);
 
@@ -115,26 +179,26 @@ function buildStethoscope(color, transmission, tint) {
     new THREE.Vector3(-0.05, -0.18, 0.04),
     new THREE.Vector3(0.03, -0.42, -0.02),
   ]);
-  group.add(new THREE.Mesh(new THREE.TubeGeometry(tubing, 32, 0.03, 10, false), tubeMat));
+  group.add(new THREE.Mesh(new THREE.TubeGeometry(tubing, s(32), 0.038, s(10), false), tubeMat));
 
   // Chest piece — steel rim and stem, a coloured rubber diaphragm face
   // (the part that would actually be a different, softer material on a
   // real one), and a small raised centre boss for the acoustic seal.
-  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.08, 16), steel);
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.08, s(16)), steel);
   stem.position.set(0.03, -0.5, 0);
   group.add(stem);
 
-  const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.04, 40), tubeMat);
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.04, s(40)), tubeMat);
   disc.position.set(0.03, -0.57, 0);
   disc.rotation.x = Math.PI / 2;
   group.add(disc);
 
-  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.02, 12, 40), steel);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.02, s(12), s(40)), steel);
   rim.position.set(0.03, -0.57, 0);
   rim.rotation.x = Math.PI / 2;
   group.add(rim);
 
-  const boss = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 16), steel);
+  const boss = new THREE.Mesh(new THREE.SphereGeometry(0.05, s(16), s(16)), steel);
   boss.position.set(0.03, -0.55, 0);
   group.add(boss);
 
@@ -142,7 +206,7 @@ function buildStethoscope(color, transmission, tint) {
   return group;
 }
 
-function buildPulseTrace(color, transmission, tint) {
+function buildPulseTrace(color, transmission, tint, lite = false) {
   const pts = [
     new THREE.Vector3(-0.75, 0, 0),
     new THREE.Vector3(-0.4, 0, 0),
@@ -154,17 +218,17 @@ function buildPulseTrace(color, transmission, tint) {
     new THREE.Vector3(0.75, 0, 0),
   ];
   const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.15);
-  const tube = new THREE.TubeGeometry(curve, 96, 0.034, 10, false);
-  const mesh = new THREE.Mesh(tube, crystalMaterial(color, tint, transmission));
+  const tube = new THREE.TubeGeometry(curve, lite ? 48 : 96, 0.034, lite ? 6 : 10, false);
+  const mesh = new THREE.Mesh(tube, crystalMaterial(color, tint, transmission, lite));
   mesh.scale.setScalar(0.74);
   return mesh;
 }
 
 // Medicine's own shape — two capped half-cylinders, standing in for
 // "medicine" the way the stethoscope stands in for "clinical".
-function buildCapsule(color, transmission, tint) {
-  const geo = new THREE.CapsuleGeometry(0.16, 0.42, 6, 14);
-  const mesh = new THREE.Mesh(geo, crystalMaterial(color, tint ?? 0.22, transmission));
+function buildCapsule(color, transmission, tint, lite = false) {
+  const geo = new THREE.CapsuleGeometry(0.16, 0.42, lite ? 3 : 6, lite ? 8 : 14);
+  const mesh = new THREE.Mesh(geo, crystalMaterial(color, tint ?? 0.22, transmission, lite));
   mesh.rotation.z = Math.PI / 2.6;
   mesh.scale.setScalar(0.74);
   return mesh;
@@ -174,10 +238,10 @@ function buildCapsule(color, transmission, tint) {
 // rungs between them at regular intervals. Standing in for "biology" the
 // way the cross stands in for "medical". Built from parametric points
 // rather than an imported model, same as every other shape here.
-function buildDnaHelix(color, transmission, tint) {
+function buildDnaHelix(color, transmission, tint, lite = false) {
   const group = new THREE.Group();
-  const mat = crystalMaterial(color, tint ?? 0.22, transmission);
-  const turns = 2.1, height = 1.1, radius = 0.22, steps = 40;
+  const mat = crystalMaterial(color, tint ?? 0.22, transmission, lite);
+  const turns = 2.1, height = 1.1, radius = 0.22, steps = lite ? 24 : 40;
 
   const strandA = [];
   const strandB = [];
@@ -191,11 +255,11 @@ function buildDnaHelix(color, transmission, tint) {
 
   [strandA, strandB].forEach((pts) => {
     const curve = new THREE.CatmullRomCurve3(pts);
-    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.024, 6, false), mat));
+    group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, lite ? 36 : 64, 0.024, lite ? 4 : 6, false), mat));
   });
 
   // Rungs between the strands, evenly spaced along the axis.
-  const rungCount = 7;
+  const rungCount = lite ? 5 : 7;
   for (let i = 0; i < rungCount; i++) {
     const t = i / (rungCount - 1);
     const angle = t * turns * Math.PI * 2;
@@ -203,14 +267,64 @@ function buildDnaHelix(color, transmission, tint) {
     const a = new THREE.Vector3(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
     const b = new THREE.Vector3(Math.cos(angle + Math.PI) * radius, y, Math.sin(angle + Math.PI) * radius);
     const rungCurve = new THREE.CatmullRomCurve3([a, b]);
-    group.add(new THREE.Mesh(new THREE.TubeGeometry(rungCurve, 4, 0.014, 5, false), mat));
+    group.add(new THREE.Mesh(new THREE.TubeGeometry(rungCurve, 4, 0.014, lite ? 4 : 5, false), mat));
   }
 
   group.scale.setScalar(0.74);
   return group;
 }
 
-function buildCross(color, transmission, tint) {
+// A syringe — barrel, plunger and a fine needle. Added on the owner's
+// explicit ask for more medical icons in the field, built the same way as
+// every other shape here: procedural primitives, split into steel
+// (needle, plunger rod) and the crystal/glass material (barrel) so the
+// needle actually reads as metal rather than the same translucent glass
+// as everything around it.
+function buildSyringe(color, transmission, tint, lite = false) {
+  const group = new THREE.Group();
+  const s = (n) => (lite ? Math.max(4, Math.round(n / 2)) : n);
+
+  const steel = lite
+    ? new THREE.MeshStandardMaterial({ color: 0xcbd3da, metalness: 0.75, roughness: 0.24 })
+    : new THREE.MeshPhysicalMaterial({
+        color: 0xcbd3da, metalness: 0.9, roughness: 0.16,
+        clearcoat: 0.6, clearcoatRoughness: 0.1,
+      });
+
+  // Barrel — clear glass, the syringe's own defining shape.
+  const barrel = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.09, 0.09, 0.62, s(24), 1, true),
+    crystalMaterial(color, tint ?? 0.28, transmission, lite),
+  );
+  group.add(barrel);
+
+  // Finger-flange at the barrel's open end.
+  const flange = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.025, s(24)), steel);
+  flange.position.y = 0.31;
+  group.add(flange);
+
+  // Plunger rod, extending out through the flange, plus its thumb-rest disc.
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.4, s(10)), steel);
+  rod.position.y = 0.5;
+  group.add(rod);
+  const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.025, s(20)), steel);
+  thumb.position.y = 0.7;
+  group.add(thumb);
+
+  // Tip taper and needle — steel, thin, deliberately the most slender
+  // thing in the whole set (a syringe needle is meant to read as fine).
+  const tip = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.09, 0.08, s(24)), steel);
+  tip.position.y = -0.35;
+  group.add(tip);
+  const needle = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.34, s(10)), steel);
+  needle.position.y = -0.56;
+  group.add(needle);
+
+  group.scale.setScalar(0.78);
+  return group;
+}
+
+function buildCross(color, transmission, tint, lite = false) {
   const shape = new THREE.Shape();
   const a = 0.22, b = 0.7; // arm half-width, arm length
   shape.moveTo(-a, b); shape.lineTo(a, b); shape.lineTo(a, a);
@@ -221,10 +335,10 @@ function buildCross(color, transmission, tint) {
 
   const geo = new THREE.ExtrudeGeometry(shape, {
     depth: 0.22, bevelEnabled: true, bevelThickness: 0.05,
-    bevelSize: 0.04, bevelSegments: 4, curveSegments: 2,
+    bevelSize: 0.04, bevelSegments: lite ? 2 : 4, curveSegments: 2,
   });
   geo.center();
-  const mesh = new THREE.Mesh(geo, crystalMaterial(color, tint ?? 0.22, transmission));
+  const mesh = new THREE.Mesh(geo, crystalMaterial(color, tint ?? 0.22, transmission, lite));
   mesh.scale.setScalar(0.74);
   return mesh;
 }
@@ -249,17 +363,34 @@ export function mountMedicalIconsScene(canvas, colorVars) {
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 20);
   camera.position.set(0, 0, 6.2);
 
-  // A light, neutral environment (not the dark-tuned one an earlier pass
-  // used) so the glass material reflects something appropriate to a
-  // clinical, light-ground page rather than carrying a dark cast into it.
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const env = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
-  scene.environment = env;
+  // Device signal, computed once up front — decides both the material/
+  // geometry weight below and the DPR cap further down. `hardwareConcurrency`
+  // is a rough proxy (real budget phones commonly report 4 or fewer cores)
+  // but it's the only signal the platform actually offers; there is no
+  // direct "how fast is this GPU" API. `lite` additionally skips the
+  // PMREM environment prefilter entirely — real cost even at the cheap-
+  // scene size added in the previous perf pass — trading its reflections
+  // for plain directional+ambient lighting on a route that has already
+  // chosen to mount this scene above the fold, i.e. cannot defer the
+  // cost the way the footer's IntersectionObserver gate does.
+  const cores = navigator.hardwareConcurrency || 4;
+  const narrow = matchMedia('(max-width: 48rem)').matches;
+  const lite = narrow || cores <= 4;
+
+  let pmrem, env;
+  if (!lite) {
+    pmrem = new THREE.PMREMGenerator(renderer);
+    env = pmrem.fromScene(cheapEnvironmentScene(), 0.05).texture;
+    scene.environment = env;
+  }
 
   const key = new THREE.DirectionalLight(0xffffff, 0.95);
   key.position.set(3, 4, 5);
   scene.add(key);
-  const fill = new THREE.AmbientLight(0xdfe8ff, 0.4);
+  // A touch brighter in lite mode — with no environment map to add fill
+  // light of its own, the plain MeshStandardMaterial objects read slightly
+  // flatter without it.
+  const fill = new THREE.AmbientLight(0xdfe8ff, lite ? 0.55 : 0.4);
   scene.add(fill);
 
   // Brand tokens, read at mount time — falls back to the site's own blue/
@@ -285,25 +416,49 @@ export function mountMedicalIconsScene(canvas, colorVars) {
   // *about*.
   const tint = colorVars?.tint;
 
-  const stetho = buildStethoscope(brand, transmission, tint);
-  stetho.position.set(-1.7, 0.7, 0);
-  scene.add(stetho);
+  // All five ride in one group so the formation can be scaled as a whole
+  // (see the aspect-ratio note in resize() below) without re-deriving each
+  // object's individual position.
+  const field = new THREE.Group();
+  scene.add(field);
 
-  const pulse = buildPulseTrace(brand2, transmission, tint);
-  pulse.position.set(0.15, -0.85, -0.5);
-  scene.add(pulse);
+  // Design pass, 2026-09-16: all six repositioned into the right-hand
+  // third of the field, clear of the headline/lead copy that lives in
+  // the left ~55% of the hero. The previous spread (stethoscope out to
+  // x=-1.7) put objects directly underneath "Your MBBS in Nepal" and the
+  // lead paragraph — visible in a real screenshot, not assumed — which
+  // read as a rendering glitch rather than an ambient background, and is
+  // very likely a real part of why the stethoscope specifically got
+  // flagged as looking cheap: a shape crossing through body text looks
+  // broken regardless of how the shape itself is built. Clustered tighter
+  // together now too (previous x-spread of ~3.45 units, now ~1.15) as
+  // its own contribution to "smaller", on top of the FIELD_SCALE cut
+  // below — the formation reads as a considered group beside the copy,
+  // not scattered across it.
+  const stetho = buildStethoscope(brand, transmission, tint, lite);
+  stetho.position.set(1.85, 0.75, 0);
+  field.add(stetho);
 
-  const capsule = buildCapsule(brand, transmission, tint);
-  capsule.position.set(1.75, 0.85, -0.2);
-  scene.add(capsule);
+  const pulse = buildPulseTrace(brand2, transmission, tint, lite);
+  pulse.position.set(1.95, -0.85, -0.5);
+  field.add(pulse);
 
-  const dna = buildDnaHelix(brand2, transmission, tint);
-  dna.position.set(-1.6, -0.75, -0.4);
-  scene.add(dna);
+  const capsule = buildCapsule(brand, transmission, tint, lite);
+  capsule.position.set(2.6, 0.7, -0.2);
+  field.add(capsule);
 
-  const cross = buildCross(brand.clone().lerp(brand2, 0.5), transmission, tint);
-  cross.position.set(1.3, -1.25, -0.3);
-  scene.add(cross);
+  const dna = buildDnaHelix(brand2, transmission, tint, lite);
+  dna.position.set(1.9, -0.2, -0.4);
+  field.add(dna);
+
+  const cross = buildCross(brand.clone().lerp(brand2, 0.5), transmission, tint, lite);
+  cross.position.set(2.65, -1.0, -0.3);
+  field.add(cross);
+
+  const syringe = buildSyringe(brand2, transmission, tint, lite);
+  syringe.position.set(2.15, 0.0, 0.25);
+  syringe.rotation.z = 0.35;
+  field.add(syringe);
 
   const objects = [
     { mesh: stetho, spin: 0.05, floatAmp: 0.16, floatSpeed: 0.35, phase: 0 },
@@ -311,15 +466,46 @@ export function mountMedicalIconsScene(canvas, colorVars) {
     { mesh: capsule, spin: 0.08, floatAmp: 0.15, floatSpeed: 0.33, phase: 1.3 },
     { mesh: dna, spin: -0.04, floatAmp: 0.12, floatSpeed: 0.24, phase: 3.4 },
     { mesh: cross, spin: 0.06, floatAmp: 0.17, floatSpeed: 0.31, phase: 4.2 },
+    { mesh: syringe, spin: -0.05, floatAmp: 0.14, floatSpeed: 0.29, phase: 1.8 },
   ];
+
+  // Adaptive DPR cap, reusing the same `cores`/`narrow` signal `lite` was
+  // decided from above: full retina (2x) only where there's CPU to spare,
+  // scaled down harder on a phone-width viewport specifically since these
+  // are small background icons where the extra resolution is invisible
+  // at that size anyway.
+  const dprCap = narrow ? 1.25 : (cores <= 4 ? 1.5 : 2);
+
+  // The five objects' world-space spread (x out to ~1.75) was tuned against
+  // a wide, short canvas — the desktop hero band this scene was built for
+  // first. PageHeader and admission-process mount the same scene into a
+  // canvas shaped like a whole page header instead: on a phone that is
+  // often near-square or taller than wide, where the same spread fills the
+  // frame edge to edge and sits directly over the heading/lead text
+  // underneath it rather than reading as a quiet background field (found
+  // visually — a mobile screenshot of /colleges and /admission-process
+  // both showed the icons overlapping their own headline). REF_ASPECT is
+  // the wide ratio the layout already looks right at; a canvas at or above
+  // it is untouched, so the desktop hero and any already-wide mount are
+  // unaffected. Floored so the icons never shrink to invisible on a very
+  // tall narrow header.
+  const REF_ASPECT = 1.6;
+  // Overall field size, on the owner's explicit ask to make the icons
+  // smaller — a flat multiplier on top of the aspect-ratio scaling below
+  // rather than shrinking each shape's own internal scale, so the
+  // relative sizing between shapes (and the aspect-ratio floor for narrow
+  // headers) is unchanged, just the whole formation sits smaller in frame.
+  const FIELD_SCALE = 0.56;
 
   function resize() {
     const w = canvas.clientWidth || 1;
     const h = canvas.clientHeight || 1;
     renderer.setSize(w, h, false);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    const aspectScale = camera.aspect < REF_ASPECT ? Math.max(0.34, camera.aspect / REF_ASPECT) : 1;
+    field.scale.setScalar(aspectScale * FIELD_SCALE);
   }
 
   const ro = new ResizeObserver(resize);
@@ -367,7 +553,7 @@ export function mountMedicalIconsScene(canvas, colorVars) {
         else obj.material?.dispose?.();
       });
       env?.dispose?.();
-      pmrem.dispose();
+      pmrem?.dispose?.();
       renderer.dispose();
       renderer.forceContextLoss();
     },

@@ -63,7 +63,14 @@
     var picked = slugs.map(function (s) { return bySlug[s]; }).filter(Boolean);
 
     var wrap = document.createElement('div');
-    wrap.className = 'doc';
+    // cmp-pop: a fresh comparison is a new answer to a question the visitor
+    // just asked by ticking a box, not a passive content update — it gets a
+    // small depth pop-in (compare.astro's own CSS) each time the selection
+    // changes and the whole table is rebuilt, the "selection -> spatial
+    // response" this page's picker doesn't otherwise have (a per-checkbox
+    // tilt was considered and rejected: 27 small adjacent targets tilting
+    // independently reads as wobble, not depth).
+    wrap.className = 'doc cmp-pop';
     var head = document.createElement('div');
     head.className = 'doc-head';
     var title = document.createElement('h2');

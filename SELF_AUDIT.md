@@ -10,6 +10,19 @@ do not raise a number because the build passes.
 
 _Last scored: 2026-08-28, after the seat matrix landed._
 
+**Note, 2026-09-12**: this table has not been re-scored since, despite
+Phase 4 (full-site rollout) and Phases 5A-5G all shipping in between —
+see `PROJECT_STATE.md` and `NEXT_TASK.md` for what each did. Two rows
+below are known-stale in a direction the shipped work should improve
+(Visual design's "page interiors ... never redesigned" and UX's "admission
+journey remains a narrative page" are each less true after 5F/5G than when
+written), but re-scoring only those two without re-checking Motion,
+Accessibility, Performance and the rest against everything shipped since
+would produce a total that looks precise and isn't. Flagging the table as
+stale is more honest than partially updating it. A full re-score, reading
+every phase's own verified evidence rather than impression, is real,
+owed work — not done this pass, whose own mandate was 5F/5G/5H specifically.
+
 | Category | Weight | Score | Why not higher |
 |---|---:|---:|---|
 | Visual design | 20 | 16 | The chrome is coherent now and the typography is finally one system rather than two. Not higher because the page interiors are still inherited layout — the section-card grid, the three-equal-cards pattern and the flat content blocks were never redesigned, only made legible. |

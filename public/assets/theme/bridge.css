@@ -43,12 +43,12 @@
      stay light. Aliasing them to ink painted the hero's own ancestor dark. */
   --navy-1:      var(--m-fill-soft);
   --navy-2:      var(--m-fill);
-  --off:         color-mix(in oklab, var(--g-base) 92%, var(--g-ink) 8%);
-  --gray:        color-mix(in oklab, var(--g-base) 88%, var(--g-ink) 12%);
+  --off:         color-mix(in oklab, var(--g-base) 90%, var(--g-ink-tint) 10%);
+  --gray:        color-mix(in oklab, var(--g-base) 85%, var(--g-ink-tint) 15%);
   --bg-base:     var(--g-base);
   --bg-surface:  var(--m-fill);
   --bg-raised:   var(--m-fill-solid);
-  --bg-overlay:  color-mix(in oklab, var(--g-base) 84%, var(--g-ink) 16%);
+  --bg-overlay:  color-mix(in oklab, var(--g-base) 84%, var(--g-ink-tint) 16%);
 
   /* ── Text ─────────────────────────────────────────────────────────
      Inverted. This is the flip that keeps 37 pages readable. */
@@ -102,10 +102,10 @@
      — the contrast against its surroundings is what carried the meaning, and
      that survives the inversion. */
 
-  --doc-bg:        color-mix(in oklab, var(--g-base) 96%, var(--g-ink) 4%);
-  --doc-bg-alt:    color-mix(in oklab, var(--g-base) 91%, var(--g-ink) 9%);
-  --doc-border:    color-mix(in oklab, var(--g-ink) 12%, transparent);
-  --doc-rule:      color-mix(in oklab, var(--g-ink) 8%, transparent);
+  --doc-bg:        color-mix(in oklab, var(--g-base) 94%, var(--g-ink-tint) 6%);
+  --doc-bg-alt:    color-mix(in oklab, var(--g-base) 88%, var(--g-ink-tint) 12%);
+  --doc-border:    color-mix(in oklab, var(--g-ink-tint) 15%, transparent);
+  --doc-rule:      color-mix(in oklab, var(--g-ink-tint) 10%, transparent);
   --doc-text:      var(--g-ink);
   --doc-text-mute: var(--g-ink-3);
 

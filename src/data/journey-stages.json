@@ -1,0 +1,10 @@
+[
+  { "key": "enquiry",     "label": "Enquiry received" },
+  { "key": "qualifying",  "label": "Checking eligibility" },
+  { "key": "eligible",    "label": "Eligible" },
+  { "key": "applied",     "label": "Applied to MEC" },
+  { "key": "entrance",    "label": "Entrance" },
+  { "key": "counselling", "label": "In MEC counselling" },
+  { "key": "allotted",    "label": "Seat allotted" },
+  { "key": "admitted",    "label": "Admitted" }
+]

@@ -12,12 +12,12 @@ import PageHeader from '../components/PageHeader.astro';
   <PageHeader eyebrow="Official Documentation" lead="Key regulations from official government sources only. For full documents, use the official links provided." threeD>Official Guidelines — NMC India &amp; Nepal NMC</PageHeader>
   <div style="margin-top:28px">
     <div class="guide-tabs">
-      <button class="g-tab on" data-act="click" data-do='[["switchGuide","@el","gp-india"]]'>🇮🇳 NMC India Guidelines</button>
-      <button class="g-tab" data-act="click" data-do='[["switchGuide","@el","gp-nepal"]]'>🇳🇵 Nepal NMC Guidelines</button>
-      <button class="g-tab" data-act="click" data-do='[["switchGuide","@el","gp-resources"]]'>🔗 All Official Resources</button>
+      <button class="g-tab on" data-act="click" data-do='[["switchGuide","@el","gp-india"]]'><span class="g-tab-flag"><svg width="18" height="13" viewBox="0 0 18 13" aria-hidden="true"><rect width="18" height="13" rx="1.5" fill="#fff"/><path d="M1.5 0h15A1.5 1.5 0 0118 1.5v2.83H0V1.5A1.5 1.5 0 011.5 0z" fill="#FF9933"/><path d="M0 8.67h18v2.83A1.5 1.5 0 0116.5 13h-15A1.5 1.5 0 010 11.5V8.67z" fill="#128807"/><circle cx="9" cy="6.5" r="1.5" fill="none" stroke="#000088" stroke-width="0.25"/><circle cx="9" cy="6.5" r="0.28" fill="#000088"/></svg></span><span class="g-tab-label"> NMC India Guidelines</span></button>
+      <button class="g-tab" data-act="click" data-do='[["switchGuide","@el","gp-nepal"]]'><span class="g-tab-flag"><svg width="13" height="16" viewBox="0 0 13 16" aria-hidden="true"><path d="M1 0.8 L1 15.2 L1 8.3 L10.5 4.9 L1 1.6 Z" fill="#003893"/><path d="M1.7 1.6 L1.7 14.2 L1.7 8.3 L9 5.1 L1.7 2.5 Z" fill="#DC143C"/></svg></span><span class="g-tab-label"> Nepal NMC Guidelines</span></button>
+      <button class="g-tab" data-act="click" data-do='[["switchGuide","@el","gp-resources"]]'><span class="g-tab-label">🔗 All Official Resources</span></button>
     </div>
     <div class="g-pane on" id="gp-india">
-      <div class="doc-note"><div>Regulations may be updated. Always verify at <a href="https://nmc.org.in" target="_blank" rel="noopener" style="color:#92400e;font-weight:700">nmc.org.in</a> before making any decision. Source: NMC FMGL Regulations, 2021 (Gazette Notification, 18 Nov 2021).</div></div>
+      <div class="doc-note"><div>Regulations change, and this page won't always catch up the moment they do. Confirm the current text at <a href="https://nmc.org.in" target="_blank" rel="noopener" style="color:#92400e;font-weight:700">nmc.org.in</a> before acting on it. Source: NMC FMGL Regulations, 2021 (Gazette Notification, 18 Nov 2021).</div></div>
       <div class="doc doc--flow rev">
         <div class="doc-head"><h2 class="doc-title">NMC India — FMGL Regulations, 2021</h2><span class="ev ev--verified">Official document</span></div>
         <div class="doc-row doc-row--stack"><span class="doc-label">NEET Mandatory for All</span><span class="doc-value"><p>Per NMC Act 2019 and FMGL Regulations 2021, NEET qualification is mandatory for Indian students wishing to practice medicine in India after completing MBBS abroad. No exceptions.</p></span></div>
@@ -56,8 +56,8 @@ import PageHeader from '../components/PageHeader.astro';
     <div class="g-pane" id="gp-resources">
       <div class="doc-note"><div>These are the ONLY official sources to trust for fees, college lists, and regulations. Beware of unofficial information from agents or college websites.</div></div>
       <div class="off-grid">
-        <a href="https://nmc.org.in" target="_blank" rel="noopener" class="off-card"><div class="off-flag">🇮🇳</div><h4>NMC India</h4><p>National Medical Commission — college recognition, NExT/FMGE rules, foreign graduate regulations</p><div class="off-url">↗ nmc.org.in</div></a>
-        <a href="https://mec.gov.np" target="_blank" rel="noopener" class="off-card"><div class="off-flag">🇳🇵</div><h4>MEC Nepal</h4><p>Medical Education Commission — official admission authority, fee ceiling, seat matrix</p><div class="off-url">↗ mec.gov.np</div></a>
+        <a href="https://nmc.org.in" target="_blank" rel="noopener" class="off-card"><div class="off-flag"><svg width="22" height="16" viewBox="0 0 18 13" aria-hidden="true"><rect width="18" height="13" rx="1.5" fill="#fff"/><path d="M1.5 0h15A1.5 1.5 0 0118 1.5v2.83H0V1.5A1.5 1.5 0 011.5 0z" fill="#FF9933"/><path d="M0 8.67h18v2.83A1.5 1.5 0 0116.5 13h-15A1.5 1.5 0 010 11.5V8.67z" fill="#128807"/><circle cx="9" cy="6.5" r="1.5" fill="none" stroke="#000088" stroke-width="0.25"/><circle cx="9" cy="6.5" r="0.28" fill="#000088"/></svg></div><h4>NMC India</h4><p>National Medical Commission — college recognition, NExT/FMGE rules, foreign graduate regulations</p><div class="off-url">↗ nmc.org.in</div></a>
+        <a href="https://mec.gov.np" target="_blank" rel="noopener" class="off-card"><div class="off-flag"><svg width="16" height="19" viewBox="0 0 13 16" aria-hidden="true"><path d="M1 0.8 L1 15.2 L1 8.3 L10.5 4.9 L1 1.6 Z" fill="#003893"/><path d="M1.7 1.6 L1.7 14.2 L1.7 8.3 L9 5.1 L1.7 2.5 Z" fill="#DC143C"/></svg></div><h4>MEC Nepal</h4><p>Medical Education Commission — official admission authority, fee ceiling, seat matrix</p><div class="off-url">↗ mec.gov.np</div></a>
         <a href="https://nmc.org.np" target="_blank" rel="noopener" class="off-card"><div class="off-flag">🏥</div><h4>Nepal Medical Council</h4><p>Licensing, provisional registration, internship guidelines for Nepal MBBS students</p><div class="off-url">↗ nmc.org.np</div></a>
         <a href="https://entrance.mec.gov.np" target="_blank" rel="noopener" class="off-card"><div class="off-flag">📝</div><h4>MECEE Portal</h4><p>MEC entrance exam applications, admit cards, results, seat matrix</p><div class="off-url">↗ entrance.mec.gov.np</div></a>
         <a href="https://natboard.edu.in" target="_blank" rel="noopener" class="off-card"><div class="off-flag">📊</div><h4>NBE India</h4><p>National Board of Examinations — conducts FMGE and NExT for all foreign medical graduates</p><div class="off-url">↗ natboard.edu.in</div></a>
@@ -82,6 +82,10 @@ import PageHeader from '../components/PageHeader.astro';
   .g-tab {
     position: relative;
     overflow: hidden;
+    box-shadow:
+      inset 0 1px 0 rgba(255 255 255 / 0.6),
+      0 1px 2px color-mix(in oklab, var(--g-ink) 10%, transparent),
+      0 3px 8px color-mix(in oklab, var(--g-ink) 8%, transparent);
     transition: background var(--d-2, 200ms) var(--ea-out, ease),
                 color var(--d-2, 200ms) var(--ea-out, ease),
                 box-shadow var(--d-2, 200ms) var(--ea-out, ease),
@@ -96,20 +100,52 @@ import PageHeader from '../components/PageHeader.astro';
       inset 0 1px 0 rgba(255 255 255 / 0.35),
       0 0 0 1px color-mix(in oklab, var(--sky) 55%, transparent),
       0 6px 18px color-mix(in oklab, var(--navy-accent) 30%, transparent) !important;
-    transform: translate3d(2px, -1px, 0);
+    transform: translate3d(2px, -3px, 0);
+  }
+  /* The active tab reads as physically raised in front of the row — a
+     deeper cast shadow below it plus a bright top edge, rather than just a
+     flat colour swap, since "which tab is selected" is a spatial fact as
+     much as a colour one. */
+  .g-tab.on {
+    box-shadow:
+      inset 0 1px 0 rgba(255 255 255 / 0.45),
+      0 8px 16px color-mix(in oklab, var(--navy-accent) 32%, transparent),
+      0 2px 4px color-mix(in oklab, var(--navy-accent) 22%, transparent) !important;
+    transform: translate3d(0, -2px, 0);
   }
   .g-tab::after {
     content: '';
     position: absolute;
     top: -40%;
     bottom: -40%;
+    left: 0;
     width: 45%;
     background: linear-gradient(90deg,
       transparent,
-      rgba(255 255 255 / 0.75),
+      color-mix(in oklab, var(--parrot) 60%, white 30%),
       transparent);
     transform: translate3d(-180%, 0, 0) skewX(-18deg);
     pointer-events: none;
+  }
+  /* 3D letter-pop on the label, same technique as the main nav links —
+     a real perspective tilt with ONE crisp shadow, not a stacked coloured
+     one. The first version stacked three colour layers at a 14° tilt, and
+     at this label's font size that fringed into a blurry double-print
+     rather than reading as depth — corrected the same way the nav links
+     were, after seeing it in a real screenshot. */
+  .g-tab-label {
+    display: inline-block;
+    position: relative;
+    z-index: 1;
+    transform-style: preserve-3d;
+    transition: transform var(--d-3, 250ms) var(--ea-spring, ease),
+                text-shadow var(--d-3, 250ms) var(--ea-out, ease);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .g-tab:not(.on):hover .g-tab-label, .g-tab:not(.on):focus-visible .g-tab-label {
+      transform: perspective(600px) rotateX(9deg) translate3d(0, calc(-1.5px * var(--mo, 1)), 0);
+      text-shadow: 0 3px 5px rgba(0, 0, 0, 0.28);
+    }
   }
   @media (prefers-reduced-motion: no-preference) {
     .g-tab:not(.on):hover::after, .g-tab:not(.on):focus-visible::after {

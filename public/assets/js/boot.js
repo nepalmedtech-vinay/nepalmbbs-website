@@ -120,6 +120,8 @@ async function loadDynamicContent(){
     const tests=await sbR('/rest/v1/site_testimonials?select=*&is_active=eq.true&order=sort_order.asc,created_at.asc');
     if(tests&&tests.length){
       const c=document.getElementById('testimonials-container');
+      const empty=document.getElementById('testimonials-empty');
+      if(empty)empty.remove();
       if(c)tests.forEach(t=>{
         const d=document.createElement('div');d.className='test-card rev';
         d.innerHTML=`<div class="test-quote-icon">"</div><div class="test-stars">${'★'.repeat(t.stars||5)}</div><div class="test-text">${t.quote}</div><div class="test-author"><div class="test-avatar">${t.name[0]}</div><div><div class="test-name">${t.name}</div><div class="test-college">${t.city||''}</div><span class="test-year">${t.year||''}</span></div></div>`;

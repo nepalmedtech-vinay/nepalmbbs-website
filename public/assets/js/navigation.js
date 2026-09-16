@@ -43,11 +43,21 @@ function switchTab(name){
   document.getElementById('mob-menu').classList.remove('open');
   document.getElementById('hbg').classList.remove('open');
 
-  // Scroll to tabs section — past the hero — immediately
-  const ts = document.getElementById('tabs-section');
-  if(ts){
-    const targetY = ts.getBoundingClientRect().top + window.pageYOffset - 68;
-    window.scrollTo({top: targetY, behavior: 'smooth'});
+  // Scroll somewhere meaningful. #tabs-section is the homepage's own
+  // multi-tab remnant; every other page is single-pane since Phase 2, which
+  // means the branch above just reactivated the pane that was already
+  // showing — a true no-op unless the pane itself names a landing spot via
+  // [data-scroll-target] (e.g. counseling.astro's enquiry form, so a body-copy
+  // CTA like "Book Free Counseling" actually goes somewhere instead of
+  // silently doing nothing, which is what every such CTA did before this).
+  const target = document.getElementById('tabs-section')
+    || (pane && pane.querySelector('[data-scroll-target]'));
+  if(target){
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const targetY = target.getBoundingClientRect().top + window.pageYOffset - 68;
+    window.scrollTo({top: targetY, behavior: reduce ? 'auto' : 'smooth'});
+    const focusable = target.querySelector('input, select, textarea, button');
+    if(focusable) setTimeout(() => focusable.focus({preventScroll: true}), reduce ? 0 : 450);
   }
 }
 function switchGuide(btn,id){
