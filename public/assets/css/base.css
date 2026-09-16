@@ -710,6 +710,7 @@ textarea.a-inp{min-height:80px;resize:vertical}
   .chat-toggle{width:48px;height:48px}
   .foot-top{grid-template-columns:1fr}
   .calc-grid{grid-template-columns:1fr}
+  .calc-wrap--compact .calc-grid{grid-template-columns:1fr}
   .a-row{grid-template-columns:1fr}
   .foot-bottom{flex-direction:column;text-align:center}
   .admin-access-btn{bottom:6px;left:6px;font-size:9px;padding:4px 8px}

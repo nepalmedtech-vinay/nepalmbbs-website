@@ -3,6 +3,42 @@
 _Read this after `CLAUDE.md` (which loads itself) and `PROJECT_STATE.md`.
 It is overwritten at the end of every chunk to point at the next one._
 
+## ⭐ Status as of 2026-09-16, part 3 (full-site premium audit — one real fix, several deliberately not made)
+
+Owner asked for a full re-audit against "ultra premium" quality with instant
+fixes for anything found. Screenshotted and reviewed every remaining
+un-checked page this session hadn't looked at closely: `/admission-process`,
+`/documents`, `/neet-calculator`, `/privacy`, `/colleges` grid, `/portal`,
+`/staff` at desktop, plus a mobile (390px) sweep of `/`, `/colleges`, a
+college detail page, `/faq`, `/why-nepal`, `/counseling`, `/guidelines`,
+`/videos`. Most of it held up — this is the product of many prior passes,
+not a first look.
+
+**One real, fixed bug**: `.calc-wrap--compact .calc-grid` (the "Not sure
+you qualify?" mini-calculator embedded in `/counseling` and the homepage
+tabs) never collapsed to a single column on mobile — a plain `.calc-grid`
+rule existed in the 640px breakpoint, but the compact variant's own
+2-class selector (`.calc-wrap--compact .calc-grid`) outranks it on
+specificity regardless of media query, so it stayed 2 columns at 390px.
+That put the Category dropdown directly under the fixed WhatsApp button —
+confirmed by screenshot, not assumed, and confirmed again after the fix
+that the field moved clear. One line added to the existing 640px block.
+
+**Investigated and deliberately left alone**: the same two fixed
+floating buttons (chat + WhatsApp, `base.css` `.wa-float`/`.chat-wrap`)
+also graze decorative text and a couple of college-filter pills on other
+pages at certain scroll positions (`/why-nepal`, `/colleges/[slug]`,
+`/videos`, `/guidelines`). This is the normal, expected trade-off of any
+persistent bottom-right contact FAB — sitewide, deliberate, present before
+this pass, not a recent regression — and none of the other instances block
+an actual interactive control the way the calculator did. Redesigning the
+FAB pattern itself (single button, scroll-reveal, etc.) would be a real
+product decision, not a "needful fix" — flagging it here rather than
+making that call unilaterally.
+
+**Verified**: build clean, CSP regenerated, full `audit.mjs` clean (0
+low-contrast, 0 mobile overflow, all 44 routes) after the fix.
+
 ## ⭐ Status as of 2026-09-16, part 2 (pushed the "paper" tint further, on explicit ask)
 
 Owner saw the first tint pass and asked for it "more visibly blue." Two
